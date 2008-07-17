@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<agent>
+<action>
+<p2pAction>
+	<hosts>
+		<host>rmi://cheypa.inria.fr:1091</host>
+		<host>rmi://eon1.inria.fr:6444</host>
+	</hosts>
+</p2pAction>
+<!--
+<rmRegistration>
+<resourceMgr url="rmi://cheypa:1099/bla"/>
+</rmRegistration>
+-->
+
+</action>
+
+</agent>

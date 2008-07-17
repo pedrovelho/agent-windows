@@ -1,0 +1,20 @@
+C:\Documents and Settings\tdobek\Mes documents\Screen Saver\ScreenSaver\obj\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\tdobek\Mes documents\Screen Saver\ScreenSaver\obj\Release\ScreenSaver.ScreenSaverForm.resources
+C:\Documents and Settings\tdobek\Mes documents\Screen Saver\ScreenSaver\obj\Release\ScreenSaver.csproj.GenerateResource.Cache
+C:\Documents and Settings\tdobek\Mes documents\Screen Saver\ScreenSaver\bin\Release\ProActiveSSaver.exe
+C:\Documents and Settings\tdobek\Mes documents\Screen Saver\ScreenSaver\bin\Release\ConfigParser.exe
+C:\Documents and Settings\tdobek\Mes documents\Screen Saver\ScreenSaver\bin\Release\ProActiveAgent.exe
+C:\Documents and Settings\tdobek\Mes documents\Screen Saver\ScreenSaver\bin\Release\ProActiveAgent.pdb
+C:\Documents and Settings\tdobek\Mes documents\Screen Saver\ScreenSaver\bin\Release\ConfigParser.pdb
+C:\Documents and Settings\tdobek\Mes documents\Screen Saver\ScreenSaver\obj\Release\ProActiveSSaver.exe
+C:\Documents and Settings\tdobek\Mes documents\Screen Saver\ScreenSaver\obj\Release\ScreenSaver.Properties.Resources.resources
+D:\tdobek\Mes documents\Screen Saver\ScreenSaver\obj\Release\ResolveAssemblyReference.cache
+D:\tdobek\Mes documents\Screen Saver\ScreenSaver\obj\Release\ScreenSaver.Properties.Resources.resources
+D:\tdobek\Mes documents\Screen Saver\ScreenSaver\obj\Release\ScreenSaver.ScreenSaverForm.resources
+D:\tdobek\Mes documents\Screen Saver\ScreenSaver\obj\Release\ScreenSaver.csproj.GenerateResource.Cache
+D:\tdobek\Mes documents\Screen Saver\ScreenSaver\obj\Release\ProActiveSSaver.exe
+D:\tdobek\Mes documents\Screen Saver\ScreenSaver\bin\Release\ProActiveSSaver.exe
+D:\tdobek\Mes documents\Screen Saver\ScreenSaver\bin\Release\ProActiveAgent.pdb
+D:\tdobek\Mes documents\Screen Saver\ScreenSaver\bin\Release\ConfigParser.pdb
+D:\tdobek\Mes documents\Screen Saver\ScreenSaver\bin\Release\ConfigParser.dll
+D:\tdobek\Mes documents\Screen Saver\ScreenSaver\bin\Release\ProActiveAgent.exe
