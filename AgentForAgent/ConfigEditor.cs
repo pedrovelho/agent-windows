@@ -14,11 +14,11 @@ namespace AgentForAgent
         private Configuration conf;
         private string location;
 
-        public ConfigEditor(string confLocation)
+        public ConfigEditor(Configuration conf, string confLocation, string agentDir)
         {
             InitializeComponent();
 
-            this.conf = ConfigurationParser.parseXml(confLocation);
+            this.conf = conf;
             this.location = confLocation;
 
             proactiveLocation.Text = conf.agentConfig.proactiveLocation;
@@ -254,7 +254,15 @@ namespace AgentForAgent
 
         private void saveConfig_Click(object sender, EventArgs e)
         {
-            ConfigurationParser.saveXml(location, conf);
+            try
+            {
+                ConfigurationParser.saveXml(location, conf);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("");
+            }
+            Close();
         }
 
         private void proactiveLocation_TextChanged(object sender, EventArgs e)

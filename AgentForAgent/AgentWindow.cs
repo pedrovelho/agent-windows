@@ -205,8 +205,16 @@ namespace AgentForAgent
         private void scrSvrStart_Click(object sender, EventArgs e)
         {
             Process p = new Process();
-            p.StartInfo.FileName = "D:\\tdobek\\Mes documents\\Screen Saver\\ScreenSaver\\bin\\Release\\ProActiveSSaver.exe";
-            p.Start();
+            ;
+            p.StartInfo.FileName = Environment.GetEnvironmentVariable("SystemRoot") + "\\system32\\ProActiveSSaver.scr";
+            try
+            {
+                p.Start();
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("The ProActive Screen Saver could not be started", "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void globalStop_Click(object sender, EventArgs e)
@@ -246,8 +254,16 @@ namespace AgentForAgent
 
         private void button1_Click(object sender, EventArgs e)
         {
-            ConfigEditor window = new ConfigEditor(configLocation.Text);
-            window.Show();
+            try
+            {
+                Configuration conf = ConfigurationParser.parseXml(configLocation.Text, agentLocation);
+                ConfigEditor window = new ConfigEditor(conf, configLocation.Text, agentLocation);
+                window.Show();
+            }
+            catch (IncorrectConfigurationException)
+            {
+                MessageBox.Show("The configuration file is broken.", "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
