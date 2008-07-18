@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Action" nillable="true" type="Action" />
+  <xs:complexType name="Action">
+    <xs:attribute name="priority" type="xs:string" />
+  </xs:complexType>
+  <xs:complexType name="AdvertAction">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Action">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="nodeName" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="RMAction">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Action">
+        <xs:attribute name="url" type="xs:string" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="P2PAction">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Action">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="contact" type="xs:string" />
+        </xs:sequence>
+        <xs:attribute name="protocol" type="xs:string" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="Events" nillable="true" type="Events" />
+  <xs:complexType name="Events">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="event" type="Event" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Event" />
+  <xs:complexType name="CalendarEvent">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Event">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="startDay" type="xs:string" />
+          <xs:element minOccurs="1" maxOccurs="1" name="startHour" type="xs:int" />
+          <xs:element minOccurs="1" maxOccurs="1" name="startMinute" type="xs:int" />
+          <xs:element minOccurs="1" maxOccurs="1" name="startSecond" type="xs:int" />
+          <xs:element minOccurs="1" maxOccurs="1" name="durationDays" type="xs:int" />
+          <xs:element minOccurs="1" maxOccurs="1" name="durationHours" type="xs:int" />
+          <xs:element minOccurs="1" maxOccurs="1" name="durationMinutes" type="xs:int" />
+          <xs:element minOccurs="1" maxOccurs="1" name="durationSeconds" type="xs:int" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="AgentConfig" nillable="true" type="AgentConfig" />
+  <xs:complexType name="AgentConfig">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="proactiveLocation" type="xs:string" />
+      <xs:element minOccurs="1" maxOccurs="1" name="java_home" type="xs:string" />
+      <xs:element minOccurs="1" maxOccurs="1" name="jvm_params" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ConfigurationParser" nillable="true" type="ConfigurationParser" />
+  <xs:complexType name="ConfigurationParser" />
+  <xs:element name="agent" nillable="true" type="Configuration" />
+  <xs:complexType name="Configuration">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="internalConfig" type="AgentConfig" />
+      <xs:element minOccurs="1" maxOccurs="1" name="events" type="Events" />
+      <xs:element minOccurs="1" maxOccurs="1" name="action" type="Action" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="RMAction" nillable="true" type="RMAction" />
+  <xs:element name="Event" nillable="true" type="Event" />
+  <xs:element name="IdlenessEvent" nillable="true" type="IdlenessEvent" />
+  <xs:complexType name="IdlenessEvent">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Event">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="beginSecs" type="xs:int" />
+          <xs:element minOccurs="1" maxOccurs="1" name="endSecs" type="xs:int" />
+          <xs:element minOccurs="1" maxOccurs="1" name="beginThreshold" type="xs:int" />
+          <xs:element minOccurs="1" maxOccurs="1" name="endThreshold" type="xs:int" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="Test" nillable="true" type="Test" />
+  <xs:complexType name="Test" />
+  <xs:element name="P2PAction" nillable="true" type="P2PAction" />
+  <xs:element name="CalendarEvent" nillable="true" type="CalendarEvent" />
+  <xs:element name="AdvertAction" nillable="true" type="AdvertAction" />
+</xs:schema>
