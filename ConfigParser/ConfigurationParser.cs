@@ -30,20 +30,21 @@ namespace ConfigParser
         // Parse given XML file
         // Result: Configuration object representing the contents of file
 
-        public static Configuration parseXml(String fileName, string proActiveDir)
+        public static bool validateXMLFile(String filePath, String agentHomePath)
         {
+            String schemaPath = agentHomePath + "\\config.xsd"; 
             valid = true;
             // Schema validation
 
             XmlSchemaSet schemaSet = new XmlSchemaSet();
-            schemaSet.Add(null, proActiveDir + "\\config.xsd");
+            schemaSet.Add(null,schemaPath);
 
             XmlReaderSettings settings = new XmlReaderSettings();
             settings.ValidationType = ValidationType.Schema;
             settings.Schemas = schemaSet;
             settings.ValidationEventHandler += new ValidationEventHandler(ValidationError);
 
-            XmlReader textReader = XmlReader.Create(fileName, settings);
+            XmlReader textReader = XmlReader.Create(filePath, settings);
             try
             {
                 while (textReader.Read()) ;
@@ -57,12 +58,22 @@ namespace ConfigParser
 
 
             if (!valid)
+                return false;
+
+            return true;
+        }
+
+        
+        public static Configuration parseXml(String configFilePath, string proActiveAgentDir)
+        {
+           // String xmlSchemaFilePath = proActiveAgentDir + "\\config.xsd";          
+            if (!validateXMLFile(configFilePath, proActiveAgentDir))
                 throw new IncorrectConfigurationException();
             // Deserialization
 
             XmlSerializer serializer = new XmlSerializer(typeof(Configuration));
             Configuration res;
-            TextReader tr = new StreamReader(fileName);
+            TextReader tr = new StreamReader(configFilePath);
             res = (Configuration)serializer.Deserialize(tr);
             tr.Close();
             return res;

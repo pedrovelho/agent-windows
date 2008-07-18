@@ -195,6 +195,23 @@ namespace AgentForAgent
             browseConfig.FileName = configLocation.Text;
             browseConfig.ShowDialog();
             configLocation.Text = browseConfig.FileName;
+
+            //validate the config file 
+            try
+            {
+                bool valid = ConfigurationParser.validateXMLFile(configLocation.Text, agentLocation);
+                if (!valid)
+                {
+                    MessageBox.Show("The selected file does not comply with the schema. The Agent will probably not work. You can edit the file in the text editor or the graphical one.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+            catch (IncorrectConfigurationException )
+            {
+                MessageBox.Show("The selected file is not a correct xml file. The Agent will probably not work. You can edit the file in the text editor or the graphical one.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            
+
+
         }
 
         private void close_Click(object sender, EventArgs e)
