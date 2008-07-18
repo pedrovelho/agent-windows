@@ -19,3 +19,12 @@ D:\tdobek\Mes documents\Visual Studio 2008\Projects\ProActiveAgent\ProActiveAgen
 D:\tdobek\Mes documents\Visual Studio 2008\Projects\ProActiveAgent\ProActiveAgent\bin\Release\ProActiveAgent.exe
 D:\tdobek\Mes documents\Visual Studio 2008\Projects\ProActiveAgent\ProActiveAgent\obj\Release\ProActiveAgent.exe
 D:\tdobek\Mes documents\Visual Studio 2008\Projects\ProActiveAgent\ProActiveAgent\bin\Release\ConfigParser.exe
+D:\tdobek\svn\ProActiveAgent\bin\Release\ProActiveAgent.exe
+D:\tdobek\svn\ProActiveAgent\bin\Release\ProActiveAgent.pdb
+D:\tdobek\svn\ProActiveAgent\bin\Release\ConfigParser.exe
+D:\tdobek\svn\ProActiveAgent\bin\Release\ConfigParser.pdb
+D:\tdobek\svn\ProActiveAgent\obj\Release\ResolveAssemblyReference.cache
+D:\tdobek\svn\ProActiveAgent\obj\Release\ProActiveAgent.exe
+D:\tdobek\svn\ProActiveAgent\obj\Release\ProActiveAgent.pdb
+D:\tdobek\svn\bin\Release\ProActiveAgent.exe
+D:\tdobek\svn\bin\Release\ProActiveAgent.pdb

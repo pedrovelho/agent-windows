@@ -12,7 +12,7 @@ namespace ProActiveAgent
         {
             String CONFIG_LOCATION = "c:\\PAAgent-config.xml";
 
-            Configuration configuration = ConfigurationParser.parseXml(CONFIG_LOCATION);
+            Configuration configuration = ConfigurationParser.parseXml(CONFIG_LOCATION, "d:\\ProActiveAgent");
             FileLogger logger = new FileLogger("d:\\tdobek");
             ProActiveExec runner = new ProActiveExec(logger, "d:\\tdobek", "d:\\tdobek", "d:\\tdobek", "d:\\tdobek", "Idle");
 /*            runner.setCommand(configuration.daemonConfig.daemonScript);

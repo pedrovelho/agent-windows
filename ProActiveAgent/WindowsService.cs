@@ -35,18 +35,7 @@ namespace ProActiveAgent
             this.configLocation = CONFIG_LOCATION;
             this.agentLocation = AGENT_LOCATION;
 
-            RegistryKey confKey = Registry.LocalMachine.OpenSubKey("Software\\ProActiveAgent");
-            if (confKey != null)
-            {
-                if (confKey.GetValue("ConfigLocation") != null)
-                {
-                    this.configLocation = (string) confKey.GetValue("ConfigLocation");
-                }
-                if (confKey.GetValue("AgentDirectory") != null)
-                {
-                    this.agentLocation = (string)confKey.GetValue("AgentDirectory");
-                }
-            }
+            readRegistryConfiguration();
 
             this.ServiceName = "ProActive Agent";
             this.EventLog.Log = "Application";
@@ -63,6 +52,23 @@ namespace ProActiveAgent
 
             this.timerManager = null;
             this.exec = null;
+        }
+
+        private void readRegistryConfiguration()
+        {
+
+            RegistryKey confKey = Registry.LocalMachine.OpenSubKey("Software\\ProActiveAgent");
+            if (confKey != null)
+            {
+                if (confKey.GetValue("ConfigLocation") != null)
+                {
+                    this.configLocation = (string)confKey.GetValue("ConfigLocation");
+                }
+                if (confKey.GetValue("AgentDirectory") != null)
+                {
+                    this.agentLocation = (string)confKey.GetValue("AgentDirectory");
+                }
+            }
         }
 
         /// <summary>
@@ -103,10 +109,12 @@ namespace ProActiveAgent
 
         protected override void OnStart(string[] args)
         {
+            // TODO: zero all of the members/properties
+
             if (args.Length > 0)
                 this.configLocation = args[0];
             
-            this.configuration = ConfigurationParser.parseXml(configLocation);
+            this.configuration = ConfigurationParser.parseXml(configLocation, agentLocation);
             LoggerComposite composite = new LoggerComposite();
             composite.addLogger(new FileLogger(this.agentLocation));
             composite.addLogger(new EventLogger());
