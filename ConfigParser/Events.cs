@@ -13,7 +13,7 @@ namespace ConfigParser
     {
         private List<Event> myEvents = new List<Event>();
 
-        [XmlElement("event")]
+        [XmlElement("event", IsNullable = false)]
         public Event[] events
         {
             get

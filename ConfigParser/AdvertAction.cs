@@ -18,7 +18,7 @@ namespace ConfigParser
         // If the name is null, a default name will be used
         private string myNodeName;
 
-        [XmlElement("nodeName")]
+        [XmlElement("nodeName", IsNullable=false)]
         public string nodeName
         {
             get

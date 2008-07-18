@@ -29,7 +29,7 @@ namespace ConfigParser
             }
         }
 
-        [XmlElement("contact")]
+        [XmlElement("contact", IsNullable = false)]
         public String[] contacts
         {
             get

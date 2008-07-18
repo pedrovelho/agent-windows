@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ConfigParser
 {
-    class IncorrectConfigurationException : Exception
+    public class IncorrectConfigurationException : Exception
     {
     }
 }

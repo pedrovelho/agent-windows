@@ -15,8 +15,8 @@ namespace ConfigParser
         // START CONFIGURATION
         // day of week
         private String myStartDay;
-        
-        [XmlElement("startDay")]
+
+        [XmlElement("startDay", IsNullable = false)]
         public String startDay
         {
             set
@@ -32,7 +32,7 @@ namespace ConfigParser
 
         private int myStartHour;
 
-        [XmlElement("startHour")]
+        [XmlElement("startHour", IsNullable = false)]
         public int startHour
         {
             set
@@ -48,7 +48,7 @@ namespace ConfigParser
         // minute
         private int myStartMinute;
 
-        [XmlElement("startMinute")]
+        [XmlElement("startMinute", IsNullable = false)]
         public int startMinute
         {
             set
@@ -64,7 +64,7 @@ namespace ConfigParser
         // second
         private int myStartSecond;
 
-        [XmlElement("startSecond")]
+        [XmlElement("startSecond", IsNullable = false)]
         public int startSecond
         {
             set
@@ -82,7 +82,7 @@ namespace ConfigParser
         // number of days
         private int myDurationDays;
 
-        [XmlElement("durationDays")]
+        [XmlElement("durationDays", IsNullable = false)]
         public int durationDays
         {
             set
@@ -98,7 +98,7 @@ namespace ConfigParser
         // number of hours
         private int myDurationHours;
 
-        [XmlElement("durationHours")]
+        [XmlElement("durationHours", IsNullable = false)]
         public int durationHours
         {
             set
@@ -114,7 +114,7 @@ namespace ConfigParser
         // number of minutes
         private int myDurationMinutes;
 
-        [XmlElement("durationMinutes")]
+        [XmlElement("durationMinutes", IsNullable = false)]
         public int durationMinutes
         {
             set
@@ -130,7 +130,7 @@ namespace ConfigParser
         // number of seconds
         private int myDurationSeconds;
 
-        [XmlElement("durationSeconds")]
+        [XmlElement("durationSeconds", IsNullable = false)]
         public int durationSeconds
         {
             set

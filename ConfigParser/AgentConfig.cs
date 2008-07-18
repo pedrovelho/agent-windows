@@ -20,7 +20,7 @@ namespace ConfigParser
 
         private string myJvmParams;
 
-        [XmlElement("proactiveLocation")]
+        [XmlElement("proactiveLocation", IsNullable = false)]
         public string proactiveLocation
         {
             get
@@ -34,7 +34,7 @@ namespace ConfigParser
             }
         }
 
-        [XmlElement("java_home")]
+        [XmlElement("java_home", IsNullable = false)]
         public string javaHome
         {
             get
@@ -47,7 +47,7 @@ namespace ConfigParser
             }
         }
 
-        [XmlElement("jvm_params")]
+        [XmlElement("jvm_params", IsNullable = false)]
         public string jvmParams
         {
             get

@@ -21,3 +21,12 @@ D:\tdobek\Mes documents\Visual Studio 2008\Projects\ProActiveAgent\ConfigParser\
 D:\tdobek\Mes documents\Visual Studio 2008\Projects\ProActiveAgent\ConfigParser\bin\Release\ConfigParser.exe.config
 D:\tdobek\Mes documents\Visual Studio 2008\Projects\ProActiveAgent\ConfigParser\bin\Release\ConfigParser.exe
 D:\tdobek\Mes documents\Visual Studio 2008\Projects\ProActiveAgent\ConfigParser\obj\Release\ConfigParser.exe
+D:\tdobek\svn\ConfigParser\obj\Release\ResolveAssemblyReference.cache
+D:\tdobek\svn\ConfigParser\obj\Release\ConfigParser.exe
+D:\tdobek\svn\ConfigParser\bin\Release\ConfigParser.exe.config
+D:\tdobek\svn\ConfigParser\bin\Release\ConfigParser.exe
+D:\tdobek\svn\ConfigParser\bin\Release\ConfigParser.pdb
+D:\tdobek\svn\ConfigParser\obj\Release\ConfigParser.pdb
+D:\tdobek\svn\bin\Release\ConfigParser.exe.config
+D:\tdobek\svn\bin\Release\ConfigParser.exe
+D:\tdobek\svn\bin\Release\ConfigParser.pdb

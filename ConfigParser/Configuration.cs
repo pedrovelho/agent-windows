@@ -18,7 +18,7 @@ namespace ConfigParser
         
         private AgentConfig myAgentConfig;
 
-        [XmlElement("internalConfig")]
+        [XmlElement("internalConfig", IsNullable = false)]
         public AgentConfig agentConfig
         {
             get
@@ -35,8 +35,8 @@ namespace ConfigParser
         // Collection of events that the system will react on
 
         private Events myEvents;
-        
-        [XmlElement("events")]
+
+        [XmlElement("events", IsNullable = false)]
         public Events events
         {
             get
@@ -54,7 +54,7 @@ namespace ConfigParser
 
         private Action myAction;
 
-        [XmlElement("action")]
+        [XmlElement("action", IsNullable = false)]
         public Action action
         {
             get

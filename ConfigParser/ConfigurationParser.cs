@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml.Serialization;
+using System.Xml;
+using System.Xml.Schema;
 using System.IO;
 
 /**
@@ -14,6 +16,9 @@ namespace ConfigParser
 {
     public class ConfigurationParser
     {
+        private static bool valid = true;
+        private static string reason = "";
+
         public static void saveXml(String fileName, Configuration configuration)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(Configuration));
@@ -25,8 +30,36 @@ namespace ConfigParser
         // Parse given XML file
         // Result: Configuration object representing the contents of file
 
-        public static Configuration parseXml(String fileName)
+        public static Configuration parseXml(String fileName, string proActiveDir)
         {
+            valid = true;
+            // Schema validation
+
+            XmlSchemaSet schemaSet = new XmlSchemaSet();
+            schemaSet.Add(null, proActiveDir + "\\config.xsd");
+
+            XmlReaderSettings settings = new XmlReaderSettings();
+            settings.ValidationType = ValidationType.Schema;
+            settings.Schemas = schemaSet;
+            settings.ValidationEventHandler += new ValidationEventHandler(ValidationError);
+
+            XmlReader textReader = XmlReader.Create(fileName, settings);
+            try
+            {
+                while (textReader.Read()) ;
+            }
+            catch (XmlException)
+            {
+                throw new IncorrectConfigurationException();
+            }
+
+            textReader.Close();
+
+
+            if (!valid)
+                throw new IncorrectConfigurationException();
+            // Deserialization
+
             XmlSerializer serializer = new XmlSerializer(typeof(Configuration));
             Configuration res;
             TextReader tr = new StreamReader(fileName);
@@ -34,6 +67,13 @@ namespace ConfigParser
             tr.Close();
             return res;
         }
+
+        private static void ValidationError(object sender, ValidationEventArgs arguments)
+        {
+            reason = arguments.Message; // Display error
+            valid = false; //validation failed
+        }
+
 
         public static Configuration generateSampleConf()
         {
