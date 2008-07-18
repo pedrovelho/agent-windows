@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<agent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <internalConfig>
+    <proactiveLocation />
+    <java_home />
+    <jvm_params />
+  </internalConfig>
+  <events />
+  <action xsi:type="P2PAction" priority="High" protocol="RMI" />
+</agent>
