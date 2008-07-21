@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ConfigParser;
 using ProActiveAgent;
 using System.ServiceProcess;
 
@@ -22,7 +21,7 @@ namespace ScreenSaver
             {
                 sc.ExecuteCommand((int)PAACommands.ScreenSaverStart);
             }
-            catch (InvalidOperationException e)
+            catch (InvalidOperationException)
             {
             }
         }
@@ -33,7 +32,7 @@ namespace ScreenSaver
             {
                 sc.ExecuteCommand((int)PAACommands.ScreenSaverStop);
             }
-            catch (InvalidOperationException e)
+            catch (InvalidOperationException)
             {
             }
         }
