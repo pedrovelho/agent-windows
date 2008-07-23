@@ -6,6 +6,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using ConfigParser;
 using System.Threading;
+using System.Runtime.CompilerServices;
 
 /** Executor of runner script and thus ProActive runtime.
  *  This class implements semantics of all actions available
@@ -86,30 +87,19 @@ namespace ProActiveAgent
             return logger;
         }
 
-        public bool isRunning()
-        {
-            return process != null;
-        }
-
         private bool startP2P(string[] hosts)
         {
-            if (isRunning())
-                return false;
             return start("P2P", hosts);
         }
 
         private bool startRM(string rmHost)
         {
-            if (isRunning())
-                return false;
             String[] args = new String[] { rmHost };
             return start("RM", args);
         }
 
         private bool startAdvert(string nodeName)
         {
-            if (isRunning())
-                return false;
             String[] args;
             if (nodeName != null)
                 args = new String[] { nodeName };
@@ -123,12 +113,15 @@ namespace ProActiveAgent
             return "\"" + toQuote + "\"";
         }
 
-        // Precond: process is null
         // Starts runner script with given [command] argument
         // and optionally other arguments (args parameter)
+        // this method has to be synchronized as it is dealing with a process object
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         private bool start(String cmd, string[] args)
         {
+            if (process != null)
+                return false;
             logger.log("Starting: " + cmd, LogLevel.TRACE);
 
             this.cmd = cmd;
@@ -194,8 +187,13 @@ namespace ProActiveAgent
             }
         }
 
+        // this method has to be synchronized as it is dealing with a process object
+        
+        [MethodImpl(MethodImplOptions.Synchronized)]
         private void stop()
         {
+            if (this.process == null)
+                return;
             logger.log("Stopping ProActive process...", LogLevel.INFO);
             observer.setMonitorredProcess(null);
             
@@ -250,8 +248,7 @@ namespace ProActiveAgent
         {
             logger.log("Received global stop request", LogLevel.INFO);
             callersState.Clear(); // we delete everything from the state
-            if (isRunning())
-                stop();
+            stop();
         }
 
         public void sendStopAction(object whatToDo, ApplicationType appType)
@@ -269,9 +266,7 @@ namespace ProActiveAgent
                     // someone else sent the start command too
                     return; 
             }
-            // if we reach that far, then we can stop the action provided it is still running ;)
-            if (isRunning())
-                stop();
+            stop();
         }
 
     }
