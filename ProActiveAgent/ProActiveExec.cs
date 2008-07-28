@@ -242,6 +242,7 @@ namespace ProActiveAgent
             //disableRestarting();
             if (!this.process.HasExited)
             {
+                this.process.Exited -= restart;
                 KillProcessEx((uint)this.process.Id, true);
             }
             this.process = null;
