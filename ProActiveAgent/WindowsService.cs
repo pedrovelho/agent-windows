@@ -140,6 +140,7 @@ namespace ProActiveAgent
         protected override void OnStop()
         {
             logger.log("Stopping ProActiveAgent Service", LogLevel.TRACE);
+            exec.dispose();
             timerManager.dispose();
             exec.sendGlobalStop();
             logger.onStopService();
@@ -192,10 +193,13 @@ namespace ProActiveAgent
 
         protected override void OnShutdown()
         {
+            logger.log("ONShutdown called!", LogLevel.TRACE);
+            exec.disableRestarting();
+/*            exec.disableRestarting();
             exec.sendGlobalStop();
             this.configuration = null;
             this.timerManager = null;
-            this.exec = null;
+            this.exec = null; */
             base.OnShutdown();
         }
 

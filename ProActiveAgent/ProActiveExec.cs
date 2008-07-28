@@ -32,6 +32,7 @@ namespace ProActiveAgent
         private String proactiveLocation;
         private TimerManager timerMgr;
         private ProcessPriorityClass priority;
+        private bool disabledRestarting = false; // restarting of the process is disabled when the system shuts down
 
         private Dictionary<ApplicationType, Boolean> callersState; // state of the calling applications 
                                                                    // (if there were unstopped start actions)
@@ -56,6 +57,11 @@ namespace ProActiveAgent
             this.priority = getPriority(priority);
         }
 
+        public void resetRestartDelay()
+        {
+            this.restartDelay = 1000;
+        }
+
         private ProcessPriorityClass getPriority(string priority)
         {
             if (priority.Equals("Idle"))
@@ -77,6 +83,7 @@ namespace ProActiveAgent
             else return ProcessPriorityClass.Normal;
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void setTimerMgr(TimerManager timerMgr)
         {
             this.timerMgr = timerMgr;
@@ -105,6 +112,7 @@ namespace ProActiveAgent
                 args = new String[] { nodeName };
             else
                 args = new String[0];
+            //logger.log("We are just before the start method", LogLevel.TRACE);
             return start("ADVERT", args);
         }
 
@@ -120,75 +128,106 @@ namespace ProActiveAgent
         [MethodImpl(MethodImplOptions.Synchronized)]
         private bool start(String cmd, string[] args)
         {
-            if (process != null)
-                return false;
-            logger.log("Starting: " + cmd, LogLevel.TRACE);
+            if (!disabledRestarting)
+            {
 
-            this.cmd = cmd;
-            this.args = args;
-            // We start a new process
-            process = new Process();
-            process.StartInfo.FileName = scriptLocation + "\\" + SCRIPT_NAME;
-            
-            // Command-line params building
-            StringBuilder argsBld = new StringBuilder();
-            foreach( string arg in args) {
-                argsBld.Append(" " + arg);
+                //logger.log("We are inside start method", LogLevel.TRACE);
+                if (process != null)
+                {
+                    //logger.log("The process is not null", LogLevel.TRACE);
+                    return false;
+                }
+                logger.log("Starting: " + cmd, LogLevel.TRACE);
+
+                this.cmd = cmd;
+                this.args = args;
+                // We start a new process
+                process = new Process();
+                process.StartInfo.FileName = scriptLocation + "\\" + SCRIPT_NAME;
+
+                // Command-line params building
+                StringBuilder argsBld = new StringBuilder();
+                foreach (string arg in args)
+                {
+                    argsBld.Append(" " + arg);
+                }
+
+                string action_args = quote(argsBld.ToString());
+                string action_cmd = quote(cmd);
+                string proactive_location = quote(proactiveLocation);
+                string jvm_location = quote(javaLocation);
+                string jvm_args = quote(jvmOptions);
+
+                process.StartInfo.Arguments = proactive_location + " " + jvm_location + " " + jvm_args + " " + action_cmd + " " + action_args;
+                // We attach a handler in order to intercept killing of that process
+                // Therefore, we will be able to relaunch script in that event
+                process.EnableRaisingEvents = true;
+                process.Exited += restart;
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.UseShellExecute = false;
+                logger.log("Full path of the script: " + process.StartInfo.FileName, LogLevel.TRACE);
+                logger.log("Arguments: " + process.StartInfo.Arguments, LogLevel.TRACE);
+
+                process.Start();
+                process.PriorityClass = ProcessPriorityClass.Idle;
+                observer.setMonitorredProcess(process);
+                logger.log("The ProActive process was successfuly started", LogLevel.INFO);
+                return true;
             }
-
-            string action_args = quote(argsBld.ToString());
-            string action_cmd = quote(cmd);
-            string proactive_location = quote(proactiveLocation);
-            string jvm_location = quote(javaLocation);
-            string jvm_args = quote(jvmOptions);
-
-            process.StartInfo.Arguments = proactive_location + " " + jvm_location + " " + jvm_args + " " + action_cmd + " " + action_args;
-            // We attach a handler in order to intercept killing of that process
-            // Therefore, we will be able to relaunch script in that event
-            process.EnableRaisingEvents = true;
-            process.Exited += restart;
-            process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.UseShellExecute = false;
-            logger.log("Full path of the script: " + process.StartInfo.FileName, LogLevel.TRACE);
-            logger.log("Arguments: " + process.StartInfo.Arguments, LogLevel.TRACE);
-
-            process.Start();
-            process.PriorityClass = ProcessPriorityClass.Idle;
-            observer.setMonitorredProcess(process);
-            logger.log("The ProActive process was successfuly started", LogLevel.INFO);
-            return true;
+            return false;
         }
 
         // if the process is killed and should be running, it is restarted
+        [MethodImpl(MethodImplOptions.Synchronized)]
         private void restart(object o, EventArgs e)
         {
-            observer.setMonitorredProcess(null);
-            logger.log("ProActive process ended prematurely", LogLevel.INFO);
             
-            // if we use timer based config then we will use binary expotential backoff retry
-            // in other case we restart process immediately
-
-            // we only perform delayed restart when action originated from scheduled calendar event
-
-            bool delayRestart = false;
-
-            if (callersState.ContainsKey(ApplicationType.AgentScheduler) && callersState[ApplicationType.AgentScheduler])
-                delayRestart = true;
-
-            if (timerMgr != null && delayRestart)
+            if (!disabledRestarting)
             {
-                logger.log("Restarting in " + restartDelay + " ms", LogLevel.TRACE);
-                timerMgr.addDelayedRetry(restartDelay);
+                observer.setMonitorredProcess(null);
+                logger.log("ProActive process ended prematurely", LogLevel.INFO);
+
+                // if we use timer based config then we will use binary expotential backoff retry
+                // in other case we restart process immediately
+
+                // we only perform delayed restart when action originated from scheduled calendar event
+
+                bool delayRestart = false;
+
+                if (callersState.ContainsKey(ApplicationType.AgentScheduler) && callersState[ApplicationType.AgentScheduler])
+                    delayRestart = true;
+
+                this.process = null;
+
+                if (timerMgr != null && delayRestart)
+                {
+                    logger.log("Restarting in " + restartDelay + " ms", LogLevel.TRACE);
+//                    try
+//                    {
+                        timerMgr.addDelayedRetry(restartDelay);
+//                    }
+//                    catch (Exception)
+//                    {
+//                        logger.log("Restart operation failed.", LogLevel.TRACE);
+//                    }
+                }
+                else
+                {
+                    logger.log("Restarting now!", LogLevel.TRACE);
+                    start(this.cmd, this.args);
+                }
             }
-            else
-            {
-                logger.log("Restarting now!", LogLevel.TRACE);
-                start(this.cmd, this.args);
-            }
+             
         }
 
         // this method has to be synchronized as it is dealing with a process object
-        
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public void disableRestarting()
+        {
+            disabledRestarting = true;
+        }
+
         [MethodImpl(MethodImplOptions.Synchronized)]
         private void stop()
         {
@@ -200,9 +239,9 @@ namespace ProActiveAgent
             this.cmd = null;
             this.args = null;
             // kill the process tree
+            //disableRestarting();
             if (!this.process.HasExited)
             {
-                process.Exited -= restart;
                 KillProcessEx((uint)this.process.Id, true);
             }
             this.process = null;
@@ -267,6 +306,12 @@ namespace ProActiveAgent
                     return; 
             }
             stop();
+        }
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public void dispose()
+        {
+            this.timerMgr = null;
         }
 
     }

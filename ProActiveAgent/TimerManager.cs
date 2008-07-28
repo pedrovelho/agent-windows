@@ -110,9 +110,9 @@ namespace ProActiveAgent
 
             if (System.DateTime.Now.Ticks + delay * 10000L < retryTimeBarrier)
             {
-                Timer newTimer = new Timer(new TimerCallback(mySendRestartAction), configuration.action, delay, System.Threading.Timeout.Infinite);
-                retryTimers.Add(newTimer);
-                exec.getLogger().log("Restart action succesfully scheduled", LogLevel.TRACE);
+                    Timer newTimer = new Timer(new TimerCallback(mySendRestartAction), configuration.action, delay, System.Threading.Timeout.Infinite);
+                    retryTimers.Add(newTimer);
+                    exec.getLogger().log("Restart action succesfully scheduled", LogLevel.TRACE);
             }
             else
             {
@@ -129,6 +129,8 @@ namespace ProActiveAgent
             while (retryTimeBarrier < DateTime.Now.Ticks)
                 retryTimeBarrier += WEEK_DELAY * 10000;
             retryTimeBarrier -= BARRIER_SAFETY_MARGIN * 10000;
+            
+            exec.resetRestartDelay();
             exec.sendStartAction(actionInfo.getAction(), ApplicationType.AgentScheduler);
         }
 
