@@ -125,9 +125,18 @@ namespace ProActiveAgent
         private void mySendStartAction(object action)
         {
             StartActionInfo actionInfo = (StartActionInfo)action;
-            retryTimeBarrier = actionInfo.getStopTime();
-            while (retryTimeBarrier < DateTime.Now.Ticks)
-                retryTimeBarrier += WEEK_DELAY * 10000;
+            long stopTime = actionInfo.getStopTime();
+
+            while (stopTime < DateTime.Now.Ticks)
+                stopTime += WEEK_DELAY * 10000;
+            
+
+            if (retryTimeBarrier < stopTime)
+            {
+                retryTimeBarrier = stopTime;
+             
+            }
+
             retryTimeBarrier -= BARRIER_SAFETY_MARGIN * 10000;
             
             exec.resetRestartDelay();

@@ -36,8 +36,10 @@ namespace ProActiveAgent
         private bool disabledRestarting = false; // restarting of the process is disabled when the system shuts down
         private int initialRestartDelay;
 
-        private Dictionary<ApplicationType, Boolean> callersState; // state of the calling applications 
-                                                                   // (if there were unstopped start actions)
+        //For an application type (i.e AgentScheduler) boolean value = true if this type has sent the "start command". It is set to false when the same app type sends stop command. 
+        private Dictionary<ApplicationType, Int32> callersState; 
+        // state of the calling applications 
+        // (if there were unstopped start actions)
 
         private ProcessObserver observer;
         private Logger logger;
@@ -47,7 +49,7 @@ namespace ProActiveAgent
             String proactiveLocation, String priority, int initialRestartDelay)
         {
             this.observer = new ProcessObserver(logger);
-            this.callersState = new Dictionary<ApplicationType, Boolean>();
+            this.callersState = new Dictionary<ApplicationType, Int32>();
             this.scriptLocation = scriptLocation;
             this.jvmOptions = jvmOptions;
             this.javaLocation = javaLocation;
@@ -202,7 +204,7 @@ namespace ProActiveAgent
 
                 bool delayRestart = false;
 
-                if (callersState.ContainsKey(ApplicationType.AgentScheduler) && callersState[ApplicationType.AgentScheduler])
+                if (callersState.ContainsKey(ApplicationType.AgentScheduler) && (callersState[ApplicationType.AgentScheduler])>0)
                     delayRestart = true;
 
                 this.process = null;
@@ -263,7 +265,15 @@ namespace ProActiveAgent
         public void sendStartAction(object whatToDo, ApplicationType appType)
         {
             logger.log("Received start action request from " + appType.ToString(), LogLevel.INFO);
-            callersState[appType] = true;
+            if (callersState.ContainsKey(appType))
+            {
+                callersState[appType]++;
+            }
+            else {
+                callersState.Add(appType, 1);
+            }
+            
+
             if (whatToDo is P2PAction)
             {
                 P2PAction action = (P2PAction)whatToDo;
@@ -304,13 +314,16 @@ namespace ProActiveAgent
             logger.log("Received stop action request from " + appType.ToString(), LogLevel.INFO);
             if (!callersState.ContainsKey(appType))
                 return; // there were no previous actions from this application type (or we deleted them)
-            if (!callersState[appType])
-                return; // this app type didn't start the action
+            
+                        
+            if (callersState[appType]==0)
+                return; // this app type didn't start the action so it doesn't have the right to stop it
             // change state
-            callersState[appType] = false;
-            foreach (KeyValuePair<ApplicationType,Boolean> app in callersState)
+              callersState[appType] --;
+
+            foreach (KeyValuePair<ApplicationType,Int32> app in callersState)
             {
-                if (app.Value)
+                if (app.Value>0)
                     // someone else sent the start command too
                     return; 
             }
