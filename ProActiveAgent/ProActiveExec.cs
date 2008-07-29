@@ -22,6 +22,7 @@ namespace ProActiveAgent
         private static extern bool KillProcessEx(uint dwProcessId, bool bTree);
 
         private static string SCRIPT_NAME = "agentservice.bat";
+        private static int INITIAL_RESTART_DELAY = 3000;
 
         private String scriptLocation;          // location of runner script
         private Process process;                // process object that represents running runner script
@@ -33,15 +34,17 @@ namespace ProActiveAgent
         private TimerManager timerMgr;
         private ProcessPriorityClass priority;
         private bool disabledRestarting = false; // restarting of the process is disabled when the system shuts down
+        private int initialRestartDelay;
 
         private Dictionary<ApplicationType, Boolean> callersState; // state of the calling applications 
                                                                    // (if there were unstopped start actions)
+
         private ProcessObserver observer;
         private Logger logger;
-        private int restartDelay = 1000;
+        private int restartDelay;
         
         public ProActiveExec(Logger logger, String scriptLocation, String jvmOptions, String javaLocation,
-            String proactiveLocation, String priority)
+            String proactiveLocation, String priority, int initialRestartDelay)
         {
             this.observer = new ProcessObserver(logger);
             this.callersState = new Dictionary<ApplicationType, Boolean>();
@@ -55,11 +58,16 @@ namespace ProActiveAgent
             this.args = null;
             this.logger = logger;
             this.priority = getPriority(priority);
+
+            if (initialRestartDelay > 0) {
+                this.initialRestartDelay = initialRestartDelay;
+            } else
+                this.initialRestartDelay = INITIAL_RESTART_DELAY;
         }
 
         public void resetRestartDelay()
         {
-            this.restartDelay = 1000;
+            this.restartDelay = initialRestartDelay;
         }
 
         private ProcessPriorityClass getPriority(string priority)

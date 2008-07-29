@@ -3,6 +3,7 @@
   <xs:element name="Action" nillable="true" type="Action" />
   <xs:complexType name="Action">
     <xs:attribute name="priority" type="xs:string" />
+    <xs:attribute name="initialRestartDelay" type="xs:int" />
   </xs:complexType>
   <xs:complexType name="AdvertAction">
     <xs:complexContent mixed="false">

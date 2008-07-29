@@ -122,7 +122,7 @@ namespace ProActiveAgent
             logger.log("Starting ProActiveAgent Service", LogLevel.TRACE);
             this.exec = new ProActiveExec(logger, agentLocation, configuration.agentConfig.jvmParams,
                 configuration.agentConfig.javaHome, configuration.agentConfig.proactiveLocation,
-                configuration.action.priority);
+                configuration.action.priority, configuration.action.initialRestartDelay);
             this.timerManager = new TimerManager(this.configuration, exec);
             this.exec.setTimerMgr(timerManager);
 

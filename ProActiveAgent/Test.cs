@@ -14,7 +14,7 @@ namespace ProActiveAgent
 
             Configuration configuration = ConfigurationParser.parseXml(CONFIG_LOCATION, "d:\\ProActiveAgent");
             FileLogger logger = new FileLogger("d:\\tdobek");
-            ProActiveExec runner = new ProActiveExec(logger, "d:\\tdobek", "d:\\tdobek", "d:\\tdobek", "d:\\tdobek", "Idle");
+            ProActiveExec runner = new ProActiveExec(logger, "d:\\tdobek", "d:\\tdobek", "d:\\tdobek", "d:\\tdobek", "Idle", -1);
 /*            runner.setCommand(configuration.daemonConfig.daemonScript);
             runner.setWorkingDir(configuration.daemonConfig.daemonWorkingDir); */
             runner.sendStartAction(configuration.action, ApplicationType.AgentScreensaver);

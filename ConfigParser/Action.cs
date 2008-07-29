@@ -17,6 +17,7 @@ namespace ConfigParser
     public class Action
     {
         private String myPriority;
+        private int myInitialRestartDelay;
 
         [XmlAttribute("priority")]
         public String priority
@@ -32,5 +33,18 @@ namespace ConfigParser
             }
         }
 
+        [XmlAttribute("initialRestartDelay")]
+        public int initialRestartDelay
+        {
+            get
+            {
+                return myInitialRestartDelay;
+            }
+
+            set
+            {
+                myInitialRestartDelay = value;
+            }
+        }
     }
 }
