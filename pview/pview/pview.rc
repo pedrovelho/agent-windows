@@ -1,0 +1,410 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\pview.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\pview.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU PRELOAD DISCARDABLE 
+BEGIN
+    POPUP "&Action"
+    BEGIN
+        MENUITEM "&Connect to another computer...", ID_ACTION_CONNECT
+        MENUITEM "&Disconnect",                 ID_ACTION_DISCONNECT
+        MENUITEM SEPARATOR
+        MENUITEM "&End Process",                ID_ACTION_KILLPROC
+        MENUITEM "End Process &Tree",           ID_ACTION_KILLTREE
+        MENUITEM "End &Application",            ID_ACTION_KILLAPP
+        MENUITEM SEPARATOR
+        MENUITEM "Security...",                 ID_ACTION_SECURITY
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_APP_EXIT
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
+        MENUITEM SEPARATOR
+        MENUITEM "&Applications",               ID_VIEW_APPLICATIONS
+        MENUITEM "&Processes",                  ID_VIEW_PROCESSES
+        MENUITEM SEPARATOR
+        MENUITEM "&Refresh Now\tF5",            ID_VIEW_REFRESH
+        POPUP "&Update Speed"
+        BEGIN
+            MENUITEM "&High",                       ID_VIEW_SPEED_HIGH
+            MENUITEM "&Normal",                     ID_VIEW_SPEED_NORMAL
+            MENUITEM "&Low",                        ID_VIEW_SPEED_LOW
+            MENUITEM "&Paused",                     ID_VIEW_SPEED_PAUSED
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "Show 1&6-bit Tasks",          ID_VIEW_16BIT
+    END
+    POPUP "&Options"
+    BEGIN
+        POPUP "Enumerate &Processes With"
+        BEGIN
+            MENUITEM "&1 PSAPI",                    ID_OPTIONS_ENUMPROC_PSAPI
+
+            MENUITEM "&2 ToolHelp32 API",           ID_OPTIONS_ENUMPROC_TOOLHELP
+
+            MENUITEM "&3 ZwQuerySystemInformation", ID_OPTIONS_ENUMPROC_NTAPI
+
+            MENUITEM "&4 Performance Data",         ID_OPTIONS_ENUMPROC_PERFDATA
+
+            MENUITEM "&5 Windows Management Instrumentation", 
+                                                    ID_OPTIONS_ENUMPROC_WMI
+        END
+        POPUP "&Detect Hangup With"
+        BEGIN
+            MENUITEM "&1 SendMessageTimeout",       ID_OPTIONS_HANGUP_SMTO
+            MENUITEM "&2 IsHungAppWindow/IsHungThread", 
+                                                    ID_OPTIONS_HANGUP_UNDOC
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "Enable &Debug Privilege",     ID_OPTIONS_DEBUG
+    END
+END
+
+IDR_POPUPS MENU DISCARDABLE 
+BEGIN
+    POPUP "0"
+    BEGIN
+        MENUITEM "&End Process",                ID_ACTION_KILLPROC
+        MENUITEM "End Process &Tree",           ID_ACTION_KILLTREE
+        MENUITEM SEPARATOR
+        MENUITEM "&Security...",                ID_ACTION_SECURITY
+    END
+    POPUP "1"
+    BEGIN
+        MENUITEM "End &Application",            ID_ACTION_KILLAPP
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS PRELOAD MOVEABLE PURE 
+BEGIN
+    VK_F5,          ID_VIEW_REFRESH,        VIRTKEY, NOINVERT
+END
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "Comments", "\0"
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "Process Viewer Sample\0"
+            VALUE "FileVersion", "1.00.001\0"
+            VALUE "InternalName", "pview\0"
+            VALUE "LegalCopyright", "Copyright (C) 2001 RSDN\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "pview.exe\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "Process Viewer Sample\0"
+            VALUE "ProductVersion", "1.00\0"
+            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ENDAPP DIALOG DISCARDABLE  0, 0, 223, 74
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "End Application"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "&Wait",IDC_WAIT1,102,54,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,166,54,50,14
+    ICON            "",IDC_EXCL,7,7,20,20
+    LTEXT           "",IDC_APPTITLE,36,7,180,8
+    LTEXT           "The application has not responded within 15 seconds. Press Stop to terminate the application, press Wait to continue waiting or press Cancel to cancel the operation.",
+                    IDC_STATIC,36,23,180,24
+    PUSHBUTTON      "&Stop",IDC_STOP,38,54,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_ENDAPP, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 216
+        VERTGUIDE, 38
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 67
+        HORZGUIDE, 54
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_SORT_DOWN           BITMAP  DISCARDABLE     "res\\sortup.bmp"
+IDB_SORT_UP             BITMAP  DISCARDABLE     "res\\sortdown.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE PRELOAD DISCARDABLE 
+BEGIN
+    IDR_MAINFRAME           "Process Viewer"
+END
+
+STRINGTABLE PRELOAD DISCARDABLE 
+BEGIN
+    AFX_IDS_APP_TITLE       "Process Viewer"
+    AFX_IDS_IDLEMESSAGE     "Ready"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_APP_EXIT             "Quit the application.\nExit"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_VIEW_STATUS_BAR      "Show or hide the status bar.\nToggle StatusBar"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    AFX_IDS_SCSIZE          "Change the window size."
+    AFX_IDS_SCMOVE          "Change the window position."
+    AFX_IDS_SCMINIMIZE      "Reduce the window to an icon."
+    AFX_IDS_SCMAXIMIZE      "Enlarge the window to full size."
+    AFX_IDS_SCNEXTWINDOW    "Switch to the next document window."
+    AFX_IDS_SCPREVWINDOW    "Switch to the previous document window."
+    AFX_IDS_SCCLOSE         "Close the active window and prompts to save the documents."
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    AFX_IDS_SCRESTORE       "Restore the window to normal size."
+    AFX_IDS_SCTASKLIST      "Activate Task List."
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_VIEW_APPLICATIONS    "Shows active applications\nApplications"
+    ID_VIEW_PROCESSES       "Shows active processes\nProcesses"
+    ID_FILE_OPTIONS         "Shows options dialog\nOptions"
+    ID_VIEW_REFRESH         "Refreshes the information being displayed."
+    ID_VIEW_16BIT           "Toggles display of 16-bit tasks."
+    ID_OPTIONS_ENUMPROC_PSAPI "Enumerate processes with PSAPI library."
+    ID_OPTIONS_ENUMPROC_TOOLHELP "Enumerate processes using ToolHelp32 API."
+    ID_OPTIONS_ENUMPROC_NTAPI 
+                            "Enumerate processes using ZwQuerySystemInformation function."
+    ID_OPTIONS_ENUMPROC_PERFDATA "Enumerate processes using performance data."
+    ID_OPTIONS_DEBUG        "Enables or disables the Debug privilege."
+    ID_OPTIONS_ENUMPROC_WMI "Enumerate processes using WMI interfaces."
+    ID_ACTION_CONNECT       "Connect to a remote computer."
+    ID_ACTION_DISCONNECT    "Disconnect from the remote computer."
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_OPTIONS_TITLE       "Options"
+    IDS_PROCESSES_ID        "ID"
+    IDS_PROCESSES_NAME      "Name"
+    IDS_NAME_UNAVAILABLE    "(name unavailable)"
+    IDS_TITLE_LOCAL         "(local computer) - Process Viewer"
+    IDS_TITLE_REMOTE        "%s - Process Viewer"
+    IDS_BROWSE_TITLE        "Select Computer"
+    IDS_DISCONNECT_FROM     "&Disconnect from %s"
+    IDS_KILLPROC_WARNING    "Terminating a process can cause undesired results including loss of data and system instability.\n\nAre you sure you want to terminate the process?"
+    IDS_KILLTREE_WARNING    "This operation will attempt to terminate this process and any processes which were directly or indirectly started by it. Terminating processes in this manner can cause data loss and system instability.\n\nAre you sure you wish to continue?"
+    IDS_WARNING_TITLE       "Warning"
+    IDS_DISCONNECT          "&Disconnect"
+    IDS_APPS_TASK           "Task"
+    IDS_APPS_STATUS         "Status"
+    IDS_STATUS_RUNNING      "Running"
+    IDS_STATUS_NOT_RESPONDING "Not Responding"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_ACTION_KILLPROC      "Terminates the selected process."
+    ID_ACTION_KILLTREE      "Terminates the selected process and all child processes."
+    ID_VIEW_SPEED_HIGH      "Sets high update speed."
+    ID_VIEW_SPEED_NORMAL    "Sets normal update speed."
+    ID_VIEW_SPEED_LOW       "Sets low update speed."
+    ID_VIEW_SPEED_PAUSED    "Turns off automatic update."
+    ID_VIEW_SECURITY        "Edit"
+    ID_ACTION_SECURITY      "View or edit the process' security descriptor."
+    ID_OPTIONS_HANGUP_SMTO  "Detect hung applications with SendMessageTimeout."
+    ID_OPTIONS_HANGUP_UNDOC "Detect hung applications with IsHungAppWindow or IsHungThread."
+    ID_ACTION_KILLAPP       "Terminate the selected application."
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_FULL_CONTROL        "Full Control"
+    IDS_GENERIC_READ        "Read"
+    IDS_GENERIC_WRITE       "Write"
+    IDS_GENERIC_EXECUTE     "Execute"
+    IDS_PROCESS_TERMINATE   "Terminate"
+    IDS_PROCESS_CREATE_THREAD "Create Thread"
+    IDS_PROCESS_SET_SESSIONID "Set Session ID"
+    IDS_PROCESS_VM_OPERATION "Change Memory Protection"
+    IDS_PROCESS_VM_READ     "Read Memory"
+    IDS_PROCESS_VM_WRITE    "Write Memory"
+    IDS_PROCESS_DUP_HANDLE  "Duplicate Handle"
+    IDS_PROCESS_CREATE_PROCESS "Create Process"
+    IDS_PROCESS_SET_QUOTA   "Set Quota"
+    IDS_PROCESS_SET_INFORMATION "Set Information"
+    IDS_PROCESS_QUERY_INFORMATION "Query Information"
+    IDS_PROCESS_SUSPEND_RESUME "Suspend/Resume"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_DELETE              "Delete"
+    IDS_READ_CONTROL        "Read Control"
+    IDS_WRITE_DAC           "Write DAC"
+    IDS_WRITE_OWNER         "Write Owner"
+    IDS_SYNCHRONIZE         "Synchronize"
+    IDS_SPECIAL_ACCESS      "Special..."
+    IDS_PROCESS_OBJECT      "Process"
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\pview.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
