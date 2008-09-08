@@ -16,5 +16,7 @@ namespace ProActiveAgent
         ScreenSaverStart = 128,
         ScreenSaverStop = 129,
         GlobalStop = 130
+        /*AllowRuntime = 131,
+        ForbidRuntime = 132*/
     }
 }

@@ -20,7 +20,7 @@ namespace ProActiveAgent
         private Configuration configuration;
         private TimerManager timerManager;
         private ProActiveExec exec;
-        private Logger logger;
+        private static Logger logger;
 
         /// <summary>
 
@@ -68,7 +68,9 @@ namespace ProActiveAgent
                 {
                     this.agentLocation = (string)confKey.GetValue("AgentDirectory");
                 }
+                confKey.Close();
             }
+
         }
 
         /// <summary>
@@ -110,20 +112,26 @@ namespace ProActiveAgent
         protected override void OnStart(string[] args)
         {
             // TODO: zero all of the members/properties
+            //-- runtime started = true
+            ProActiveExec.setRegistryIsRuntimeStarted(false);
+            //set allowRuntime registry to true
+            //ProActiveExec.setRegistryAllowRuntime(true);
 
             if (args.Length > 0)
                 this.configLocation = args[0];
-            
+
             this.configuration = ConfigurationParser.parseXml(configLocation, agentLocation);
             LoggerComposite composite = new LoggerComposite();
             composite.addLogger(new FileLogger(this.agentLocation));
             composite.addLogger(new EventLogger());
-            this.logger = composite;
-            logger.log("Starting ProActiveAgent Service", LogLevel.TRACE);
+            logger = composite;
+            WindowsService.log("Starting ProActiveAgent Service", LogLevel.TRACE);
             this.exec = new ProActiveExec(logger, agentLocation, configuration.agentConfig.jvmParams,
                 configuration.agentConfig.javaHome, configuration.agentConfig.proactiveLocation,
                 configuration.action.priority, configuration.action.initialRestartDelay);
+
             this.timerManager = new TimerManager(this.configuration, exec);
+
             this.exec.setTimerMgr(timerManager);
 
             base.OnStart(args);
@@ -139,7 +147,7 @@ namespace ProActiveAgent
 
         protected override void OnStop()
         {
-            logger.log("Stopping ProActiveAgent Service", LogLevel.TRACE);
+            WindowsService.log("Stopping ProActiveAgent Service", LogLevel.TRACE);
             exec.dispose();
             timerManager.dispose();
             exec.sendGlobalStop();
@@ -147,7 +155,12 @@ namespace ProActiveAgent
             this.configuration = null;
             this.timerManager = null;
             this.exec = null;
-            this.logger = null;
+            logger = null;
+
+            //-- runtime started = false
+            ProActiveExec.setRegistryIsRuntimeStarted(false);
+
+            //BUT THIS SHOULD NOT BE NECESSARY:
             base.OnStop();
         }
 
@@ -193,13 +206,17 @@ namespace ProActiveAgent
 
         protected override void OnShutdown()
         {
-            logger.log("ONShutdown called!", LogLevel.TRACE);
+            WindowsService.log("ONShutdown called!", LogLevel.TRACE);
             exec.disableRestarting();
-/*            exec.disableRestarting();
-            exec.sendGlobalStop();
-            this.configuration = null;
-            this.timerManager = null;
-            this.exec = null; */
+            /*            exec.disableRestarting();
+                        exec.sendGlobalStop();
+                        this.configuration = null;
+                        this.timerManager = null;
+                        this.exec = null; */
+
+            //-- runtime started = false
+            //TODO: need to think if you should keep this: 
+            //ProActiveExec.setRegistryIsRuntimeStarted(false);
             base.OnShutdown();
         }
 
@@ -227,19 +244,29 @@ namespace ProActiveAgent
 
             if (command == (int)PAACommands.ScreenSaverStart)
             {
-                logger.log("Received start command from ProActive ScreenSaver", LogLevel.TRACE);
+                WindowsService.log("Received start command from ProActive ScreenSaver", LogLevel.TRACE);
                 exec.sendStartAction(configuration.action, ApplicationType.AgentScreensaver);
             }
             else if (command == (int)PAACommands.ScreenSaverStop)
             {
-                logger.log("Received stop command from ProActive ScreenSaver", LogLevel.TRACE);
+                WindowsService.log("Received stop command from ProActive ScreenSaver", LogLevel.TRACE);
                 exec.sendStopAction(configuration.action, ApplicationType.AgentScreensaver);
             }
             else if (command == (int)PAACommands.GlobalStop)
             {
-                logger.log("Received global stop command", LogLevel.TRACE);
+                WindowsService.log("Received global stop command", LogLevel.TRACE);
                 exec.sendGlobalStop();
             }
+            /*else if (command == (int)PAACommands.AllowRuntime)
+            {
+                WindowsService.log("Received allow runtime command", LogLevel.TRACE);
+                exec.sendAllowRuntime();
+            }
+            else if (command == (int)PAACommands.ForbidRuntime)
+            {
+                WindowsService.log("Received forbid runtime command", LogLevel.TRACE);
+                exec.sendForbidRuntime();
+            }*/
 
             base.OnCustomCommand(command);
         }
@@ -285,6 +312,19 @@ namespace ProActiveAgent
             base.OnSessionChange(changeDescription);
         }
 
+        public static bool log(string text,LogLevel level)
+        {
+            try
+            {
+                logger.log(text, level);
+                return true; 
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+            
+        }
 
     }
 }

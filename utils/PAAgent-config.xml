@@ -6,5 +6,7 @@
     <jvm_params />
   </internalConfig>
   <events />
-  <action xsi:type="P2PAction" priority="High" protocol="RMI" />
+  <action xsi:type="AdvertAction" priority="High" initialRestartDelay="0">
+    <nodeName />
+  </action>
 </agent>

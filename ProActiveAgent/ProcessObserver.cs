@@ -11,17 +11,20 @@ namespace ProActiveAgent
     {
         private Logger logger;
         private Process monitored;
-        private Thread monitoring;
+        private Thread monitoringOut;
+        private Thread monitoringError;
 
         public ProcessObserver(Logger logger)
         {
             this.logger = logger;
-            this.monitoring = new Thread(monitorStdOut);
-            this.monitoring.Start();
+            this.monitoringOut = new Thread(monitorStdOut);
+            this.monitoringError = new Thread(monitorStdError);
+            this.monitoringOut.Start();
+            this.monitoringError.Start();
             this.monitored = null;
         }
 
-        
+
         public void setMonitorredProcess(Process p)
         {
             this.monitored = p;
@@ -33,6 +36,7 @@ namespace ProActiveAgent
             StreamReader outputReader = null;
             for (; ; )
             {
+
                 if (monitored != null)
                 {
                     outputReader = monitored.StandardOutput;
@@ -50,8 +54,42 @@ namespace ProActiveAgent
                         }
                     }
                 }
-                catch (IOException)
+                catch (IOException e)
+                {//TODO: what to do here?
+                 //at least log something ....
+                    WindowsService.log(e.StackTrace, LogLevel.TRACE);
+                }
+
+                System.Threading.Thread.Sleep(100);
+            }
+        }
+
+        private void monitorStdError()
+        {
+            StreamReader outputReader = null;
+            for (; ; )
+            {
+                if (monitored != null)
                 {
+                    outputReader = monitored.StandardError;
+                }
+
+                try
+                {
+                    if (outputReader != null)
+                    {
+                        string line = outputReader.ReadLine();
+                        while (line != null)
+                        {
+                            logger.log("ERROR: " + line, LogLevel.TRACE);
+                            line = outputReader.ReadLine();
+                        }
+                    }
+                }
+                catch (IOException e)
+                {//TODO: what to do here?
+                    //at least log something ....
+                    WindowsService.log(e.StackTrace, LogLevel.TRACE);
                 }
 
                 System.Threading.Thread.Sleep(100);

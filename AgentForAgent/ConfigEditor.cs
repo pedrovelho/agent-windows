@@ -22,7 +22,7 @@ namespace AgentForAgent
             this.location = confLocation;
 
             proactiveLocation.Text = conf.agentConfig.proactiveLocation;
-            
+
             if (conf.agentConfig.javaHome.Equals(""))
             {
                 checkBox1.Checked = true;
@@ -38,8 +38,8 @@ namespace AgentForAgent
 
             foreach (Event ev in conf.events.events)
             {
-                CalendarEvent cEv = (CalendarEvent) ev;
-                eventsList.Items.Add(makeEventName(cEv));  
+                CalendarEvent cEv = (CalendarEvent)ev;
+                eventsList.Items.Add(makeEventName(cEv));
             }
 
             Action action = conf.action;
@@ -47,12 +47,12 @@ namespace AgentForAgent
             if (action.priority.Equals(""))
             {
                 priorityBox.SelectedIndex = 0;
-  //              priorityBox.SelectedItem = priorityBox.Items[priorityBox.SelectedIndex];
+                //              priorityBox.SelectedItem = priorityBox.Items[priorityBox.SelectedIndex];
             }
             else
             {
                 priorityBox.SelectedIndex = priorityBox.FindString(action.priority);
-//                priorityBox.SelectedItem = priorityBox.Items[priorityBox.SelectedIndex];
+                //                priorityBox.SelectedItem = priorityBox.Items[priorityBox.SelectedIndex];
             }
 
 
@@ -96,7 +96,8 @@ namespace AgentForAgent
 
         private string makeEventName(CalendarEvent cEv)
         {
-            return cEv.startDay.Substring(0, 3) + "/" + cEv.startHour + "/" + cEv.startMinute + "/" + cEv.startSecond;
+            //return cEv.startDay.Substring(0, 3) + "/" + cEv.startHour + "/" + cEv.startMinute + "/" + cEv.startSecond;
+            return cEv.startDay + " - " + cEv.startHour + ":" + cEv.startMinute + ":" + cEv.startSecond;
         }
 
         private void p2pRadioButton_CheckedChanged(object sender, EventArgs e)
@@ -195,7 +196,10 @@ namespace AgentForAgent
             }
             eventEditorGroup.Enabled = true;
             CalendarEvent cEv = (CalendarEvent)conf.events.events[eventsList.SelectedIndex];
-            weekdayStart.SelectedIndex = weekdayStart.FindString(cEv.startDay);
+            if (weekdayStart.FindString(cEv.startDay) == -1)
+                weekdayStart.SelectedIndex = 0;
+            else
+                weekdayStart.SelectedIndex = weekdayStart.FindString(cEv.startDay);
             hourStart.Value = cEv.startHour;
             minuteStart.Value = cEv.startMinute;
             secondStart.Value = cEv.startSecond;
@@ -217,6 +221,7 @@ namespace AgentForAgent
         private void newEventButton_Click(object sender, EventArgs e)
         {
             CalendarEvent calEvent = new CalendarEvent();
+            // calEvent.startDay = (string)weekdayStart.SelectedItem;
             conf.events.addEvent(calEvent);
             eventsList.Items.Add("new Event");
         }
@@ -225,20 +230,18 @@ namespace AgentForAgent
         {
             if (eventsList.SelectedIndex == -1)
                 return;
-
             CalendarEvent calEvent = (CalendarEvent)conf.events.events[eventsList.SelectedIndex];
             calEvent.durationSeconds = (int)secondsDuration.Value;
             calEvent.durationMinutes = (int)minutesDuration.Value;
             calEvent.durationHours = (int)hoursDuration.Value;
             calEvent.durationDays = (int)dayDuration.Value;
-            calEvent.startDay = (string) weekdayStart.SelectedItem;
+            calEvent.startDay = (string)weekdayStart.SelectedItem;
             calEvent.startHour = (int)hourStart.Value;
             calEvent.startMinute = (int)minuteStart.Value;
             calEvent.startSecond = (int)secondStart.Value;
             conf.events.modifyEvent(eventsList.SelectedIndex, calEvent);
 
             // change name in the event list control
-
             eventsList.Items[eventsList.SelectedIndex] = makeEventName(calEvent);
         }
 
@@ -254,6 +257,20 @@ namespace AgentForAgent
 
         private void saveConfig_Click(object sender, EventArgs e)
         {
+            //--Events list
+            int i = 0;
+            foreach (Event item in conf.events.events)
+            {
+                if (((CalendarEvent)item).startDay == null)
+                {
+                    //Delete event
+                    conf.events.removeEvent(i);
+                }
+                else
+                    i++;
+
+            }
+
             try
             {
                 ConfigurationParser.saveXml(location, conf);
@@ -262,6 +279,8 @@ namespace AgentForAgent
             {
                 MessageBox.Show("");
             }
+
+            MessageBox.Show("Service must be restarted to apply changes.", "Restart service", MessageBoxButtons.OK, MessageBoxIcon.Information);
             Close();
         }
 
@@ -282,7 +301,7 @@ namespace AgentForAgent
 
         private void rmiNodeName_TextChanged(object sender, EventArgs e)
         {
-            AdvertAction ourAction = (AdvertAction) conf.action;
+            AdvertAction ourAction = (AdvertAction)conf.action;
             ourAction.nodeName = rmiNodeName.Text;
         }
 
@@ -305,7 +324,7 @@ namespace AgentForAgent
             saveHost.Enabled = true;
             deleteHost.Enabled = true;
 
-            peerUrl.Text = (string) hostList.Items[hostList.SelectedIndex];
+            peerUrl.Text = (string)hostList.Items[hostList.SelectedIndex];
         }
 
         private void saveHost_Click(object sender, EventArgs e)
@@ -335,7 +354,7 @@ namespace AgentForAgent
             if (priorityBox.SelectedIndex == -1)
                 conf.action.priority = "";
             else
-                conf.action.priority = (string) priorityBox.Items[priorityBox.SelectedIndex];
+                conf.action.priority = (string)priorityBox.Items[priorityBox.SelectedIndex];
         }
 
         private void p2pProtocol_TextChanged(object sender, EventArgs e)

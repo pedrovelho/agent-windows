@@ -72,6 +72,8 @@
             this.rmiRadioButton = new System.Windows.Forms.RadioButton();
             this.p2pRadioButton = new System.Windows.Forms.RadioButton();
             this.p2pactionGroup = new System.Windows.Forms.GroupBox();
+            this.p2pProtocol = new System.Windows.Forms.TextBox();
+            this.label17 = new System.Windows.Forms.Label();
             this.saveHost = new System.Windows.Forms.Button();
             this.peerUrl = new System.Windows.Forms.TextBox();
             this.label15 = new System.Windows.Forms.Label();
@@ -89,8 +91,6 @@
             this.closeConfig = new System.Windows.Forms.Button();
             this.proActiveLocationBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.jvmLocationBrowser = new System.Windows.Forms.FolderBrowserDialog();
-            this.label17 = new System.Windows.Forms.Label();
-            this.p2pProtocol = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -451,6 +451,7 @@
             // 
             // weekdayStart
             // 
+            this.weekdayStart.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.weekdayStart.FormattingEnabled = true;
             this.weekdayStart.Items.AddRange(new object[] {
             "monday",
@@ -464,7 +465,6 @@
             this.weekdayStart.Name = "weekdayStart";
             this.weekdayStart.Size = new System.Drawing.Size(121, 21);
             this.weekdayStart.TabIndex = 0;
-            this.weekdayStart.Text = "day of week";
             // 
             // groupBox2
             // 
@@ -564,7 +564,6 @@
             this.rmRadioButton.Name = "rmRadioButton";
             this.rmRadioButton.Size = new System.Drawing.Size(175, 17);
             this.rmRadioButton.TabIndex = 2;
-            this.rmRadioButton.TabStop = true;
             this.rmRadioButton.Text = "Resource Manager Registration";
             this.rmRadioButton.UseVisualStyleBackColor = true;
             this.rmRadioButton.CheckedChanged += new System.EventHandler(this.rmRadioButton_CheckedChanged);
@@ -572,6 +571,7 @@
             // rmiRadioButton
             // 
             this.rmiRadioButton.AutoSize = true;
+            this.rmiRadioButton.Checked = true;
             this.rmiRadioButton.Location = new System.Drawing.Point(165, 19);
             this.rmiRadioButton.Name = "rmiRadioButton";
             this.rmiRadioButton.Size = new System.Drawing.Size(104, 17);
@@ -584,12 +584,10 @@
             // p2pRadioButton
             // 
             this.p2pRadioButton.AutoSize = true;
-            this.p2pRadioButton.Checked = true;
             this.p2pRadioButton.Location = new System.Drawing.Point(7, 20);
             this.p2pRadioButton.Name = "p2pRadioButton";
             this.p2pRadioButton.Size = new System.Drawing.Size(152, 17);
             this.p2pRadioButton.TabIndex = 0;
-            this.p2pRadioButton.TabStop = true;
             this.p2pRadioButton.Text = "Peer-To-Peer Collaboration";
             this.p2pRadioButton.UseVisualStyleBackColor = true;
             this.p2pRadioButton.CheckedChanged += new System.EventHandler(this.p2pRadioButton_CheckedChanged);
@@ -611,6 +609,23 @@
             this.p2pactionGroup.TabIndex = 2;
             this.p2pactionGroup.TabStop = false;
             this.p2pactionGroup.Text = "Peer-To-Peer Collaboration";
+            // 
+            // p2pProtocol
+            // 
+            this.p2pProtocol.Location = new System.Drawing.Point(338, 33);
+            this.p2pProtocol.Name = "p2pProtocol";
+            this.p2pProtocol.Size = new System.Drawing.Size(313, 20);
+            this.p2pProtocol.TabIndex = 8;
+            this.p2pProtocol.TextChanged += new System.EventHandler(this.p2pProtocol_TextChanged);
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(282, 36);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(49, 13);
+            this.label17.TabIndex = 7;
+            this.label17.Text = "Protocol:";
             // 
             // saveHost
             // 
@@ -764,23 +779,6 @@
             // jvmLocationBrowser
             // 
             this.jvmLocationBrowser.Description = "Choose location for JVM";
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(282, 36);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(49, 13);
-            this.label17.TabIndex = 7;
-            this.label17.Text = "Protocol:";
-            // 
-            // p2pProtocol
-            // 
-            this.p2pProtocol.Location = new System.Drawing.Point(338, 33);
-            this.p2pProtocol.Name = "p2pProtocol";
-            this.p2pProtocol.Size = new System.Drawing.Size(313, 20);
-            this.p2pProtocol.TabIndex = 8;
-            this.p2pProtocol.TextChanged += new System.EventHandler(this.p2pProtocol_TextChanged);
             // 
             // ConfigEditor
             // 

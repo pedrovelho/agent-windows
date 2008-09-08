@@ -35,27 +35,23 @@
             this.browse = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.button1 = new System.Windows.Forms.Button();
-            this.save = new System.Windows.Forms.Button();
             this.editConfig = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.viewLogs = new System.Windows.Forms.Button();
-            this.troubleshoot = new System.Windows.Forms.Button();
             this.stopService = new System.Windows.Forms.Button();
             this.startService = new System.Windows.Forms.Button();
             this.statuslabel = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.close = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.browseConfig = new System.Windows.Forms.OpenFileDialog();
-            this.scrSvrStart = new System.Windows.Forms.Button();
-            this.globalStop = new System.Windows.Forms.Button();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.restoreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.stopProActiveRuntimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.startServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.stopServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.startToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.closeAdministrationPanelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -79,6 +75,7 @@
             this.configLocation.Size = new System.Drawing.Size(339, 20);
             this.configLocation.TabIndex = 1;
             this.configLocation.Text = "C:\\PAAgent-config.xml";
+            this.configLocation.TextChanged += new System.EventHandler(this.configLocation_TextChanged);
             // 
             // browse
             // 
@@ -94,7 +91,6 @@
             // 
             this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Controls.Add(this.configLocation);
-            this.groupBox1.Controls.Add(this.save);
             this.groupBox1.Controls.Add(this.editConfig);
             this.groupBox1.Controls.Add(this.browse);
             this.groupBox1.Controls.Add(this.label1);
@@ -107,7 +103,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(323, 48);
+            this.button1.Location = new System.Drawing.Point(404, 48);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 3;
@@ -115,19 +111,9 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // save
-            // 
-            this.save.Location = new System.Drawing.Point(487, 48);
-            this.save.Name = "save";
-            this.save.Size = new System.Drawing.Size(75, 23);
-            this.save.TabIndex = 2;
-            this.save.Text = "Save";
-            this.save.UseVisualStyleBackColor = true;
-            this.save.Click += new System.EventHandler(this.save_Click);
-            // 
             // editConfig
             // 
-            this.editConfig.Location = new System.Drawing.Point(404, 48);
+            this.editConfig.Location = new System.Drawing.Point(487, 48);
             this.editConfig.Name = "editConfig";
             this.editConfig.Size = new System.Drawing.Size(75, 23);
             this.editConfig.TabIndex = 2;
@@ -138,7 +124,6 @@
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.viewLogs);
-            this.groupBox2.Controls.Add(this.troubleshoot);
             this.groupBox2.Controls.Add(this.stopService);
             this.groupBox2.Controls.Add(this.startService);
             this.groupBox2.Controls.Add(this.statuslabel);
@@ -158,16 +143,6 @@
             this.viewLogs.Text = "View logs...";
             this.viewLogs.UseVisualStyleBackColor = true;
             this.viewLogs.Click += new System.EventHandler(this.viewLogs_Click);
-            // 
-            // troubleshoot
-            // 
-            this.troubleshoot.Location = new System.Drawing.Point(387, 48);
-            this.troubleshoot.Name = "troubleshoot";
-            this.troubleshoot.Size = new System.Drawing.Size(92, 23);
-            this.troubleshoot.TabIndex = 3;
-            this.troubleshoot.Text = "Troubleshoot...";
-            this.troubleshoot.UseVisualStyleBackColor = true;
-            this.troubleshoot.Click += new System.EventHandler(this.troubleshoot_Click);
             // 
             // stopService
             // 
@@ -200,6 +175,7 @@
             // 
             // pictureBox1
             // 
+            this.pictureBox1.BackColor = System.Drawing.Color.White;
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
             this.pictureBox1.InitialImage = ((System.Drawing.Image)(resources.GetObject("pictureBox1.InitialImage")));
             this.pictureBox1.Location = new System.Drawing.Point(12, 12);
@@ -210,19 +186,10 @@
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
-            // close
-            // 
-            this.close.Location = new System.Drawing.Point(499, 304);
-            this.close.Name = "close";
-            this.close.Size = new System.Drawing.Size(75, 23);
-            this.close.TabIndex = 5;
-            this.close.Text = "Close";
-            this.close.UseVisualStyleBackColor = true;
-            this.close.Click += new System.EventHandler(this.close_Click);
-            // 
             // label3
             // 
             this.label3.AutoSize = true;
+            this.label3.BackColor = System.Drawing.Color.White;
             this.label3.Location = new System.Drawing.Point(430, 35);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(114, 13);
@@ -232,6 +199,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
+            this.label4.BackColor = System.Drawing.Color.White;
             this.label4.Location = new System.Drawing.Point(444, 68);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(79, 13);
@@ -249,81 +217,70 @@
             this.browseConfig.FileName = "openFileDialog1";
             this.browseConfig.Title = "Choose configuration file";
             // 
-            // scrSvrStart
-            // 
-            this.scrSvrStart.Location = new System.Drawing.Point(21, 304);
-            this.scrSvrStart.Name = "scrSvrStart";
-            this.scrSvrStart.Size = new System.Drawing.Size(110, 23);
-            this.scrSvrStart.TabIndex = 7;
-            this.scrSvrStart.Text = "Start ScreenSaver";
-            this.scrSvrStart.UseVisualStyleBackColor = true;
-            this.scrSvrStart.Click += new System.EventHandler(this.scrSvrStart_Click);
-            // 
-            // globalStop
-            // 
-            this.globalStop.Location = new System.Drawing.Point(137, 304);
-            this.globalStop.Name = "globalStop";
-            this.globalStop.Size = new System.Drawing.Size(149, 23);
-            this.globalStop.TabIndex = 8;
-            this.globalStop.Text = "Stop ProActive Runtime!";
-            this.globalStop.UseVisualStyleBackColor = true;
-            this.globalStop.Click += new System.EventHandler(this.globalStop_Click);
-            // 
             // notifyIcon1
             // 
             this.notifyIcon1.ContextMenuStrip = this.contextMenuStrip1;
             this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
             this.notifyIcon1.Text = "ProActiveAgent";
             this.notifyIcon1.Visible = true;
+            this.notifyIcon1.Click += new System.EventHandler(this.notifyIcon1_Click);
             this.notifyIcon1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDoubleClick);
             // 
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.restoreToolStripMenuItem,
-            this.stopProActiveRuntimeToolStripMenuItem,
-            this.closeToolStripMenuItem});
+            this.startServiceToolStripMenuItem,
+            this.stopServiceToolStripMenuItem,
+            this.startToolStripMenuItem,
+            this.closeAdministrationPanelToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
             this.contextMenuStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.contextMenuStrip1.Size = new System.Drawing.Size(224, 70);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(212, 92);
             // 
-            // restoreToolStripMenuItem
+            // startServiceToolStripMenuItem
             // 
-            this.restoreToolStripMenuItem.Name = "restoreToolStripMenuItem";
-            this.restoreToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
-            this.restoreToolStripMenuItem.Text = "Restore";
-            this.restoreToolStripMenuItem.Click += new System.EventHandler(this.restoreToolStripMenuItem_Click);
+            this.startServiceToolStripMenuItem.Name = "startServiceToolStripMenuItem";
+            this.startServiceToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.startServiceToolStripMenuItem.Text = "Start Service";
+            this.startServiceToolStripMenuItem.Click += new System.EventHandler(this.startService_Click);
             // 
-            // stopProActiveRuntimeToolStripMenuItem
+            // stopServiceToolStripMenuItem
             // 
-            this.stopProActiveRuntimeToolStripMenuItem.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
-            this.stopProActiveRuntimeToolStripMenuItem.Name = "stopProActiveRuntimeToolStripMenuItem";
-            this.stopProActiveRuntimeToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
-            this.stopProActiveRuntimeToolStripMenuItem.Text = "Stop ProActive Runtime!";
-            this.stopProActiveRuntimeToolStripMenuItem.Click += new System.EventHandler(this.stopProActiveRuntimeToolStripMenuItem_Click);
+            this.stopServiceToolStripMenuItem.Name = "stopServiceToolStripMenuItem";
+            this.stopServiceToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.stopServiceToolStripMenuItem.Text = "Stop Service";
+            this.stopServiceToolStripMenuItem.Click += new System.EventHandler(this.stopService_Click);
             // 
-            // closeToolStripMenuItem
+            // startToolStripMenuItem
             // 
-            this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
-            this.closeToolStripMenuItem.Text = "Close";
-            this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
+            this.startToolStripMenuItem.Name = "startToolStripMenuItem";
+            this.startToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
+            this.startToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.startToolStripMenuItem.Text = "Automatic launch";
+            this.startToolStripMenuItem.CheckStateChanged += new System.EventHandler(this.startToolStripMenuItem_CheckStateChanged);
+            this.startToolStripMenuItem.Click += new System.EventHandler(this.startToolStripMenuItem_Click);
+            // 
+            // closeAdministrationPanelToolStripMenuItem
+            // 
+            this.closeAdministrationPanelToolStripMenuItem.Name = "closeAdministrationPanelToolStripMenuItem";
+            this.closeAdministrationPanelToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.closeAdministrationPanelToolStripMenuItem.Text = "Close Administration Panel";
+            this.closeAdministrationPanelToolStripMenuItem.Click += new System.EventHandler(this.closeAdministrationPanelToolStripMenuItem_Click_1);
             // 
             // ConfigurationDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(595, 341);
-            this.Controls.Add(this.globalStop);
-            this.Controls.Add(this.scrSvrStart);
+            this.ClientSize = new System.Drawing.Size(595, 295);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.close);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ConfigurationDialog";
             this.Text = "ProActiveAgent Configuration";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ConfigurationDialog_FormClosing);
             this.Resize += new System.EventHandler(this.ConfigurationDialog_Resize);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -342,28 +299,29 @@
         private System.Windows.Forms.TextBox configLocation;
         private System.Windows.Forms.Button browse;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Button save;
         private System.Windows.Forms.Button editConfig;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button stopService;
         private System.Windows.Forms.Button startService;
         private System.Windows.Forms.Label statuslabel;
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Button close;
+        //private System.Windows.Forms.Button close;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Button troubleshoot;
+        //private System.Windows.Forms.Button troubleshoot;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Button viewLogs;
         private System.Windows.Forms.OpenFileDialog browseConfig;
-        private System.Windows.Forms.Button scrSvrStart;
-        private System.Windows.Forms.Button globalStop;
+        //private System.Windows.Forms.Button scrSvrStart;
+        //private System.Windows.Forms.Button globalStop;
         private System.Windows.Forms.NotifyIcon notifyIcon1;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem restoreToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem stopProActiveRuntimeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.ToolStripMenuItem startToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem closeAdministrationPanelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem startServiceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem stopServiceToolStripMenuItem;
+        //private System.Windows.Forms.Button allowForbidRT;
     }
 }
 

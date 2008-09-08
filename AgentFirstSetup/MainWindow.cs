@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using ConfigParser;
 using Microsoft.Win32;
+using System.Collections;
 
 namespace AgentFirstSetup
 {
@@ -61,7 +62,7 @@ namespace AgentFirstSetup
             }
 
             InitializeComponent();
-            
+            jvmDirectory.Text = Environment.GetEnvironmentVariable("JAVA_HOME");
         }
 
         private void proactiveLocationButton_Click(object sender, EventArgs e)
