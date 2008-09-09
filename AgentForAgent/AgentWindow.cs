@@ -136,7 +136,6 @@ namespace AgentForAgent
                 this.stopService.Enabled = false;
                 this.startServiceToolStripMenuItem.Enabled = false;
                 this.stopServiceToolStripMenuItem.Enabled = false;
-
                 this.notifyIcon1.Text = StopPending;
                 //this.globalStop.Enabled = false;
                 //this.contextMenuStrip1.Items[1].Enabled = false;
@@ -316,6 +315,7 @@ namespace AgentForAgent
         private void browse_Click(object sender, EventArgs e)
         {
             browseConfig.FileName = configLocation.Text;
+            browseConfig.Filter = "Xml File|*.xml";
             browseConfig.ShowDialog();
             configLocation.Text = browseConfig.FileName;
 
@@ -405,7 +405,7 @@ namespace AgentForAgent
             try
             {
                 Configuration conf = ConfigurationParser.parseXml(configLocation.Text, agentLocation);
-                ConfigEditor window = new ConfigEditor(conf, configLocation.Text, agentLocation);
+                ConfigEditor window = new ConfigEditor(conf, configLocation.Text, agentLocation, this);
                 window.Show();
             }
             catch (IncorrectConfigurationException)
@@ -418,6 +418,11 @@ namespace AgentForAgent
 
                 }*/
             }
+        }
+
+        public void setConfigLocation(string title)
+        {
+            configLocation.Text = title;
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)

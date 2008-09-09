@@ -83,7 +83,7 @@
             this.browse.Name = "browse";
             this.browse.Size = new System.Drawing.Size(75, 23);
             this.browse.TabIndex = 2;
-            this.browse.Text = "Browse...";
+            this.browse.Text = "Load...";
             this.browse.UseVisualStyleBackColor = true;
             this.browse.Click += new System.EventHandler(this.browse_Click);
             // 
@@ -117,7 +117,7 @@
             this.editConfig.Name = "editConfig";
             this.editConfig.Size = new System.Drawing.Size(75, 23);
             this.editConfig.TabIndex = 2;
-            this.editConfig.Text = "Edit...";
+            this.editConfig.Text = "Text Edit...";
             this.editConfig.UseVisualStyleBackColor = true;
             this.editConfig.Click += new System.EventHandler(this.editConfig_Click);
             // 
@@ -192,9 +192,9 @@
             this.label3.BackColor = System.Drawing.Color.White;
             this.label3.Location = new System.Drawing.Point(430, 35);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(114, 13);
+            this.label3.Size = new System.Drawing.Size(108, 13);
             this.label3.TabIndex = 6;
-            this.label3.Text = "ProActiveAgent v.0.99";
+            this.label3.Text = "ProActiveAgent v.0.9";
             // 
             // label4
             // 

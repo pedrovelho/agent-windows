@@ -13,13 +13,16 @@ namespace AgentForAgent
     {
         private Configuration conf;
         private string location;
+        private ConfigurationDialog hook;
+        private Chart chart;
 
-        public ConfigEditor(Configuration conf, string confLocation, string agentDir)
+        public ConfigEditor(Configuration conf, string confLocation, string agentDir, ConfigurationDialog hook)
         {
             InitializeComponent();
 
             this.conf = conf;
             this.location = confLocation;
+            this.hook = hook;
 
             proactiveLocation.Text = conf.agentConfig.proactiveLocation;
 
@@ -92,12 +95,76 @@ namespace AgentForAgent
                     rmiNodeEnabled.Checked = true;
                 rmiNodeName.Text = advAction.nodeName;
             }
+
+            //--Chart
+            chart = new Chart(ref conf);
         }
 
         private string makeEventName(CalendarEvent cEv)
         {
+            //--Compute after duration
+            int finishSecond = 0;
+            int finishMinute = 0;
+            int finishHour = 0;
+            string finishDay = "";
+
+            finishSecond = cEv.startSecond;
+            finishMinute = cEv.startMinute;
+            finishHour = cEv.startHour;
+
+            finishSecond += cEv.durationSeconds;
+            if (finishSecond >= 60)
+            {
+                finishMinute += finishSecond - 60;
+                finishSecond -= 60;
+            }
+
+            finishMinute += cEv.durationMinutes;
+            if (finishMinute >= 60)
+            {
+                finishHour += finishMinute - 60;
+                finishMinute -= 60;
+            }
+
+            finishHour += cEv.durationHours;
+            if (finishHour >= 24)
+            {
+                finishDay = resolveDayIntToString((int)(((cEv.resolveDay() + cEv.durationDays) + 1) % 7));
+                finishHour -= 24;
+            }
+            else
+            {
+                finishDay = resolveDayIntToString((int)((cEv.resolveDay() + cEv.durationDays) % 7));
+            }
+            
             //return cEv.startDay.Substring(0, 3) + "/" + cEv.startHour + "/" + cEv.startMinute + "/" + cEv.startSecond;
-            return cEv.startDay + " - " + cEv.startHour + ":" + cEv.startMinute + ":" + cEv.startSecond;
+            return cEv.startDay + " - " + formatDate(cEv.startHour) + ":" + formatDate(cEv.startMinute) + ":" + formatDate(cEv.startSecond) + " => " + finishDay + " - " + formatDate(finishHour) + ":" + formatDate(finishMinute) + ":" + formatDate(finishSecond);
+        }
+
+        public static string resolveDayIntToString(int day)
+        {
+            if (day == 5)
+                return "friday";
+            if (day == 1)
+                return "monday";
+            if (day == 6)
+                return "saturday";
+            if (day == 0)
+                return "sunday";
+            if (day == 4)
+                return "thursday";
+            if (day == 2)
+                return "tuesday";
+            if (day == 3)
+                return "wednesday";
+            return "";
+        }
+
+        private static string formatDate(int num)
+        {
+            if (num < 10)
+                return "0" + num.ToString();
+            return num.ToString();
         }
 
         private void p2pRadioButton_CheckedChanged(object sender, EventArgs e)
@@ -284,6 +351,54 @@ namespace AgentForAgent
             Close();
         }
 
+        private void saveConfigAs_Click(object sender, EventArgs e)
+        {
+            //--Show dialog form
+            saveFileDialog1.Filter = "Xml File|*.xml";
+            saveFileDialog1.Title = "Save an xml configuration file";
+            saveFileDialog1.ShowDialog();
+            string locationAs = "";
+            locationAs = saveFileDialog1.FileName;
+            
+
+            if (locationAs != "")
+            {
+                /*browseConfig.FileName = configLocation.Text;
+                browseConfig.ShowDialog();
+                configLocation.Text = browseConfig.FileName;*/
+
+                //--Events list
+                int i = 0;
+                foreach (Event item in conf.events.events)
+                {
+                    if (((CalendarEvent)item).startDay == null)
+                    {
+                        //Delete event
+                        conf.events.removeEvent(i);
+                    }
+                    else
+                        i++;
+
+                }
+
+                try
+                {
+                    ConfigurationParser.saveXml(locationAs, conf);
+                    location = locationAs;
+                    hook.setConfigLocation(locationAs);
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("");
+                }
+
+                MessageBox.Show("Service must be restarted to apply changes.", "Restart service", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Close();
+            }
+        }
+
+
+
         private void proactiveLocation_TextChanged(object sender, EventArgs e)
         {
             conf.agentConfig.proactiveLocation = proactiveLocation.Text;
@@ -363,8 +478,10 @@ namespace AgentForAgent
             ourAction.protocol = p2pProtocol.Text;
         }
 
-
-
-
+        private void button2_Click(object sender, EventArgs e)
+        {
+            chart.loadEvents();
+            chart.Show();
+        }
     }
 }

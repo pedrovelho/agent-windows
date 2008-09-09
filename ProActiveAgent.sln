@@ -11,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenSaver", "ScreenSaver\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgentFirstSetup", "AgentFirstSetup\AgentFirstSetup.csproj", "{AF23E8C6-383B-415B-99B4-DA1479626092}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{CE362F95-0893-4063-8972-593E0CDC2CF9}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,10 +37,6 @@ Global
 		{AF23E8C6-383B-415B-99B4-DA1479626092}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF23E8C6-383B-415B-99B4-DA1479626092}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF23E8C6-383B-415B-99B4-DA1479626092}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CE362F95-0893-4063-8972-593E0CDC2CF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CE362F95-0893-4063-8972-593E0CDC2CF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CE362F95-0893-4063-8972-593E0CDC2CF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CE362F95-0893-4063-8972-593E0CDC2CF9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

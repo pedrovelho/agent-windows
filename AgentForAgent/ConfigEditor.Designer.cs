@@ -61,6 +61,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.weekdayStart = new System.Windows.Forms.ComboBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.button2 = new System.Windows.Forms.Button();
             this.newEventButton = new System.Windows.Forms.Button();
             this.deleteEventButton = new System.Windows.Forms.Button();
             this.eventsList = new System.Windows.Forms.ListBox();
@@ -91,6 +92,8 @@
             this.closeConfig = new System.Windows.Forms.Button();
             this.proActiveLocationBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.jvmLocationBrowser = new System.Windows.Forms.FolderBrowserDialog();
+            this.saveConfigAs = new System.Windows.Forms.Button();
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -468,6 +471,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.button2);
             this.groupBox2.Controls.Add(this.newEventButton);
             this.groupBox2.Controls.Add(this.deleteEventButton);
             this.groupBox2.Controls.Add(this.eventsList);
@@ -478,21 +482,31 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Events";
             // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(171, 226);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(70, 23);
+            this.button2.TabIndex = 6;
+            this.button2.Text = "Show";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // newEventButton
             // 
             this.newEventButton.Location = new System.Drawing.Point(6, 226);
             this.newEventButton.Name = "newEventButton";
-            this.newEventButton.Size = new System.Drawing.Size(114, 23);
+            this.newEventButton.Size = new System.Drawing.Size(87, 23);
             this.newEventButton.TabIndex = 3;
-            this.newEventButton.Text = "Create new event";
+            this.newEventButton.Text = "Create event";
             this.newEventButton.UseVisualStyleBackColor = true;
             this.newEventButton.Click += new System.EventHandler(this.newEventButton_Click);
             // 
             // deleteEventButton
             // 
-            this.deleteEventButton.Location = new System.Drawing.Point(166, 226);
+            this.deleteEventButton.Location = new System.Drawing.Point(99, 226);
             this.deleteEventButton.Name = "deleteEventButton";
-            this.deleteEventButton.Size = new System.Drawing.Size(75, 23);
+            this.deleteEventButton.Size = new System.Drawing.Size(66, 23);
             this.deleteEventButton.TabIndex = 1;
             this.deleteEventButton.Text = "Delete";
             this.deleteEventButton.UseVisualStyleBackColor = true;
@@ -560,7 +574,7 @@
             // rmRadioButton
             // 
             this.rmRadioButton.AutoSize = true;
-            this.rmRadioButton.Location = new System.Drawing.Point(275, 19);
+            this.rmRadioButton.Location = new System.Drawing.Point(98, 34);
             this.rmRadioButton.Name = "rmRadioButton";
             this.rmRadioButton.Size = new System.Drawing.Size(175, 17);
             this.rmRadioButton.TabIndex = 2;
@@ -780,15 +794,28 @@
             // 
             this.jvmLocationBrowser.Description = "Choose location for JVM";
             // 
+            // saveConfigAs
+            // 
+            this.saveConfigAs.Location = new System.Drawing.Point(453, 311);
+            this.saveConfigAs.Name = "saveConfigAs";
+            this.saveConfigAs.Size = new System.Drawing.Size(75, 23);
+            this.saveConfigAs.TabIndex = 2;
+            this.saveConfigAs.Text = "Save as ...";
+            this.saveConfigAs.UseVisualStyleBackColor = true;
+            this.saveConfigAs.Click += new System.EventHandler(this.saveConfigAs_Click);
+            // 
             // ConfigEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(702, 342);
             this.Controls.Add(this.closeConfig);
+            this.Controls.Add(this.saveConfigAs);
             this.Controls.Add(this.saveConfig);
             this.Controls.Add(this.tabControl1);
+            this.MaximizeBox = false;
             this.Name = "ConfigEditor";
+            this.ShowIcon = false;
             this.Text = "ConfigEditor";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -883,5 +910,8 @@
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.TextBox p2pProtocol;
         private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Button saveConfigAs;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.Button button2;
     }
 }
