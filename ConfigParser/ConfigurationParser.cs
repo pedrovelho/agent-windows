@@ -37,7 +37,8 @@ namespace ConfigParser
             // Schema validation
 
             XmlSchemaSet schemaSet = new XmlSchemaSet();
-            schemaSet.Add(null,schemaPath);
+            schemaSet.Add(null, schemaPath);
+
 
             XmlReaderSettings settings = new XmlReaderSettings();
             settings.ValidationType = ValidationType.Schema;
@@ -88,7 +89,7 @@ namespace ConfigParser
 
         public static Configuration generateSampleConf()
         {
-            Configuration toSave = new Configuration();
+            /*Configuration toSave = new Configuration();
             toSave.agentConfig = new AgentConfig();
             toSave.agentConfig.javaHome = "";
             toSave.agentConfig.jvmParams = "-Dtomek = krol";
@@ -109,7 +110,8 @@ namespace ConfigParser
             p2pAction.priority = "Idle";
             p2pAction.protocol = "RMI";
             toSave.action = p2pAction;
-            return toSave;
+            return toSave;*/
+            return null;
         }
 
 /*            Configuration res = new Configuration();

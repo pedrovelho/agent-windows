@@ -52,19 +52,19 @@ namespace ConfigParser
 
         // Action that will be taken in case of any event triggered
 
-        private Action myAction;
+        private Actions myActions;
 
-        [XmlElement("action", IsNullable = false)]
-        public Action action
+        [XmlElement("actions", IsNullable = false)]
+        public Actions actions
         {
             get
             {
-                return myAction;
+                return myActions;
             }
 
             set
             {
-                myAction = value;
+                myActions = value;
             }
         }
 

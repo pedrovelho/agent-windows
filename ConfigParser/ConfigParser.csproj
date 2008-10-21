@@ -58,6 +58,7 @@
     <Compile Include="CalendarEvent.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="ConfigurationParser.cs" />
+    <Compile Include="Actions.cs" />
     <Compile Include="IncorrectConfigurationException.cs" />
     <Compile Include="AgentConfig.cs" />
     <Compile Include="Event.cs" />

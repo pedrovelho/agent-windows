@@ -9,17 +9,33 @@ using System.Windows.Forms;
 using ConfigParser;
 using Microsoft.Win32;
 using System.Collections;
+using System.Security.Principal;
+using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace AgentFirstSetup
 {
     public partial class MainWindow : Form
     {
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public extern static bool LogonUser(String lpszUsername, String lpszDomain, String lpszPassword, int dwLogonType, int dwLogonProvider, ref IntPtr phToken);
+
+        const int LOGON32_LOGON_INTERACTIVE = 2;
+        const int LOGON32_LOGON_NETWORK = 3;
+
+        const int LOGON32_PROVIDER_DEFAULT = 0;
+        const int LOGON32_PROVIDER_WINNT35 = 1;
+        const int LOGON32_PROVIDER_WINNT40 = 2;
+        const int LOGON32_PROVIDER_WINNT50 = 3;
+
         private Configuration conf;
         private string configLocation;
         private string agentDir;
+        private string path;
 
-        public MainWindow()
+        public MainWindow(string path)
         {
+            this.path = path;
             RegistryKey confKey = Registry.LocalMachine.OpenSubKey("Software\\ProActiveAgent");
             this.configLocation = "";
             this.agentDir = "";
@@ -63,6 +79,7 @@ namespace AgentFirstSetup
 
             InitializeComponent();
             jvmDirectory.Text = Environment.GetEnvironmentVariable("JAVA_HOME");
+
         }
 
         private void proactiveLocationButton_Click(object sender, EventArgs e)
@@ -105,9 +122,40 @@ namespace AgentFirstSetup
 
         private void saveConfig_Click(object sender, EventArgs e)
         {
+            if (radioButton2.Checked && checkUser() != 0)
+            {
+                if (checkUser() == 1)
+                {
+                    MessageBox.Show("Wrong name/password", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    MessageBox.Show("This user is not an administrator", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                return;
+            }
             try
             {
                 ConfigurationParser.saveXml(this.configLocation, conf);
+
+                //--launch install.bat
+                Process process = new Process();
+                process.StartInfo.FileName = path + "\\" + "install.bat";
+                process.StartInfo.UseShellExecute = false;
+                if (radioButton2.Checked)
+                {
+                    process.StartInfo.Arguments = user.Text + " " + password.Text + " " + domain.Text;
+                }
+                try
+                {
+                    process.Start();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("error");
+                }
+
+                
             }
             catch (Exception)
             {
@@ -116,10 +164,67 @@ namespace AgentFirstSetup
             Close();
         }
 
+        private int checkUser()
+        {
+            IntPtr UserToken = new IntPtr(0);
+            bool loggedOn = false;
+            try
+            {
+                //tente de logger l'utilisateur
+                loggedOn = LogonUser(
+                     user.Text,
+                     domain.Text,
+                     password.Text,
+                      LOGON32_LOGON_INTERACTIVE,//LOGON32_LOGON_NETWORK,
+                      LOGON32_PROVIDER_DEFAULT,
+                      ref UserToken);
+            }
+            catch (Exception ex)
+            {
+                return 1;
+                throw ex;
+            }
+            if (loggedOn)
+            {
+                //renvoi identité ASP_NET
+                WindowsIdentity ident_here1 = WindowsIdentity.GetCurrent();
+                WindowsIdentity SystemMonitorUser = new WindowsIdentity(UserToken);
+
+                //Changement d'utilisateur ici
+                WindowsImpersonationContext ImpersonatedUser = SystemMonitorUser.Impersonate();
+
+                //ridentité nouvel User
+                WindowsIdentity ident_here2 = WindowsIdentity.GetCurrent();
+                WindowsIdentity identity = new WindowsIdentity(UserToken);
+                WindowsPrincipal principal = new WindowsPrincipal(identity);
+                ImpersonatedUser.Undo();
+                if (principal.IsInRole(WindowsBuiltInRole.Administrator))
+                    return 0;
+                else
+                    return 2;
+
+                
+            }
+            return 1;
+            
+        }
+
         private void closeConfig_Click(object sender, EventArgs e)
         {
             MessageBox.Show("The ProActiveAgent is not configured properly. Thus, it may not work. You can configure it later using AgentControl application.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             Close();
+        }
+
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButton2.Checked)
+            {
+                panelAccount.Enabled = true;
+            }
+            else
+            {
+                panelAccount.Enabled = false;
+            }
         }
 
 

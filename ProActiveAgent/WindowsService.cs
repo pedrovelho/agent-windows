@@ -7,6 +7,9 @@ using System.IO;
 using ConfigParser;
 using System.Threading;
 using Microsoft.Win32;
+using System.Collections;
+using System.Security;
+using System.Security.Principal;
 
 namespace ProActiveAgent
 {
@@ -20,6 +23,9 @@ namespace ProActiveAgent
         private Configuration configuration;
         private TimerManager timerManager;
         private ProActiveExec exec;
+        //private ArrayList execs;
+        //private ArrayList timers;
+        private ArrayList agregations;
         private static Logger logger;
 
         /// <summary>
@@ -52,6 +58,7 @@ namespace ProActiveAgent
 
             this.timerManager = null;
             this.exec = null;
+            this.agregations = new ArrayList();
         }
 
         private void readRegistryConfiguration()
@@ -111,29 +118,42 @@ namespace ProActiveAgent
 
         protected override void OnStart(string[] args)
         {
+            
             // TODO: zero all of the members/properties
             //-- runtime started = true
             ProActiveExec.setRegistryIsRuntimeStarted(false);
             //set allowRuntime registry to true
             //ProActiveExec.setRegistryAllowRuntime(true);
 
-            if (args.Length > 0)
-                this.configLocation = args[0];
-
             this.configuration = ConfigurationParser.parseXml(configLocation, agentLocation);
             LoggerComposite composite = new LoggerComposite();
             composite.addLogger(new FileLogger(this.agentLocation));
             composite.addLogger(new EventLogger());
             logger = composite;
-            WindowsService.log("Starting ProActiveAgent Service", LogLevel.TRACE);
-            this.exec = new ProActiveExec(logger, agentLocation, configuration.agentConfig.jvmParams,
-                configuration.agentConfig.javaHome, configuration.agentConfig.proactiveLocation,
-                configuration.action.priority, configuration.action.initialRestartDelay);
+            WindowsService.log("--- Starting ProActiveAgent Service", LogLevel.TRACE);
+            //--Foreach action
+            ProActiveExec exe;
+            TimerManager tim;
+            Agregation agre;
+           
+            foreach (Action action in configuration.actions.actions)
+            {
+                    WindowsService.log("Starting action " + action.GetType().Name, LogLevel.TRACE);
 
-            this.timerManager = new TimerManager(this.configuration, exec);
+                    exe = new ProActiveExec(logger, agentLocation, configuration.agentConfig.jvmParams,
+                    configuration.agentConfig.javaHome, configuration.agentConfig.proactiveLocation,
+                    action.priority, action.initialRestartDelay);
 
-            this.exec.setTimerMgr(timerManager);
 
+                    tim = new TimerManager(this.configuration, action, exe);
+
+                    exe.setTimerMgr(tim);
+
+                    //--Save in collection
+                    agre = new Agregation(exe, tim, action);
+                    agregations.Add(agre);
+            }
+            WindowsService.log("All tasks are scheduling", LogLevel.TRACE);
             base.OnStart(args);
         }
 
@@ -148,9 +168,16 @@ namespace ProActiveAgent
         protected override void OnStop()
         {
             WindowsService.log("Stopping ProActiveAgent Service", LogLevel.TRACE);
-            exec.dispose();
-            timerManager.dispose();
-            exec.sendGlobalStop();
+            foreach (Agregation a in agregations)
+            {
+                a.exec.dispose();
+                a.timerManager.dispose();
+                a.exec.sendGlobalStop();
+            }
+            agregations.Clear();
+            //exec.dispose();
+            //timerManager.dispose();
+            //exec.sendGlobalStop();
             logger.onStopService();
             this.configuration = null;
             this.timerManager = null;
@@ -245,17 +272,31 @@ namespace ProActiveAgent
             if (command == (int)PAACommands.ScreenSaverStart)
             {
                 WindowsService.log("Received start command from ProActive ScreenSaver", LogLevel.TRACE);
-                exec.sendStartAction(configuration.action, ApplicationType.AgentScreensaver);
+                foreach (Agregation agregation in agregations)
+                {
+                    agregation.exec.sendStartAction(agregation.action,ApplicationType.AgentScreensaver);    
+                }
+                
             }
             else if (command == (int)PAACommands.ScreenSaverStop)
             {
                 WindowsService.log("Received stop command from ProActive ScreenSaver", LogLevel.TRACE);
-                exec.sendStopAction(configuration.action, ApplicationType.AgentScreensaver);
+                foreach (Agregation agregation in agregations)
+                {
+                    agregation.exec.sendStopAction(agregation.action, ApplicationType.AgentScreensaver);
+                }
+
+                //exec.sendStopAction(configuration.action, ApplicationType.AgentScreensaver);
             }
             else if (command == (int)PAACommands.GlobalStop)
             {
                 WindowsService.log("Received global stop command", LogLevel.TRACE);
-                exec.sendGlobalStop();
+                foreach (Agregation agregation in agregations)
+                {
+                    agregation.exec.sendGlobalStop();
+                }
+
+                //exec.sendGlobalStop();
             }
             /*else if (command == (int)PAACommands.AllowRuntime)
             {
@@ -324,6 +365,22 @@ namespace ProActiveAgent
                 return false;
             }
             
+        }
+
+    }
+
+    public class Agregation
+    {
+        public TimerManager timerManager;
+        public ProActiveExec exec;
+        public Action action;
+
+        public Agregation(ProActiveExec exec,TimerManager timerManager, Action action )
+        {
+            this.timerManager = timerManager;
+            this.exec = exec;
+            this.action = action;
+            WindowsService.log("start", LogLevel.INFO);
         }
 
     }

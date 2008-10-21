@@ -17,6 +17,7 @@ namespace ConfigParser
     public class RMAction : Action
     {
         private string myUrl;
+        private string myNodeName;
 
         [XmlAttribute("url")]
         public string url
@@ -28,6 +29,20 @@ namespace ConfigParser
             set
             {
                 myUrl = value;
+            }
+        }
+
+
+        [XmlElement("nodeName", IsNullable = false)]
+        public string nodeName
+        {
+            get
+            {
+                return myNodeName;
+            }
+            set
+            {
+                myNodeName = value;
             }
         }
     }

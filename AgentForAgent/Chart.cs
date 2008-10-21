@@ -12,7 +12,7 @@ namespace AgentForAgent
 {
     public partial class Chart : Form
     {
-        private Rectangle rect;
+
         private Pen pen;
         private Brush brush;
         private Graphics G;

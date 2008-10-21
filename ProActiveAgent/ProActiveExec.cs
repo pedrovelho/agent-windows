@@ -9,6 +9,8 @@ using System.Threading;
 using System.Runtime.CompilerServices;
 using Microsoft.Win32;
 using System.Collections;
+using System.Security;
+using System.Security.Principal;
 
 /** Executor of runner script and thus ProActive runtime.
  *  This class implements semantics of all actions available
@@ -16,15 +18,15 @@ using System.Collections;
 
 namespace ProActiveAgent
 {
+
     public class ProActiveExec
     {
-        // Import of unmanaged library responsible for killing Windows processes recursively
-
         [DllImport("pkill.dll", EntryPoint = "_KillProcessEx@8", CallingConvention = CallingConvention.Winapi)]
         private static extern bool KillProcessEx(uint dwProcessId, bool bTree);
 
         private static string SCRIPT_NAME = "agentservice.bat";
         private static int INITIAL_RESTART_DELAY = 3000;
+        private static int MAX_RESTART_DELAY = 10000;
 
         private String scriptLocation;          // location of runner script
         private Process process;                // process object that represents running runner script
@@ -53,7 +55,8 @@ namespace ProActiveAgent
         public ProActiveExec(Logger logger, String scriptLocation, String jvmOptions, String javaLocation,
             String proactiveLocation, String priority, int initialRestartDelay)
         {
-            this.observer = new ProcessObserver(logger);
+            WindowsService.log("#>ProActiveExec", LogLevel.INFO);
+            //this.observer = new ProcessObserver(logger);
             this.callersState = new Dictionary<ApplicationType, Int32>();
             this.scriptLocation = scriptLocation;
             this.jvmOptions = jvmOptions;
@@ -64,6 +67,7 @@ namespace ProActiveAgent
             this.cmd = null;
             this.args = null;
             this.logger = logger;
+            this.observer = new ProcessObserver(logger);
 
             this.priority = getPriority(priority);
 
@@ -119,9 +123,20 @@ namespace ProActiveAgent
             return start("P2P", hosts);
         }
 
-        private bool startRM(string rmHost)
+        private bool startRM(string rmHost, string nodeName)
         {
-            String[] args = new String[] { rmHost };
+            String[] args;
+            if (nodeName != "")
+            {
+                args = new String[] { rmHost, nodeName };
+                WindowsService.log("start with nodename",LogLevel.INFO);
+            }
+            else
+            {
+                args = new String[] { rmHost};
+                WindowsService.log("start without nodename",LogLevel.INFO);
+            }
+
             return start("RM", args);
         }
 
@@ -163,9 +178,11 @@ namespace ProActiveAgent
                 this.args = args;
                 // We start a new process
                 process = new Process();
+
                 process.StartInfo.FileName = scriptLocation + "\\" + SCRIPT_NAME;
-                //process.StartInfo.FileName = "C:\\toto.bat";
-                //WindowsService.log("1", LogLevel.TRACE);
+
+                //process.StartInfo.FileName = "C:\\win\\run.bat";
+
                 // Command-line params building
                 StringBuilder argsBld = new StringBuilder();
                 foreach (string arg in args)
@@ -183,17 +200,23 @@ namespace ProActiveAgent
                 // Therefore, we will be able to relaunch script in that event
                 process.EnableRaisingEvents = true;
                 process.Exited += manageRestart;
-
+                
                 process.StartInfo.RedirectStandardOutput = true;
-                process.StartInfo.RedirectStandardError = true;
                 process.StartInfo.UseShellExecute = false;
-                WindowsService.log("Full path of the script: " + process.StartInfo.FileName, LogLevel.TRACE);
-                WindowsService.log("Arguments: " + process.StartInfo.Arguments, LogLevel.TRACE);
 
-                process.Start();
-                WindowsService.log("After start", LogLevel.INFO);
+                WindowsService.log("Command line: \"" + process.StartInfo.FileName + "\" " + process.StartInfo.Arguments, LogLevel.TRACE);
+
+                try
+                {
+                    process.Start();
+                }
+                catch (Exception ex)
+                {
+                    WindowsService.log("Exception: " + ex.Message, LogLevel.TRACE);
+                }
+                
                 process.PriorityClass = ProcessPriorityClass.Idle;
-                observer.setMonitorredProcess(process);
+                //observer.setMonitorredProcess(process);
                 WindowsService.log("The ProActive process was successfuly started", LogLevel.INFO);
 
                 //-- runtime started = true
@@ -212,7 +235,7 @@ namespace ProActiveAgent
 
         public static void setRegistryIsRuntimeStarted(Boolean value)
         {
-            // WindowsService.log("setRegistryIsRuntimeStarted = "+ value, LogLevel.INFO);
+            WindowsService.log("setRegistryIsRuntimeStarted = "+ value, LogLevel.INFO);
             RegistryKey confKey = Registry.LocalMachine.CreateSubKey("Software\\ProActiveAgent");
             if (confKey != null)
             {
@@ -295,13 +318,13 @@ namespace ProActiveAgent
             this.args = null;
             // kill the process tree
             //disableRestarting();
+
             if (!this.process.HasExited)
             {
-                this.process.Exited -= restart;
+                this.process.Exited -= manageRestart;
                 KillProcessEx((uint)this.process.Id, true);
             }
             this.process = null;
-
             //-- runtime started = false
             setRegistryIsRuntimeStarted(false);
         }
@@ -316,12 +339,12 @@ namespace ProActiveAgent
             if (callersState.ContainsKey(appType))
             {
                 callersState[appType]++;
-                WindowsService.log("callersState ++ " + appType.ToString(), LogLevel.INFO);
+                //WindowsService.log("callersState ++ " + appType.ToString(), LogLevel.INFO);
             }
             else
             {
                 callersState.Add(appType, 1);
-                WindowsService.log("callersState 1 " + appType.ToString(), LogLevel.INFO);
+                //WindowsService.log("callersState 1 " + appType.ToString(), LogLevel.INFO);
             }
 
             /*{
@@ -343,7 +366,7 @@ namespace ProActiveAgent
             else if (whatToDo is RMAction)
             {
                 RMAction action = (RMAction)whatToDo;
-                startRM(action.url);
+                startRM(action.url,action.nodeName);
             }
             else if (whatToDo is AdvertAction)
             {
@@ -358,6 +381,8 @@ namespace ProActiveAgent
         {
             WindowsService.log("Received start action request from AgentScheduler", LogLevel.INFO);
             restartDelay <<= 1;
+            if (restartDelay > MAX_RESTART_DELAY)
+                restartDelay = MAX_RESTART_DELAY;
             start(this.cmd, this.args);
         }
 
@@ -463,8 +488,6 @@ namespace ProActiveAgent
         //WindowsService.log("end", LogLevel.INFO);
 
 
-
-
         /*public void sendForbidRuntime()
         {
             //save to a registry
@@ -481,6 +504,8 @@ namespace ProActiveAgent
         {
             this.timerMgr = null;
         }
+
+        
 
     }
 }

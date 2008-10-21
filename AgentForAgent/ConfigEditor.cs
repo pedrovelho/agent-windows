@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using ConfigParser;
+using Microsoft.Win32;
 
 namespace AgentForAgent
 {
@@ -15,6 +16,7 @@ namespace AgentForAgent
         private string location;
         private ConfigurationDialog hook;
         private Chart chart;
+        private string[] usersList;
 
         public ConfigEditor(Configuration conf, string confLocation, string agentDir, ConfigurationDialog hook)
         {
@@ -45,59 +47,33 @@ namespace AgentForAgent
                 eventsList.Items.Add(makeEventName(cEv));
             }
 
-            Action action = conf.action;
-
-            if (action.priority.Equals(""))
+            foreach (Action act in conf.actions.actions)
             {
-                priorityBox.SelectedIndex = 0;
-                //              priorityBox.SelectedItem = priorityBox.Items[priorityBox.SelectedIndex];
-            }
-            else
-            {
-                priorityBox.SelectedIndex = priorityBox.FindString(action.priority);
-                //                priorityBox.SelectedItem = priorityBox.Items[priorityBox.SelectedIndex];
+                actionsList.Items.Add(act.GetType().Name);
             }
 
-
-            if (action.GetType() == typeof(P2PAction))
-            {
-                p2pRadioButton.Select();
-                P2PAction p2pAction = (P2PAction)action;
-                foreach (string host in p2pAction.contacts)
-                {
-                    hostList.Items.Add(host);
-                }
-
-                if (hostList.Items.Count == 0)
-                {
-                    peerUrl.Enabled = false;
-                    saveHost.Enabled = false;
-                    deleteHost.Enabled = false;
-                }
-                else
-                    hostList.SelectedIndex = 0;
-
-                p2pProtocol.Text = p2pAction.protocol;
-            }
-            else if (action.GetType() == typeof(RMAction))
-            {
-                rmRadioButton.Select();
-                RMAction rmAction = (RMAction)action;
-                rmUrl.Text = rmAction.url;
-            }
-            else if (action.GetType() == typeof(AdvertAction))
-            {
-                rmiRadioButton.Select();
-                AdvertAction advAction = (AdvertAction)action;
-                if (advAction.nodeName.Equals(""))
-                    rmiNodeEnabled.Checked = false;
-                else
-                    rmiNodeEnabled.Checked = true;
-                rmiNodeName.Text = advAction.nodeName;
-            }
+            p2pactionGroup.Visible = false;
+            rmiActionGroup.Visible = false;
+            rmActionGroup.Visible = false;
 
             //--Chart
             chart = new Chart(ref conf);
+         
+            //--Users list
+            string users_reg_key = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\DocFolderPaths";
+            //The registry key for reading user list.
+            RegistryKey key = Registry.LocalMachine.OpenSubKey(users_reg_key, true);
+            //string[] winusers;
+            if (key != null && key.ValueCount > 0)
+            {
+                usersList = key.GetValueNames();
+            }
+
+            for (int i = 0; i < usersList.Length; i++)
+            {
+                //MessageBox.Show(usersList[i]);
+                userBox.Items.Add(usersList[i]);
+            }
         }
 
         private string makeEventName(CalendarEvent cEv)
@@ -167,59 +143,92 @@ namespace AgentForAgent
             return num.ToString();
         }
 
-        private void p2pRadioButton_CheckedChanged(object sender, EventArgs e)
+        private void actionTypeBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (p2pRadioButton.Checked)
+            actionPropertyChanged(sender, e);
+
+            switch ((string)(actionTypeBox.SelectedItem))
             {
-                p2pactionGroup.Enabled = true;
-                rmiActionGroup.Enabled = false;
-                rmActionGroup.Enabled = false;
+                case "RMI Registration":
+                    {
+                        p2pactionGroup.Enabled = false;
+                        rmiActionGroup.Enabled = true;
+                        rmActionGroup.Enabled = false;
 
-                P2PAction newAction = new P2PAction();
-                string[] hosts = new string[hostList.Items.Count];
-                hostList.Items.CopyTo(hosts, 0);
-                newAction.contacts = hosts;
-                newAction.priority = (string)priorityBox.SelectedItem;
-                newAction.protocol = p2pProtocol.Text;
+                        p2pactionGroup.Visible = false;
+                        rmiActionGroup.Visible = true;
+                        rmActionGroup.Visible = false;
+                        
+                        AdvertAction newAction = new AdvertAction();
+                        newAction.nodeName = rmiNodeEnabled.Checked ? rmiNodeName.Text : "";
+                        newAction.priority = (string)priorityBox.SelectedItem;
 
-                conf.action = newAction;
-            }
-        }
+                        if (actionsList.SelectedIndex != -1)
+                        {
+                            conf.actions.actions[actionsList.SelectedIndex] = newAction;
+                        }
+                        
+                        //conf.action = newAction;
+                    }
+                    break;
 
-        private void rmiRadioButton_CheckedChanged(object sender, EventArgs e)
-        {
-            if (rmiRadioButton.Checked)
-            {
-                p2pactionGroup.Enabled = false;
-                rmiActionGroup.Enabled = true;
-                rmActionGroup.Enabled = false;
+                case "Peer-To-Peer":
+                    {
+                        p2pactionGroup.Enabled = true;
+                        rmiActionGroup.Enabled = false;
+                        rmActionGroup.Enabled = false;
 
-                AdvertAction newAction = new AdvertAction();
-                newAction.nodeName = rmiNodeEnabled.Checked ? rmiNodeName.Text : "";
-                newAction.priority = (string)priorityBox.SelectedItem;
+                        p2pactionGroup.Visible = true;
+                        rmiActionGroup.Visible = false;
+                        rmActionGroup.Visible = false;
 
-                conf.action = newAction;
-            }
-        }
+                        P2PAction newAction = new P2PAction();
+                        string[] hosts = new string[hostList.Items.Count];
+                        hostList.Items.CopyTo(hosts, 0);
+                        newAction.contacts = hosts;
+                        newAction.priority = (string)priorityBox.SelectedItem;
+                        newAction.protocol = p2pProtocol.Text;
 
-        private void rmRadioButton_CheckedChanged(object sender, EventArgs e)
-        {
-            if (rmRadioButton.Checked)
-            {
-                p2pactionGroup.Enabled = false;
-                rmiActionGroup.Enabled = false;
-                rmActionGroup.Enabled = true;
+                        if (actionsList.SelectedIndex != -1)
+                        {
+                            conf.actions.actions[actionsList.SelectedIndex] = newAction;
+                            //actionsList.Items[actionsList.SelectedIndex] = newAction;
+                            //conf.action = newAction;
+                        }
+                    }
+                    break;
 
-                RMAction newAction = new RMAction();
-                newAction.url = rmUrl.Text;
-                newAction.priority = (string)priorityBox.SelectedItem;
+                case "Resource Manager Registration":
+                    {
+                        p2pactionGroup.Enabled = false;
+                        rmiActionGroup.Enabled = false;
+                        rmActionGroup.Enabled = true;
 
-                conf.action = newAction;
+                        p2pactionGroup.Visible = false;
+                        rmiActionGroup.Visible = false;
+                        rmActionGroup.Visible = true;
+
+                        RMAction newAction = new RMAction();
+                        newAction.url = rmUrl.Text;
+                        newAction.nodeName = rmNodeName.Text;
+                        newAction.priority = (string)priorityBox.SelectedItem;
+
+                        if (actionsList.SelectedIndex != -1)
+                        {
+                            conf.actions.actions[actionsList.SelectedIndex] = newAction;
+                            //conf.action = newAction;
+                        }
+                    }
+                    break;
+
+                default:
+                    break;
             }
         }
 
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
         {
+            actionPropertyChanged(sender, e);
             if (rmiNodeEnabled.Checked)
                 rmiNodeName.Enabled = true;
             else
@@ -253,7 +262,7 @@ namespace AgentForAgent
             jvmLocationBrowser.ShowDialog();
             jvmDirectory.Text = jvmLocationBrowser.SelectedPath;
         }
-
+        //--EVENTS LIST
         private void eventsList_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (eventsList.SelectedIndex == -1)
@@ -315,6 +324,7 @@ namespace AgentForAgent
         private void saveEventButton_Click(object sender, EventArgs e)
         {
             updateEvent();
+            saveEventButton.Enabled = false;
         }
 
         private void closeConfig_Click(object sender, EventArgs e)
@@ -397,8 +407,6 @@ namespace AgentForAgent
             }
         }
 
-
-
         private void proactiveLocation_TextChanged(object sender, EventArgs e)
         {
             conf.agentConfig.proactiveLocation = proactiveLocation.Text;
@@ -414,17 +422,6 @@ namespace AgentForAgent
             conf.agentConfig.jvmParams = jvmParams.Text;
         }
 
-        private void rmiNodeName_TextChanged(object sender, EventArgs e)
-        {
-            AdvertAction ourAction = (AdvertAction)conf.action;
-            ourAction.nodeName = rmiNodeName.Text;
-        }
-
-        private void rmUrl_TextChanged(object sender, EventArgs e)
-        {
-            RMAction ourAction = (RMAction)conf.action;
-            ourAction.url = rmUrl.Text;
-        }
 
         private void hostList_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -444,44 +441,260 @@ namespace AgentForAgent
 
         private void saveHost_Click(object sender, EventArgs e)
         {
-            P2PAction ourAction = (P2PAction)conf.action;
+            actionPropertyChanged(sender, e);
+
+            P2PAction ourAction = (P2PAction)conf.actions.actions[actionsList.SelectedIndex];
+            //P2PAction ourAction = (P2PAction)conf.action;
             hostList.Items[hostList.SelectedIndex] = peerUrl.Text;
             ourAction.modifyContact(hostList.SelectedIndex, peerUrl.Text);
         }
 
         private void addHost_Click(object sender, EventArgs e)
         {
-            P2PAction ourAction = (P2PAction)conf.action;
+            actionPropertyChanged(sender, e);
+
+            P2PAction ourAction = (P2PAction)conf.actions.actions[actionsList.SelectedIndex];
+            //P2PAction ourAction = (P2PAction)conf.action;
             hostList.Items.Add("newPeer");
             ourAction.addContact("newPeer");
         }
 
         private void deleteHost_Click(object sender, EventArgs e)
         {
-            P2PAction ourAction = (P2PAction)conf.action;
+            actionPropertyChanged(sender, e);
+
+            P2PAction ourAction = (P2PAction)conf.actions.actions[actionsList.SelectedIndex];
+            //P2PAction ourAction = (P2PAction)conf.action;
             int index = hostList.SelectedIndex;
             hostList.Items.RemoveAt(index);
             ourAction.deleteContact(index);
-        }
-
-        private void priorityBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (priorityBox.SelectedIndex == -1)
-                conf.action.priority = "";
-            else
-                conf.action.priority = (string)priorityBox.Items[priorityBox.SelectedIndex];
-        }
-
-        private void p2pProtocol_TextChanged(object sender, EventArgs e)
-        {
-            P2PAction ourAction = (P2PAction)conf.action;
-            ourAction.protocol = p2pProtocol.Text;
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             chart.loadEvents();
             chart.Show();
+        }
+
+        private void actionsList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (actionsList.SelectedIndex == -1)
+            {
+                actionEditorGroup.Enabled = false;
+                return;
+            }
+            actionEditorGroup.Enabled = true;
+            Action action = (Action)conf.actions.actions[actionsList.SelectedIndex];
+
+
+            if (action.priority.Equals(""))
+            {
+                priorityBox.SelectedIndex = 0;
+                //              priorityBox.SelectedItem = priorityBox.Items[priorityBox.SelectedIndex];
+            }
+            else
+            {
+                priorityBox.SelectedIndex = priorityBox.FindString(action.priority);
+                //                priorityBox.SelectedItem = priorityBox.Items[priorityBox.SelectedIndex];
+            }
+            userBox.SelectedIndex = userBox.FindString(action.user);
+
+            if (action.GetType() == typeof(P2PAction))
+            {
+                actionTypeBox.SelectedItem = "Peer-To-Peer";
+
+                P2PAction p2pAction = (P2PAction)action;
+                //--Vide
+                hostList.Items.Clear();
+                foreach (string host in p2pAction.contacts)
+                {
+                    hostList.Items.Add(host);
+                }
+
+                if (hostList.Items.Count == 0)
+                {
+                    peerUrl.Enabled = false;
+                    saveHost.Enabled = false;
+                    deleteHost.Enabled = false;
+                }
+                else
+                    hostList.SelectedIndex = 0;
+
+                p2pProtocol.Text = p2pAction.protocol;
+            }
+            else if (action.GetType() == typeof(RMAction))
+            {
+                actionTypeBox.SelectedItem = "Resource Manager Registration";
+                RMAction rmAction = (RMAction)action;
+                rmUrl.Text = rmAction.url;
+                rmNodeName.Text = rmAction.nodeName;
+            }
+            else if (action.GetType() == typeof(AdvertAction))
+            {
+                actionTypeBox.SelectedItem = "RMI Registration";
+                AdvertAction advAction = (AdvertAction)action;
+                if (advAction.nodeName.Equals(""))
+                    rmiNodeEnabled.Checked = false;
+                else
+                    rmiNodeEnabled.Checked = true;
+                rmiNodeName.Text = advAction.nodeName;
+            }
+            else
+            {
+                p2pactionGroup.Enabled = false;
+                rmiActionGroup.Enabled = false;
+                rmActionGroup.Enabled = false;
+
+                p2pactionGroup.Visible = false;
+                rmiActionGroup.Visible = false;
+                rmActionGroup.Visible = false;
+
+                actionTypeBox.SelectedIndex = -1;
+                rmUrl.Text = "";
+                rmNodeName.Text = "";
+
+                rmiNodeName.Text = "";
+                rmiNodeEnabled.Enabled = true;
+                hostList.Items.Clear();
+
+                p2pProtocol.Text = "";
+                peerUrl.Text = "";
+                hostList.Items.Clear();
+            }
+            saveActionButton.Enabled = false;
+        }
+
+        private void saveActionButton_Click(object sender, EventArgs e)
+        {
+            updateAction();
+            saveActionButton.Enabled = false;
+        }
+
+        private void updateAction()
+        {
+            if (actionsList.SelectedIndex == -1)
+                return;
+
+            switch ((string)(actionTypeBox.SelectedItem))
+            {
+                case "RMI Registration":
+                    {
+                        AdvertAction newAction = new AdvertAction();
+                        //newAction.nodeName = rmiNodeEnabled.Checked ? rmiNodeName.Text : "";
+                        if (rmiNodeEnabled.Checked)
+                        {
+                            newAction.nodeName = rmiNodeName.Text;
+                        }
+                        else
+                        {
+                            newAction.nodeName = "";
+                        }
+
+                        newAction.priority = (string)priorityBox.SelectedItem;
+                        newAction.user = (string)userBox.SelectedItem;
+
+                        if (actionsList.SelectedIndex != -1)
+                        {
+                            conf.actions.modifyAction(actionsList.SelectedIndex, newAction);
+                            actionsList.Items[actionsList.SelectedIndex] = newAction.GetType().Name;
+                        }
+                    }
+                    break;
+
+                case "Peer-To-Peer":
+                    {
+                        P2PAction newAction = new P2PAction();
+                        string[] hosts = new string[hostList.Items.Count];
+                        hostList.Items.CopyTo(hosts, 0);
+                        newAction.contacts = hosts;
+                        newAction.priority = (string)priorityBox.SelectedItem;
+                        newAction.user = (string)userBox.SelectedItem;
+
+                        newAction.protocol = p2pProtocol.Text;
+
+                        if (actionsList.SelectedIndex != -1)
+                        {
+                            conf.actions.modifyAction(actionsList.SelectedIndex, newAction);
+                            actionsList.Items[actionsList.SelectedIndex] = newAction.GetType().Name;
+                        }
+                    }
+                    break;
+
+                case "Resource Manager Registration":
+                    {
+                        p2pactionGroup.Enabled = false;
+                        rmiActionGroup.Enabled = false;
+                        rmActionGroup.Enabled = true;
+
+                        p2pactionGroup.Visible = false;
+                        rmiActionGroup.Visible = false;
+                        rmActionGroup.Visible = true;
+
+                        RMAction newAction = new RMAction();
+                        newAction.url = rmUrl.Text;
+                        newAction.nodeName = rmNodeName.Text;
+                        newAction.priority = (string)priorityBox.SelectedItem;
+                        newAction.user = (string)userBox.SelectedItem;
+
+                        if (actionsList.SelectedIndex != -1)
+                        {
+                            conf.actions.modifyAction(actionsList.SelectedIndex, newAction);
+                            actionsList.Items[actionsList.SelectedIndex] = newAction.GetType().Name;
+                        }
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        private void weekdayStart_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            saveEventButton.Enabled = true;
+        }
+
+
+        private void eventChanged(object sender, EventArgs e)
+        {
+            saveEventButton.Enabled = true;
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            Action action = new Action();
+            action.priority = "";
+            conf.actions.addAction(action);
+            actionsList.Items.Add("new Action");
+            /*p2pactionGroup.Enabled = false;
+            rmiActionGroup.Enabled = false;
+            rmActionGroup.Enabled = false;
+
+            p2pactionGroup.Visible = false;
+            rmiActionGroup.Visible = false;
+            rmActionGroup.Visible = false;
+
+            actionTypeBox.SelectedIndex = -1;*/
+        }
+
+        private void deleteActionButton_Click(object sender, EventArgs e)
+        {
+            int selectedIdx = actionsList.SelectedIndex;
+            if (selectedIdx == -1)
+                return;
+            actionsList.Items.RemoveAt(selectedIdx);
+            conf.actions.removeAction(selectedIdx);
+        }
+
+
+        private void actionPropertyChanged(object sender, EventArgs e)
+        {
+            saveActionButton.Enabled = true;
+        }
+
+        private void ConfigEditor_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            this.Dispose();
         }
     }
 }

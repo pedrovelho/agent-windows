@@ -16,7 +16,7 @@ namespace ProActiveAgent
     {
 
         private static int WEEK_DELAY = 3600 * 24 * 7 * 1000;
-        private static int BARRIER_SAFETY_MARGIN = 5000;
+        private static int BARRIER_SAFETY_MARGIN = 15000;
 
         // start - action timers
         private List<Timer> startTimers = new List<Timer>();
@@ -26,7 +26,8 @@ namespace ProActiveAgent
         private List<Timer> retryTimers = new List<Timer>();
 
         private ProActiveExec exec;
-        private Configuration configuration;
+        private Action action;
+        private Configuration config;
 
         private long retryTimeBarrier = 0;
 
@@ -37,12 +38,13 @@ namespace ProActiveAgent
 
         // The constructor should be called only during starting the service
 
-        public TimerManager(Configuration config, ProActiveExec paExec)
+        public TimerManager(Configuration config, Action action, ProActiveExec paExec)
         {
             WindowsService.log("Time Manager", LogLevel.INFO);
-            this.configuration = config;
+            this.action = action;
             bool startNow = false;  // flag that will be set if now we are in the middle of the event
             this.exec = paExec;
+            this.config = config;
             Events events = config.events;
             foreach (Event e in events.events)
             {
@@ -82,12 +84,12 @@ namespace ProActiveAgent
                         dueStop += WEEK_DELAY;
 
                     StartActionInfo startInfo = new StartActionInfo();
-                    startInfo.setAction(config.action);
+                    startInfo.setAction(action);
                     startInfo.setStopTime(accurateStartTime.Add(duration).Ticks);
 
                     // timer registration
                     Timer startT = new Timer(new TimerCallback(mySendStartAction), startInfo, dueStart, WEEK_DELAY);
-                    Timer stopT = new Timer(new TimerCallback(mySendStopAction), config.action, dueStop, WEEK_DELAY);
+                    Timer stopT = new Timer(new TimerCallback(mySendStopAction), action, dueStop, WEEK_DELAY);
 
                     startTimers.Add(startT);
                     stopTimers.Add(stopT);
@@ -116,7 +118,7 @@ namespace ProActiveAgent
 
             if (System.DateTime.Now.Ticks + delay * 10000L < retryTimeBarrier)
             {
-                Timer newTimer = new Timer(new TimerCallback(mySendRestartAction), configuration.action, delay, System.Threading.Timeout.Infinite);
+                Timer newTimer = new Timer(new TimerCallback(mySendRestartAction), action, delay, System.Threading.Timeout.Infinite);
                 retryTimers.Add(newTimer);
                 WindowsService.log("Restart action succesfully scheduled", LogLevel.TRACE);
             }
@@ -130,6 +132,8 @@ namespace ProActiveAgent
         //note : it does not refer to restarted actions, but started according to calendar event
         private void mySendStartAction(object action)
         {
+            WindowsService.log("#>mySendStartAction", LogLevel.INFO);
+
             StartActionInfo actionInfo = (StartActionInfo)action;
             long stopTime = actionInfo.getStopTime();
 
@@ -144,13 +148,13 @@ namespace ProActiveAgent
             }
 
             retryTimeBarrier -= BARRIER_SAFETY_MARGIN * 10000;
-            WindowsService.log("mySendStartAction", LogLevel.INFO);
             exec.resetRestartDelay();
             exec.sendStartAction(actionInfo.getAction(), ApplicationType.AgentScheduler);
         }
 
         private void mySendStopAction(object action)
         {
+            WindowsService.log("#>mySendStopAction", LogLevel.INFO);
             retryTimeBarrier = 0;
             exec.sendStopAction(action, ApplicationType.AgentScheduler);
         }
@@ -216,6 +220,7 @@ namespace ProActiveAgent
         // releasing resources
         public void dispose()
         {
+            WindowsService.log("#>dispose", LogLevel.INFO);
             foreach (Timer t in startTimers)
             {
                 t.Dispose();

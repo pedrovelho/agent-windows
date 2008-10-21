@@ -1,9 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<!-- ACTIONS -->
+  <xs:element name="Actions" nillable="true" type="Actions" />
+  <xs:complexType name="Actions">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="action" type="Action" />
+    </xs:sequence>
+  </xs:complexType>
+  
   <xs:element name="Action" nillable="true" type="Action" />
   <xs:complexType name="Action">
     <xs:attribute name="priority" type="xs:string" />
     <xs:attribute name="initialRestartDelay" type="xs:int" />
+	<xs:attribute name="user" type="xs:string" />
   </xs:complexType>
   <xs:complexType name="AdvertAction">
     <xs:complexContent mixed="false">
@@ -17,7 +26,11 @@
   <xs:complexType name="RMAction">
     <xs:complexContent mixed="false">
       <xs:extension base="Action">
-        <xs:attribute name="url" type="xs:string" />
+		<!--NODE-->
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="nodeName" type="xs:string" />
+        </xs:sequence>
+        <xs:attribute name="url" type="xs:string" />		
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -31,6 +44,8 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  
+<!-- EVENTS -->  
   <xs:element name="Events" nillable="true" type="Events" />
   <xs:complexType name="Events">
     <xs:sequence>
@@ -69,7 +84,7 @@
     <xs:sequence>
       <xs:element minOccurs="1" maxOccurs="1" name="internalConfig" type="AgentConfig" />
       <xs:element minOccurs="1" maxOccurs="1" name="events" type="Events" />
-      <xs:element minOccurs="1" maxOccurs="1" name="action" type="Action" />
+      <xs:element minOccurs="1" maxOccurs="1" name="actions" type="Actions" />
     </xs:sequence>
   </xs:complexType>
   <xs:element name="RMAction" nillable="true" type="RMAction" />

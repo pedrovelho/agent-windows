@@ -66,12 +66,15 @@
             this.deleteEventButton = new System.Windows.Forms.Button();
             this.eventsList = new System.Windows.Forms.ListBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.actionEditorGroup = new System.Windows.Forms.GroupBox();
+            this.saveActionButton = new System.Windows.Forms.Button();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.actionTypeBox = new System.Windows.Forms.ComboBox();
+            this.userBox = new System.Windows.Forms.ComboBox();
             this.priorityBox = new System.Windows.Forms.ComboBox();
+            this.label18 = new System.Windows.Forms.Label();
+            this.label20 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
-            this.rmRadioButton = new System.Windows.Forms.RadioButton();
-            this.rmiRadioButton = new System.Windows.Forms.RadioButton();
-            this.p2pRadioButton = new System.Windows.Forms.RadioButton();
             this.p2pactionGroup = new System.Windows.Forms.GroupBox();
             this.p2pProtocol = new System.Windows.Forms.TextBox();
             this.label17 = new System.Windows.Forms.Label();
@@ -83,11 +86,17 @@
             this.hostList = new System.Windows.Forms.ListBox();
             this.label14 = new System.Windows.Forms.Label();
             this.rmActionGroup = new System.Windows.Forms.GroupBox();
+            this.rmNodeName = new System.Windows.Forms.TextBox();
             this.rmUrl = new System.Windows.Forms.TextBox();
+            this.label19 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.rmiActionGroup = new System.Windows.Forms.GroupBox();
             this.rmiNodeName = new System.Windows.Forms.TextBox();
             this.rmiNodeEnabled = new System.Windows.Forms.CheckBox();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.button3 = new System.Windows.Forms.Button();
+            this.deleteActionButton = new System.Windows.Forms.Button();
+            this.actionsList = new System.Windows.Forms.ListBox();
             this.saveConfig = new System.Windows.Forms.Button();
             this.closeConfig = new System.Windows.Forms.Button();
             this.proActiveLocationBrowser = new System.Windows.Forms.FolderBrowserDialog();
@@ -108,10 +117,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.hourStart)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.tabPage3.SuspendLayout();
+            this.actionEditorGroup.SuspendLayout();
             this.groupBox7.SuspendLayout();
             this.p2pactionGroup.SuspendLayout();
             this.rmActionGroup.SuspendLayout();
             this.rmiActionGroup.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -223,7 +234,7 @@
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(682, 293);
+            this.tabControl1.Size = new System.Drawing.Size(682, 349);
             this.tabControl1.TabIndex = 1;
             // 
             // tabPage1
@@ -232,7 +243,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(674, 267);
+            this.tabPage1.Size = new System.Drawing.Size(674, 323);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "ProActive Configuration";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -244,7 +255,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(674, 267);
+            this.tabPage2.Size = new System.Drawing.Size(674, 323);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Events";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -272,14 +283,14 @@
             this.eventEditorGroup.Enabled = false;
             this.eventEditorGroup.Location = new System.Drawing.Point(259, 6);
             this.eventEditorGroup.Name = "eventEditorGroup";
-            this.eventEditorGroup.Size = new System.Drawing.Size(398, 255);
+            this.eventEditorGroup.Size = new System.Drawing.Size(398, 311);
             this.eventEditorGroup.TabIndex = 1;
             this.eventEditorGroup.TabStop = false;
             this.eventEditorGroup.Text = "Event Editor";
             // 
             // saveEventButton
             // 
-            this.saveEventButton.Location = new System.Drawing.Point(317, 226);
+            this.saveEventButton.Location = new System.Drawing.Point(317, 282);
             this.saveEventButton.Name = "saveEventButton";
             this.saveEventButton.Size = new System.Drawing.Size(75, 23);
             this.saveEventButton.TabIndex = 17;
@@ -296,8 +307,9 @@
             0,
             0});
             this.secondsDuration.Name = "secondsDuration";
-            this.secondsDuration.Size = new System.Drawing.Size(32, 20);
+            this.secondsDuration.Size = new System.Drawing.Size(36, 20);
             this.secondsDuration.TabIndex = 16;
+            this.secondsDuration.ValueChanged += new System.EventHandler(this.eventChanged);
             // 
             // label12
             // 
@@ -317,8 +329,9 @@
             0,
             0});
             this.minutesDuration.Name = "minutesDuration";
-            this.minutesDuration.Size = new System.Drawing.Size(34, 20);
+            this.minutesDuration.Size = new System.Drawing.Size(36, 20);
             this.minutesDuration.TabIndex = 14;
+            this.minutesDuration.ValueChanged += new System.EventHandler(this.eventChanged);
             // 
             // label11
             // 
@@ -340,6 +353,7 @@
             this.hoursDuration.Name = "hoursDuration";
             this.hoursDuration.Size = new System.Drawing.Size(36, 20);
             this.hoursDuration.TabIndex = 12;
+            this.hoursDuration.ValueChanged += new System.EventHandler(this.eventChanged);
             // 
             // label10
             // 
@@ -359,8 +373,9 @@
             0,
             0});
             this.dayDuration.Name = "dayDuration";
-            this.dayDuration.Size = new System.Drawing.Size(33, 20);
+            this.dayDuration.Size = new System.Drawing.Size(36, 20);
             this.dayDuration.TabIndex = 10;
+            this.dayDuration.ValueChanged += new System.EventHandler(this.eventChanged);
             // 
             // label9
             // 
@@ -389,8 +404,9 @@
             0,
             0});
             this.secondStart.Name = "secondStart";
-            this.secondStart.Size = new System.Drawing.Size(34, 20);
+            this.secondStart.Size = new System.Drawing.Size(36, 20);
             this.secondStart.TabIndex = 7;
+            this.secondStart.ValueChanged += new System.EventHandler(this.eventChanged);
             // 
             // label7
             // 
@@ -412,6 +428,7 @@
             this.minuteStart.Name = "minuteStart";
             this.minuteStart.Size = new System.Drawing.Size(36, 20);
             this.minuteStart.TabIndex = 5;
+            this.minuteStart.ValueChanged += new System.EventHandler(this.eventChanged);
             // 
             // label6
             // 
@@ -440,8 +457,9 @@
             0,
             0});
             this.hourStart.Name = "hourStart";
-            this.hourStart.Size = new System.Drawing.Size(33, 20);
+            this.hourStart.Size = new System.Drawing.Size(36, 20);
             this.hourStart.TabIndex = 2;
+            this.hourStart.ValueChanged += new System.EventHandler(this.eventChanged);
             // 
             // label4
             // 
@@ -468,6 +486,7 @@
             this.weekdayStart.Name = "weekdayStart";
             this.weekdayStart.Size = new System.Drawing.Size(121, 21);
             this.weekdayStart.TabIndex = 0;
+            this.weekdayStart.SelectedIndexChanged += new System.EventHandler(this.weekdayStart_SelectedIndexChanged);
             // 
             // groupBox2
             // 
@@ -477,14 +496,14 @@
             this.groupBox2.Controls.Add(this.eventsList);
             this.groupBox2.Location = new System.Drawing.Point(6, 6);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(247, 255);
+            this.groupBox2.Size = new System.Drawing.Size(247, 311);
             this.groupBox2.TabIndex = 0;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Events";
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(171, 226);
+            this.button2.Location = new System.Drawing.Point(171, 282);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(70, 23);
             this.button2.TabIndex = 6;
@@ -494,7 +513,7 @@
             // 
             // newEventButton
             // 
-            this.newEventButton.Location = new System.Drawing.Point(6, 226);
+            this.newEventButton.Location = new System.Drawing.Point(6, 282);
             this.newEventButton.Name = "newEventButton";
             this.newEventButton.Size = new System.Drawing.Size(87, 23);
             this.newEventButton.TabIndex = 3;
@@ -504,7 +523,7 @@
             // 
             // deleteEventButton
             // 
-            this.deleteEventButton.Location = new System.Drawing.Point(99, 226);
+            this.deleteEventButton.Location = new System.Drawing.Point(99, 282);
             this.deleteEventButton.Name = "deleteEventButton";
             this.deleteEventButton.Size = new System.Drawing.Size(66, 23);
             this.deleteEventButton.TabIndex = 1;
@@ -517,94 +536,125 @@
             this.eventsList.FormattingEnabled = true;
             this.eventsList.Location = new System.Drawing.Point(6, 19);
             this.eventsList.Name = "eventsList";
-            this.eventsList.Size = new System.Drawing.Size(235, 199);
+            this.eventsList.Size = new System.Drawing.Size(235, 251);
             this.eventsList.TabIndex = 0;
             this.eventsList.SelectedIndexChanged += new System.EventHandler(this.eventsList_SelectedIndexChanged);
             // 
             // tabPage3
             // 
-            this.tabPage3.Controls.Add(this.groupBox7);
-            this.tabPage3.Controls.Add(this.p2pactionGroup);
-            this.tabPage3.Controls.Add(this.rmActionGroup);
-            this.tabPage3.Controls.Add(this.rmiActionGroup);
+            this.tabPage3.Controls.Add(this.actionEditorGroup);
+            this.tabPage3.Controls.Add(this.groupBox3);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(674, 267);
+            this.tabPage3.Size = new System.Drawing.Size(674, 323);
             this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "Action";
+            this.tabPage3.Text = "Actions";
             this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // actionEditorGroup
+            // 
+            this.actionEditorGroup.Controls.Add(this.saveActionButton);
+            this.actionEditorGroup.Controls.Add(this.groupBox7);
+            this.actionEditorGroup.Controls.Add(this.p2pactionGroup);
+            this.actionEditorGroup.Controls.Add(this.rmActionGroup);
+            this.actionEditorGroup.Controls.Add(this.rmiActionGroup);
+            this.actionEditorGroup.Location = new System.Drawing.Point(215, 6);
+            this.actionEditorGroup.Name = "actionEditorGroup";
+            this.actionEditorGroup.Size = new System.Drawing.Size(453, 311);
+            this.actionEditorGroup.TabIndex = 5;
+            this.actionEditorGroup.TabStop = false;
+            this.actionEditorGroup.Text = "Action Editor";
+            // 
+            // saveActionButton
+            // 
+            this.saveActionButton.Enabled = false;
+            this.saveActionButton.Location = new System.Drawing.Point(367, 282);
+            this.saveActionButton.Name = "saveActionButton";
+            this.saveActionButton.Size = new System.Drawing.Size(75, 23);
+            this.saveActionButton.TabIndex = 18;
+            this.saveActionButton.Text = "Save Action";
+            this.saveActionButton.UseVisualStyleBackColor = true;
+            this.saveActionButton.Click += new System.EventHandler(this.saveActionButton_Click);
             // 
             // groupBox7
             // 
+            this.groupBox7.Controls.Add(this.actionTypeBox);
+            this.groupBox7.Controls.Add(this.userBox);
             this.groupBox7.Controls.Add(this.priorityBox);
+            this.groupBox7.Controls.Add(this.label18);
+            this.groupBox7.Controls.Add(this.label20);
             this.groupBox7.Controls.Add(this.label16);
-            this.groupBox7.Controls.Add(this.rmRadioButton);
-            this.groupBox7.Controls.Add(this.rmiRadioButton);
-            this.groupBox7.Controls.Add(this.p2pRadioButton);
-            this.groupBox7.Location = new System.Drawing.Point(9, 4);
+            this.groupBox7.Location = new System.Drawing.Point(6, 15);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(657, 51);
+            this.groupBox7.Size = new System.Drawing.Size(436, 67);
             this.groupBox7.TabIndex = 3;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Choose action type:";
             // 
+            // actionTypeBox
+            // 
+            this.actionTypeBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.actionTypeBox.FormattingEnabled = true;
+            this.actionTypeBox.Items.AddRange(new object[] {
+            "Peer-To-Peer",
+            "RMI Registration",
+            "Resource Manager Registration"});
+            this.actionTypeBox.Location = new System.Drawing.Point(10, 36);
+            this.actionTypeBox.Name = "actionTypeBox";
+            this.actionTypeBox.Size = new System.Drawing.Size(124, 21);
+            this.actionTypeBox.TabIndex = 4;
+            this.actionTypeBox.SelectedIndexChanged += new System.EventHandler(this.actionTypeBox_SelectedIndexChanged);
+            // 
+            // userBox
+            // 
+            this.userBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.userBox.FormattingEnabled = true;
+            this.userBox.Location = new System.Drawing.Point(308, 36);
+            this.userBox.Name = "userBox";
+            this.userBox.Size = new System.Drawing.Size(106, 21);
+            this.userBox.TabIndex = 4;
+            // 
             // priorityBox
             // 
+            this.priorityBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.priorityBox.FormattingEnabled = true;
             this.priorityBox.Items.AddRange(new object[] {
             "Idle",
             "Normal",
             "High",
             "Realtime"});
-            this.priorityBox.Location = new System.Drawing.Point(544, 17);
+            this.priorityBox.Location = new System.Drawing.Point(167, 36);
             this.priorityBox.Name = "priorityBox";
             this.priorityBox.Size = new System.Drawing.Size(106, 21);
             this.priorityBox.TabIndex = 4;
-            this.priorityBox.SelectedIndexChanged += new System.EventHandler(this.priorityBox_SelectedIndexChanged);
+            this.priorityBox.SelectedIndexChanged += new System.EventHandler(this.actionPropertyChanged);
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(7, 20);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(34, 13);
+            this.label18.TabIndex = 3;
+            this.label18.Text = "Type:";
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(305, 20);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(32, 13);
+            this.label20.TabIndex = 3;
+            this.label20.Text = "User:";
             // 
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(457, 20);
+            this.label16.Location = new System.Drawing.Point(164, 20);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(81, 13);
             this.label16.TabIndex = 3;
             this.label16.Text = "Process priority:";
-            // 
-            // rmRadioButton
-            // 
-            this.rmRadioButton.AutoSize = true;
-            this.rmRadioButton.Location = new System.Drawing.Point(98, 34);
-            this.rmRadioButton.Name = "rmRadioButton";
-            this.rmRadioButton.Size = new System.Drawing.Size(175, 17);
-            this.rmRadioButton.TabIndex = 2;
-            this.rmRadioButton.Text = "Resource Manager Registration";
-            this.rmRadioButton.UseVisualStyleBackColor = true;
-            this.rmRadioButton.CheckedChanged += new System.EventHandler(this.rmRadioButton_CheckedChanged);
-            // 
-            // rmiRadioButton
-            // 
-            this.rmiRadioButton.AutoSize = true;
-            this.rmiRadioButton.Checked = true;
-            this.rmiRadioButton.Location = new System.Drawing.Point(165, 19);
-            this.rmiRadioButton.Name = "rmiRadioButton";
-            this.rmiRadioButton.Size = new System.Drawing.Size(104, 17);
-            this.rmiRadioButton.TabIndex = 1;
-            this.rmiRadioButton.TabStop = true;
-            this.rmiRadioButton.Text = "RMI Registration";
-            this.rmiRadioButton.UseVisualStyleBackColor = true;
-            this.rmiRadioButton.CheckedChanged += new System.EventHandler(this.rmiRadioButton_CheckedChanged);
-            // 
-            // p2pRadioButton
-            // 
-            this.p2pRadioButton.AutoSize = true;
-            this.p2pRadioButton.Location = new System.Drawing.Point(7, 20);
-            this.p2pRadioButton.Name = "p2pRadioButton";
-            this.p2pRadioButton.Size = new System.Drawing.Size(152, 17);
-            this.p2pRadioButton.TabIndex = 0;
-            this.p2pRadioButton.Text = "Peer-To-Peer Collaboration";
-            this.p2pRadioButton.UseVisualStyleBackColor = true;
-            this.p2pRadioButton.CheckedChanged += new System.EventHandler(this.p2pRadioButton_CheckedChanged);
             // 
             // p2pactionGroup
             // 
@@ -617,25 +667,25 @@
             this.p2pactionGroup.Controls.Add(this.addHost);
             this.p2pactionGroup.Controls.Add(this.hostList);
             this.p2pactionGroup.Controls.Add(this.label14);
-            this.p2pactionGroup.Location = new System.Drawing.Point(9, 61);
+            this.p2pactionGroup.Location = new System.Drawing.Point(6, 88);
             this.p2pactionGroup.Name = "p2pactionGroup";
-            this.p2pactionGroup.Size = new System.Drawing.Size(657, 136);
+            this.p2pactionGroup.Size = new System.Drawing.Size(436, 177);
             this.p2pactionGroup.TabIndex = 2;
             this.p2pactionGroup.TabStop = false;
             this.p2pactionGroup.Text = "Peer-To-Peer Collaboration";
             // 
             // p2pProtocol
             // 
-            this.p2pProtocol.Location = new System.Drawing.Point(338, 33);
+            this.p2pProtocol.Location = new System.Drawing.Point(62, 122);
             this.p2pProtocol.Name = "p2pProtocol";
-            this.p2pProtocol.Size = new System.Drawing.Size(313, 20);
+            this.p2pProtocol.Size = new System.Drawing.Size(363, 20);
             this.p2pProtocol.TabIndex = 8;
-            this.p2pProtocol.TextChanged += new System.EventHandler(this.p2pProtocol_TextChanged);
+            this.p2pProtocol.TextChanged += new System.EventHandler(this.actionPropertyChanged);
             // 
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(282, 36);
+            this.label17.Location = new System.Drawing.Point(6, 125);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(49, 13);
             this.label17.TabIndex = 7;
@@ -643,7 +693,7 @@
             // 
             // saveHost
             // 
-            this.saveHost.Location = new System.Drawing.Point(576, 107);
+            this.saveHost.Location = new System.Drawing.Point(350, 86);
             this.saveHost.Name = "saveHost";
             this.saveHost.Size = new System.Drawing.Size(75, 23);
             this.saveHost.TabIndex = 6;
@@ -653,15 +703,16 @@
             // 
             // peerUrl
             // 
-            this.peerUrl.Location = new System.Drawing.Point(285, 82);
+            this.peerUrl.Location = new System.Drawing.Point(62, 151);
             this.peerUrl.Name = "peerUrl";
-            this.peerUrl.Size = new System.Drawing.Size(366, 20);
+            this.peerUrl.Size = new System.Drawing.Size(363, 20);
             this.peerUrl.TabIndex = 5;
+            this.peerUrl.TextChanged += new System.EventHandler(this.actionPropertyChanged);
             // 
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(282, 65);
+            this.label15.Location = new System.Drawing.Point(6, 154);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(57, 13);
             this.label15.TabIndex = 4;
@@ -669,7 +720,7 @@
             // 
             // deleteHost
             // 
-            this.deleteHost.Location = new System.Drawing.Point(90, 104);
+            this.deleteHost.Location = new System.Drawing.Point(350, 57);
             this.deleteHost.Name = "deleteHost";
             this.deleteHost.Size = new System.Drawing.Size(75, 23);
             this.deleteHost.TabIndex = 3;
@@ -679,7 +730,7 @@
             // 
             // addHost
             // 
-            this.addHost.Location = new System.Drawing.Point(9, 104);
+            this.addHost.Location = new System.Drawing.Point(350, 29);
             this.addHost.Name = "addHost";
             this.addHost.Size = new System.Drawing.Size(75, 23);
             this.addHost.TabIndex = 2;
@@ -690,9 +741,9 @@
             // hostList
             // 
             this.hostList.FormattingEnabled = true;
-            this.hostList.Location = new System.Drawing.Point(9, 33);
+            this.hostList.Location = new System.Drawing.Point(9, 32);
             this.hostList.Name = "hostList";
-            this.hostList.Size = new System.Drawing.Size(264, 69);
+            this.hostList.Size = new System.Drawing.Size(335, 82);
             this.hostList.TabIndex = 1;
             this.hostList.SelectedIndexChanged += new System.EventHandler(this.hostList_SelectedIndexChanged);
             // 
@@ -707,15 +758,25 @@
             // 
             // rmActionGroup
             // 
+            this.rmActionGroup.Controls.Add(this.rmNodeName);
             this.rmActionGroup.Controls.Add(this.rmUrl);
+            this.rmActionGroup.Controls.Add(this.label19);
             this.rmActionGroup.Controls.Add(this.label13);
             this.rmActionGroup.Enabled = false;
-            this.rmActionGroup.Location = new System.Drawing.Point(294, 203);
+            this.rmActionGroup.Location = new System.Drawing.Point(6, 88);
             this.rmActionGroup.Name = "rmActionGroup";
-            this.rmActionGroup.Size = new System.Drawing.Size(372, 53);
+            this.rmActionGroup.Size = new System.Drawing.Size(436, 80);
             this.rmActionGroup.TabIndex = 1;
             this.rmActionGroup.TabStop = false;
             this.rmActionGroup.Text = "Resource Manager Registration";
+            // 
+            // rmNodeName
+            // 
+            this.rmNodeName.Location = new System.Drawing.Point(139, 45);
+            this.rmNodeName.Name = "rmNodeName";
+            this.rmNodeName.Size = new System.Drawing.Size(227, 20);
+            this.rmNodeName.TabIndex = 2;
+            this.rmNodeName.TextChanged += new System.EventHandler(this.actionPropertyChanged);
             // 
             // rmUrl
             // 
@@ -723,7 +784,16 @@
             this.rmUrl.Name = "rmUrl";
             this.rmUrl.Size = new System.Drawing.Size(227, 20);
             this.rmUrl.TabIndex = 1;
-            this.rmUrl.TextChanged += new System.EventHandler(this.rmUrl_TextChanged);
+            this.rmUrl.TextChanged += new System.EventHandler(this.actionPropertyChanged);
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(7, 48);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(64, 13);
+            this.label19.TabIndex = 0;
+            this.label19.Text = "NodeName:";
             // 
             // label13
             // 
@@ -739,9 +809,9 @@
             this.rmiActionGroup.Controls.Add(this.rmiNodeName);
             this.rmiActionGroup.Controls.Add(this.rmiNodeEnabled);
             this.rmiActionGroup.Enabled = false;
-            this.rmiActionGroup.Location = new System.Drawing.Point(9, 203);
+            this.rmiActionGroup.Location = new System.Drawing.Point(6, 88);
             this.rmiActionGroup.Name = "rmiActionGroup";
-            this.rmiActionGroup.Size = new System.Drawing.Size(279, 53);
+            this.rmiActionGroup.Size = new System.Drawing.Size(436, 53);
             this.rmiActionGroup.TabIndex = 0;
             this.rmiActionGroup.TabStop = false;
             this.rmiActionGroup.Text = "RMI Registration";
@@ -753,7 +823,7 @@
             this.rmiNodeName.Name = "rmiNodeName";
             this.rmiNodeName.Size = new System.Drawing.Size(177, 20);
             this.rmiNodeName.TabIndex = 1;
-            this.rmiNodeName.TextChanged += new System.EventHandler(this.rmiNodeName_TextChanged);
+            this.rmiNodeName.TextChanged += new System.EventHandler(this.actionPropertyChanged);
             // 
             // rmiNodeEnabled
             // 
@@ -766,9 +836,50 @@
             this.rmiNodeEnabled.UseVisualStyleBackColor = true;
             this.rmiNodeEnabled.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
             // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.button3);
+            this.groupBox3.Controls.Add(this.deleteActionButton);
+            this.groupBox3.Controls.Add(this.actionsList);
+            this.groupBox3.Location = new System.Drawing.Point(6, 6);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(203, 311);
+            this.groupBox3.TabIndex = 4;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Actions";
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(38, 282);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(87, 23);
+            this.button3.TabIndex = 3;
+            this.button3.Text = "Create action";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // deleteActionButton
+            // 
+            this.deleteActionButton.Location = new System.Drawing.Point(131, 282);
+            this.deleteActionButton.Name = "deleteActionButton";
+            this.deleteActionButton.Size = new System.Drawing.Size(66, 23);
+            this.deleteActionButton.TabIndex = 1;
+            this.deleteActionButton.Text = "Delete";
+            this.deleteActionButton.UseVisualStyleBackColor = true;
+            this.deleteActionButton.Click += new System.EventHandler(this.deleteActionButton_Click);
+            // 
+            // actionsList
+            // 
+            this.actionsList.FormattingEnabled = true;
+            this.actionsList.Location = new System.Drawing.Point(6, 19);
+            this.actionsList.Name = "actionsList";
+            this.actionsList.Size = new System.Drawing.Size(191, 251);
+            this.actionsList.TabIndex = 0;
+            this.actionsList.SelectedIndexChanged += new System.EventHandler(this.actionsList_SelectedIndexChanged);
+            // 
             // saveConfig
             // 
-            this.saveConfig.Location = new System.Drawing.Point(534, 311);
+            this.saveConfig.Location = new System.Drawing.Point(531, 367);
             this.saveConfig.Name = "saveConfig";
             this.saveConfig.Size = new System.Drawing.Size(75, 23);
             this.saveConfig.TabIndex = 2;
@@ -778,7 +889,7 @@
             // 
             // closeConfig
             // 
-            this.closeConfig.Location = new System.Drawing.Point(615, 311);
+            this.closeConfig.Location = new System.Drawing.Point(612, 367);
             this.closeConfig.Name = "closeConfig";
             this.closeConfig.Size = new System.Drawing.Size(75, 23);
             this.closeConfig.TabIndex = 3;
@@ -796,7 +907,7 @@
             // 
             // saveConfigAs
             // 
-            this.saveConfigAs.Location = new System.Drawing.Point(453, 311);
+            this.saveConfigAs.Location = new System.Drawing.Point(450, 367);
             this.saveConfigAs.Name = "saveConfigAs";
             this.saveConfigAs.Size = new System.Drawing.Size(75, 23);
             this.saveConfigAs.TabIndex = 2;
@@ -808,15 +919,18 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(702, 342);
+            this.ClientSize = new System.Drawing.Size(702, 395);
             this.Controls.Add(this.closeConfig);
             this.Controls.Add(this.saveConfigAs);
             this.Controls.Add(this.saveConfig);
             this.Controls.Add(this.tabControl1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "ConfigEditor";
             this.ShowIcon = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "ConfigEditor";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ConfigEditor_FormClosed);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.tabControl1.ResumeLayout(false);
@@ -833,6 +947,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.hourStart)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
+            this.actionEditorGroup.ResumeLayout(false);
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
             this.p2pactionGroup.ResumeLayout(false);
@@ -841,6 +956,7 @@
             this.rmActionGroup.PerformLayout();
             this.rmiActionGroup.ResumeLayout(false);
             this.rmiActionGroup.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -892,7 +1008,6 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.TextBox rmUrl;
         private System.Windows.Forms.GroupBox groupBox7;
-        private System.Windows.Forms.RadioButton p2pRadioButton;
         private System.Windows.Forms.GroupBox p2pactionGroup;
         private System.Windows.Forms.TextBox peerUrl;
         private System.Windows.Forms.Label label15;
@@ -900,8 +1015,6 @@
         private System.Windows.Forms.Button addHost;
         private System.Windows.Forms.ListBox hostList;
         private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.RadioButton rmRadioButton;
-        private System.Windows.Forms.RadioButton rmiRadioButton;
         private System.Windows.Forms.FolderBrowserDialog proActiveLocationBrowser;
         private System.Windows.Forms.FolderBrowserDialog jvmLocationBrowser;
         private System.Windows.Forms.Button saveEventButton;
@@ -913,5 +1026,17 @@
         private System.Windows.Forms.Button saveConfigAs;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.ComboBox actionTypeBox;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button deleteActionButton;
+        private System.Windows.Forms.ListBox actionsList;
+        private System.Windows.Forms.GroupBox actionEditorGroup;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Button saveActionButton;
+        private System.Windows.Forms.TextBox rmNodeName;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.ComboBox userBox;
+        private System.Windows.Forms.Label label20;
     }
 }

@@ -11,6 +11,7 @@ using System.Threading;
 using Microsoft.Win32;
 using ConfigParser;
 using ProActiveAgent;
+using System.Security;
 
 
 //test emil
@@ -28,6 +29,8 @@ namespace AgentForAgent
         private bool isRuntimeStarted = false;
         private bool setVisibleCore = false;
         //private bool allowRuntime = true;
+
+        private ConfigEditor window;
 
         private static string StopPending = "StopPending";
         private static string Stopped = "Stopped";
@@ -53,28 +56,6 @@ namespace AgentForAgent
                 }
             }
             confKey.Close();
-
-            //--Read the register and update button
-            /*confKey = Registry.LocalMachine.OpenSubKey("Software\\ProActiveAgent");
-            if (confKey != null)
-            {
-                if (confKey.GetValue("AllowRuntime") != null)
-                {
-                    allowRuntime = (bool)TypeDescriptor.GetConverter(allowRuntime).ConvertFrom(confKey.GetValue("AllowRuntime"));
-                }
-                else
-                {
-                    allowRuntime = false;
-                }
-                if (allowRuntime)
-                {
-                    allowForbidRT.Text = "Forbid RT";
-                }
-                else
-                {
-                    allowForbidRT.Text = "Allow RT";
-                }
-            }*/
         }
 
         private void ReadConfigLocation()
@@ -127,6 +108,7 @@ namespace AgentForAgent
 
         private void UpdateStatus()
         {
+
             agentStatus = sc.Status;
             if (agentStatus == ServiceControllerStatus.StopPending)
             {
@@ -198,7 +180,7 @@ namespace AgentForAgent
             }
 
             this.statuslabel.Text = "The ProActive Agent is currently " + agentStatusString;
-
+            //WindowsService.log("Received start command from ProActive ScreenSaver", LogLevel.TRACE);
             if (agentStatus != ServiceControllerStatus.Running)
             {
                 //-- stopped icon
@@ -405,8 +387,8 @@ namespace AgentForAgent
             try
             {
                 Configuration conf = ConfigurationParser.parseXml(configLocation.Text, agentLocation);
-                ConfigEditor window = new ConfigEditor(conf, configLocation.Text, agentLocation, this);
-                window.Show();
+                window = new ConfigEditor(conf, configLocation.Text, agentLocation, this);
+                window.ShowDialog();
             }
             catch (IncorrectConfigurationException)
             {
@@ -451,9 +433,11 @@ namespace AgentForAgent
             {
                 //--Register the automatic launch
                 RegistryKey confKey = Registry.LocalMachine.CreateSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Run");
+                //MessageBox.Show("==>" + System.Environment.CurrentDirectory + "   " + System.Environment.CommandLine);
                 if (confKey != null)
                 {
-                    confKey.SetValue("ProActive Agent Interface", System.Environment.CurrentDirectory + "\\AgentForAgent.exe");
+                    confKey.SetValue("ProActive Agent Interface", System.Environment.CommandLine);
+//                    confKey.SetValue("ProActive Agent Interface", System.Environment.CurrentDirectory + "\\AgentForAgent.exe");
                 }
                 confKey.Close();
             }
@@ -543,6 +527,11 @@ namespace AgentForAgent
         private void configLocation_TextChanged(object sender, EventArgs e)
         {
             UpdateConfigLocation();
+        }
+
+        private void toolStripStatusLabel1_Click(object sender, EventArgs e)
+        {
+            new VersionChecker().ShowDialog();
         }
     }
 }
