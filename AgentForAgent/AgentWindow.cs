@@ -245,22 +245,35 @@ namespace AgentForAgent
 
         private void startService_Click(object sender, EventArgs e)
         {
+            // 1) Parse the xml config file            
             try
             {
-                Configuration conf = ConfigurationParser.parseXml(configLocation.Text, agentLocation);
-                startService.Enabled = false;
-                stopService.Enabled = false;
-                //troubleshoot.Enabled = true;
-                startServiceToolStripMenuItem.Enabled = false;
-                stopServiceToolStripMenuItem.Enabled = false;
+                ConfigurationParser.parseXml(configLocation.Text, agentLocation);
+            }
+            catch (Exception ex) // since the parseXml method does not declare any exceptions like IncorrectConfigurationException 
+            {
+                // Cannot continue show error message box and exit from this method
+                MessageBox.Show("The configuration file is broken. " + ex.ToString(), "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // 2) Start the service
+            try
+            {
                 sc.Start();
             }
-            catch (IncorrectConfigurationException)
+            catch (Exception ex)
             {
-                DialogResult res = MessageBox.Show("The configuration file is broken.", "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
+                // Cannot continue show error message box and exit from this method
+                MessageBox.Show("Could not start the service. " + ex.ToString(), "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
 
+            // 3) Disable gui components to avoid user errors
+            startService.Enabled = false;
+            stopService.Enabled = false;
+            startServiceToolStripMenuItem.Enabled = false;
+            stopServiceToolStripMenuItem.Enabled = false;
         }
 
         private void stopService_Click(object sender, EventArgs e)
@@ -400,6 +413,10 @@ namespace AgentForAgent
 
                 }*/
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.StackTrace);
+            }
         }
 
         public void setConfigLocation(string title)
@@ -437,7 +454,7 @@ namespace AgentForAgent
                 if (confKey != null)
                 {
                     confKey.SetValue("ProActive Agent Interface", System.Environment.CommandLine);
-//                    confKey.SetValue("ProActive Agent Interface", System.Environment.CurrentDirectory + "\\AgentForAgent.exe");
+                    //                    confKey.SetValue("ProActive Agent Interface", System.Environment.CurrentDirectory + "\\AgentForAgent.exe");
                 }
                 confKey.Close();
             }

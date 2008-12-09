@@ -16,6 +16,9 @@ namespace ConfigParser
 {
     public class RMAction : Action
     {
+        /** The string description of this action **/
+        public const string DESCRIPTION = "Resource Manager Registration";
+
         private string myUrl;
         private string myNodeName;
 

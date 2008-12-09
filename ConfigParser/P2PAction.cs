@@ -13,6 +13,9 @@ namespace ConfigParser
 {
     public class P2PAction : Action
     {
+        /** The string description of this action **/
+        public const string DESCRIPTION = "Peer-to-peer";
+
         private List<String> myContacts = new List<string>();
         private String myProtocol = "RMI"; // maybe this will be configurable in the future
 

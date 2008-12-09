@@ -11,5 +11,6 @@
     </BootstrapperUrlHistory>
     <FallbackCulture>fr-FR</FallbackCulture>
     <VerifyUploadedFiles>true</VerifyUploadedFiles>
+    <ProjectView>ProjectFiles</ProjectView>
   </PropertyGroup>
 </Project>

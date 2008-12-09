@@ -6,7 +6,7 @@
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{B9C37063-2787-4603-A961-EB10AEF9DEB9}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AgentForAgent</RootNamespace>
     <AssemblyName>AgentForAgent</AssemblyName>
@@ -16,6 +16,7 @@
     </StartupObject>
     <ApplicationIcon>
     </ApplicationIcon>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
     <PublishUrl>http://localhost/AgentForAgent/</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
@@ -31,7 +32,6 @@
     <AutorunEnabled>true</AutorunEnabled>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>true</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -80,6 +80,13 @@
     <Compile Include="ConfigEditor.Designer.cs">
       <DependentUpon>ConfigEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="CreateAction.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CreateAction.Designer.cs">
+      <DependentUpon>CreateAction.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IniFile.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="AgentWindow.resx">
@@ -94,6 +101,10 @@
       <DependentUpon>ConfigEditor.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="CreateAction.resx">
+      <DependentUpon>CreateAction.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -102,6 +113,10 @@
     <EmbeddedResource Include="Resource1.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RestartServiceWarning.resx">
+      <DependentUpon>RestartServiceWarning.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="VersionChecker.resx">
@@ -125,6 +140,12 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resource1.resx</DependentUpon>
+    </Compile>
+    <Compile Include="RestartServiceWarning.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RestartServiceWarning.Designer.cs">
+      <DependentUpon>RestartServiceWarning.cs</DependentUpon>
     </Compile>
     <Compile Include="VersionChecker.cs">
       <SubType>Form</SubType>

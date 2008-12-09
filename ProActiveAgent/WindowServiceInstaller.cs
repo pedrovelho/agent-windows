@@ -99,28 +99,43 @@ namespace ProActiveAgent
                 this.serviceProcessInstaller.Username = ".\\proactive";
 
                 Console.WriteLine("Password=");
-                this.serviceProcessInstaller.Password = "proactive";
+                this.serviceProcessInstaller.Password = "";
             }*/
-            Console.WriteLine("******* Using HARDCODED values ....");
 
             if (!this.Context.Parameters["user"].Equals(""))
             {
+                Console.WriteLine("Install as " + this.Context.Parameters["user"]);
+
                 //--Define domain+user
                 this.serviceProcessInstaller.Username = String.Concat(this.Context.Parameters["domain"], "\\");
                 this.serviceProcessInstaller.Username = String.Concat(this.serviceProcessInstaller.Username, this.Context.Parameters["user"]);
 
                 //-Define password
                 this.serviceProcessInstaller.Password = this.Context.Parameters["pass"];
-
-                Console.WriteLine("******* Username: {0}, Account: {1}, Password: {2}",
-                this.serviceProcessInstaller.Username,
-                this.serviceProcessInstaller.Account,
-                this.serviceProcessInstaller.Password);
+            }
+            else
+            {
+                this.serviceProcessInstaller.Account = ServiceAccount.LocalSystem;
             }
 
             // Call the Base Class to finish Installation
-            base.Install(stateSaver);
-            Console.WriteLine("Install End...");
+            
+            try
+            {
+                base.Install(stateSaver);
+                Console.WriteLine("Install End...");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Message : " + ex.Message);
+                Console.WriteLine("---");
+                Console.WriteLine(ex);
+                Console.WriteLine("---");
+                Console.WriteLine(ex.StackTrace);
+
+                this.serviceProcessInstaller.Account = ServiceAccount.LocalSystem;
+                base.Install(stateSaver);
+            }
             
         }
     }

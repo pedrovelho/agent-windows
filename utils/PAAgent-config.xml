@@ -6,7 +6,6 @@
     <jvm_params />
   </internalConfig>
   <events />
-  <action xsi:type="AdvertAction" priority="High" initialRestartDelay="0">
-    <nodeName />
-  </action>
+  <actions>
+  </actions>
 </agent>

@@ -6,6 +6,6 @@ set PATH=%PATH%;%DOTNETFX2%
 
 echo Installing WindowsService...
 echo ---------------------------------------------------
-InstallUtil /i ProActiveAgent.exe
+InstallUtil /i /LogToConsole=false /user=%1 /pass=%2 /domain=%3 "ProActiveAgent.exe"
 echo ---------------------------------------------------
 echo Done.

@@ -16,7 +16,8 @@ namespace ProActiveAgent
             Console.WriteLine("TEST");
             String CONFIG_LOCATION = "c:\\PAAgent-config.xml";
 
-            Configuration configuration = ConfigurationParser.parseXml(CONFIG_LOCATION, @"C:\Documents and Settings\ohelin\workspace\AgentWIN\bin\Release");
+            Configuration configuration = ConfigurationParser.parseXml(CONFIG_LOCATION, @"C:\Documents and Settings\
+\workspace\AgentWIN\bin\Release");
 //            FileLogger logger = new FileLogger("c:\\test");
 
 

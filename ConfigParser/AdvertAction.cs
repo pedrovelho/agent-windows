@@ -14,6 +14,9 @@ namespace ConfigParser
     
     public class AdvertAction : Action
     {
+        /** The string description of this action **/
+        public const string DESCRIPTION = "RMI Registration";
+
         // Name of the node to create
         // If the name is null, a default name will be used
         private string myNodeName;

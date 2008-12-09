@@ -55,8 +55,7 @@ namespace ProActiveAgent
         public ProActiveExec(Logger logger, String scriptLocation, String jvmOptions, String javaLocation,
             String proactiveLocation, String priority, int initialRestartDelay)
         {
-            WindowsService.log("#>ProActiveExec", LogLevel.INFO);
-            //this.observer = new ProcessObserver(logger);
+            WindowsService.log("ProActiveExec", LogLevel.INFO);
             this.callersState = new Dictionary<ApplicationType, Int32>();
             this.scriptLocation = scriptLocation;
             this.jvmOptions = jvmOptions;
@@ -129,12 +128,12 @@ namespace ProActiveAgent
             if (nodeName != "")
             {
                 args = new String[] { rmHost, nodeName };
-                WindowsService.log("start with nodename",LogLevel.INFO);
+                WindowsService.log("start with nodename", LogLevel.INFO);
             }
             else
             {
-                args = new String[] { rmHost};
-                WindowsService.log("start without nodename",LogLevel.INFO);
+                args = new String[] { rmHost };
+                WindowsService.log("start without nodename", LogLevel.INFO);
             }
 
             return start("RM", args);
@@ -163,79 +162,70 @@ namespace ProActiveAgent
         [MethodImpl(MethodImplOptions.Synchronized)]
         private bool start(String cmd, string[] args)
         {
-            if (!disabledRestarting)
+            if (disabledRestarting || process != null)
             {
-
-                //WindowsService.log("We are inside start method", LogLevel.TRACE);
-                if (process != null)
-                {
-                    //WindowsService.log("The process is not null", LogLevel.TRACE);
-                    return false;
-                }
-                WindowsService.log("Starting: " + cmd, LogLevel.TRACE);
-
-                this.cmd = cmd;
-                this.args = args;
-                // We start a new process
-                process = new Process();
-
-                process.StartInfo.FileName = scriptLocation + "\\" + SCRIPT_NAME;
-
-                //process.StartInfo.FileName = "C:\\win\\run.bat";
-
-                // Command-line params building
-                StringBuilder argsBld = new StringBuilder();
-                foreach (string arg in args)
-                {
-                    argsBld.Append(" " + arg);
-                }
-                string action_args = quote(argsBld.ToString());
-                string action_cmd = quote(cmd);
-                string proactive_location = quote(proactiveLocation);
-                string jvm_location = quote(javaLocation);
-                string jvm_args = quote(jvmOptions);
-
-                process.StartInfo.Arguments = proactive_location + " " + jvm_location + " " + jvm_args + " " + action_cmd + " " + action_args;
-                // We attach a handler in order to intercept killing of that process
-                // Therefore, we will be able to relaunch script in that event
-                process.EnableRaisingEvents = true;
-                process.Exited += manageRestart;
-                
-                process.StartInfo.RedirectStandardOutput = true;
-                process.StartInfo.UseShellExecute = false;
-
-                WindowsService.log("Command line: \"" + process.StartInfo.FileName + "\" " + process.StartInfo.Arguments, LogLevel.TRACE);
-
-                try
-                {
-                    process.Start();
-                }
-                catch (Exception ex)
-                {
-                    WindowsService.log("Exception: " + ex.Message, LogLevel.TRACE);
-                }
-                
-                process.PriorityClass = ProcessPriorityClass.Idle;
-                //observer.setMonitorredProcess(process);
-                WindowsService.log("The ProActive process was successfuly started", LogLevel.INFO);
-
-                //-- runtime started = true
-                setRegistryIsRuntimeStarted(true);
-
-                return true;
+                return false;
             }
-            return false;
+            WindowsService.log("Starting: " + cmd, LogLevel.TRACE);
+
+            this.cmd = cmd;
+            this.args = args;
+            // We start a new process
+            process = new Process();
+
+            process.StartInfo.FileName = scriptLocation + "\\" + SCRIPT_NAME;            
+
+            // Command-line params building
+            StringBuilder argsBld = new StringBuilder();
+            foreach (string arg in args)
+            {
+                argsBld.Append(" " + arg);
+            }
+            string action_args = quote(argsBld.ToString());
+            string action_cmd = quote(cmd);
+            string proactive_location = quote(proactiveLocation);
+            string jvm_location = quote(javaLocation);
+            string jvm_args = quote(jvmOptions);
+
+            process.StartInfo.Arguments = proactive_location + " " + jvm_location + " " + jvm_args + " " + action_cmd + " " + action_args;
+            // We attach a handler in order to intercept killing of that process
+            // Therefore, we will be able to relaunch script in that event
+            process.EnableRaisingEvents = true;
+            process.Exited += manageRestart;
+
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.RedirectStandardError = true;
+            process.StartInfo.UseShellExecute = false;
+
+            WindowsService.log("Command line: \"" + process.StartInfo.FileName + "\" " + process.StartInfo.Arguments, LogLevel.TRACE);
+
+            try
+            {
+                process.Start();
+            }
+            catch (Exception ex)
+            {
+                WindowsService.log("Exception: " + ex.Message, LogLevel.TRACE);
+            }
+
+            process.PriorityClass = ProcessPriorityClass.Idle;
+            observer.setMonitorredProcess(process);
+            WindowsService.log("The ProActive process was successfuly started", LogLevel.INFO);
+
+            //-- runtime started = true
+            setRegistryIsRuntimeStarted(true);
+            return true;
         }
 
         private void manageRestart(object o, EventArgs e)
         {
             Thread.Sleep(1000);
-            restart(o,e);
+            restart(o, e);
         }
 
         public static void setRegistryIsRuntimeStarted(Boolean value)
         {
-            WindowsService.log("setRegistryIsRuntimeStarted = "+ value, LogLevel.INFO);
+            WindowsService.log("setRegistryIsRuntimeStarted = " + value, LogLevel.INFO);
             RegistryKey confKey = Registry.LocalMachine.CreateSubKey("Software\\ProActiveAgent");
             if (confKey != null)
             {
@@ -366,7 +356,7 @@ namespace ProActiveAgent
             else if (whatToDo is RMAction)
             {
                 RMAction action = (RMAction)whatToDo;
-                startRM(action.url,action.nodeName);
+                startRM(action.url, action.nodeName);
             }
             else if (whatToDo is AdvertAction)
             {
@@ -505,7 +495,7 @@ namespace ProActiveAgent
             this.timerMgr = null;
         }
 
-        
+
 
     }
 }

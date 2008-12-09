@@ -4,12 +4,10 @@ using System.Text;
 
 namespace ConfigParser
 {
-    public class Test
+    class Test
     {
-        static void Main()
+        public static void Main()
         {
-            Configuration config = ConfigurationParser.generateSampleConf();
-            ConfigurationParser.saveXml("test.xml", config);
         }
     }
 }

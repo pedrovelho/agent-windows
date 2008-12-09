@@ -87,7 +87,7 @@ namespace AgentForAgent
                 //--On compare le nb de min qu'il reste avec le nb de minute d'une journée
                 int duration = (cEv.durationDays*1440) + (cEv.durationHours*60) + cEv.durationMinutes;
                 int heightBar = 0;
-                Console.Write("dur="+duration+" rem="+timeRemain);
+
                 if (duration <= timeRemain)
                 {
                     //--No overruning

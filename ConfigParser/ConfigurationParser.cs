@@ -183,7 +183,7 @@ namespace ConfigParser
                     p2pAction.addContact(hostNode.InnerText);
                 }
                 action = p2pAction;
-            // resource manager registration action
+            // Resource Manager Registration action
             } else if (someAction.Name.Equals("rmRegistration")) {
                 RMAction rmAction = new RMAction();
                 XmlNode attrib = someAction.Attributes.GetNamedItem("url");

@@ -43,15 +43,15 @@
             this.jvmLocationBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
+            this.panelAccount = new System.Windows.Forms.Panel();
             this.label5 = new System.Windows.Forms.Label();
-            this.password = new System.Windows.Forms.TextBox();
-            this.user = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.domain = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.user = new System.Windows.Forms.TextBox();
+            this.password = new System.Windows.Forms.TextBox();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
-            this.panelAccount = new System.Windows.Forms.Panel();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.panelAccount.SuspendLayout();
@@ -198,23 +198,19 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Service Account";
             // 
-            // label7
+            // panelAccount
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(371, 10);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(53, 13);
-            this.label7.TabIndex = 2;
-            this.label7.Text = "Password";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(201, 10);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(29, 13);
-            this.label6.TabIndex = 2;
-            this.label6.Text = "User";
+            this.panelAccount.Controls.Add(this.label5);
+            this.panelAccount.Controls.Add(this.label7);
+            this.panelAccount.Controls.Add(this.domain);
+            this.panelAccount.Controls.Add(this.label6);
+            this.panelAccount.Controls.Add(this.user);
+            this.panelAccount.Controls.Add(this.password);
+            this.panelAccount.Enabled = false;
+            this.panelAccount.Location = new System.Drawing.Point(25, 71);
+            this.panelAccount.Name = "panelAccount";
+            this.panelAccount.Size = new System.Drawing.Size(534, 33);
+            this.panelAccount.TabIndex = 3;
             // 
             // label5
             // 
@@ -225,13 +221,31 @@
             this.label5.TabIndex = 2;
             this.label5.Text = "Domain";
             // 
-            // password
+            // label7
             // 
-            this.password.Location = new System.Drawing.Point(430, 7);
-            this.password.Name = "password";
-            this.password.PasswordChar = '*';
-            this.password.Size = new System.Drawing.Size(100, 20);
-            this.password.TabIndex = 1;
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(371, 10);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(53, 13);
+            this.label7.TabIndex = 2;
+            this.label7.Text = "Password";
+            // 
+            // domain
+            // 
+            this.domain.Location = new System.Drawing.Point(64, 7);
+            this.domain.Name = "domain";
+            this.domain.Size = new System.Drawing.Size(100, 20);
+            this.domain.TabIndex = 1;
+            this.domain.Text = ".";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(201, 10);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(29, 13);
+            this.label6.TabIndex = 2;
+            this.label6.Text = "User";
             // 
             // user
             // 
@@ -240,14 +254,14 @@
             this.user.Size = new System.Drawing.Size(100, 20);
             this.user.TabIndex = 1;
             // 
-            // domain
+            // password
             // 
-            this.domain.Enabled = false;
-            this.domain.Location = new System.Drawing.Point(64, 7);
-            this.domain.Name = "domain";
-            this.domain.Size = new System.Drawing.Size(100, 20);
-            this.domain.TabIndex = 1;
-            this.domain.Text = ".";
+            this.password.Location = new System.Drawing.Point(430, 7);
+            this.password.Name = "password";
+            this.password.PasswordChar = '*';
+            this.password.Size = new System.Drawing.Size(100, 20);
+            this.password.TabIndex = 1;
+            this.password.KeyDown += new System.Windows.Forms.KeyEventHandler(this.password_KeyDown);
             // 
             // radioButton2
             // 
@@ -273,20 +287,6 @@
             this.radioButton1.Text = "Install as LocalSystem Account";
             this.radioButton1.UseVisualStyleBackColor = true;
             // 
-            // panelAccount
-            // 
-            this.panelAccount.Controls.Add(this.label5);
-            this.panelAccount.Controls.Add(this.label7);
-            this.panelAccount.Controls.Add(this.domain);
-            this.panelAccount.Controls.Add(this.label6);
-            this.panelAccount.Controls.Add(this.user);
-            this.panelAccount.Controls.Add(this.password);
-            this.panelAccount.Enabled = false;
-            this.panelAccount.Location = new System.Drawing.Point(25, 71);
-            this.panelAccount.Name = "panelAccount";
-            this.panelAccount.Size = new System.Drawing.Size(534, 33);
-            this.panelAccount.TabIndex = 3;
-            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -298,6 +298,7 @@
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.label3);
             this.Name = "MainWindow";
+            this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "ProActiveAgent Essential Configuration";
             this.groupBox1.ResumeLayout(false);

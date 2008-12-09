@@ -1,13 +1,14 @@
- 
 CRCCheck on
 
 Name "ProActive Agent"
-OutFile setup.exe
+OutFile PAAgent_Setup.exe
 
 LicenseText "This program is Licensed under the GNU General Public License (GPL)."
 LicenseData "Copying"
 
-InstallDir $PROGRAMFILES\..\ProActive\ProActiveAgent
+
+InstallDir $PROGRAMFILES\ProActiveAgent
+;InstallDir C:\ProActive\ProActiveAgent
 
 InstallDirRegKey HKLM SOFTWARE\ProActiveAgent "AgentDirectory"
 
@@ -98,6 +99,7 @@ Page instfiles
  
 !define MakeGroupReadOnly '!insertmacro GroupRO'
  
+
 Function SetupDotNetSectionIfNeeded
  
   StrCpy $0 "0"
@@ -180,6 +182,8 @@ StrCmp $0 '1' +8 0
         
 WriteRegStr HKLM SOFTWARE\ProActiveAgent "AgentDirectory" "$INSTDIR"
 WriteRegStr HKLM SOFTWARE\ProActiveAgent "ConfigLocation" "$INSTDIR\PAAgent-config.xml"
+WriteRegStr HKLM SOFTWARE\ProActiveAgent "IsRuntimeStarted" "false"
+WriteRegStr HKLM SOFTWARE\ProActiveAgent "AllowRuntime" "true"
 
 ; write the uninstall keys for Windows
 WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ProActiveAgent" "DisplayName" "ProActive Agent (remove only)"
@@ -197,21 +201,22 @@ File "config.xsd"
 File "Copying"
 
 File "ConfigParser.exe"
-File "ConfigParser.exe.config"
-File "ConfigParser.pdb"
+;File "ConfigParser.exe.config"
+;File "ConfigParser.pdb"
 File "ProActiveAgent.exe"
-File "ProActiveAgent.pdb"
+;File "ProActiveAgent.pdb"
 File "install.bat"
 File "PAAgent-config.xml"
 File "pkill.dll"
 File "uninstall.bat"
 
 File "AgentFirstSetup.exe"
-File "AgentFirstSetup.pdb"
+;File "AgentFirstSetup.pdb"
 
-ExecWait "$INSTDIR\AgentFirstSetup.exe"
+File "icon.ico"
+File "proactive-log4j"
 
-ExecWait "$INSTDIR\install.bat"
+ExecWait "$INSTDIR\AgentFirstSetup.exe -i $\"$INSTDIR$\""
 
 SectionEnd
 
@@ -220,7 +225,7 @@ Section "ProActive Agent Control"
 SetOutPath $INSTDIR
 
 File "AgentForAgent.exe"
-File "AgentForAgent.pdb"
+;File "AgentForAgent.pdb"
 
 
 SectionEnd
@@ -238,7 +243,7 @@ Section "Desktop shortcuts"
 
 SetShellVarContext all ; All users
 IfFileExists $INSTDIR\AgentForAgent.exe 0 +2
-  CreateShortCut "$DESKTOP\AgentControl.lnk" "$INSTDIR\AgentForAgent.exe" "" "$INSTDIR\AgentForAgent.exe" 0
+  CreateShortCut "$DESKTOP\AgentControl.lnk" "$INSTDIR\AgentForAgent.exe" "" "$INSTDIR\icon.ico" 0
 SetShellVarContext current ; Current User
 
 SectionEnd
@@ -247,7 +252,7 @@ Section "Start Menu Shortcuts"
 
 SetShellVarContext all ; All users
 CreateDirectory "$SMPROGRAMS\ProActiveAgent"
-CreateShortCut  "$SMPROGRAMS\ProActiveAgent\AgentControl.lnk" "$INSTDIR\AgentForAgent.exe" "" "$INSTDIR\AgentForAgent.exe" 0
+CreateShortCut  "$SMPROGRAMS\ProActiveAgent\AgentControl.lnk" "$INSTDIR\AgentForAgent.exe" "" "$INSTDIR\icon.ico" 0
 CreateShortCut  "$SMPROGRAMS\ProActiveAgent\Uninstall ProActive Agent.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
 SetShellVarContext current ; reset to current user
 
@@ -276,10 +281,10 @@ Section "Uninstall"
 
 	    
 	SetOutPath $INSTDIR
-	ExecWait '"$INSTDIR\uninstall.bat"'
+	;ExecWait '"$INSTDIR\uninstall.bat"'
+	ExecWait "$INSTDIR\AgentFirstSetup.exe -u"
 
 	RMDir /r "$INSTDIR"
-	
 	Delete $SYSDIR\ProActiveSSaver.scr
 
 SectionEnd

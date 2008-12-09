@@ -41,6 +41,7 @@ namespace ProActiveAgent
             this.configLocation = CONFIG_LOCATION;
             this.agentLocation = AGENT_LOCATION;
 
+
             readRegistryConfiguration();
 
             this.ServiceName = "ProActive Agent";
@@ -81,9 +82,7 @@ namespace ProActiveAgent
         }
 
         /// <summary>
-
         /// The Main Thread: This is where your Service is Run.
-
         /// </summary>
 
         static void Main()
@@ -92,13 +91,9 @@ namespace ProActiveAgent
         }
 
         /// <summary>
-
         /// Dispose of objects that need it here.
-
         /// </summary>
-
         /// <param name="disposing">Whether
-
         ///    or not disposing is going on.</param>
 
         protected override void Dispose(bool disposing)
@@ -135,7 +130,7 @@ namespace ProActiveAgent
             ProActiveExec exe;
             TimerManager tim;
             Agregation agre;
-           
+
             foreach (Action action in configuration.actions.actions)
             {
                     WindowsService.log("Starting action " + action.GetType().Name, LogLevel.TRACE);
@@ -360,7 +355,7 @@ namespace ProActiveAgent
                 logger.log(text, level);
                 return true; 
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }

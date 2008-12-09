@@ -97,7 +97,7 @@ namespace ProActiveAgent
                     if (startNow)
                     {
                         mySendStartAction(startInfo);
-                        WindowsService.log("===> startNOW",LogLevel.INFO);
+                        WindowsService.log("Must be started now",LogLevel.INFO);
                     }
                     startNow = false;
                 }

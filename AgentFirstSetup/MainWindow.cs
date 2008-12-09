@@ -122,49 +122,59 @@ namespace AgentFirstSetup
 
         private void saveConfig_Click(object sender, EventArgs e)
         {
-            if (radioButton2.Checked && checkUser() != 0)
+            save();
+        }
+
+        private void save()
+        {
+            string accountDomain = null;
+            string accountUser = null;
+            string accountPassword = null;
+
+            // All radio buttons cannot be checked at the same time
+            // If the radioButton1 is checked ie the LocalSystem account will be used
+
+            // Check the radioButton2 ie a specific user
+            if (radioButton2.Checked)
             {
-                if (checkUser() == 1)
+                accountDomain = domain.Text;
+                accountUser = user.Text;
+                accountPassword = password.Text;
+
+                if (accountDomain == null || accountDomain.Equals(""))
                 {
-                    MessageBox.Show("Wrong name/password", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Please specify a Domain.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
                 }
-                else
+
+                if (accountUser == null || accountUser.Equals("") || accountPassword == null || accountPassword.Equals(""))
                 {
-                    MessageBox.Show("This user is not an administrator", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Please specify a User/Password.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
                 }
-                return;
+
+                if (!checkUser(accountDomain, accountUser, accountPassword))
+                {
+                    // No need to print any message, the checkUser function already does it !
+                    return;
+                }
             }
+
             try
             {
+                // Save the config
                 ConfigurationParser.saveXml(this.configLocation, conf);
-
-                //--launch install.bat
-                Process process = new Process();
-                process.StartInfo.FileName = path + "\\" + "install.bat";
-                process.StartInfo.UseShellExecute = false;
-                if (radioButton2.Checked)
-                {
-                    process.StartInfo.Arguments = user.Text + " " + password.Text + " " + domain.Text;
-                }
-                try
-                {
-                    process.Start();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("error");
-                }
-
-                
+                SrvInstaller.Install(path + "\\" + Program.PROACTIVE_AGENT_EXECUTABLE_NAME, Program.PROACTIVE_AGENT_NAME, Program.PROACTIVE_AGENT_NAME, accountDomain, accountUser, accountPassword);
             }
             catch (Exception)
             {
-                MessageBox.Show("");
+                MessageBox.Show("Error");
             }
             Close();
         }
 
-        private int checkUser()
+        // If the function fails, the return value is false        
+        private bool checkUser(string domain, string username, string password)
         {
             IntPtr UserToken = new IntPtr(0);
             bool loggedOn = false;
@@ -172,41 +182,45 @@ namespace AgentFirstSetup
             {
                 //tente de logger l'utilisateur
                 loggedOn = LogonUser(
-                     user.Text,
-                     domain.Text,
-                     password.Text,
+                     username,
+                     domain,
+                     password,
                       LOGON32_LOGON_INTERACTIVE,//LOGON32_LOGON_NETWORK,
                       LOGON32_PROVIDER_DEFAULT,
                       ref UserToken);
+
+                if (!loggedOn)
+                {
+                    throw new Exception();
+                }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return 1;
-                throw ex;
+                MessageBox.Show("Wrong User/Password", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
             }
-            if (loggedOn)
+            //renvoi identité ASP_NET <--- ???????????
+            WindowsIdentity ident_here1 = WindowsIdentity.GetCurrent();
+            WindowsIdentity SystemMonitorUser = new WindowsIdentity(UserToken);
+
+            //Changement d'utilisateur ici
+            WindowsImpersonationContext ImpersonatedUser = SystemMonitorUser.Impersonate();
+
+            //ridentité nouvel User
+            WindowsIdentity ident_here2 = WindowsIdentity.GetCurrent();
+            WindowsIdentity identity = new WindowsIdentity(UserToken);
+            WindowsPrincipal principal = new WindowsPrincipal(identity);
+            ImpersonatedUser.Undo();
+            if (principal.IsInRole(WindowsBuiltInRole.Administrator))
             {
-                //renvoi identité ASP_NET
-                WindowsIdentity ident_here1 = WindowsIdentity.GetCurrent();
-                WindowsIdentity SystemMonitorUser = new WindowsIdentity(UserToken);
-
-                //Changement d'utilisateur ici
-                WindowsImpersonationContext ImpersonatedUser = SystemMonitorUser.Impersonate();
-
-                //ridentité nouvel User
-                WindowsIdentity ident_here2 = WindowsIdentity.GetCurrent();
-                WindowsIdentity identity = new WindowsIdentity(UserToken);
-                WindowsPrincipal principal = new WindowsPrincipal(identity);
-                ImpersonatedUser.Undo();
-                if (principal.IsInRole(WindowsBuiltInRole.Administrator))
-                    return 0;
-                else
-                    return 2;
-
-                
+                // Only a valid account with valid rights can be used
+                return true;
             }
-            return 1;
-            
+            else
+            {
+                MessageBox.Show("This user is not an administrator", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
         }
 
         private void closeConfig_Click(object sender, EventArgs e)
@@ -227,7 +241,12 @@ namespace AgentFirstSetup
             }
         }
 
-
-
+        private void password_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                save();
+            }
+        }
     }
 }

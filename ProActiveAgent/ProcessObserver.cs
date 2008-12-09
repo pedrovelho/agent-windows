@@ -28,6 +28,7 @@ namespace ProActiveAgent
         public void setMonitorredProcess(Process p)
         {
             this.monitored = p;
+            //Console.WriteLine(p.SessionId);
         }
 
 
