@@ -208,6 +208,8 @@ File "ProActiveAgent.exe"
 File "install.bat"
 File "PAAgent-config.xml"
 File "pkill.dll"
+File "log4net.dll"
+File "log4net.config"
 File "uninstall.bat"
 
 File "AgentFirstSetup.exe"

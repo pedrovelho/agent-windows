@@ -10,47 +10,59 @@ using Microsoft.Win32;
 using System.Collections;
 using System.Security;
 using System.Security.Principal;
+using log4net;
 
 namespace ProActiveAgent
 {
     class WindowsService : ServiceBase
     {
-        private static string CONFIG_LOCATION = "c:\\PAAgent-config.xml";
-        private static string AGENT_LOCATION = "";
+        private static readonly ILog LOGGER = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private string configLocation;
-        private string agentLocation;
+        private readonly string agentInstallLocation;
+        private readonly string agentConfigLocation;
+
         private Configuration configuration;
         private TimerManager timerManager;
         private ProActiveExec exec;
-        //private ArrayList execs;
-        //private ArrayList timers;
-        private ArrayList agregations;
-        private static Logger logger;
+        private ArrayList agregations;        
 
         /// <summary>
-
         /// Public Constructor for WindowsService.
-
         /// - Put all of your Initialization code here.
-
         /// </summary>
-
         public WindowsService()
         {
-            this.configLocation = CONFIG_LOCATION;
-            this.agentLocation = AGENT_LOCATION;
+            if (LOGGER.IsDebugEnabled)
+            {
+                LOGGER.Debug("ProActive Agent application loaded successfully.");
+            }
 
+            // Set the service name
+            base.ServiceName = Constants.PROACTIVE_AGENT_SERVICE_NAME;
+            // Set the windows event log type
+            base.EventLog.Log = Constants.PROACTIVE_AGENT_WINDOWS_EVENTLOG_LOG;
 
-            readRegistryConfiguration();
-
-            this.ServiceName = "ProActive Agent";
-            this.EventLog.Log = "Application";
+            // Try to read install and config locations from registry
+            RegistryKey confKey = Registry.LocalMachine.OpenSubKey(Constants.PROACTIVE_AGENT_REG_SUBKEY);
+            if (confKey == null)
+            {
+                if (LOGGER.IsWarnEnabled)
+                {
+                    LOGGER.Warn("ProActive Agent could not read " + Constants.PROACTIVE_AGENT_REG_SUBKEY + " from windows registry.");
+                }
+                // If registry key is unknown set default locations
+                this.agentInstallLocation = Constants.PROACTIVE_AGENT_DEFAULT_INSTALL_LOCATION;
+                this.agentConfigLocation = Constants.PROACTIVE_AGENT_DEFAULT_CONFIG_LOCATION;
+            }
+            else
+            {
+                this.agentInstallLocation = (string)confKey.GetValue(Constants.PROACTIVE_AGENT_INSTALL_REG_VALUE_NAME);
+                this.agentConfigLocation = (string)confKey.GetValue(Constants.PROACTIVE_AGENT_CONFIG_REG_VALUE_NAME);
+                confKey.Close();
+            }
 
             // These Flags set whether or not to handle that specific
-
             //  type of event. Set to true if you need it, false otherwise.
-
             this.CanHandlePowerEvent = true;
             this.CanHandleSessionChangeEvent = true;
             this.CanPauseAndContinue = true;
@@ -62,107 +74,83 @@ namespace ProActiveAgent
             this.agregations = new ArrayList();
         }
 
-        private void readRegistryConfiguration()
-        {
-
-            RegistryKey confKey = Registry.LocalMachine.OpenSubKey("Software\\ProActiveAgent");
-            if (confKey != null)
-            {
-                if (confKey.GetValue("ConfigLocation") != null)
-                {
-                    this.configLocation = (string)confKey.GetValue("ConfigLocation");
-                }
-                if (confKey.GetValue("AgentDirectory") != null)
-                {
-                    this.agentLocation = (string)confKey.GetValue("AgentDirectory");
-                }
-                confKey.Close();
-            }
-
-        }
-
-        /// <summary>
-        /// The Main Thread: This is where your Service is Run.
-        /// </summary>
-
-        static void Main()
-        {
-            ServiceBase.Run(new WindowsService());
-        }
-
         /// <summary>
         /// Dispose of objects that need it here.
         /// </summary>
         /// <param name="disposing">Whether
         ///    or not disposing is going on.</param>
-
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
         }
 
         /// <summary>
-
         /// OnStart(): Put startup code here
-
         ///  - Start threads, get inital data, etc.
-
         /// </summary>
-
         /// <param name="args"></param>
-
         protected override void OnStart(string[] args)
         {
-            
+            if (LOGGER.IsDebugEnabled)
+            {
+                LOGGER.Debug("Starting ProActive Agent service.");
+            }
+
             // TODO: zero all of the members/properties
             //-- runtime started = true
             ProActiveExec.setRegistryIsRuntimeStarted(false);
-            //set allowRuntime registry to true
-            //ProActiveExec.setRegistryAllowRuntime(true);
 
-            this.configuration = ConfigurationParser.parseXml(configLocation, agentLocation);
-            LoggerComposite composite = new LoggerComposite();
-            composite.addLogger(new FileLogger(this.agentLocation));
-            composite.addLogger(new EventLogger());
-            logger = composite;
-            WindowsService.log("--- Starting ProActiveAgent Service", LogLevel.TRACE);
+            // Parse the configuration file
+            this.configuration = ConfigurationParser.parseXml(this.agentConfigLocation, this.agentInstallLocation);
+
+            // Init loggers
+            // LoggerComposite composite = new LoggerComposite();
+            // composite.addLogger(new FileLogger(this.agentLocation));
+            // composite.addLogger(new EventLogger());
+            // logger = composite;
+
             //--Foreach action
             ProActiveExec exe;
             TimerManager tim;
             Agregation agre;
 
-            foreach (Action action in configuration.actions.actions)
+            foreach (ConfigParser.Action action in configuration.actions.actions)
             {
-                    WindowsService.log("Starting action " + action.GetType().Name, LogLevel.TRACE);
+                if (LOGGER.IsDebugEnabled)
+                {
+                    LOGGER.Debug("Starting action " + action.GetType().Name);                    
+                } 
 
-                    exe = new ProActiveExec(logger, agentLocation, configuration.agentConfig.jvmParams,
-                    configuration.agentConfig.javaHome, configuration.agentConfig.proactiveLocation,
-                    action.priority, action.initialRestartDelay);
+                exe = new ProActiveExec(agentInstallLocation, configuration.agentConfig.jvmParams,
+                configuration.agentConfig.javaHome, configuration.agentConfig.proactiveLocation,
+                action.priority, action.initialRestartDelay);
 
+                tim = new TimerManager(this.configuration, action, exe);
 
-                    tim = new TimerManager(this.configuration, action, exe);
+                exe.setTimerMgr(tim);
 
-                    exe.setTimerMgr(tim);
-
-                    //--Save in collection
-                    agre = new Agregation(exe, tim, action);
-                    agregations.Add(agre);
+                //--Save in collection
+                agre = new Agregation(exe, tim, action);
+                agregations.Add(agre);
             }
-            WindowsService.log("All tasks are scheduling", LogLevel.TRACE);
+            if (LOGGER.IsDebugEnabled)
+            {
+                LOGGER.Debug("All actions are scheduled.");                
+            }             
             base.OnStart(args);
         }
 
         /// <summary>
-
         /// OnStop(): Put your stop code here
-
         /// - Stop threads, set final data, etc.
-
         /// </summary>
-
         protected override void OnStop()
         {
-            WindowsService.log("Stopping ProActiveAgent Service", LogLevel.TRACE);
+            if (LOGGER.IsDebugEnabled)
+            {
+                LOGGER.Debug("Stopping ProActive Agent service.");
+            }
+            
             foreach (Agregation a in agregations)
             {
                 a.exec.dispose();
@@ -170,14 +158,10 @@ namespace ProActiveAgent
                 a.exec.sendGlobalStop();
             }
             agregations.Clear();
-            //exec.dispose();
-            //timerManager.dispose();
-            //exec.sendGlobalStop();
-            logger.onStopService();
+            
             this.configuration = null;
             this.timerManager = null;
-            this.exec = null;
-            logger = null;
+            this.exec = null;            
 
             //-- runtime started = false
             ProActiveExec.setRegistryIsRuntimeStarted(false);
@@ -187,13 +171,9 @@ namespace ProActiveAgent
         }
 
         /// <summary>
-
         /// OnPause: Put your pause code here
-
         /// - Pause working threads, etc.
-
         /// </summary>
-
         protected override void OnPause()
         {
             timerManager.onPause();
@@ -201,13 +181,9 @@ namespace ProActiveAgent
         }
 
         /// <summary>
-
         /// OnContinue(): Put your continue code here
-
         /// - Un-pause working threads, etc.
-
         /// </summary>
-
         protected override void OnContinue()
         {
             timerManager.onResume();
@@ -215,20 +191,17 @@ namespace ProActiveAgent
         }
 
         /// <summary>
-
         /// OnShutdown(): Called when the System is shutting down
-
         /// - Put code here when you need special handling
-
         ///   of code that deals with a system shutdown, such
-
         ///   as saving special data before shutdown.
-
         /// </summary>
-
         protected override void OnShutdown()
         {
-            WindowsService.log("ONShutdown called!", LogLevel.TRACE);
+            if (LOGGER.IsDebugEnabled)
+            {
+                LOGGER.Debug("Shutting down the ProActive Agent service.");
+            }            
             exec.disableRestarting();
             /*            exec.disableRestarting();
                         exec.sendGlobalStop();
@@ -243,140 +216,101 @@ namespace ProActiveAgent
         }
 
         /// <summary>
-
         /// OnCustomCommand(): If you need to send a command to your
-
         ///   service without the need for Remoting or Sockets, use
-
         ///   this method to do custom methods.
-
         /// </summary>
-
         /// <param name="command">Arbitrary Integer between 128 & 256</param>
-
         protected override void OnCustomCommand(int command)
         {
             //  A custom command can be sent to a service by using this method:
-
             //#  int command = 128; //Some Arbitrary number between 128 & 256
-
             //#  ServiceController sc = new ServiceController("NameOfService");
-
             //#  sc.ExecuteCommand(command);
-
-            if (command == (int)PAACommands.ScreenSaverStart)
+            switch ((PAACommands)command)
             {
-                WindowsService.log("Received start command from ProActive ScreenSaver", LogLevel.TRACE);
-                foreach (Agregation agregation in agregations)
-                {
-                    agregation.exec.sendStartAction(agregation.action,ApplicationType.AgentScreensaver);    
-                }
-                
+                case PAACommands.ScreenSaverStart:
+                    if (LOGGER.IsDebugEnabled)
+                    {
+                        LOGGER.Debug("Received start command from ProActive Agent screenSaver.");
+                    }
+                    foreach (Agregation agregation in agregations)
+                    {
+                        agregation.exec.sendStartAction(agregation.action, ApplicationType.AgentScreensaver);
+                    }
+                    break;
+                case PAACommands.ScreenSaverStop:
+                    if (LOGGER.IsDebugEnabled)
+                    {
+                        LOGGER.Debug("Received stop command from ProActive Agent screenSaver.");
+                    }                    
+                    foreach (Agregation agregation in agregations)
+                    {
+                        agregation.exec.sendStopAction(agregation.action, ApplicationType.AgentScreensaver);
+                    }
+                    break;
+                case PAACommands.GlobalStop:                    
+                    if (LOGGER.IsDebugEnabled)
+                    {
+                        LOGGER.Debug("Received global stop command.");
+                    }  
+                    foreach (Agregation agregation in agregations)
+                    {
+                        agregation.exec.sendGlobalStop();
+                    }
+                    break;
+                default:                    
+                    break;
             }
-            else if (command == (int)PAACommands.ScreenSaverStop)
-            {
-                WindowsService.log("Received stop command from ProActive ScreenSaver", LogLevel.TRACE);
-                foreach (Agregation agregation in agregations)
-                {
-                    agregation.exec.sendStopAction(agregation.action, ApplicationType.AgentScreensaver);
-                }
-
-                //exec.sendStopAction(configuration.action, ApplicationType.AgentScreensaver);
-            }
-            else if (command == (int)PAACommands.GlobalStop)
-            {
-                WindowsService.log("Received global stop command", LogLevel.TRACE);
-                foreach (Agregation agregation in agregations)
-                {
-                    agregation.exec.sendGlobalStop();
-                }
-
-                //exec.sendGlobalStop();
-            }
-            /*else if (command == (int)PAACommands.AllowRuntime)
-            {
-                WindowsService.log("Received allow runtime command", LogLevel.TRACE);
-                exec.sendAllowRuntime();
-            }
-            else if (command == (int)PAACommands.ForbidRuntime)
-            {
-                WindowsService.log("Received forbid runtime command", LogLevel.TRACE);
-                exec.sendForbidRuntime();
-            }*/
-
             base.OnCustomCommand(command);
         }
 
         /// <summary>
-
         /// OnPowerEvent(): Useful for detecting power status changes,
-
         ///   such as going into Suspend mode or Low Battery for laptops.
-
         /// </summary>
-
         /// <param name="powerStatus">The Power Broadcast Status
-
         /// (BatteryLow, Suspend, etc.)</param>
-
         protected override bool OnPowerEvent(PowerBroadcastStatus powerStatus)
         {
             return base.OnPowerEvent(powerStatus);
         }
 
         /// <summary>
-
         /// OnSessionChange(): To handle a change event
-
         ///   from a Terminal Server session.
-
         ///   Useful if you need to determine
-
         ///   when a user logs in remotely or logs off,
-
         ///   or when someone logs into the console.
-
         /// </summary>
-
         /// <param name="changeDescription">The Session Change
-
         /// Event that occured.</param>
-
         protected override void OnSessionChange(
                   SessionChangeDescription changeDescription)
         {
             base.OnSessionChange(changeDescription);
         }
 
-        public static bool log(string text,LogLevel level)
+        /// <summary>
+        /// The Main Thread: This is where your Service is Run.
+        /// </summary>
+        static void Main()
         {
-            try
-            {
-                logger.log(text, level);
-                return true; 
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-            
+            ServiceBase.Run(new WindowsService());
         }
-
     }
 
     public class Agregation
     {
-        public TimerManager timerManager;
-        public ProActiveExec exec;
-        public Action action;
+        public readonly TimerManager timerManager;
+        public readonly ProActiveExec exec;
+        public readonly ConfigParser.Action action;
 
-        public Agregation(ProActiveExec exec,TimerManager timerManager, Action action )
+        public Agregation(ProActiveExec exec, TimerManager timerManager, ConfigParser.Action action)
         {
             this.timerManager = timerManager;
             this.exec = exec;
-            this.action = action;
-            WindowsService.log("start", LogLevel.INFO);
+            this.action = action;            
         }
-
     }
 }

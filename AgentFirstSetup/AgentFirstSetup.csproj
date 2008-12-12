@@ -87,6 +87,10 @@
       <Project>{7A2374A3-842C-4A95-8DCA-2E5E011835F8}</Project>
       <Name>ConfigParser</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ProActiveAgent\ProActiveAgent.csproj">
+      <Project>{91B8D1E6-3204-4AC5-91A6-6CB53C0F03F2}</Project>
+      <Name>ProActiveAgent</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

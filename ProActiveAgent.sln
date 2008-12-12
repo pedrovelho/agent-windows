@@ -10,6 +10,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenSaver", "ScreenSaver\ScreenSaver.csproj", "{62176B11-E98A-40D9-8BE7-AB5464A395D8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgentFirstSetup", "AgentFirstSetup\AgentFirstSetup.csproj", "{AF23E8C6-383B-415B-99B4-DA1479626092}"
+	ProjectSection(ProjectDependencies) = postProject
+		{91B8D1E6-3204-4AC5-91A6-6CB53C0F03F2} = {91B8D1E6-3204-4AC5-91A6-6CB53C0F03F2}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

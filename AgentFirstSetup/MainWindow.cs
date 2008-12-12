@@ -12,6 +12,7 @@ using System.Collections;
 using System.Security.Principal;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
+using ProActiveAgent;
 
 namespace AgentFirstSetup
 {
@@ -164,7 +165,7 @@ namespace AgentFirstSetup
             {
                 // Save the config
                 ConfigurationParser.saveXml(this.configLocation, conf);
-                SrvInstaller.Install(path + "\\" + Program.PROACTIVE_AGENT_EXECUTABLE_NAME, Program.PROACTIVE_AGENT_NAME, Program.PROACTIVE_AGENT_NAME, accountDomain, accountUser, accountPassword);
+                SrvInstaller.Install(path + "\\" + Constants.PROACTIVE_AGENT_EXECUTABLE_NAME, Constants.PROACTIVE_AGENT_SERVICE_NAME, Constants.PROACTIVE_AGENT_SERVICE_NAME, accountDomain, accountUser, accountPassword);
             }
             catch (Exception)
             {

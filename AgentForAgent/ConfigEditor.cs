@@ -66,7 +66,7 @@ namespace AgentForAgent
 
             // Iterate through all actions in configuration then 
             // add its description in the actions list
-            foreach (Action act in conf.actions.actions)
+            foreach (ConfigParser.Action act in conf.actions.actions)
             {
                 if (act.GetType() == typeof(AdvertAction))
                 {
@@ -767,7 +767,7 @@ namespace AgentForAgent
                 return;
             }
             actionEditorGroup.Enabled = true;
-            Action action = (Action)conf.actions.actions[actionsList.SelectedIndex];
+            ConfigParser.Action action = (ConfigParser.Action)conf.actions.actions[actionsList.SelectedIndex];
 
             if (action.GetType() == typeof(P2PAction))
             {

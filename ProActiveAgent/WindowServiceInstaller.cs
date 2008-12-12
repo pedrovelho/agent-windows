@@ -41,7 +41,7 @@ namespace ProActiveAgent
 
                 //# Service Information
 
-                serviceInstaller.DisplayName = "ProActive Agent";
+                serviceInstaller.DisplayName = Constants.PROACTIVE_AGENT_SERVICE_NAME;
                 serviceInstaller.StartType = ServiceStartMode.Automatic;
                 serviceInstaller.Description = "Background computations on desktop machines";
 
@@ -49,7 +49,7 @@ namespace ProActiveAgent
 
                 //# set in the constructor of WindowsService.cs
 
-                serviceInstaller.ServiceName = "ProActive Agent";
+                serviceInstaller.ServiceName = Constants.PROACTIVE_AGENT_SERVICE_NAME;
 
                 this.Installers.Add(serviceProcessInstaller);
                 this.Installers.Add(serviceInstaller);

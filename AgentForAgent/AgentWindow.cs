@@ -13,17 +13,27 @@ using ConfigParser;
 using ProActiveAgent;
 using System.Security;
 
-
-//test emil
 namespace AgentForAgent
 {
     public partial class ConfigurationDialog : Form
     {
-        private ServiceController sc = new ServiceController("ProActive Agent");
-        private static string DEFAULT_CONF_LOCATION = "C:\\PAAgent-config.xml";
-        private string agentLocation;
+        // The configuration location registery key name
+        public const string CONFIG_LOCATION_KEY = "ConfigLocation";
+        public const string PROACTIVE_AGENT_SUB_KEY = "Software\\ProActiveAgent";
 
+        // The following constants are used by the gui
+        public const string STOP_PENDING = "StopPending";
+        public const string STOPPED = "Stopped";
+        public const string START_PENDING = "StartPending";
+        public const string RUNNING = "Running";
+        public const string UNKNOWN = "unknown";
+        // The default location of the ProActive Agent configuration file
+        public const string DEFAULT_CONFIG_LOCATION = "C:\\PAAgent-config.xml";
+
+        private ServiceController sc = new ServiceController(Constants.PROACTIVE_AGENT_SERVICE_NAME);
         private ServiceControllerStatus agentStatus;
+
+        private string agentLocation;        
         private string agentStatusString;
 
         private bool isRuntimeStarted = false;
@@ -32,14 +42,9 @@ namespace AgentForAgent
 
         private ConfigEditor window;
 
-        private static string StopPending = "StopPending";
-        private static string Stopped = "Stopped";
-        private static string StartPending = "StartPending";
-        private static string Running = "Running";
-        private static string Unknown = "unknown";
-
         public ConfigurationDialog()
         {
+            // Init all visuals
             InitializeComponent();
             this.Hide();
             UpdateStatus();
@@ -60,29 +65,30 @@ namespace AgentForAgent
 
         private void ReadConfigLocation()
         {
-            RegistryKey confKey = Registry.LocalMachine.OpenSubKey("Software\\ProActiveAgent");
-            if (confKey != null)
+            RegistryKey confKey = Registry.LocalMachine.OpenSubKey(PROACTIVE_AGENT_SUB_KEY);
+            if (confKey == null)
             {
-                if (confKey.GetValue("ConfigLocation") != null)
-                {
-                    this.configLocation.Text = (string)confKey.GetValue("ConfigLocation");
-                }
-                else
-                {
-                    confKey.SetValue("ConfigLocation", DEFAULT_CONF_LOCATION);
-                }
+                confKey = Registry.LocalMachine.CreateSubKey(PROACTIVE_AGENT_SUB_KEY);
+                confKey.SetValue(CONFIG_LOCATION_KEY, DEFAULT_CONFIG_LOCATION);
             }
             else
             {
-                confKey = Registry.LocalMachine.CreateSubKey("Software\\ProActiveAgent");
-                confKey.SetValue("ConfigLocation", DEFAULT_CONF_LOCATION);
+                string configLocation = (string)confKey.GetValue(CONFIG_LOCATION_KEY);
+                if (configLocation != null)
+                {
+                    this.configLocation.Text = configLocation;
+                }
+                else
+                {
+                    confKey.SetValue(CONFIG_LOCATION_KEY, DEFAULT_CONFIG_LOCATION);
+                }
             }
             confKey.Close();
         }
 
         private void ReadAgentLocation()
         {
-            RegistryKey confKey = Registry.LocalMachine.OpenSubKey("Software\\ProActiveAgent");
+            RegistryKey confKey = Registry.LocalMachine.OpenSubKey(PROACTIVE_AGENT_SUB_KEY);
             if (confKey != null)
             {
                 if (confKey.GetValue("AgentDirectory") != null)
@@ -99,10 +105,10 @@ namespace AgentForAgent
 
         private void UpdateConfigLocation()
         {
-            RegistryKey confKey = Registry.LocalMachine.OpenSubKey("Software\\ProActiveAgent", true);
+            RegistryKey confKey = Registry.LocalMachine.OpenSubKey(PROACTIVE_AGENT_SUB_KEY, true);
             if (confKey == null)
                 return;
-            confKey.SetValue("ConfigLocation", configLocation.Text);
+            confKey.SetValue(CONFIG_LOCATION_KEY, configLocation.Text);
             confKey.Close();
         }
 
@@ -118,7 +124,7 @@ namespace AgentForAgent
                 this.stopService.Enabled = false;
                 this.startServiceToolStripMenuItem.Enabled = false;
                 this.stopServiceToolStripMenuItem.Enabled = false;
-                this.notifyIcon1.Text = StopPending;
+                this.notifyIcon1.Text = STOP_PENDING;
                 //this.globalStop.Enabled = false;
                 //this.contextMenuStrip1.Items[1].Enabled = false;
                 //this.allowForbidRT.Enabled = false;
@@ -132,7 +138,7 @@ namespace AgentForAgent
                 this.startServiceToolStripMenuItem.Enabled = true;
                 this.stopServiceToolStripMenuItem.Enabled = false;
 
-                this.notifyIcon1.Text = Stopped;
+                this.notifyIcon1.Text = STOPPED;
                 //this.globalStop.Enabled = false;
                 //this.contextMenuStrip1.Items[1].Enabled = false;
                 //this.allowForbidRT.Enabled = false;
@@ -146,7 +152,7 @@ namespace AgentForAgent
                 this.startServiceToolStripMenuItem.Enabled = false;
                 this.stopServiceToolStripMenuItem.Enabled = false;
 
-                this.notifyIcon1.Text = StartPending;
+                this.notifyIcon1.Text = START_PENDING;
                 //this.globalStop.Enabled = false;
                 //this.contextMenuStrip1.Items[1].Enabled = false;
                 //this.allowForbidRT.Enabled = false;
@@ -160,7 +166,7 @@ namespace AgentForAgent
                 this.startServiceToolStripMenuItem.Enabled = false;
                 this.stopServiceToolStripMenuItem.Enabled = true;
 
-                this.notifyIcon1.Text = Running;
+                this.notifyIcon1.Text = RUNNING;
                 //this.globalStop.Enabled = true;
                 //this.contextMenuStrip1.Items[1].Enabled = true;
                 //this.allowForbidRT.Enabled = true;
@@ -174,7 +180,7 @@ namespace AgentForAgent
                 this.startServiceToolStripMenuItem.Enabled = false;
                 this.stopServiceToolStripMenuItem.Enabled = false;
 
-                this.notifyIcon1.Text = Unknown;
+                this.notifyIcon1.Text = UNKNOWN;
                 //this.globalStop.Enabled = false;
                 //this.allowForbidRT.Enabled = false;
             }

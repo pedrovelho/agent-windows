@@ -7,7 +7,7 @@ namespace ProActiveAgent
 {
     public class StartActionInfo
     {
-        private Action action;
+        private ConfigParser.Action action;
         private long stopTime; // in ticks
 
         public long getStopTime()
@@ -15,12 +15,12 @@ namespace ProActiveAgent
             return stopTime;
         }
 
-        public Action getAction()
+        public ConfigParser.Action getAction()
         {
             return action;
         }
 
-        public void setAction(Action action)
+        public void setAction(ConfigParser.Action action)
         {
             this.action = action;
         }

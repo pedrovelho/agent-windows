@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using ConfigParser;
+using log4net;
 
 /** TimeManager implements semantics of calendar events
  *  It creates timers in order to start or stop actions
@@ -14,6 +15,7 @@ namespace ProActiveAgent
 {
     public class TimerManager
     {
+        private static readonly ILog LOGGER = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private static int WEEK_DELAY = 3600 * 24 * 7 * 1000;
         private static int BARRIER_SAFETY_MARGIN = 15000;
@@ -26,7 +28,7 @@ namespace ProActiveAgent
         private List<Timer> retryTimers = new List<Timer>();
 
         private ProActiveExec exec;
-        private Action action;
+        private ConfigParser.Action action;
         private Configuration config;
 
         private long retryTimeBarrier = 0;
@@ -38,23 +40,26 @@ namespace ProActiveAgent
 
         // The constructor should be called only during starting the service
 
-        public TimerManager(Configuration config, Action action, ProActiveExec paExec)
+        public TimerManager(Configuration config, ConfigParser.Action action, ProActiveExec paExec)
         {
-            WindowsService.log("Time Manager", LogLevel.INFO);
+            if (LOGGER.IsDebugEnabled)
+            {
+                LOGGER.Debug("Loading events in the Time Manager.");
+            }            
             this.action = action;
             bool startNow = false;  // flag that will be set if now we are in the middle of the event
             this.exec = paExec;
             this.config = config;
-            Events events = config.events;
-            foreach (Event e in events.events)
+
+            // Get the current date time
+            DateTime currentTime = System.DateTime.Now;            
+
+            foreach (Event e in config.events.events)
             {
                 if (e is CalendarEvent)
-                {
-                    WindowsService.log("Load CalendardEvent and launch start/stop timers", LogLevel.INFO);
+                {                    
                     // for each calendar event we calculate remaining time to start and stop service
-                    // and according to that register timers 
-
-                    DateTime currentTime = System.DateTime.Now;
+                    // and according to that register timers                     
                     CalendarEvent cEvent = (CalendarEvent)e;
                     // we provide the day of the week to present start time
                     // the algorithm to count next start is as follows:
@@ -72,8 +77,10 @@ namespace ProActiveAgent
                         cEvent.startHour, cEvent.startMinute, cEvent.startSecond);
                     TimeSpan duration = new TimeSpan(cEvent.durationDays, cEvent.durationHours, cEvent.durationMinutes,
                                                         cEvent.durationSeconds);
-                    WindowsService.log(accurateStartTime.ToString(), LogLevel.TRACE);
-                    WindowsService.log(accurateStartTime.Add(duration).ToString(), LogLevel.TRACE);
+                    if (LOGGER.IsDebugEnabled)
+                    {
+                        LOGGER.Debug("Loading CalendardEvent " + accurateStartTime.ToString() + " -> " + accurateStartTime.Add(duration).ToString() );
+                    } 
                     long dueStart = countDelay((accurateStartTime - currentTime));
                     long dueStop = countDelay((accurateStartTime - currentTime).Add(duration));
                     if (dueStart < 0 && dueStop > 0)
@@ -97,14 +104,16 @@ namespace ProActiveAgent
                     if (startNow)
                     {
                         mySendStartAction(startInfo);
-                        WindowsService.log("Must be started now",LogLevel.INFO);
+                        if (LOGGER.IsDebugEnabled)
+                        {
+                            LOGGER.Debug("Calendar event started now.");
+                        }                         
                     }
                     startNow = false;
                 }
                 else if (e is IdlenessEvent)
                 {
                     // TODO: implement
-
                 }
             }
         }
@@ -113,38 +122,48 @@ namespace ProActiveAgent
 
         public void addDelayedRetry(int delay)
         {
-            WindowsService.log("Trying to schedule restart at " + (new DateTime(System.DateTime.Now.Ticks + delay * 10000L)).ToString(), LogLevel.TRACE);
-            WindowsService.log("Limit time barrier is " + (new DateTime(retryTimeBarrier).ToString()+ "(we cannot restart after this time point)"), LogLevel.TRACE);
+            long absoluteDelay = System.DateTime.Now.Ticks + delay * 10000L;
+            DateTime absoluteDelayDateTime = new DateTime(absoluteDelay);
 
-            if (System.DateTime.Now.Ticks + delay * 10000L < retryTimeBarrier)
+            if (LOGGER.IsDebugEnabled)
+            {
+                LOGGER.Debug("Trying to schedule restart at "
+                    + absoluteDelayDateTime.ToString()
+                    + " Limit time barrier is " + new DateTime(retryTimeBarrier).ToString()+ " (we cannot restart after this time point).");
+            }   
+
+            if (absoluteDelay < retryTimeBarrier)
             {
                 Timer newTimer = new Timer(new TimerCallback(mySendRestartAction), action, delay, System.Threading.Timeout.Infinite);
                 retryTimers.Add(newTimer);
-                WindowsService.log("Restart action succesfully scheduled", LogLevel.TRACE);
+                if (LOGGER.IsDebugEnabled)
+                {
+                    LOGGER.Debug("Restart action " + absoluteDelayDateTime.ToString() + " succesfully scheduled.");
+                }                
             }
             else
-            {
-                //                WindowsService.log(new DateTime(retryTimeBarrier).ToString(), LogLevel.TRACE);
-                WindowsService.log("Discarding restarting because it would happen outside the job allocated time", LogLevel.TRACE);
+            {                
+                if (LOGGER.IsDebugEnabled)
+                {
+                    LOGGER.Debug("Discarding restarting of " + absoluteDelayDateTime.ToString() + " because it would happen outside the job allocated time.");
+                }                
             }
         }
 
         //note : it does not refer to restarted actions, but started according to calendar event
         private void mySendStartAction(object action)
-        {
-            WindowsService.log("#>mySendStartAction", LogLevel.INFO);
-
+        {            
             StartActionInfo actionInfo = (StartActionInfo)action;
             long stopTime = actionInfo.getStopTime();
 
             while (stopTime < DateTime.Now.Ticks)
+            {
                 stopTime += WEEK_DELAY * 10000;
-
+            }
 
             if (retryTimeBarrier < stopTime)
             {
                 retryTimeBarrier = stopTime;
-
             }
 
             retryTimeBarrier -= BARRIER_SAFETY_MARGIN * 10000;
@@ -153,22 +172,23 @@ namespace ProActiveAgent
         }
 
         private void mySendStopAction(object action)
-        {
-            WindowsService.log("#>mySendStopAction", LogLevel.INFO);
+        {            
             retryTimeBarrier = 0;
             exec.sendStopAction(action, ApplicationType.AgentScheduler);
         }
 
         private void mySendRestartAction(object action)
         {
-            WindowsService.log("Invoking restart action", LogLevel.TRACE);
+            if (LOGGER.IsDebugEnabled)
+            {
+                LOGGER.Debug("Invoking restart action.");
+            } 
             exec.sendRestartAction();
         }
 
         // we count a number of milliseconds in a given timespan
         private long countDelay(TimeSpan timeSpan)
-        {
-            //            Console.WriteLine("Days: " + timeSpan.Days + "Hours: " + timeSpan.Hours + "Minutes: " + timeSpan.Minutes + "Seconds: " + timeSpan.Seconds + "Milis: " + timeSpan.Milliseconds);
+        {            
             return timeSpan.Days * 86400000L + timeSpan.Hours * 3600000L + timeSpan.Minutes * 60000L + timeSpan.Seconds * 1000L + timeSpan.Milliseconds;
         }
 
@@ -219,8 +239,7 @@ namespace ProActiveAgent
 
         // releasing resources
         public void dispose()
-        {
-            WindowsService.log("#>dispose", LogLevel.INFO);
+        {         
             foreach (Timer t in startTimers)
             {
                 t.Dispose();
@@ -235,8 +254,6 @@ namespace ProActiveAgent
             {
                 t.Dispose();
             }
-            //idleMgr.dispose();
         }
-
     }
 }
