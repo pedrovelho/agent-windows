@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+    <target name="javadoc.complete" description="Unused target">
+		<mkdir dir="${docs.api.complete.dir}" />
+                <echo>#### Currently there is no Javadoc  in ProActive Agent ####</echo>
+
+    </target>
+	<target name="javadoc.published"  description="Unused target">
+		<mkdir dir="${docs.api.published.dir}" />
+                <echo>#### Currently there is no Published API in ProActive Agent ####</echo>
+	</target>
+</project>
