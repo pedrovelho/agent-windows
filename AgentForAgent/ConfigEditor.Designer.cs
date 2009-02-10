@@ -129,13 +129,13 @@ namespace AgentForAgent
             this.showButton = new System.Windows.Forms.Button();
             this.createEventButton = new System.Windows.Forms.Button();
             this.deleteEventButton = new System.Windows.Forms.Button();
-            this.eventsList = new AgentForAgent.RefreshingListBox();
             this.saveConfig = new System.Windows.Forms.Button();
             this.closeConfig = new System.Windows.Forms.Button();
             this.proActiveLocationBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.jvmLocationBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.saveConfigAs = new System.Windows.Forms.Button();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.eventsList = new AgentForAgent.RefreshingListBox();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.generalTabPage.SuspendLayout();
@@ -788,7 +788,7 @@ namespace AgentForAgent
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage2.Size = new System.Drawing.Size(674, 323);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Events";
+            this.tabPage2.Text = "Planning";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // alwaysAvailableCheckBox
@@ -813,7 +813,7 @@ namespace AgentForAgent
             this.eventEditorGroup.Size = new System.Drawing.Size(409, 192);
             this.eventEditorGroup.TabIndex = 1;
             this.eventEditorGroup.TabStop = false;
-            this.eventEditorGroup.Text = "Event Editor";
+            this.eventEditorGroup.Text = "Plan Editor";
             // 
             // groupBox4
             // 
@@ -1116,7 +1116,7 @@ namespace AgentForAgent
             this.groupBox2.Size = new System.Drawing.Size(247, 311);
             this.groupBox2.TabIndex = 0;
             this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Events";
+            this.groupBox2.Text = "Weekly Planning";
             // 
             // showButton
             // 
@@ -1134,7 +1134,7 @@ namespace AgentForAgent
             this.createEventButton.Name = "createEventButton";
             this.createEventButton.Size = new System.Drawing.Size(87, 23);
             this.createEventButton.TabIndex = 3;
-            this.createEventButton.Text = "Create event";
+            this.createEventButton.Text = "Create plan";
             this.createEventButton.UseVisualStyleBackColor = true;
             this.createEventButton.Click += new System.EventHandler(this.createEventButton_Click);
             // 
@@ -1147,15 +1147,6 @@ namespace AgentForAgent
             this.deleteEventButton.Text = "Delete";
             this.deleteEventButton.UseVisualStyleBackColor = true;
             this.deleteEventButton.Click += new System.EventHandler(this.deleteEventButton_Click);
-            // 
-            // eventsList
-            // 
-            this.eventsList.FormattingEnabled = true;
-            this.eventsList.Location = new System.Drawing.Point(6, 19);
-            this.eventsList.Name = "eventsList";
-            this.eventsList.Size = new System.Drawing.Size(235, 251);
-            this.eventsList.TabIndex = 0;
-            this.eventsList.SelectedIndexChanged += new System.EventHandler(this.eventsList_SelectedIndexChanged);
             // 
             // saveConfig
             // 
@@ -1195,6 +1186,15 @@ namespace AgentForAgent
             this.saveConfigAs.Text = "Save as ...";
             this.saveConfigAs.UseVisualStyleBackColor = true;
             this.saveConfigAs.Click += new System.EventHandler(this.saveConfigAs_Click);
+            // 
+            // eventsList
+            // 
+            this.eventsList.FormattingEnabled = true;
+            this.eventsList.Location = new System.Drawing.Point(6, 19);
+            this.eventsList.Name = "eventsList";
+            this.eventsList.Size = new System.Drawing.Size(235, 251);
+            this.eventsList.TabIndex = 0;
+            this.eventsList.SelectedIndexChanged += new System.EventHandler(this.eventsList_SelectedIndexChanged);
             // 
             // ConfigurationEditor
             // 
