@@ -33,14 +33,14 @@ namespace AgentForAgent
         private ServiceController sc = new ServiceController(Constants.PROACTIVE_AGENT_SERVICE_NAME);
         private ServiceControllerStatus agentStatus;
 
-        private string agentLocation;        
+        private string agentLocation;
         private string agentStatusString;
 
         private bool isRuntimeStarted = false;
         private bool setVisibleCore = false;
         //private bool allowRuntime = true;
 
-        private ConfigEditor window;
+        private ConfigurationEditor window;
 
         public ConfigurationDialog()
         {
@@ -114,7 +114,6 @@ namespace AgentForAgent
 
         private void UpdateStatus()
         {
-
             agentStatus = sc.Status;
             if (agentStatus == ServiceControllerStatus.StopPending)
             {
@@ -186,7 +185,6 @@ namespace AgentForAgent
             }
 
             this.statuslabel.Text = "The ProActive Agent is currently " + agentStatusString;
-            //WindowsService.log("Received start command from ProActive ScreenSaver", LogLevel.TRACE);
             if (agentStatus != ServiceControllerStatus.Running)
             {
                 //-- stopped icon
@@ -294,19 +292,22 @@ namespace AgentForAgent
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            sc.Refresh();
-            UpdateStatus();
+            try
+            {
+                sc.Refresh();
+                UpdateStatus();
+            }
+            catch (Exception)
+            {
+                // In case of exception just exit silently
+                // This can happend when the service is terminated
+                this.Close();
+                Application.ExitThread();
+            }
         }
 
         private void viewLogs_Click(object sender, EventArgs e)
         {
-            /*            Configuration conf = ConfigurationParser.parseXml(configLocation.Text);
-                        if (conf == null || conf.agentConfig == null)
-                        {
-                            MessageBox.Show("The configuration file is broken.", "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
-                        } */
-
             Process p = new Process();
             p.StartInfo.FileName = "notepad.exe";
             p.StartInfo.Arguments = this.agentLocation + "\\ProActiveAgent-log.txt";
@@ -329,13 +330,10 @@ namespace AgentForAgent
                     MessageBox.Show("The selected file does not comply with the schema. The Agent will probably not work. You can edit the file in the text editor or the graphical one.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
-            catch (IncorrectConfigurationException)
+            catch (Exception)
             {
                 MessageBox.Show("The selected file is not a correct xml file. The Agent will probably not work. You can edit the file in the text editor or the graphical one.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-
-
-
         }
 
         private void close_Click(object sender, EventArgs e)
@@ -359,11 +357,6 @@ namespace AgentForAgent
             }
         }
 
-        private void globalStop_Click(object sender, EventArgs e)
-        {
-            sc.ExecuteCommand((int)PAACommands.GlobalStop);
-        }
-
         private void ConfigurationDialog_Resize(object sender, EventArgs e)
         {
             if (FormWindowState.Minimized == WindowState)
@@ -379,49 +372,23 @@ namespace AgentForAgent
             WindowState = FormWindowState.Normal;
         }
 
-        private void restoreToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            setVisibleCore = true;
-            Show();
-            WindowState = FormWindowState.Normal;
-        }
-
-        private void stopProActiveRuntimeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            sc.ExecuteCommand((int)PAACommands.GlobalStop);
-        }
-
-        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            /*DialogResult res = MessageBox.Show("This operation doesn't change the state of ProActive service", "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
-            if (res == DialogResult.OK)
-            {
-                this.Close();
-                Application.ExitThread();
-            }*/
-        }
-
         private void button1_Click(object sender, EventArgs e)
         {
             try
             {
                 Configuration conf = ConfigurationParser.parseXml(configLocation.Text, agentLocation);
-                window = new ConfigEditor(conf, configLocation.Text, agentLocation, this);
+                window = new ConfigurationEditor(conf, configLocation.Text, agentLocation, this);
                 window.ShowDialog();
             }
-            catch (IncorrectConfigurationException)
+            catch (Exception ex)
             {
                 //MessageBox.Show("The configuration file is broken.", "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                DialogResult res = MessageBox.Show("The configuration file is broken.", "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                DialogResult res = MessageBox.Show("The configuration file is broken. " + ex.ToString(), "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 //TODO : proposer de créer un fichier âr default
                 /*if (res == DialogResult.Yes)
                 {
 
                 }*/
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.StackTrace);
             }
         }
 
@@ -430,16 +397,72 @@ namespace AgentForAgent
             configLocation.Text = title;
         }
 
-        private void pictureBox1_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void ConfigurationDialog_FormClosing(object sender, FormClosingEventArgs e)
         {
-            e.Cancel = true;
-            setVisibleCore = false;
-            Hide();
+            switch (e.CloseReason)
+            {
+                case CloseReason.ApplicationExitCall:
+                    {
+                        //Handle application exit call
+                        setVisibleCore = false;
+                        Hide();
+                        e.Cancel = true;                        
+                        break;
+                    }
+                case CloseReason.FormOwnerClosing:
+                    {
+                        //Handle Form owner close
+                        break;
+                    }
+                case CloseReason.MdiFormClosing:
+                    {
+                        //Handle MDI parent closing
+                        break;
+                    }
+                case CloseReason.None:
+                    {
+                        //Handle unknown reason
+                        break;
+                    }
+                case CloseReason.TaskManagerClosing:
+                    {
+                        //Handle taskmanager close
+                        this.kill();
+                        break;
+                    }
+                case CloseReason.UserClosing:
+                    {
+                        // Handle User close
+                        setVisibleCore = false;
+                        Hide();
+                        e.Cancel = true;                        
+                        break;
+                    }
+                case CloseReason.WindowsShutDown:
+                    {
+                        // Handle system shutdown
+                        this.kill();
+                        break;
+                    }
+            }         
+        }
+
+        private void kill()
+        {            
+            // if the service is running stop it then exit
+            try
+            {
+                if (this.sc.CanStop && this.sc.Status != ServiceControllerStatus.Stopped)
+                {
+                    this.sc.Stop();
+                }
+            }
+            catch (Exception) { }
+            finally
+            {
+                this.Close();
+                Application.ExitThread();
+            }
         }
 
         private void startToolStripMenuItem_Click(object sender, EventArgs e)

@@ -50,9 +50,9 @@ namespace ConfigParser
             {
                 while (textReader.Read()) ;
             }
-            catch (XmlException)
+            catch (XmlException e)
             {
-                throw new IncorrectConfigurationException();
+                throw new ApplicationException("Could not read the " + filePath + " config file ", e);
             }
 
             textReader.Close();
@@ -69,7 +69,7 @@ namespace ConfigParser
         {
            // String xmlSchemaFilePath = proActiveAgentDir + "\\config.xsd";          
             if (!validateXMLFile(configFilePath, proActiveAgentDir))
-                throw new IncorrectConfigurationException();
+                throw new ApplicationException("Reason: " + reason);
             // Deserialization
 
             XmlSerializer serializer = new XmlSerializer(typeof(Configuration));

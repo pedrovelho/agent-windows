@@ -12,29 +12,16 @@ using System.Xml.Serialization;
 namespace ConfigParser
 {
     [XmlInclude(typeof(AdvertAction)),
-    XmlInclude(typeof(P2PAction)),
-    XmlInclude(typeof(RMAction))]
+    XmlInclude(typeof(RMAction)),    
+    XmlInclude(typeof(P2PAction))
+    ]
     public class Action
-    {
-        private String myPriority;
-        private int myInitialRestartDelay;
-        private String myUser;
+    {        
+        private int myInitialRestartDelay;        
+        private String myJavaStarterClass;
+        private bool myIsEnabled;
 
-        [XmlAttribute("priority")]
-        public String priority
-        {
-            get
-            {
-                return myPriority;
-            }
-
-            set
-            {
-                myPriority = value;
-            }
-        }
-
-        [XmlAttribute("initialRestartDelay")]
+        [XmlElement("initialRestartDelay")]
         public int initialRestartDelay
         {
             get
@@ -48,18 +35,40 @@ namespace ConfigParser
             }
         }
 
-        [XmlAttribute("user")]
-        public String user
+        [XmlElement("javaStarterClass")]
+        public String javaStarterClass
         {
             get
             {
-                return myUser;
+                return this.myJavaStarterClass;
             }
 
             set
             {
-                myUser = value;
+                this.myJavaStarterClass = value;
             }
+        }
+
+        [XmlElement("isEnabled")]
+        public bool isEnabled
+        {
+            get
+            {
+                return this.myIsEnabled;
+            }
+
+            set
+            {
+                this.myIsEnabled = value;
+            }
+        }
+
+        // Default jvm parameters needed for this type of action
+        public static void addDefaultJvmParameters(List<string> jvmParameters, string proactiveLocation)
+        {
+            jvmParameters.Add("-Dproactive.home=\"" + proactiveLocation + "\"");
+            jvmParameters.Add("-Dproactive.configuration=\"" + proactiveLocation + "\\config\\proactive\\ProActiveConfiguration.xml\"");
+            jvmParameters.Add("-Djava.security.manager");
         }
     }
 }

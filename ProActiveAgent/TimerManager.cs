@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using ConfigParser;
 using log4net;
+using System.Diagnostics;
 
 /** TimeManager implements semantics of calendar events
  *  It creates timers in order to start or stop actions
@@ -21,43 +22,47 @@ namespace ProActiveAgent
         private static int BARRIER_SAFETY_MARGIN = 15000;
 
         // start - action timers
-        private List<Timer> startTimers = new List<Timer>();
+        private readonly List<Timer> startTimers;
         // stop - action timers
-        private List<Timer> stopTimers = new List<Timer>();
+        private readonly List<Timer> stopTimers;
         // retry timers
-        private List<Timer> retryTimers = new List<Timer>();
+        private readonly List<Timer> retryTimers;
 
-        private ProActiveExec exec;
-        private ConfigParser.Action action;
-        private Configuration config;
-
+        private readonly ProActiveExec exec;
+        private readonly ConfigParser.Action action;
         private long retryTimeBarrier = 0;
-
-        //private IdlenessDetector idleMgr = null;
-
-        // config - configuration of ProActive Agent Service
-        // paExec - implementation of actions
 
         // The constructor should be called only during starting the service
 
-        public TimerManager(Configuration config, ConfigParser.Action action, ProActiveExec paExec)
+        public TimerManager(ProActiveExec paExec,ConfigParser.Action action)
+        {                                
+            this.startTimers = new List<Timer>();
+            this.stopTimers = new List<Timer>();
+            this.retryTimers = new List<Timer>();
+
+            this.exec = paExec;
+            this.action = action;
+        }
+
+        public ConfigParser.Action getAssociatedAction()
+        {
+            return this.action;
+        }
+
+        public void loadEvents(List<Event> events)
         {
             if (LOGGER.IsDebugEnabled)
             {
                 LOGGER.Debug("Loading events in the Time Manager.");
             }            
-            this.action = action;
-            bool startNow = false;  // flag that will be set if now we are in the middle of the event
-            this.exec = paExec;
-            this.config = config;
 
             // Get the current date time
-            DateTime currentTime = System.DateTime.Now;            
+            DateTime currentTime = System.DateTime.Now;
 
-            foreach (Event e in config.events.events)
+            foreach (Event e in events)
             {
                 if (e is CalendarEvent)
-                {                    
+                {
                     // for each calendar event we calculate remaining time to start and stop service
                     // and according to that register timers                     
                     CalendarEvent cEvent = (CalendarEvent)e;
@@ -72,54 +77,47 @@ namespace ProActiveAgent
                     // 6. if time is negative, we move it into next week (to avoid waiting for past events)
                     int daysAhead = dayDifference(resolveDayOfWeek(currentTime.DayOfWeek), cEvent.resolveDay());
                     DateTime startTime = currentTime.AddDays(daysAhead);
-                    
+
                     DateTime accurateStartTime = new DateTime(startTime.Year, startTime.Month, startTime.Day,
                         cEvent.startHour, cEvent.startMinute, cEvent.startSecond);
                     TimeSpan duration = new TimeSpan(cEvent.durationDays, cEvent.durationHours, cEvent.durationMinutes,
                                                         cEvent.durationSeconds);
                     if (LOGGER.IsDebugEnabled)
                     {
-                        LOGGER.Debug("Loading CalendardEvent " + accurateStartTime.ToString() + " -> " + accurateStartTime.Add(duration).ToString() );
-                    } 
+                        LOGGER.Debug("Loading CalendardEvent " + accurateStartTime.ToString() + " -> " + accurateStartTime.Add(duration).ToString());
+                    }
                     long dueStart = countDelay((accurateStartTime - currentTime));
                     long dueStop = countDelay((accurateStartTime - currentTime).Add(duration));
-                    if (dueStart < 0 && dueStop > 0)
-                        startNow = true;
+                    // if now we are in the middle of the event just start
+                    bool startNow = (dueStart < 0 && dueStop > 0);
                     if (dueStart < 0)
                         dueStart += WEEK_DELAY;
                     if (dueStop < 0)
                         dueStop += WEEK_DELAY;
 
                     StartActionInfo startInfo = new StartActionInfo();
-                    startInfo.setAction(action);
+                    startInfo.setAction(this.action);
                     startInfo.setStopTime(accurateStartTime.Add(duration).Ticks);
+                    startInfo.setProcessPriority(cEvent.processPriority);
+                    startInfo.setMaxCpuUsage(cEvent.maxCpuUsage);
 
                     // timer registration
                     Timer startT = new Timer(new TimerCallback(mySendStartAction), startInfo, dueStart, WEEK_DELAY);
-                    Timer stopT = new Timer(new TimerCallback(mySendStopAction), action, dueStop, WEEK_DELAY);
+                    Timer stopT = new Timer(new TimerCallback(mySendStopAction), null, dueStop, WEEK_DELAY);
 
-                    startTimers.Add(startT);
-                    stopTimers.Add(stopT);
+                    this.startTimers.Add(startT);
+                    this.stopTimers.Add(stopT);
 
                     if (startNow)
                     {
-                        mySendStartAction(startInfo);
-                        if (LOGGER.IsDebugEnabled)
-                        {
-                            LOGGER.Debug("Calendar event started now.");
-                        }                         
-                    }
-                    startNow = false;
-                }
-                else if (e is IdlenessEvent)
-                {
-                    // TODO: implement
-                }
+                        this.mySendStartAction(startInfo);
+                    }                    
+                } 
+                // Only a single type of event
             }
         }
 
         // used to add delayed retry-actions
-
         public void addDelayedRetry(int delay)
         {
             long absoluteDelay = System.DateTime.Now.Ticks + delay * 10000L;
@@ -134,7 +132,7 @@ namespace ProActiveAgent
 
             if (absoluteDelay < retryTimeBarrier)
             {
-                Timer newTimer = new Timer(new TimerCallback(mySendRestartAction), action, delay, System.Threading.Timeout.Infinite);
+                Timer newTimer = new Timer(new TimerCallback(mySendRestartAction), null, delay, System.Threading.Timeout.Infinite);
                 retryTimers.Add(newTimer);
                 if (LOGGER.IsDebugEnabled)
                 {
@@ -168,16 +166,18 @@ namespace ProActiveAgent
 
             retryTimeBarrier -= BARRIER_SAFETY_MARGIN * 10000;
             exec.resetRestartDelay();
-            exec.sendStartAction(actionInfo.getAction(), ApplicationType.AgentScheduler);
+            exec.sendStartAction(ApplicationType.AgentScheduler);
+            // Apply process priority and max cpu usage
+            exec.setProcessBehaviour(actionInfo.getProcessPriority(), actionInfo.getMaxCpuUsage());            
         }
 
-        private void mySendStopAction(object action)
+        private void mySendStopAction(object stateInfo)
         {            
             retryTimeBarrier = 0;
-            exec.sendStopAction(action, ApplicationType.AgentScheduler);
+            exec.sendStopAction(ApplicationType.AgentScheduler);
         }
 
-        private void mySendRestartAction(object action)
+        private void mySendRestartAction(object stateInfo)
         {
             if (LOGGER.IsDebugEnabled)
             {
@@ -190,16 +190,6 @@ namespace ProActiveAgent
         private long countDelay(TimeSpan timeSpan)
         {            
             return timeSpan.Days * 86400000L + timeSpan.Hours * 3600000L + timeSpan.Minutes * 60000L + timeSpan.Seconds * 1000L + timeSpan.Milliseconds;
-        }
-
-        // called when service is paused
-        public void onPause()
-        {
-        }
-
-        // called when service is resumed
-        public void onResume()
-        {
         }
 
         // resolving from .NET API enumeration to meaningful numbers
@@ -240,20 +230,23 @@ namespace ProActiveAgent
         // releasing resources
         public void dispose()
         {         
-            foreach (Timer t in startTimers)
+            foreach (Timer t in this.startTimers)
             {
                 t.Dispose();
             }
+            this.startTimers.Clear();
 
-            foreach (Timer t in stopTimers)
+            foreach (Timer t in this.stopTimers)
             {
                 t.Dispose();
             }
+            this.startTimers.Clear();
 
-            foreach (Timer t in retryTimers)
+            foreach (Timer t in this.retryTimers)
             {
                 t.Dispose();
             }
+            this.retryTimers.Clear();
         }
     }
 }

@@ -3,23 +3,37 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml.Serialization;
 
-/**
- * In P2PAction a machine registers itself in P2P network
- * The configuration contains a list of first-contact
- * nodes that P2P service will be initialized with
- */
-
 namespace ConfigParser
 {
+    /**
+     * In P2PAction a machine registers itself in P2P network
+     * The configuration contains a list of first-contact
+     * nodes that P2P service will be initialized with
+     * 
+     * !! NOT AVAILABLE !!
+     */
     public class P2PAction : Action
     {
-        /** The string description of this action **/
+        /// <summary>
+        /// The string description of this action.</summary>
         public const string DESCRIPTION = "Peer-to-peer";
+        /// <summary>
+        /// The java class that corresponds to this action.</summary>
+        public const string DEFAULT_JAVA_STARTER_CLASS = "org.objectweb.proactive.extra.p2p.daemon.PAAgentServiceP2PStarter";
+        /// <summary>
+        /// The default protocol.</summary>
+        public const string DEFAULT_P2P_PROTOCOL = "RMI";
 
-        private List<String> myContacts = new List<string>();
-        private String myProtocol = "RMI"; // maybe this will be configurable in the future
+        private String myProtocol;
+        private String[] myContacts;
 
-        [XmlAttribute("protocol")]
+        public P2PAction()
+        {
+            this.myProtocol = DEFAULT_P2P_PROTOCOL;
+            this.myContacts = new string[0];
+        }
+
+        [XmlElement("protocol")]
         public String protocol
         {
             get
@@ -32,49 +46,18 @@ namespace ConfigParser
             }
         }
 
-        [XmlElement("contact", IsNullable = false)]
+        [XmlArray("contacts", IsNullable = false)]
+        [XmlArrayItem("contact", IsNullable = true)]
         public String[] contacts
         {
             get
             {
-                String[] contacts = new String[myContacts.Count];
-                myContacts.CopyTo(contacts);
-                return contacts;
+                return this.myContacts;
             }
             set
             {
-                if (value == null) return;
-                String[] contacts = (String[])value;
-                myContacts.Clear();
-                foreach (String contact in contacts)
-                    myContacts.Add(contact);
+                this.myContacts = value;
             }
         }
-
-        public void modifyContact(int index, string value)
-        {
-            myContacts[index] = value;
-        }
-
-        public void addContact(string value)
-        {
-            myContacts.Add(value);
-        }
-
-        public void deleteContact(int index)
-        {
-            myContacts.RemoveAt(index);
-        }
-
-// THE FOLLOWING CODE IS DEPRECATED 
-/*        public void addContact(String contact)
-        {
-            contacts.Add(contact);
-        }
-
-        public List<String> getContacts()
-        {
-            return contacts;
-        } */
     }
 }

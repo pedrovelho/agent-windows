@@ -14,59 +14,62 @@ namespace ConfigParser
     [XmlRoot("agent")]
     public class Configuration
     {
-        // Configuration of runner script for launching ProActive
-        
+        // Configuration of runner script for launching ProActive        
         private AgentConfig myAgentConfig;
+
+        // Actions that will be taken in case of any event triggered
+        private Action[] myActions;
+
+        // Collection of events that the system will react on        
+        private List<Event> myEvents;
+
+        // Public constructor
+        public Configuration(){
+            this.myEvents = new List<Event>();
+        }
 
         [XmlElement("internalConfig", IsNullable = false)]
         public AgentConfig agentConfig
         {
             get
             {
-                return myAgentConfig;
+                return this.myAgentConfig;
             }
 
             set
             {
-                myAgentConfig = value;
+                this.myAgentConfig = value;
             }
         }
-
-        // Collection of events that the system will react on
-
-        private Events myEvents;
-
-        [XmlElement("events", IsNullable = false)]
-        public Events events
+                
+        [XmlArray("events", IsNullable = false )]
+        [XmlArrayItem("event", typeof(Event), IsNullable = true)]
+        public List<Event> events
         {
             get
             {
-                return myEvents;
+                return this.myEvents;
             }
 
             set
             {
-                myEvents = value;
+                this.myEvents = value;
             }
         }
-
-        // Action that will be taken in case of any event triggered
-
-        private Actions myActions;
-
-        [XmlElement("actions", IsNullable = false)]
-        public Actions actions
+        
+        [XmlArray("actions", IsNullable = false)]
+        [XmlArrayItem("action", IsNullable = true)]
+        public Action[] actions
         {
             get
             {
-                return myActions;
+                return this.myActions;
             }
 
             set
             {
-                myActions = value;
+                this.myActions = value;
             }
         }
-
     }
 }

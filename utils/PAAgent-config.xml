@@ -4,7 +4,8 @@
     <proactiveLocation />
     <java_home />
     <jvm_params />
-  </internalConfig>
+    <process_memory_limit>100</process_memory_limit>
+    </internalConfig>
   <events />
   <actions>
   </actions>

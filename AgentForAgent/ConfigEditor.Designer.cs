@@ -1,6 +1,17 @@
-﻿namespace AgentForAgent
+﻿using System;
+using System.Management;
+
+namespace AgentForAgent
 {
-    partial class ConfigEditor
+    public class RefreshingListBox : System.Windows.Forms.ListBox
+    {
+        public new void RefreshItem(int index)
+        {
+            base.RefreshItem(index);
+        }
+    }
+
+    partial class ConfigurationEditor
     {
         /// <summary>
         /// Required designer variable.
@@ -28,108 +39,147 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfigurationEditor));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.jvmParametersListBox = new System.Windows.Forms.ListBox();
+            this.removeJvmParameterButton = new System.Windows.Forms.Button();
+            this.addJvmParameterButton = new System.Windows.Forms.Button();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.jvmLocationButton = new System.Windows.Forms.Button();
             this.proactiveLocationButton = new System.Windows.Forms.Button();
-            this.jvmParams = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.jvmDirectory = new System.Windows.Forms.TextBox();
             this.proactiveLocation = new System.Windows.Forms.TextBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
-            this.eventEditorGroup = new System.Windows.Forms.GroupBox();
-            this.secondsDuration = new System.Windows.Forms.NumericUpDown();
-            this.label12 = new System.Windows.Forms.Label();
-            this.minutesDuration = new System.Windows.Forms.NumericUpDown();
-            this.label11 = new System.Windows.Forms.Label();
-            this.hoursDuration = new System.Windows.Forms.NumericUpDown();
-            this.label10 = new System.Windows.Forms.Label();
-            this.dayDuration = new System.Windows.Forms.NumericUpDown();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.secondStart = new System.Windows.Forms.NumericUpDown();
-            this.label7 = new System.Windows.Forms.Label();
-            this.minuteStart = new System.Windows.Forms.NumericUpDown();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.hourStart = new System.Windows.Forms.NumericUpDown();
-            this.label4 = new System.Windows.Forms.Label();
-            this.weekdayStart = new System.Windows.Forms.ComboBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.button2 = new System.Windows.Forms.Button();
-            this.newEventButton = new System.Windows.Forms.Button();
-            this.deleteEventButton = new System.Windows.Forms.Button();
-            this.eventsList = new System.Windows.Forms.ListBox();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.actionEditorGroup = new System.Windows.Forms.GroupBox();
-            this.groupBox7 = new System.Windows.Forms.GroupBox();
-            this.actionTypeBox = new System.Windows.Forms.ComboBox();
-            this.userBox = new System.Windows.Forms.ComboBox();
-            this.priorityBox = new System.Windows.Forms.ComboBox();
-            this.label18 = new System.Windows.Forms.Label();
-            this.label20 = new System.Windows.Forms.Label();
-            this.label16 = new System.Windows.Forms.Label();
-            this.p2pactionGroup = new System.Windows.Forms.GroupBox();
-            this.label17 = new System.Windows.Forms.Label();
-            this.p2pProtocol = new System.Windows.Forms.TextBox();
-            this.saveHost = new System.Windows.Forms.Button();
-            this.peerUrl = new System.Windows.Forms.TextBox();
-            this.label15 = new System.Windows.Forms.Label();
-            this.deleteHost = new System.Windows.Forms.Button();
-            this.addHost = new System.Windows.Forms.Button();
-            this.hostList = new System.Windows.Forms.ListBox();
-            this.label14 = new System.Windows.Forms.Label();
+            this.generalTabPage = new System.Windows.Forms.TabPage();
+            this.enableMemoryManagementCheckBox = new System.Windows.Forms.CheckBox();
+            this.memoryManagementBox = new System.Windows.Forms.GroupBox();
+            this.totalProcessMemoryValue = new System.Windows.Forms.Label();
+            this.totalProcessMemoryLabel = new System.Windows.Forms.Label();
+            this.javaMemoryNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.javaMemoryLabel = new System.Windows.Forms.Label();
+            this.availablePhysicalMemoryValue = new System.Windows.Forms.Label();
+            this.availablePhysicalMemoryLabel = new System.Windows.Forms.Label();
+            this.nativeMemoryNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.nativeMemoryLabel = new System.Windows.Forms.Label();
+            this.connectionTabPage = new System.Windows.Forms.TabPage();
+            this.enabledConnectionGroupBox = new System.Windows.Forms.GroupBox();
+            this.resourceManagerRegistrationRadioButton = new System.Windows.Forms.RadioButton();
+            this.rmiRegistrationRadioButton = new System.Windows.Forms.RadioButton();
+            this.peerToPeerRadioButton = new System.Windows.Forms.RadioButton();
+            this.connectionTypeTabControl = new System.Windows.Forms.TabControl();
+            this.rmiRegistrationTabPage = new System.Windows.Forms.TabPage();
+            this.rmiRegistrationAdditionalConfigurationGroupBox = new System.Windows.Forms.GroupBox();
+            this.rmiRegistrationJavaActionClassTextBox = new System.Windows.Forms.TextBox();
+            this.label13 = new System.Windows.Forms.Label();
             this.rmiActionGroup = new System.Windows.Forms.GroupBox();
             this.rmiNodeName = new System.Windows.Forms.TextBox();
             this.rmiNodeEnabled = new System.Windows.Forms.CheckBox();
+            this.resourceManagerRegistrationTabPage = new System.Windows.Forms.TabPage();
+            this.resourceManagerRegistrationAdditionalConfigurationGroupBox = new System.Windows.Forms.GroupBox();
+            this.resourceManagerRegistrationJavaActionClassTextBox = new System.Windows.Forms.TextBox();
+            this.label18 = new System.Windows.Forms.Label();
             this.rmActionGroup = new System.Windows.Forms.GroupBox();
             this.rmNodeName = new System.Windows.Forms.TextBox();
+            this.label16 = new System.Windows.Forms.Label();
             this.rmUrl = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.peerToPeerTabPage = new System.Windows.Forms.TabPage();
+            this.peerToPeerAdditionalConfigurationGroupBox = new System.Windows.Forms.GroupBox();
+            this.peerToPeerJavaActionClassTextBox = new System.Windows.Forms.TextBox();
             this.label19 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.button3 = new System.Windows.Forms.Button();
-            this.deleteActionButton = new System.Windows.Forms.Button();
-            this.actionsList = new System.Windows.Forms.ListBox();
+            this.p2pactionGroup = new System.Windows.Forms.GroupBox();
+            this.label17 = new System.Windows.Forms.Label();
+            this.p2pProtocol = new System.Windows.Forms.TextBox();
+            this.peerToPeerSaveHostButton = new System.Windows.Forms.Button();
+            this.peerToPeerUrlTextBox = new System.Windows.Forms.TextBox();
+            this.label15 = new System.Windows.Forms.Label();
+            this.peerToPeerDeleteHostButton = new System.Windows.Forms.Button();
+            this.peerToPeerAddHostButton = new System.Windows.Forms.Button();
+            this.peerToPeerContactsListBox = new System.Windows.Forms.ListBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.alwaysAvailableCheckBox = new System.Windows.Forms.CheckBox();
+            this.eventEditorGroup = new System.Windows.Forms.GroupBox();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.processPriorityLabel = new System.Windows.Forms.Label();
+            this.processPriorityComboBox = new System.Windows.Forms.ComboBox();
+            this.startTimeGroupBox = new System.Windows.Forms.GroupBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.secondStart = new System.Windows.Forms.NumericUpDown();
+            this.label5 = new System.Windows.Forms.Label();
+            this.weekdayStart = new System.Windows.Forms.ComboBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.hourStart = new System.Windows.Forms.NumericUpDown();
+            this.minuteStart = new System.Windows.Forms.NumericUpDown();
+            this.durationGroupBox = new System.Windows.Forms.GroupBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.secondsDuration = new System.Windows.Forms.NumericUpDown();
+            this.dayDuration = new System.Windows.Forms.NumericUpDown();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.minutesDuration = new System.Windows.Forms.NumericUpDown();
+            this.hoursDuration = new System.Windows.Forms.NumericUpDown();
+            this.label11 = new System.Windows.Forms.Label();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.showButton = new System.Windows.Forms.Button();
+            this.createEventButton = new System.Windows.Forms.Button();
+            this.deleteEventButton = new System.Windows.Forms.Button();
             this.saveConfig = new System.Windows.Forms.Button();
             this.closeConfig = new System.Windows.Forms.Button();
             this.proActiveLocationBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.jvmLocationBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.saveConfigAs = new System.Windows.Forms.Button();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.maxCpuUsageLabel = new System.Windows.Forms.Label();
+            this.maxCpuUsageNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label20 = new System.Windows.Forms.Label();
+            this.eventsList = new AgentForAgent.RefreshingListBox();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
-            this.tabPage1.SuspendLayout();
+            this.generalTabPage.SuspendLayout();
+            this.memoryManagementBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.javaMemoryNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nativeMemoryNumericUpDown)).BeginInit();
+            this.connectionTabPage.SuspendLayout();
+            this.enabledConnectionGroupBox.SuspendLayout();
+            this.connectionTypeTabControl.SuspendLayout();
+            this.rmiRegistrationTabPage.SuspendLayout();
+            this.rmiRegistrationAdditionalConfigurationGroupBox.SuspendLayout();
+            this.rmiActionGroup.SuspendLayout();
+            this.resourceManagerRegistrationTabPage.SuspendLayout();
+            this.resourceManagerRegistrationAdditionalConfigurationGroupBox.SuspendLayout();
+            this.rmActionGroup.SuspendLayout();
+            this.peerToPeerTabPage.SuspendLayout();
+            this.peerToPeerAdditionalConfigurationGroupBox.SuspendLayout();
+            this.p2pactionGroup.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.eventEditorGroup.SuspendLayout();
+            this.groupBox4.SuspendLayout();
+            this.startTimeGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.secondStart)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.hourStart)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.minuteStart)).BeginInit();
+            this.durationGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.secondsDuration)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dayDuration)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.minutesDuration)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.hoursDuration)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dayDuration)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.secondStart)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.minuteStart)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.hourStart)).BeginInit();
             this.groupBox2.SuspendLayout();
-            this.tabPage3.SuspendLayout();
-            this.actionEditorGroup.SuspendLayout();
-            this.groupBox7.SuspendLayout();
-            this.p2pactionGroup.SuspendLayout();
-            this.rmiActionGroup.SuspendLayout();
-            this.rmActionGroup.SuspendLayout();
-            this.groupBox3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.maxCpuUsageNumericUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.jvmParametersListBox);
+            this.groupBox1.Controls.Add(this.removeJvmParameterButton);
+            this.groupBox1.Controls.Add(this.addJvmParameterButton);
             this.groupBox1.Controls.Add(this.checkBox1);
             this.groupBox1.Controls.Add(this.jvmLocationButton);
             this.groupBox1.Controls.Add(this.proactiveLocationButton);
-            this.groupBox1.Controls.Add(this.jvmParams);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label1);
@@ -141,6 +191,36 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "ProActive Configuration";
+            // 
+            // jvmParametersListBox
+            // 
+            this.jvmParametersListBox.FormattingEnabled = true;
+            this.jvmParametersListBox.Location = new System.Drawing.Point(127, 95);
+            this.jvmParametersListBox.Name = "jvmParametersListBox";
+            this.jvmParametersListBox.Size = new System.Drawing.Size(389, 69);
+            this.jvmParametersListBox.TabIndex = 12;
+            this.jvmParametersListBox.DoubleClick += new System.EventHandler(this.jvmParametersListBox_DoubleClick);
+            this.jvmParametersListBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.jvmParametersListBox_KeyPress);
+            // 
+            // removeJvmParameterButton
+            // 
+            this.removeJvmParameterButton.Location = new System.Drawing.Point(522, 124);
+            this.removeJvmParameterButton.Name = "removeJvmParameterButton";
+            this.removeJvmParameterButton.Size = new System.Drawing.Size(75, 23);
+            this.removeJvmParameterButton.TabIndex = 11;
+            this.removeJvmParameterButton.Text = "Remove";
+            this.removeJvmParameterButton.UseVisualStyleBackColor = true;
+            this.removeJvmParameterButton.Click += new System.EventHandler(this.removeJvmParameterButton_Click);
+            // 
+            // addJvmParameterButton
+            // 
+            this.addJvmParameterButton.Location = new System.Drawing.Point(522, 95);
+            this.addJvmParameterButton.Name = "addJvmParameterButton";
+            this.addJvmParameterButton.Size = new System.Drawing.Size(75, 23);
+            this.addJvmParameterButton.TabIndex = 10;
+            this.addJvmParameterButton.Text = "Add";
+            this.addJvmParameterButton.UseVisualStyleBackColor = true;
+            this.addJvmParameterButton.Click += new System.EventHandler(this.addJvmParameterButton_Click);
             // 
             // checkBox1
             // 
@@ -155,7 +235,7 @@
             // 
             // jvmLocationButton
             // 
-            this.jvmLocationButton.Location = new System.Drawing.Point(502, 45);
+            this.jvmLocationButton.Location = new System.Drawing.Point(522, 43);
             this.jvmLocationButton.Name = "jvmLocationButton";
             this.jvmLocationButton.Size = new System.Drawing.Size(75, 23);
             this.jvmLocationButton.TabIndex = 8;
@@ -165,7 +245,7 @@
             // 
             // proactiveLocationButton
             // 
-            this.proactiveLocationButton.Location = new System.Drawing.Point(501, 19);
+            this.proactiveLocationButton.Location = new System.Drawing.Point(522, 14);
             this.proactiveLocationButton.Name = "proactiveLocationButton";
             this.proactiveLocationButton.Size = new System.Drawing.Size(75, 23);
             this.proactiveLocationButton.TabIndex = 7;
@@ -173,19 +253,10 @@
             this.proactiveLocationButton.UseVisualStyleBackColor = true;
             this.proactiveLocationButton.Click += new System.EventHandler(this.proactiveLocationButton_Click);
             // 
-            // jvmParams
-            // 
-            this.jvmParams.Location = new System.Drawing.Point(127, 95);
-            this.jvmParams.Multiline = true;
-            this.jvmParams.Name = "jvmParams";
-            this.jvmParams.Size = new System.Drawing.Size(368, 70);
-            this.jvmParams.TabIndex = 6;
-            this.jvmParams.TextChanged += new System.EventHandler(this.jvmParams_TextChanged);
-            // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 95);
+            this.label3.Location = new System.Drawing.Point(6, 100);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(87, 13);
             this.label3.TabIndex = 5;
@@ -194,7 +265,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 45);
+            this.label2.Location = new System.Drawing.Point(6, 47);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(76, 13);
             this.label2.TabIndex = 4;
@@ -211,45 +282,526 @@
             // 
             // jvmDirectory
             // 
-            this.jvmDirectory.Location = new System.Drawing.Point(127, 45);
+            this.jvmDirectory.Location = new System.Drawing.Point(127, 44);
             this.jvmDirectory.Name = "jvmDirectory";
-            this.jvmDirectory.Size = new System.Drawing.Size(368, 20);
+            this.jvmDirectory.Size = new System.Drawing.Size(389, 20);
             this.jvmDirectory.TabIndex = 1;
             this.jvmDirectory.TextChanged += new System.EventHandler(this.jvmDirectory_TextChanged);
             // 
             // proactiveLocation
             // 
-            this.proactiveLocation.Location = new System.Drawing.Point(127, 19);
+            this.proactiveLocation.Location = new System.Drawing.Point(127, 16);
             this.proactiveLocation.Name = "proactiveLocation";
-            this.proactiveLocation.Size = new System.Drawing.Size(368, 20);
+            this.proactiveLocation.Size = new System.Drawing.Size(389, 20);
             this.proactiveLocation.TabIndex = 0;
             this.proactiveLocation.TextChanged += new System.EventHandler(this.proactiveLocation_TextChanged);
             // 
             // tabControl1
             // 
-            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.generalTabPage);
+            this.tabControl1.Controls.Add(this.connectionTabPage);
             this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(682, 349);
             this.tabControl1.TabIndex = 1;
             // 
-            // tabPage1
+            // generalTabPage
             // 
-            this.tabPage1.Controls.Add(this.groupBox1);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(674, 323);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "ProActive Configuration";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.generalTabPage.Controls.Add(this.enableMemoryManagementCheckBox);
+            this.generalTabPage.Controls.Add(this.memoryManagementBox);
+            this.generalTabPage.Controls.Add(this.groupBox1);
+            this.generalTabPage.Location = new System.Drawing.Point(4, 22);
+            this.generalTabPage.Name = "generalTabPage";
+            this.generalTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.generalTabPage.Size = new System.Drawing.Size(674, 323);
+            this.generalTabPage.TabIndex = 0;
+            this.generalTabPage.Text = "General";
+            this.generalTabPage.UseVisualStyleBackColor = true;
+            // 
+            // enableMemoryManagementCheckBox
+            // 
+            this.enableMemoryManagementCheckBox.AutoSize = true;
+            this.enableMemoryManagementCheckBox.Location = new System.Drawing.Point(3, 183);
+            this.enableMemoryManagementCheckBox.Name = "enableMemoryManagementCheckBox";
+            this.enableMemoryManagementCheckBox.Size = new System.Drawing.Size(164, 17);
+            this.enableMemoryManagementCheckBox.TabIndex = 2;
+            this.enableMemoryManagementCheckBox.Text = "Enable Memory Management";
+            this.enableMemoryManagementCheckBox.UseVisualStyleBackColor = true;
+            this.enableMemoryManagementCheckBox.CheckedChanged += new System.EventHandler(this.enableMemoryManagementCheckBox_CheckedChanged);
+            // 
+            // memoryManagementBox
+            // 
+            this.memoryManagementBox.Controls.Add(this.totalProcessMemoryValue);
+            this.memoryManagementBox.Controls.Add(this.totalProcessMemoryLabel);
+            this.memoryManagementBox.Controls.Add(this.javaMemoryNumericUpDown);
+            this.memoryManagementBox.Controls.Add(this.javaMemoryLabel);
+            this.memoryManagementBox.Controls.Add(this.availablePhysicalMemoryValue);
+            this.memoryManagementBox.Controls.Add(this.availablePhysicalMemoryLabel);
+            this.memoryManagementBox.Controls.Add(this.nativeMemoryNumericUpDown);
+            this.memoryManagementBox.Controls.Add(this.nativeMemoryLabel);
+            this.memoryManagementBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.memoryManagementBox.Location = new System.Drawing.Point(3, 206);
+            this.memoryManagementBox.Name = "memoryManagementBox";
+            this.memoryManagementBox.Size = new System.Drawing.Size(226, 111);
+            this.memoryManagementBox.TabIndex = 1;
+            this.memoryManagementBox.TabStop = false;
+            this.memoryManagementBox.Text = "Memory Management (Mbytes)";
+            // 
+            // totalProcessMemoryValue
+            // 
+            this.totalProcessMemoryValue.AutoSize = true;
+            this.totalProcessMemoryValue.Location = new System.Drawing.Point(151, 93);
+            this.totalProcessMemoryValue.Name = "totalProcessMemoryValue";
+            this.totalProcessMemoryValue.Size = new System.Drawing.Size(13, 13);
+            this.totalProcessMemoryValue.TabIndex = 8;
+            this.totalProcessMemoryValue.Text = "0";
+            // 
+            // totalProcessMemoryLabel
+            // 
+            this.totalProcessMemoryLabel.AutoSize = true;
+            this.totalProcessMemoryLabel.Location = new System.Drawing.Point(6, 93);
+            this.totalProcessMemoryLabel.Name = "totalProcessMemoryLabel";
+            this.totalProcessMemoryLabel.Size = new System.Drawing.Size(139, 13);
+            this.totalProcessMemoryLabel.TabIndex = 7;
+            this.totalProcessMemoryLabel.Text = "Total Process Memory Limit:";
+            // 
+            // javaMemoryNumericUpDown
+            // 
+            this.javaMemoryNumericUpDown.Location = new System.Drawing.Point(152, 43);
+            this.javaMemoryNumericUpDown.Maximum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.javaMemoryNumericUpDown.Name = "javaMemoryNumericUpDown";
+            this.javaMemoryNumericUpDown.Size = new System.Drawing.Size(67, 20);
+            this.javaMemoryNumericUpDown.TabIndex = 5;
+            this.javaMemoryNumericUpDown.ValueChanged += new System.EventHandler(this.javaMemoryNumericUpDown_ValueChanged);
+            // 
+            // javaMemoryLabel
+            // 
+            this.javaMemoryLabel.AutoSize = true;
+            this.javaMemoryLabel.Location = new System.Drawing.Point(23, 45);
+            this.javaMemoryLabel.Name = "javaMemoryLabel";
+            this.javaMemoryLabel.Size = new System.Drawing.Size(122, 13);
+            this.javaMemoryLabel.TabIndex = 4;
+            this.javaMemoryLabel.Text = "Additional Java Memory:";
+            // 
+            // availablePhysicalMemoryValue
+            // 
+            this.availablePhysicalMemoryValue.AutoSize = true;
+            this.availablePhysicalMemoryValue.Location = new System.Drawing.Point(151, 21);
+            this.availablePhysicalMemoryValue.Name = "availablePhysicalMemoryValue";
+            this.availablePhysicalMemoryValue.Size = new System.Drawing.Size(13, 13);
+            this.availablePhysicalMemoryValue.TabIndex = 3;
+            this.availablePhysicalMemoryValue.Text = "0";
+            // 
+            // availablePhysicalMemoryLabel
+            // 
+            this.availablePhysicalMemoryLabel.AutoSize = true;
+            this.availablePhysicalMemoryLabel.Location = new System.Drawing.Point(10, 21);
+            this.availablePhysicalMemoryLabel.Name = "availablePhysicalMemoryLabel";
+            this.availablePhysicalMemoryLabel.Size = new System.Drawing.Size(135, 13);
+            this.availablePhysicalMemoryLabel.TabIndex = 2;
+            this.availablePhysicalMemoryLabel.Text = "Available Physical Memory:";
+            // 
+            // nativeMemoryNumericUpDown
+            // 
+            this.nativeMemoryNumericUpDown.Location = new System.Drawing.Point(152, 67);
+            this.nativeMemoryNumericUpDown.Maximum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.nativeMemoryNumericUpDown.Name = "nativeMemoryNumericUpDown";
+            this.nativeMemoryNumericUpDown.Size = new System.Drawing.Size(67, 20);
+            this.nativeMemoryNumericUpDown.TabIndex = 1;
+            this.nativeMemoryNumericUpDown.ValueChanged += new System.EventHandler(this.nativeMemoryNumericUpDown_ValueChanged);
+            // 
+            // nativeMemoryLabel
+            // 
+            this.nativeMemoryLabel.AutoSize = true;
+            this.nativeMemoryLabel.Location = new System.Drawing.Point(15, 69);
+            this.nativeMemoryLabel.Name = "nativeMemoryLabel";
+            this.nativeMemoryLabel.Size = new System.Drawing.Size(130, 13);
+            this.nativeMemoryLabel.TabIndex = 0;
+            this.nativeMemoryLabel.Text = "Additional Native Memory:";
+            // 
+            // connectionTabPage
+            // 
+            this.connectionTabPage.Controls.Add(this.enabledConnectionGroupBox);
+            this.connectionTabPage.Controls.Add(this.connectionTypeTabControl);
+            this.connectionTabPage.Location = new System.Drawing.Point(4, 22);
+            this.connectionTabPage.Name = "connectionTabPage";
+            this.connectionTabPage.Size = new System.Drawing.Size(674, 323);
+            this.connectionTabPage.TabIndex = 3;
+            this.connectionTabPage.Text = "Connection";
+            this.connectionTabPage.UseVisualStyleBackColor = true;
+            // 
+            // enabledConnectionGroupBox
+            // 
+            this.enabledConnectionGroupBox.Controls.Add(this.resourceManagerRegistrationRadioButton);
+            this.enabledConnectionGroupBox.Controls.Add(this.rmiRegistrationRadioButton);
+            this.enabledConnectionGroupBox.Controls.Add(this.peerToPeerRadioButton);
+            this.enabledConnectionGroupBox.Location = new System.Drawing.Point(142, 6);
+            this.enabledConnectionGroupBox.Name = "enabledConnectionGroupBox";
+            this.enabledConnectionGroupBox.Size = new System.Drawing.Size(391, 45);
+            this.enabledConnectionGroupBox.TabIndex = 4;
+            this.enabledConnectionGroupBox.TabStop = false;
+            this.enabledConnectionGroupBox.Text = "Enabled Connection";
+            // 
+            // resourceManagerRegistrationRadioButton
+            // 
+            this.resourceManagerRegistrationRadioButton.AutoSize = true;
+            this.resourceManagerRegistrationRadioButton.Location = new System.Drawing.Point(116, 19);
+            this.resourceManagerRegistrationRadioButton.Name = "resourceManagerRegistrationRadioButton";
+            this.resourceManagerRegistrationRadioButton.Size = new System.Drawing.Size(175, 17);
+            this.resourceManagerRegistrationRadioButton.TabIndex = 2;
+            this.resourceManagerRegistrationRadioButton.TabStop = true;
+            this.resourceManagerRegistrationRadioButton.Text = "Resource Manager Registration";
+            this.resourceManagerRegistrationRadioButton.UseVisualStyleBackColor = true;
+            this.resourceManagerRegistrationRadioButton.CheckedChanged += new System.EventHandler(this.resourceManagerRegistrationRadioButton_CheckedChanged);
+            // 
+            // rmiRegistrationRadioButton
+            // 
+            this.rmiRegistrationRadioButton.AutoSize = true;
+            this.rmiRegistrationRadioButton.Location = new System.Drawing.Point(6, 19);
+            this.rmiRegistrationRadioButton.Name = "rmiRegistrationRadioButton";
+            this.rmiRegistrationRadioButton.Size = new System.Drawing.Size(104, 17);
+            this.rmiRegistrationRadioButton.TabIndex = 1;
+            this.rmiRegistrationRadioButton.TabStop = true;
+            this.rmiRegistrationRadioButton.Text = "RMI Registration";
+            this.rmiRegistrationRadioButton.UseVisualStyleBackColor = true;
+            this.rmiRegistrationRadioButton.CheckedChanged += new System.EventHandler(this.rmiRegistrationRadioButton_CheckedChanged);
+            // 
+            // peerToPeerRadioButton
+            // 
+            this.peerToPeerRadioButton.AutoSize = true;
+            this.peerToPeerRadioButton.Location = new System.Drawing.Point(297, 19);
+            this.peerToPeerRadioButton.Name = "peerToPeerRadioButton";
+            this.peerToPeerRadioButton.Size = new System.Drawing.Size(88, 17);
+            this.peerToPeerRadioButton.TabIndex = 3;
+            this.peerToPeerRadioButton.TabStop = true;
+            this.peerToPeerRadioButton.Text = "Peer-To-Peer";
+            this.peerToPeerRadioButton.UseVisualStyleBackColor = true;
+            this.peerToPeerRadioButton.CheckedChanged += new System.EventHandler(this.peerToPeerRadioButton_CheckedChanged);
+            // 
+            // connectionTypeTabControl
+            // 
+            this.connectionTypeTabControl.Alignment = System.Windows.Forms.TabAlignment.Left;
+            this.connectionTypeTabControl.Controls.Add(this.rmiRegistrationTabPage);
+            this.connectionTypeTabControl.Controls.Add(this.resourceManagerRegistrationTabPage);
+            this.connectionTypeTabControl.Controls.Add(this.peerToPeerTabPage);
+            this.connectionTypeTabControl.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
+            this.connectionTypeTabControl.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.connectionTypeTabControl.ItemSize = new System.Drawing.Size(19, 175);
+            this.connectionTypeTabControl.Location = new System.Drawing.Point(3, 57);
+            this.connectionTypeTabControl.Multiline = true;
+            this.connectionTypeTabControl.Name = "connectionTypeTabControl";
+            this.connectionTypeTabControl.SelectedIndex = 0;
+            this.connectionTypeTabControl.Size = new System.Drawing.Size(668, 263);
+            this.connectionTypeTabControl.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
+            this.connectionTypeTabControl.TabIndex = 0;
+            this.connectionTypeTabControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.actionTypeTabControl_DrawItem);
+            // 
+            // rmiRegistrationTabPage
+            // 
+            this.rmiRegistrationTabPage.Controls.Add(this.rmiRegistrationAdditionalConfigurationGroupBox);
+            this.rmiRegistrationTabPage.Controls.Add(this.rmiActionGroup);
+            this.rmiRegistrationTabPage.Location = new System.Drawing.Point(179, 4);
+            this.rmiRegistrationTabPage.Name = "rmiRegistrationTabPage";
+            this.rmiRegistrationTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.rmiRegistrationTabPage.Size = new System.Drawing.Size(485, 255);
+            this.rmiRegistrationTabPage.TabIndex = 0;
+            this.rmiRegistrationTabPage.Text = "RMI Registration";
+            this.rmiRegistrationTabPage.UseVisualStyleBackColor = true;
+            // 
+            // rmiRegistrationAdditionalConfigurationGroupBox
+            // 
+            this.rmiRegistrationAdditionalConfigurationGroupBox.Controls.Add(this.rmiRegistrationJavaActionClassTextBox);
+            this.rmiRegistrationAdditionalConfigurationGroupBox.Controls.Add(this.label13);
+            this.rmiRegistrationAdditionalConfigurationGroupBox.Location = new System.Drawing.Point(6, 201);
+            this.rmiRegistrationAdditionalConfigurationGroupBox.Name = "rmiRegistrationAdditionalConfigurationGroupBox";
+            this.rmiRegistrationAdditionalConfigurationGroupBox.Size = new System.Drawing.Size(473, 48);
+            this.rmiRegistrationAdditionalConfigurationGroupBox.TabIndex = 2;
+            this.rmiRegistrationAdditionalConfigurationGroupBox.TabStop = false;
+            this.rmiRegistrationAdditionalConfigurationGroupBox.Text = "Additional Configuration";
+            // 
+            // rmiRegistrationJavaActionClassTextBox
+            // 
+            this.rmiRegistrationJavaActionClassTextBox.Location = new System.Drawing.Point(106, 19);
+            this.rmiRegistrationJavaActionClassTextBox.Name = "rmiRegistrationJavaActionClassTextBox";
+            this.rmiRegistrationJavaActionClassTextBox.Size = new System.Drawing.Size(361, 20);
+            this.rmiRegistrationJavaActionClassTextBox.TabIndex = 1;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(6, 22);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(95, 13);
+            this.label13.TabIndex = 0;
+            this.label13.Text = "Java Starter Class:";
+            // 
+            // rmiActionGroup
+            // 
+            this.rmiActionGroup.Controls.Add(this.rmiNodeName);
+            this.rmiActionGroup.Controls.Add(this.rmiNodeEnabled);
+            this.rmiActionGroup.Location = new System.Drawing.Point(6, 6);
+            this.rmiActionGroup.Name = "rmiActionGroup";
+            this.rmiActionGroup.Size = new System.Drawing.Size(436, 53);
+            this.rmiActionGroup.TabIndex = 1;
+            this.rmiActionGroup.TabStop = false;
+            this.rmiActionGroup.Text = "RMI Registration";
+            // 
+            // rmiNodeName
+            // 
+            this.rmiNodeName.Enabled = false;
+            this.rmiNodeName.Location = new System.Drawing.Point(96, 19);
+            this.rmiNodeName.Name = "rmiNodeName";
+            this.rmiNodeName.Size = new System.Drawing.Size(333, 20);
+            this.rmiNodeName.TabIndex = 1;
+            // 
+            // rmiNodeEnabled
+            // 
+            this.rmiNodeEnabled.AutoSize = true;
+            this.rmiNodeEnabled.Location = new System.Drawing.Point(9, 21);
+            this.rmiNodeEnabled.Name = "rmiNodeEnabled";
+            this.rmiNodeEnabled.Size = new System.Drawing.Size(84, 17);
+            this.rmiNodeEnabled.TabIndex = 0;
+            this.rmiNodeEnabled.Text = "Node name:";
+            this.rmiNodeEnabled.UseVisualStyleBackColor = true;
+            this.rmiNodeEnabled.CheckedChanged += new System.EventHandler(this.rmiNodeEnabled_CheckedChanged);
+            // 
+            // resourceManagerRegistrationTabPage
+            // 
+            this.resourceManagerRegistrationTabPage.Controls.Add(this.resourceManagerRegistrationAdditionalConfigurationGroupBox);
+            this.resourceManagerRegistrationTabPage.Controls.Add(this.rmActionGroup);
+            this.resourceManagerRegistrationTabPage.Location = new System.Drawing.Point(179, 4);
+            this.resourceManagerRegistrationTabPage.Name = "resourceManagerRegistrationTabPage";
+            this.resourceManagerRegistrationTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.resourceManagerRegistrationTabPage.Size = new System.Drawing.Size(485, 255);
+            this.resourceManagerRegistrationTabPage.TabIndex = 1;
+            this.resourceManagerRegistrationTabPage.Text = "Resource Manager Registration";
+            this.resourceManagerRegistrationTabPage.UseVisualStyleBackColor = true;
+            // 
+            // resourceManagerRegistrationAdditionalConfigurationGroupBox
+            // 
+            this.resourceManagerRegistrationAdditionalConfigurationGroupBox.Controls.Add(this.resourceManagerRegistrationJavaActionClassTextBox);
+            this.resourceManagerRegistrationAdditionalConfigurationGroupBox.Controls.Add(this.label18);
+            this.resourceManagerRegistrationAdditionalConfigurationGroupBox.Location = new System.Drawing.Point(6, 201);
+            this.resourceManagerRegistrationAdditionalConfigurationGroupBox.Name = "resourceManagerRegistrationAdditionalConfigurationGroupBox";
+            this.resourceManagerRegistrationAdditionalConfigurationGroupBox.Size = new System.Drawing.Size(473, 48);
+            this.resourceManagerRegistrationAdditionalConfigurationGroupBox.TabIndex = 4;
+            this.resourceManagerRegistrationAdditionalConfigurationGroupBox.TabStop = false;
+            this.resourceManagerRegistrationAdditionalConfigurationGroupBox.Text = "Additional Configuration";
+            // 
+            // resourceManagerRegistrationJavaActionClassTextBox
+            // 
+            this.resourceManagerRegistrationJavaActionClassTextBox.Location = new System.Drawing.Point(106, 19);
+            this.resourceManagerRegistrationJavaActionClassTextBox.Name = "resourceManagerRegistrationJavaActionClassTextBox";
+            this.resourceManagerRegistrationJavaActionClassTextBox.Size = new System.Drawing.Size(361, 20);
+            this.resourceManagerRegistrationJavaActionClassTextBox.TabIndex = 1;
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(6, 22);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(95, 13);
+            this.label18.TabIndex = 0;
+            this.label18.Text = "Java Starter Class:";
+            // 
+            // rmActionGroup
+            // 
+            this.rmActionGroup.Controls.Add(this.rmNodeName);
+            this.rmActionGroup.Controls.Add(this.label16);
+            this.rmActionGroup.Controls.Add(this.rmUrl);
+            this.rmActionGroup.Controls.Add(this.label4);
+            this.rmActionGroup.Location = new System.Drawing.Point(6, 6);
+            this.rmActionGroup.Name = "rmActionGroup";
+            this.rmActionGroup.Size = new System.Drawing.Size(436, 74);
+            this.rmActionGroup.TabIndex = 3;
+            this.rmActionGroup.TabStop = false;
+            this.rmActionGroup.Text = "Resource Manager Registration";
+            // 
+            // rmNodeName
+            // 
+            this.rmNodeName.Location = new System.Drawing.Point(138, 45);
+            this.rmNodeName.Name = "rmNodeName";
+            this.rmNodeName.Size = new System.Drawing.Size(292, 20);
+            this.rmNodeName.TabIndex = 3;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(65, 48);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(67, 13);
+            this.label16.TabIndex = 2;
+            this.label16.Text = "Node Name:";
+            // 
+            // rmUrl
+            // 
+            this.rmUrl.Location = new System.Drawing.Point(138, 19);
+            this.rmUrl.Name = "rmUrl";
+            this.rmUrl.Size = new System.Drawing.Size(292, 20);
+            this.rmUrl.TabIndex = 1;
+            this.rmUrl.TextChanged += new System.EventHandler(this.rmUrl_TextChanged);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 22);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(126, 13);
+            this.label4.TabIndex = 0;
+            this.label4.Text = "Resource Manager URL:";
+            // 
+            // peerToPeerTabPage
+            // 
+            this.peerToPeerTabPage.Controls.Add(this.peerToPeerAdditionalConfigurationGroupBox);
+            this.peerToPeerTabPage.Controls.Add(this.p2pactionGroup);
+            this.peerToPeerTabPage.Location = new System.Drawing.Point(179, 4);
+            this.peerToPeerTabPage.Name = "peerToPeerTabPage";
+            this.peerToPeerTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.peerToPeerTabPage.Size = new System.Drawing.Size(485, 255);
+            this.peerToPeerTabPage.TabIndex = 2;
+            this.peerToPeerTabPage.Text = "Peer-To-Peer";
+            this.peerToPeerTabPage.UseVisualStyleBackColor = true;
+            // 
+            // peerToPeerAdditionalConfigurationGroupBox
+            // 
+            this.peerToPeerAdditionalConfigurationGroupBox.Controls.Add(this.peerToPeerJavaActionClassTextBox);
+            this.peerToPeerAdditionalConfigurationGroupBox.Controls.Add(this.label19);
+            this.peerToPeerAdditionalConfigurationGroupBox.Location = new System.Drawing.Point(6, 201);
+            this.peerToPeerAdditionalConfigurationGroupBox.Name = "peerToPeerAdditionalConfigurationGroupBox";
+            this.peerToPeerAdditionalConfigurationGroupBox.Size = new System.Drawing.Size(473, 48);
+            this.peerToPeerAdditionalConfigurationGroupBox.TabIndex = 5;
+            this.peerToPeerAdditionalConfigurationGroupBox.TabStop = false;
+            this.peerToPeerAdditionalConfigurationGroupBox.Text = "Additional Configuration";
+            // 
+            // peerToPeerJavaActionClassTextBox
+            // 
+            this.peerToPeerJavaActionClassTextBox.Location = new System.Drawing.Point(106, 19);
+            this.peerToPeerJavaActionClassTextBox.Name = "peerToPeerJavaActionClassTextBox";
+            this.peerToPeerJavaActionClassTextBox.Size = new System.Drawing.Size(361, 20);
+            this.peerToPeerJavaActionClassTextBox.TabIndex = 1;
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(6, 22);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(95, 13);
+            this.label19.TabIndex = 0;
+            this.label19.Text = "Java Starter Class:";
+            // 
+            // p2pactionGroup
+            // 
+            this.p2pactionGroup.Controls.Add(this.label17);
+            this.p2pactionGroup.Controls.Add(this.p2pProtocol);
+            this.p2pactionGroup.Controls.Add(this.peerToPeerSaveHostButton);
+            this.p2pactionGroup.Controls.Add(this.peerToPeerUrlTextBox);
+            this.p2pactionGroup.Controls.Add(this.label15);
+            this.p2pactionGroup.Controls.Add(this.peerToPeerDeleteHostButton);
+            this.p2pactionGroup.Controls.Add(this.peerToPeerAddHostButton);
+            this.p2pactionGroup.Controls.Add(this.peerToPeerContactsListBox);
+            this.p2pactionGroup.Controls.Add(this.label14);
+            this.p2pactionGroup.Location = new System.Drawing.Point(6, 6);
+            this.p2pactionGroup.Name = "p2pactionGroup";
+            this.p2pactionGroup.Size = new System.Drawing.Size(436, 181);
+            this.p2pactionGroup.TabIndex = 3;
+            this.p2pactionGroup.TabStop = false;
+            this.p2pactionGroup.Text = "Peer-To-Peer Collaboration";
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(6, 22);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(49, 13);
+            this.label17.TabIndex = 7;
+            this.label17.Text = "Protocol:";
+            // 
+            // p2pProtocol
+            // 
+            this.p2pProtocol.Location = new System.Drawing.Point(61, 19);
+            this.p2pProtocol.Name = "p2pProtocol";
+            this.p2pProtocol.Size = new System.Drawing.Size(283, 20);
+            this.p2pProtocol.TabIndex = 8;
+            this.p2pProtocol.TextChanged += new System.EventHandler(this.p2pProtocol_TextChanged);
+            // 
+            // peerToPeerSaveHostButton
+            // 
+            this.peerToPeerSaveHostButton.Enabled = false;
+            this.peerToPeerSaveHostButton.Location = new System.Drawing.Point(350, 123);
+            this.peerToPeerSaveHostButton.Name = "peerToPeerSaveHostButton";
+            this.peerToPeerSaveHostButton.Size = new System.Drawing.Size(75, 23);
+            this.peerToPeerSaveHostButton.TabIndex = 6;
+            this.peerToPeerSaveHostButton.Text = "Save Peer";
+            this.peerToPeerSaveHostButton.UseVisualStyleBackColor = true;
+            this.peerToPeerSaveHostButton.Click += new System.EventHandler(this.peerToPeerSaveHostButton_Click);
+            // 
+            // peerToPeerUrlTextBox
+            // 
+            this.peerToPeerUrlTextBox.Location = new System.Drawing.Point(69, 152);
+            this.peerToPeerUrlTextBox.Name = "peerToPeerUrlTextBox";
+            this.peerToPeerUrlTextBox.Size = new System.Drawing.Size(356, 20);
+            this.peerToPeerUrlTextBox.TabIndex = 5;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(6, 155);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(57, 13);
+            this.label15.TabIndex = 4;
+            this.label15.Text = "Peer URL:";
+            // 
+            // peerToPeerDeleteHostButton
+            // 
+            this.peerToPeerDeleteHostButton.Location = new System.Drawing.Point(350, 93);
+            this.peerToPeerDeleteHostButton.Name = "peerToPeerDeleteHostButton";
+            this.peerToPeerDeleteHostButton.Size = new System.Drawing.Size(75, 23);
+            this.peerToPeerDeleteHostButton.TabIndex = 3;
+            this.peerToPeerDeleteHostButton.Text = "Delete";
+            this.peerToPeerDeleteHostButton.UseVisualStyleBackColor = true;
+            this.peerToPeerDeleteHostButton.Click += new System.EventHandler(this.peerToPeerDeleteHostButton_Click);
+            // 
+            // peerToPeerAddHostButton
+            // 
+            this.peerToPeerAddHostButton.Location = new System.Drawing.Point(350, 64);
+            this.peerToPeerAddHostButton.Name = "peerToPeerAddHostButton";
+            this.peerToPeerAddHostButton.Size = new System.Drawing.Size(75, 23);
+            this.peerToPeerAddHostButton.TabIndex = 2;
+            this.peerToPeerAddHostButton.Text = "Add";
+            this.peerToPeerAddHostButton.UseVisualStyleBackColor = true;
+            this.peerToPeerAddHostButton.Click += new System.EventHandler(this.peerToPeerAddHostButton_Click);
+            // 
+            // peerToPeerContactsListBox
+            // 
+            this.peerToPeerContactsListBox.FormattingEnabled = true;
+            this.peerToPeerContactsListBox.Location = new System.Drawing.Point(9, 64);
+            this.peerToPeerContactsListBox.Name = "peerToPeerContactsListBox";
+            this.peerToPeerContactsListBox.Size = new System.Drawing.Size(335, 82);
+            this.peerToPeerContactsListBox.TabIndex = 1;
+            this.peerToPeerContactsListBox.SelectedIndexChanged += new System.EventHandler(this.peerToPeerContactsListBox_SelectedIndexChanged);
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(6, 48);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(99, 13);
+            this.label14.TabIndex = 0;
+            this.label14.Text = "First Contact Peers:";
             // 
             // tabPage2
             // 
-            this.tabPage2.Controls.Add(this.checkBox2);
+            this.tabPage2.Controls.Add(this.alwaysAvailableCheckBox);
             this.tabPage2.Controls.Add(this.eventEditorGroup);
             this.tabPage2.Controls.Add(this.groupBox2);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
@@ -260,144 +812,107 @@
             this.tabPage2.Text = "Events";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // checkBox2
+            // alwaysAvailableCheckBox
             // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(268, 220);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(104, 17);
-            this.checkBox2.TabIndex = 18;
-            this.checkBox2.Text = "Always available";
-            this.checkBox2.UseVisualStyleBackColor = true;
-            this.checkBox2.CheckStateChanged += new System.EventHandler(this.checkBox2_CheckStateChanged);
+            this.alwaysAvailableCheckBox.AutoSize = true;
+            this.alwaysAvailableCheckBox.Location = new System.Drawing.Point(491, 292);
+            this.alwaysAvailableCheckBox.Name = "alwaysAvailableCheckBox";
+            this.alwaysAvailableCheckBox.Size = new System.Drawing.Size(180, 17);
+            this.alwaysAvailableCheckBox.TabIndex = 18;
+            this.alwaysAvailableCheckBox.Text = "Always available (Normal Priority)";
+            this.alwaysAvailableCheckBox.UseVisualStyleBackColor = true;
+            this.alwaysAvailableCheckBox.CheckStateChanged += new System.EventHandler(this.alwaysAvailableCheckBox_CheckStateChanged);
             // 
             // eventEditorGroup
             // 
-            this.eventEditorGroup.Controls.Add(this.secondsDuration);
-            this.eventEditorGroup.Controls.Add(this.label12);
-            this.eventEditorGroup.Controls.Add(this.minutesDuration);
-            this.eventEditorGroup.Controls.Add(this.label11);
-            this.eventEditorGroup.Controls.Add(this.hoursDuration);
-            this.eventEditorGroup.Controls.Add(this.label10);
-            this.eventEditorGroup.Controls.Add(this.dayDuration);
-            this.eventEditorGroup.Controls.Add(this.label9);
-            this.eventEditorGroup.Controls.Add(this.label8);
-            this.eventEditorGroup.Controls.Add(this.secondStart);
-            this.eventEditorGroup.Controls.Add(this.label7);
-            this.eventEditorGroup.Controls.Add(this.minuteStart);
-            this.eventEditorGroup.Controls.Add(this.label6);
-            this.eventEditorGroup.Controls.Add(this.label5);
-            this.eventEditorGroup.Controls.Add(this.hourStart);
-            this.eventEditorGroup.Controls.Add(this.label4);
-            this.eventEditorGroup.Controls.Add(this.weekdayStart);
+            this.eventEditorGroup.Controls.Add(this.groupBox4);
+            this.eventEditorGroup.Controls.Add(this.startTimeGroupBox);
+            this.eventEditorGroup.Controls.Add(this.durationGroupBox);
             this.eventEditorGroup.Enabled = false;
             this.eventEditorGroup.Location = new System.Drawing.Point(259, 6);
             this.eventEditorGroup.Name = "eventEditorGroup";
-            this.eventEditorGroup.Size = new System.Drawing.Size(398, 199);
+            this.eventEditorGroup.Size = new System.Drawing.Size(409, 192);
             this.eventEditorGroup.TabIndex = 1;
             this.eventEditorGroup.TabStop = false;
             this.eventEditorGroup.Text = "Event Editor";
             // 
-            // secondsDuration
+            // groupBox4
             // 
-            this.secondsDuration.Location = new System.Drawing.Point(350, 155);
-            this.secondsDuration.Maximum = new decimal(new int[] {
-            59,
-            0,
-            0,
-            0});
-            this.secondsDuration.Name = "secondsDuration";
-            this.secondsDuration.Size = new System.Drawing.Size(36, 20);
-            this.secondsDuration.TabIndex = 17;
-            this.secondsDuration.ValueChanged += new System.EventHandler(this.durationSecondChanged);
+            this.groupBox4.Controls.Add(this.label20);
+            this.groupBox4.Controls.Add(this.maxCpuUsageNumericUpDown);
+            this.groupBox4.Controls.Add(this.maxCpuUsageLabel);
+            this.groupBox4.Controls.Add(this.processPriorityLabel);
+            this.groupBox4.Controls.Add(this.processPriorityComboBox);
+            this.groupBox4.Location = new System.Drawing.Point(6, 133);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(397, 51);
+            this.groupBox4.TabIndex = 20;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Process Management";
             // 
-            // label12
+            // processPriorityLabel
             // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(292, 157);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(52, 13);
-            this.label12.TabIndex = 15;
-            this.label12.Text = "Seconds:";
+            this.processPriorityLabel.AutoSize = true;
+            this.processPriorityLabel.Location = new System.Drawing.Point(6, 22);
+            this.processPriorityLabel.Name = "processPriorityLabel";
+            this.processPriorityLabel.Size = new System.Drawing.Size(82, 13);
+            this.processPriorityLabel.TabIndex = 1;
+            this.processPriorityLabel.Text = "Process Priority:";
             // 
-            // minutesDuration
+            // processPriorityComboBox
             // 
-            this.minutesDuration.Location = new System.Drawing.Point(246, 157);
-            this.minutesDuration.Maximum = new decimal(new int[] {
-            59,
-            0,
-            0,
-            0});
-            this.minutesDuration.Name = "minutesDuration";
-            this.minutesDuration.Size = new System.Drawing.Size(36, 20);
-            this.minutesDuration.TabIndex = 16;
-            this.minutesDuration.ValueChanged += new System.EventHandler(this.durationMinuteChanged);
+            this.processPriorityComboBox.FormattingEnabled = true;
+            this.processPriorityComboBox.Items.AddRange(new object[] {
+            "Normal",
+            "Idle",
+            "High",
+            "RealTime",
+            "BelowNormal",
+            "AboveNormal"});
+            this.processPriorityComboBox.Location = new System.Drawing.Point(94, 19);
+            this.processPriorityComboBox.Name = "processPriorityComboBox";
+            this.processPriorityComboBox.Size = new System.Drawing.Size(102, 21);
+            this.processPriorityComboBox.TabIndex = 0;
+            this.processPriorityComboBox.SelectedIndexChanged += new System.EventHandler(this.processPriorityComboBox_SelectedIndexChanged);
             // 
-            // label11
+            // startTimeGroupBox
             // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(191, 157);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(47, 13);
-            this.label11.TabIndex = 13;
-            this.label11.Text = "Minutes:";
-            // 
-            // hoursDuration
-            // 
-            this.hoursDuration.Location = new System.Drawing.Point(146, 157);
-            this.hoursDuration.Maximum = new decimal(new int[] {
-            23,
-            0,
-            0,
-            0});
-            this.hoursDuration.Name = "hoursDuration";
-            this.hoursDuration.Size = new System.Drawing.Size(36, 20);
-            this.hoursDuration.TabIndex = 15;
-            this.hoursDuration.ValueChanged += new System.EventHandler(this.durationHourChanged);
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(96, 157);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(38, 13);
-            this.label10.TabIndex = 11;
-            this.label10.Text = "Hours:";
-            // 
-            // dayDuration
-            // 
-            this.dayDuration.Location = new System.Drawing.Point(54, 157);
-            this.dayDuration.Maximum = new decimal(new int[] {
-            6,
-            0,
-            0,
-            0});
-            this.dayDuration.Name = "dayDuration";
-            this.dayDuration.Size = new System.Drawing.Size(36, 20);
-            this.dayDuration.TabIndex = 14;
-            this.dayDuration.ValueChanged += new System.EventHandler(this.durationDayChanged);
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(13, 157);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(34, 13);
-            this.label9.TabIndex = 9;
-            this.label9.Text = "Days:";
+            this.startTimeGroupBox.Controls.Add(this.label8);
+            this.startTimeGroupBox.Controls.Add(this.label7);
+            this.startTimeGroupBox.Controls.Add(this.secondStart);
+            this.startTimeGroupBox.Controls.Add(this.label5);
+            this.startTimeGroupBox.Controls.Add(this.weekdayStart);
+            this.startTimeGroupBox.Controls.Add(this.label6);
+            this.startTimeGroupBox.Controls.Add(this.hourStart);
+            this.startTimeGroupBox.Controls.Add(this.minuteStart);
+            this.startTimeGroupBox.Location = new System.Drawing.Point(6, 19);
+            this.startTimeGroupBox.Name = "startTimeGroupBox";
+            this.startTimeGroupBox.Size = new System.Drawing.Size(397, 51);
+            this.startTimeGroupBox.TabIndex = 19;
+            this.startTimeGroupBox.TabStop = false;
+            this.startTimeGroupBox.Text = "Start Time";
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 129);
+            this.label8.Location = new System.Drawing.Point(6, 21);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(50, 13);
-            this.label8.TabIndex = 8;
-            this.label8.Text = "Duration:";
+            this.label8.Size = new System.Drawing.Size(29, 13);
+            this.label8.TabIndex = 14;
+            this.label8.Text = "Day:";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(297, 21);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(52, 13);
+            this.label7.TabIndex = 6;
+            this.label7.Text = "Seconds:";
             // 
             // secondStart
             // 
-            this.secondStart.Location = new System.Drawing.Point(246, 83);
+            this.secondStart.Location = new System.Drawing.Point(355, 19);
             this.secondStart.Maximum = new decimal(new int[] {
             59,
             0,
@@ -408,49 +923,45 @@
             this.secondStart.TabIndex = 13;
             this.secondStart.ValueChanged += new System.EventHandler(this.startSecondChanged);
             // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(188, 85);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(52, 13);
-            this.label7.TabIndex = 6;
-            this.label7.Text = "Seconds:";
-            // 
-            // minuteStart
-            // 
-            this.minuteStart.Location = new System.Drawing.Point(146, 83);
-            this.minuteStart.Maximum = new decimal(new int[] {
-            59,
-            0,
-            0,
-            0});
-            this.minuteStart.Name = "minuteStart";
-            this.minuteStart.Size = new System.Drawing.Size(36, 20);
-            this.minuteStart.TabIndex = 12;
-            this.minuteStart.ValueChanged += new System.EventHandler(this.startMinuteChanged);
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(93, 85);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(47, 13);
-            this.label6.TabIndex = 4;
-            this.label6.Text = "Minutes:";
-            // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(10, 85);
+            this.label5.Location = new System.Drawing.Point(116, 21);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(38, 13);
             this.label5.TabIndex = 3;
             this.label5.Text = "Hours:";
             // 
+            // weekdayStart
+            // 
+            this.weekdayStart.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.weekdayStart.FormattingEnabled = true;
+            this.weekdayStart.Items.AddRange(new object[] {
+            "sunday",
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday",
+            "saturday"});
+            this.weekdayStart.Location = new System.Drawing.Point(45, 18);
+            this.weekdayStart.Name = "weekdayStart";
+            this.weekdayStart.Size = new System.Drawing.Size(65, 21);
+            this.weekdayStart.TabIndex = 10;
+            this.weekdayStart.SelectedIndexChanged += new System.EventHandler(this.weekdayStart_SelectedIndexChanged);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(202, 22);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(47, 13);
+            this.label6.TabIndex = 4;
+            this.label6.Text = "Minutes:";
+            // 
             // hourStart
             // 
-            this.hourStart.Location = new System.Drawing.Point(54, 83);
+            this.hourStart.Location = new System.Drawing.Point(160, 19);
             this.hourStart.Maximum = new decimal(new int[] {
             23,
             0,
@@ -461,37 +972,128 @@
             this.hourStart.TabIndex = 11;
             this.hourStart.ValueChanged += new System.EventHandler(this.startHourChanged);
             // 
-            // label4
+            // minuteStart
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(7, 20);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(54, 13);
-            this.label4.TabIndex = 1;
-            this.label4.Text = "Start time:";
+            this.minuteStart.Location = new System.Drawing.Point(255, 19);
+            this.minuteStart.Maximum = new decimal(new int[] {
+            59,
+            0,
+            0,
+            0});
+            this.minuteStart.Name = "minuteStart";
+            this.minuteStart.Size = new System.Drawing.Size(36, 20);
+            this.minuteStart.TabIndex = 12;
+            this.minuteStart.ValueChanged += new System.EventHandler(this.startMinuteChanged);
             // 
-            // weekdayStart
+            // durationGroupBox
             // 
-            this.weekdayStart.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.weekdayStart.FormattingEnabled = true;
-            this.weekdayStart.Items.AddRange(new object[] {
-            "monday",
-            "tuesday",
-            "wednesday",
-            "thursday",
-            "friday",
-            "saturday",
-            "sunday"});
-            this.weekdayStart.Location = new System.Drawing.Point(10, 46);
-            this.weekdayStart.Name = "weekdayStart";
-            this.weekdayStart.Size = new System.Drawing.Size(121, 21);
-            this.weekdayStart.TabIndex = 10;
-            this.weekdayStart.SelectedIndexChanged += new System.EventHandler(this.weekdayStart_SelectedIndexChanged);
+            this.durationGroupBox.Controls.Add(this.label9);
+            this.durationGroupBox.Controls.Add(this.secondsDuration);
+            this.durationGroupBox.Controls.Add(this.dayDuration);
+            this.durationGroupBox.Controls.Add(this.label12);
+            this.durationGroupBox.Controls.Add(this.label10);
+            this.durationGroupBox.Controls.Add(this.minutesDuration);
+            this.durationGroupBox.Controls.Add(this.hoursDuration);
+            this.durationGroupBox.Controls.Add(this.label11);
+            this.durationGroupBox.Location = new System.Drawing.Point(6, 76);
+            this.durationGroupBox.Name = "durationGroupBox";
+            this.durationGroupBox.Size = new System.Drawing.Size(397, 51);
+            this.durationGroupBox.TabIndex = 18;
+            this.durationGroupBox.TabStop = false;
+            this.durationGroupBox.Text = "Duration";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(6, 21);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(34, 13);
+            this.label9.TabIndex = 9;
+            this.label9.Text = "Days:";
+            // 
+            // secondsDuration
+            // 
+            this.secondsDuration.Location = new System.Drawing.Point(355, 19);
+            this.secondsDuration.Maximum = new decimal(new int[] {
+            59,
+            0,
+            0,
+            0});
+            this.secondsDuration.Name = "secondsDuration";
+            this.secondsDuration.Size = new System.Drawing.Size(36, 20);
+            this.secondsDuration.TabIndex = 17;
+            this.secondsDuration.ValueChanged += new System.EventHandler(this.durationSecondChanged);
+            // 
+            // dayDuration
+            // 
+            this.dayDuration.Location = new System.Drawing.Point(74, 19);
+            this.dayDuration.Maximum = new decimal(new int[] {
+            6,
+            0,
+            0,
+            0});
+            this.dayDuration.Name = "dayDuration";
+            this.dayDuration.Size = new System.Drawing.Size(36, 20);
+            this.dayDuration.TabIndex = 14;
+            this.dayDuration.ValueChanged += new System.EventHandler(this.durationDayChanged);
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(297, 21);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(52, 13);
+            this.label12.TabIndex = 15;
+            this.label12.Text = "Seconds:";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(116, 21);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(38, 13);
+            this.label10.TabIndex = 11;
+            this.label10.Text = "Hours:";
+            // 
+            // minutesDuration
+            // 
+            this.minutesDuration.Location = new System.Drawing.Point(255, 19);
+            this.minutesDuration.Maximum = new decimal(new int[] {
+            59,
+            0,
+            0,
+            0});
+            this.minutesDuration.Name = "minutesDuration";
+            this.minutesDuration.Size = new System.Drawing.Size(36, 20);
+            this.minutesDuration.TabIndex = 16;
+            this.minutesDuration.ValueChanged += new System.EventHandler(this.durationMinuteChanged);
+            // 
+            // hoursDuration
+            // 
+            this.hoursDuration.Location = new System.Drawing.Point(160, 19);
+            this.hoursDuration.Maximum = new decimal(new int[] {
+            23,
+            0,
+            0,
+            0});
+            this.hoursDuration.Name = "hoursDuration";
+            this.hoursDuration.Size = new System.Drawing.Size(36, 20);
+            this.hoursDuration.TabIndex = 15;
+            this.hoursDuration.ValueChanged += new System.EventHandler(this.durationHourChanged);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(202, 21);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(47, 13);
+            this.label11.TabIndex = 13;
+            this.label11.Text = "Minutes:";
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.button2);
-            this.groupBox2.Controls.Add(this.newEventButton);
+            this.groupBox2.Controls.Add(this.showButton);
+            this.groupBox2.Controls.Add(this.createEventButton);
             this.groupBox2.Controls.Add(this.deleteEventButton);
             this.groupBox2.Controls.Add(this.eventsList);
             this.groupBox2.Location = new System.Drawing.Point(6, 6);
@@ -501,25 +1103,25 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Events";
             // 
-            // button2
+            // showButton
             // 
-            this.button2.Location = new System.Drawing.Point(171, 282);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(70, 23);
-            this.button2.TabIndex = 6;
-            this.button2.Text = "Show";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.showButton.Location = new System.Drawing.Point(171, 282);
+            this.showButton.Name = "showButton";
+            this.showButton.Size = new System.Drawing.Size(70, 23);
+            this.showButton.TabIndex = 6;
+            this.showButton.Text = "Show";
+            this.showButton.UseVisualStyleBackColor = true;
+            this.showButton.Click += new System.EventHandler(this.showButton_Click);
             // 
-            // newEventButton
+            // createEventButton
             // 
-            this.newEventButton.Location = new System.Drawing.Point(6, 282);
-            this.newEventButton.Name = "newEventButton";
-            this.newEventButton.Size = new System.Drawing.Size(87, 23);
-            this.newEventButton.TabIndex = 3;
-            this.newEventButton.Text = "Create event";
-            this.newEventButton.UseVisualStyleBackColor = true;
-            this.newEventButton.Click += new System.EventHandler(this.newEventButton_Click);
+            this.createEventButton.Location = new System.Drawing.Point(6, 282);
+            this.createEventButton.Name = "createEventButton";
+            this.createEventButton.Size = new System.Drawing.Size(87, 23);
+            this.createEventButton.TabIndex = 3;
+            this.createEventButton.Text = "Create event";
+            this.createEventButton.UseVisualStyleBackColor = true;
+            this.createEventButton.Click += new System.EventHandler(this.createEventButton_Click);
             // 
             // deleteEventButton
             // 
@@ -531,344 +1133,9 @@
             this.deleteEventButton.UseVisualStyleBackColor = true;
             this.deleteEventButton.Click += new System.EventHandler(this.deleteEventButton_Click);
             // 
-            // eventsList
-            // 
-            this.eventsList.FormattingEnabled = true;
-            this.eventsList.Location = new System.Drawing.Point(6, 19);
-            this.eventsList.Name = "eventsList";
-            this.eventsList.Size = new System.Drawing.Size(235, 251);
-            this.eventsList.TabIndex = 0;
-            this.eventsList.SelectedIndexChanged += new System.EventHandler(this.eventsList_SelectedIndexChanged);
-            // 
-            // tabPage3
-            // 
-            this.tabPage3.Controls.Add(this.actionEditorGroup);
-            this.tabPage3.Controls.Add(this.groupBox3);
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(674, 323);
-            this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "Actions";
-            this.tabPage3.UseVisualStyleBackColor = true;
-            // 
-            // actionEditorGroup
-            // 
-            this.actionEditorGroup.Controls.Add(this.groupBox7);
-            this.actionEditorGroup.Controls.Add(this.rmActionGroup);
-            this.actionEditorGroup.Controls.Add(this.p2pactionGroup);
-            this.actionEditorGroup.Controls.Add(this.rmiActionGroup);
-            this.actionEditorGroup.Location = new System.Drawing.Point(215, 6);
-            this.actionEditorGroup.Name = "actionEditorGroup";
-            this.actionEditorGroup.Size = new System.Drawing.Size(453, 311);
-            this.actionEditorGroup.TabIndex = 5;
-            this.actionEditorGroup.TabStop = false;
-            this.actionEditorGroup.Text = "Action Editor";
-            // 
-            // groupBox7
-            // 
-            this.groupBox7.Controls.Add(this.actionTypeBox);
-            this.groupBox7.Controls.Add(this.userBox);
-            this.groupBox7.Controls.Add(this.priorityBox);
-            this.groupBox7.Controls.Add(this.label18);
-            this.groupBox7.Controls.Add(this.label20);
-            this.groupBox7.Controls.Add(this.label16);
-            this.groupBox7.Location = new System.Drawing.Point(6, 15);
-            this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(436, 67);
-            this.groupBox7.TabIndex = 3;
-            this.groupBox7.TabStop = false;
-            this.groupBox7.Text = "Choose action type:";
-            // 
-            // actionTypeBox
-            // 
-            this.actionTypeBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.actionTypeBox.Enabled = false;
-            this.actionTypeBox.FormattingEnabled = true;
-            this.actionTypeBox.Items.AddRange(new object[] {
-            "Peer-To-Peer",
-            "RMI Registration",
-            "Resource Manager Registration"});
-            this.actionTypeBox.Location = new System.Drawing.Point(10, 36);
-            this.actionTypeBox.Name = "actionTypeBox";
-            this.actionTypeBox.Size = new System.Drawing.Size(124, 21);
-            this.actionTypeBox.TabIndex = 4;
-            this.actionTypeBox.SelectedIndexChanged += new System.EventHandler(this.actionTypeBox_SelectedIndexChanged);
-            // 
-            // userBox
-            // 
-            this.userBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.userBox.Enabled = false;
-            this.userBox.FormattingEnabled = true;
-            this.userBox.Location = new System.Drawing.Point(308, 36);
-            this.userBox.Name = "userBox";
-            this.userBox.Size = new System.Drawing.Size(106, 21);
-            this.userBox.TabIndex = 4;
-            // 
-            // priorityBox
-            // 
-            this.priorityBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.priorityBox.FormattingEnabled = true;
-            this.priorityBox.Items.AddRange(new object[] {
-            "Idle",
-            "Normal",
-            "High",
-            "Realtime"});
-            this.priorityBox.Location = new System.Drawing.Point(167, 36);
-            this.priorityBox.Name = "priorityBox";
-            this.priorityBox.Size = new System.Drawing.Size(106, 21);
-            this.priorityBox.TabIndex = 4;
-            this.priorityBox.SelectedIndexChanged += new System.EventHandler(this.actionPriorityChanged);
-            // 
-            // label18
-            // 
-            this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(7, 20);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(34, 13);
-            this.label18.TabIndex = 3;
-            this.label18.Text = "Type:";
-            // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(305, 20);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(32, 13);
-            this.label20.TabIndex = 3;
-            this.label20.Text = "User:";
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(164, 20);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(81, 13);
-            this.label16.TabIndex = 3;
-            this.label16.Text = "Process priority:";
-            // 
-            // p2pactionGroup
-            // 
-            this.p2pactionGroup.Controls.Add(this.label17);
-            this.p2pactionGroup.Controls.Add(this.p2pProtocol);
-            this.p2pactionGroup.Controls.Add(this.saveHost);
-            this.p2pactionGroup.Controls.Add(this.peerUrl);
-            this.p2pactionGroup.Controls.Add(this.label15);
-            this.p2pactionGroup.Controls.Add(this.deleteHost);
-            this.p2pactionGroup.Controls.Add(this.addHost);
-            this.p2pactionGroup.Controls.Add(this.hostList);
-            this.p2pactionGroup.Controls.Add(this.label14);
-            this.p2pactionGroup.Location = new System.Drawing.Point(6, 88);
-            this.p2pactionGroup.Name = "p2pactionGroup";
-            this.p2pactionGroup.Size = new System.Drawing.Size(436, 177);
-            this.p2pactionGroup.TabIndex = 2;
-            this.p2pactionGroup.TabStop = false;
-            this.p2pactionGroup.Text = "Peer-To-Peer Collaboration";
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(6, 125);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(49, 13);
-            this.label17.TabIndex = 7;
-            this.label17.Text = "Protocol:";
-            // 
-            // p2pProtocol
-            // 
-            this.p2pProtocol.Location = new System.Drawing.Point(62, 122);
-            this.p2pProtocol.Name = "p2pProtocol";
-            this.p2pProtocol.Size = new System.Drawing.Size(363, 20);
-            this.p2pProtocol.TabIndex = 8;
-            this.p2pProtocol.TextChanged += new System.EventHandler(this.actionP2PProtocolChanged);
-            // 
-            // saveHost
-            // 
-            this.saveHost.Location = new System.Drawing.Point(350, 86);
-            this.saveHost.Name = "saveHost";
-            this.saveHost.Size = new System.Drawing.Size(75, 23);
-            this.saveHost.TabIndex = 6;
-            this.saveHost.Text = "Save Peer";
-            this.saveHost.UseVisualStyleBackColor = true;
-            this.saveHost.Click += new System.EventHandler(this.saveHost_Click);
-            // 
-            // peerUrl
-            // 
-            this.peerUrl.Location = new System.Drawing.Point(62, 151);
-            this.peerUrl.Name = "peerUrl";
-            this.peerUrl.Size = new System.Drawing.Size(363, 20);
-            this.peerUrl.TabIndex = 5;
-            this.peerUrl.Leave += new System.EventHandler(this.actionP2PUrlChanged);
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(6, 154);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(57, 13);
-            this.label15.TabIndex = 4;
-            this.label15.Text = "Peer URL:";
-            // 
-            // deleteHost
-            // 
-            this.deleteHost.Location = new System.Drawing.Point(350, 57);
-            this.deleteHost.Name = "deleteHost";
-            this.deleteHost.Size = new System.Drawing.Size(75, 23);
-            this.deleteHost.TabIndex = 3;
-            this.deleteHost.Text = "Delete";
-            this.deleteHost.UseVisualStyleBackColor = true;
-            this.deleteHost.Click += new System.EventHandler(this.deleteHost_Click);
-            // 
-            // addHost
-            // 
-            this.addHost.Location = new System.Drawing.Point(350, 29);
-            this.addHost.Name = "addHost";
-            this.addHost.Size = new System.Drawing.Size(75, 23);
-            this.addHost.TabIndex = 2;
-            this.addHost.Text = "Add";
-            this.addHost.UseVisualStyleBackColor = true;
-            this.addHost.Click += new System.EventHandler(this.addHost_Click);
-            // 
-            // hostList
-            // 
-            this.hostList.FormattingEnabled = true;
-            this.hostList.Location = new System.Drawing.Point(9, 32);
-            this.hostList.Name = "hostList";
-            this.hostList.Size = new System.Drawing.Size(335, 82);
-            this.hostList.TabIndex = 1;
-            this.hostList.SelectedIndexChanged += new System.EventHandler(this.hostList_SelectedIndexChanged);
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(6, 16);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(99, 13);
-            this.label14.TabIndex = 0;
-            this.label14.Text = "First Contact Peers:";
-            // 
-            // rmiActionGroup
-            // 
-            this.rmiActionGroup.Controls.Add(this.rmiNodeName);
-            this.rmiActionGroup.Controls.Add(this.rmiNodeEnabled);
-            this.rmiActionGroup.Enabled = false;
-            this.rmiActionGroup.Location = new System.Drawing.Point(6, 88);
-            this.rmiActionGroup.Name = "rmiActionGroup";
-            this.rmiActionGroup.Size = new System.Drawing.Size(436, 53);
-            this.rmiActionGroup.TabIndex = 0;
-            this.rmiActionGroup.TabStop = false;
-            this.rmiActionGroup.Text = "RMI Registration";
-            // 
-            // rmiNodeName
-            // 
-            this.rmiNodeName.Enabled = false;
-            this.rmiNodeName.Location = new System.Drawing.Point(96, 19);
-            this.rmiNodeName.Name = "rmiNodeName";
-            this.rmiNodeName.Size = new System.Drawing.Size(177, 20);
-            this.rmiNodeName.TabIndex = 1;
-            this.rmiNodeName.TextChanged += new System.EventHandler(this.actionAdvertNodeNameChanged);
-            // 
-            // rmiNodeEnabled
-            // 
-            this.rmiNodeEnabled.AutoSize = true;
-            this.rmiNodeEnabled.Location = new System.Drawing.Point(6, 21);
-            this.rmiNodeEnabled.Name = "rmiNodeEnabled";
-            this.rmiNodeEnabled.Size = new System.Drawing.Size(84, 17);
-            this.rmiNodeEnabled.TabIndex = 0;
-            this.rmiNodeEnabled.Text = "Node name:";
-            this.rmiNodeEnabled.UseVisualStyleBackColor = true;
-            this.rmiNodeEnabled.CheckedChanged += new System.EventHandler(this.checkDefineNodeName_CheckedChanged);
-            // 
-            // rmActionGroup
-            // 
-            this.rmActionGroup.Controls.Add(this.rmNodeName);
-            this.rmActionGroup.Controls.Add(this.rmUrl);
-            this.rmActionGroup.Controls.Add(this.label19);
-            this.rmActionGroup.Controls.Add(this.label13);
-            this.rmActionGroup.Enabled = false;
-            this.rmActionGroup.Location = new System.Drawing.Point(6, 88);
-            this.rmActionGroup.Name = "rmActionGroup";
-            this.rmActionGroup.Size = new System.Drawing.Size(436, 80);
-            this.rmActionGroup.TabIndex = 1;
-            this.rmActionGroup.TabStop = false;
-            this.rmActionGroup.Text = "Resource Manager Registration";
-            // 
-            // rmNodeName
-            // 
-            this.rmNodeName.Location = new System.Drawing.Point(139, 45);
-            this.rmNodeName.Name = "rmNodeName";
-            this.rmNodeName.Size = new System.Drawing.Size(227, 20);
-            this.rmNodeName.TabIndex = 2;
-            this.rmNodeName.TextChanged += new System.EventHandler(this.actionRMNodNameChanged);
-            // 
-            // rmUrl
-            // 
-            this.rmUrl.Location = new System.Drawing.Point(139, 16);
-            this.rmUrl.Name = "rmUrl";
-            this.rmUrl.Size = new System.Drawing.Size(227, 20);
-            this.rmUrl.TabIndex = 1;
-            this.rmUrl.TextChanged += new System.EventHandler(this.actionRMUrlChanged);
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(7, 48);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(64, 13);
-            this.label19.TabIndex = 0;
-            this.label19.Text = "NodeName:";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(7, 19);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(126, 13);
-            this.label13.TabIndex = 0;
-            this.label13.Text = "Resource Manager URL:";
-            // 
-            // groupBox3
-            // 
-            this.groupBox3.Controls.Add(this.button3);
-            this.groupBox3.Controls.Add(this.deleteActionButton);
-            this.groupBox3.Controls.Add(this.actionsList);
-            this.groupBox3.Location = new System.Drawing.Point(6, 6);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(203, 311);
-            this.groupBox3.TabIndex = 4;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Actions";
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(38, 282);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(87, 23);
-            this.button3.TabIndex = 3;
-            this.button3.Text = "Create action";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.newActionButton_Click);
-            // 
-            // deleteActionButton
-            // 
-            this.deleteActionButton.Location = new System.Drawing.Point(131, 282);
-            this.deleteActionButton.Name = "deleteActionButton";
-            this.deleteActionButton.Size = new System.Drawing.Size(66, 23);
-            this.deleteActionButton.TabIndex = 1;
-            this.deleteActionButton.Text = "Delete";
-            this.deleteActionButton.UseVisualStyleBackColor = true;
-            this.deleteActionButton.Click += new System.EventHandler(this.deleteActionButton_Click);
-            // 
-            // actionsList
-            // 
-            this.actionsList.FormattingEnabled = true;
-            this.actionsList.Location = new System.Drawing.Point(6, 19);
-            this.actionsList.Name = "actionsList";
-            this.actionsList.Size = new System.Drawing.Size(191, 251);
-            this.actionsList.TabIndex = 0;
-            this.actionsList.SelectedIndexChanged += new System.EventHandler(this.actionsList_SelectedIndexChanged);
-            // 
             // saveConfig
             // 
+            this.saveConfig.Enabled = false;
             this.saveConfig.Location = new System.Drawing.Point(531, 367);
             this.saveConfig.Name = "saveConfig";
             this.saveConfig.Size = new System.Drawing.Size(75, 23);
@@ -905,7 +1172,52 @@
             this.saveConfigAs.UseVisualStyleBackColor = true;
             this.saveConfigAs.Click += new System.EventHandler(this.saveConfigAs_Click);
             // 
-            // ConfigEditor
+            // maxCpuUsageLabel
+            // 
+            this.maxCpuUsageLabel.AutoSize = true;
+            this.maxCpuUsageLabel.Location = new System.Drawing.Point(233, 22);
+            this.maxCpuUsageLabel.Name = "maxCpuUsageLabel";
+            this.maxCpuUsageLabel.Size = new System.Drawing.Size(92, 13);
+            this.maxCpuUsageLabel.TabIndex = 2;
+            this.maxCpuUsageLabel.Text = "Max CPU Usage: ";
+            // 
+            // maxCpuUsageNumericUpDown
+            // 
+            this.maxCpuUsageNumericUpDown.Location = new System.Drawing.Point(331, 20);
+            this.maxCpuUsageNumericUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.maxCpuUsageNumericUpDown.Name = "maxCpuUsageNumericUpDown";
+            this.maxCpuUsageNumericUpDown.Size = new System.Drawing.Size(39, 20);
+            this.maxCpuUsageNumericUpDown.TabIndex = 3;
+            this.maxCpuUsageNumericUpDown.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.maxCpuUsageNumericUpDown.ValueChanged += new System.EventHandler(this.maxCpuUsageNumericUpDown_ValueChanged);
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(376, 22);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(15, 13);
+            this.label20.TabIndex = 4;
+            this.label20.Text = "%";
+            // 
+            // eventsList
+            // 
+            this.eventsList.FormattingEnabled = true;
+            this.eventsList.Location = new System.Drawing.Point(6, 19);
+            this.eventsList.Name = "eventsList";
+            this.eventsList.Size = new System.Drawing.Size(235, 251);
+            this.eventsList.TabIndex = 0;
+            this.eventsList.SelectedIndexChanged += new System.EventHandler(this.eventsList_SelectedIndexChanged);
+            // 
+            // ConfigurationEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -915,39 +1227,60 @@
             this.Controls.Add(this.saveConfig);
             this.Controls.Add(this.tabControl1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
-            this.Name = "ConfigEditor";
+            this.Name = "ConfigurationEditor";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "ConfigEditor";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ConfigEditor_FormClosed);
+            this.Text = "Configuration Editor";
+            this.Load += new System.EventHandler(this.ConfigEditor_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ConfigEditor_FormClosing);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.tabControl1.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
+            this.generalTabPage.ResumeLayout(false);
+            this.generalTabPage.PerformLayout();
+            this.memoryManagementBox.ResumeLayout(false);
+            this.memoryManagementBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.javaMemoryNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nativeMemoryNumericUpDown)).EndInit();
+            this.connectionTabPage.ResumeLayout(false);
+            this.enabledConnectionGroupBox.ResumeLayout(false);
+            this.enabledConnectionGroupBox.PerformLayout();
+            this.connectionTypeTabControl.ResumeLayout(false);
+            this.rmiRegistrationTabPage.ResumeLayout(false);
+            this.rmiRegistrationAdditionalConfigurationGroupBox.ResumeLayout(false);
+            this.rmiRegistrationAdditionalConfigurationGroupBox.PerformLayout();
+            this.rmiActionGroup.ResumeLayout(false);
+            this.rmiActionGroup.PerformLayout();
+            this.resourceManagerRegistrationTabPage.ResumeLayout(false);
+            this.resourceManagerRegistrationAdditionalConfigurationGroupBox.ResumeLayout(false);
+            this.resourceManagerRegistrationAdditionalConfigurationGroupBox.PerformLayout();
+            this.rmActionGroup.ResumeLayout(false);
+            this.rmActionGroup.PerformLayout();
+            this.peerToPeerTabPage.ResumeLayout(false);
+            this.peerToPeerAdditionalConfigurationGroupBox.ResumeLayout(false);
+            this.peerToPeerAdditionalConfigurationGroupBox.PerformLayout();
+            this.p2pactionGroup.ResumeLayout(false);
+            this.p2pactionGroup.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
             this.eventEditorGroup.ResumeLayout(false);
-            this.eventEditorGroup.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
+            this.startTimeGroupBox.ResumeLayout(false);
+            this.startTimeGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.secondStart)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.hourStart)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.minuteStart)).EndInit();
+            this.durationGroupBox.ResumeLayout(false);
+            this.durationGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.secondsDuration)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dayDuration)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.minutesDuration)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.hoursDuration)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dayDuration)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.secondStart)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.minuteStart)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.hourStart)).EndInit();
             this.groupBox2.ResumeLayout(false);
-            this.tabPage3.ResumeLayout(false);
-            this.actionEditorGroup.ResumeLayout(false);
-            this.groupBox7.ResumeLayout(false);
-            this.groupBox7.PerformLayout();
-            this.p2pactionGroup.ResumeLayout(false);
-            this.p2pactionGroup.PerformLayout();
-            this.rmiActionGroup.ResumeLayout(false);
-            this.rmiActionGroup.PerformLayout();
-            this.rmActionGroup.ResumeLayout(false);
-            this.rmActionGroup.PerformLayout();
-            this.groupBox3.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.maxCpuUsageNumericUpDown)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -960,30 +1293,26 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox jvmDirectory;
         private System.Windows.Forms.TextBox proactiveLocation;
-        private System.Windows.Forms.TextBox jvmParams;
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.Button jvmLocationButton;
         private System.Windows.Forms.Button proactiveLocationButton;
         private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage generalTabPage;
         private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.Button saveConfig;
         private System.Windows.Forms.Button closeConfig;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.ListBox eventsList;
+        private RefreshingListBox eventsList;
         private System.Windows.Forms.GroupBox eventEditorGroup;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.NumericUpDown hourStart;
-        private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ComboBox weekdayStart;
-        private System.Windows.Forms.Button newEventButton;
+        private System.Windows.Forms.Button createEventButton;
         private System.Windows.Forms.Button deleteEventButton;
         private System.Windows.Forms.NumericUpDown secondStart;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.NumericUpDown minuteStart;
-        private System.Windows.Forms.Label label8;
         private System.Windows.Forms.NumericUpDown dayDuration;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label12;
@@ -992,41 +1321,71 @@
         private System.Windows.Forms.NumericUpDown hoursDuration;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.NumericUpDown secondsDuration;
+        private System.Windows.Forms.FolderBrowserDialog proActiveLocationBrowser;
+        private System.Windows.Forms.FolderBrowserDialog jvmLocationBrowser;
+        private System.Windows.Forms.Button saveConfigAs;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.Button showButton;
+        private System.Windows.Forms.CheckBox alwaysAvailableCheckBox;
+        private System.Windows.Forms.GroupBox memoryManagementBox;
+        private System.Windows.Forms.Label nativeMemoryLabel;
+        private System.Windows.Forms.NumericUpDown nativeMemoryNumericUpDown;
+        private System.Windows.Forms.Label availablePhysicalMemoryLabel;
+        private System.Windows.Forms.Label availablePhysicalMemoryValue;
+        private System.Windows.Forms.Button removeJvmParameterButton;
+        private System.Windows.Forms.Button addJvmParameterButton;
+        private System.Windows.Forms.ListBox jvmParametersListBox;
+        private System.Windows.Forms.Label javaMemoryLabel;
+        private System.Windows.Forms.NumericUpDown javaMemoryNumericUpDown;
+        private System.Windows.Forms.Label totalProcessMemoryLabel;
+        private System.Windows.Forms.Label totalProcessMemoryValue;
+        private System.Windows.Forms.GroupBox durationGroupBox;
+        private System.Windows.Forms.GroupBox startTimeGroupBox;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.Label processPriorityLabel;
+        private System.Windows.Forms.ComboBox processPriorityComboBox;
+        private System.Windows.Forms.CheckBox enableMemoryManagementCheckBox;
+        private System.Windows.Forms.TabPage connectionTabPage;
+        private System.Windows.Forms.TabPage rmiRegistrationTabPage;
+        private System.Windows.Forms.TabPage resourceManagerRegistrationTabPage;
+        private System.Windows.Forms.TabPage peerToPeerTabPage;
+        private System.Windows.Forms.RadioButton rmiRegistrationRadioButton;
+        private System.Windows.Forms.RadioButton peerToPeerRadioButton;
+        private System.Windows.Forms.RadioButton resourceManagerRegistrationRadioButton;
+        private System.Windows.Forms.TabControl connectionTypeTabControl;
+        private System.Windows.Forms.GroupBox p2pactionGroup;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.TextBox p2pProtocol;
+        private System.Windows.Forms.Button peerToPeerSaveHostButton;
+        private System.Windows.Forms.TextBox peerToPeerUrlTextBox;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Button peerToPeerDeleteHostButton;
+        private System.Windows.Forms.Button peerToPeerAddHostButton;
+        private System.Windows.Forms.ListBox peerToPeerContactsListBox;
+        private System.Windows.Forms.Label label14;
         private System.Windows.Forms.GroupBox rmiActionGroup;
         private System.Windows.Forms.TextBox rmiNodeName;
         private System.Windows.Forms.CheckBox rmiNodeEnabled;
         private System.Windows.Forms.GroupBox rmActionGroup;
-        private System.Windows.Forms.Label label13;
         private System.Windows.Forms.TextBox rmUrl;
-        private System.Windows.Forms.GroupBox groupBox7;
-        private System.Windows.Forms.GroupBox p2pactionGroup;
-        private System.Windows.Forms.TextBox peerUrl;
-        private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.Button deleteHost;
-        private System.Windows.Forms.Button addHost;
-        private System.Windows.Forms.ListBox hostList;
-        private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.FolderBrowserDialog proActiveLocationBrowser;
-        private System.Windows.Forms.FolderBrowserDialog jvmLocationBrowser;
-        private System.Windows.Forms.Button saveHost;
-        private System.Windows.Forms.ComboBox priorityBox;
-        private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.TextBox p2pProtocol;
-        private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.Button saveConfigAs;
-        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.ComboBox actionTypeBox;
-        private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button deleteActionButton;
-        private System.Windows.Forms.ListBox actionsList;
-        private System.Windows.Forms.GroupBox actionEditorGroup;
-        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox rmNodeName;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.GroupBox rmiRegistrationAdditionalConfigurationGroupBox;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.TextBox rmiRegistrationJavaActionClassTextBox;
+        private System.Windows.Forms.GroupBox resourceManagerRegistrationAdditionalConfigurationGroupBox;
+        private System.Windows.Forms.TextBox resourceManagerRegistrationJavaActionClassTextBox;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.GroupBox peerToPeerAdditionalConfigurationGroupBox;
+        private System.Windows.Forms.TextBox peerToPeerJavaActionClassTextBox;
         private System.Windows.Forms.Label label19;
-        private System.Windows.Forms.ComboBox userBox;
+        private System.Windows.Forms.GroupBox enabledConnectionGroupBox;
+        private System.Windows.Forms.Label maxCpuUsageLabel;
         private System.Windows.Forms.Label label20;
-        private System.Windows.Forms.CheckBox checkBox2;
+        private System.Windows.Forms.NumericUpDown maxCpuUsageNumericUpDown;
     }
+
+
 }

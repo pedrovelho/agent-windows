@@ -83,12 +83,6 @@
     <Compile Include="ConfigEditor.Designer.cs">
       <DependentUpon>ConfigEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="CreateAction.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="CreateAction.Designer.cs">
-      <DependentUpon>CreateAction.cs</DependentUpon>
-    </Compile>
     <Compile Include="IniFile.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -102,10 +96,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ConfigEditor.resx">
       <DependentUpon>ConfigEditor.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CreateAction.resx">
-      <DependentUpon>CreateAction.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">

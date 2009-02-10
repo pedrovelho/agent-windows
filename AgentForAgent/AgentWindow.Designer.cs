@@ -30,7 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfigurationDialog));
-            this.label1 = new System.Windows.Forms.Label();
+            this.configurationFileLocationLabel = new System.Windows.Forms.Label();
             this.configLocation = new System.Windows.Forms.TextBox();
             this.browse = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -41,7 +41,7 @@
             this.stopService = new System.Windows.Forms.Button();
             this.startService = new System.Windows.Forms.Button();
             this.statuslabel = new System.Windows.Forms.Label();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.proActiveLogoPictureBox = new System.Windows.Forms.PictureBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
@@ -56,19 +56,19 @@
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.proActiveLogoPictureBox)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // label1
+            // configurationFileLocationLabel
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 21);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(128, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Configuration file location:";
+            this.configurationFileLocationLabel.AutoSize = true;
+            this.configurationFileLocationLabel.Location = new System.Drawing.Point(6, 21);
+            this.configurationFileLocationLabel.Name = "configurationFileLocationLabel";
+            this.configurationFileLocationLabel.Size = new System.Drawing.Size(128, 13);
+            this.configurationFileLocationLabel.TabIndex = 0;
+            this.configurationFileLocationLabel.Text = "Configuration file location:";
             // 
             // configLocation
             // 
@@ -82,7 +82,7 @@
             // 
             // browse
             // 
-            this.browse.Location = new System.Drawing.Point(487, 19);
+            this.browse.Location = new System.Drawing.Point(487, 16);
             this.browse.Name = "browse";
             this.browse.Size = new System.Drawing.Size(75, 23);
             this.browse.TabIndex = 2;
@@ -96,7 +96,7 @@
             this.groupBox1.Controls.Add(this.configLocation);
             this.groupBox1.Controls.Add(this.editConfig);
             this.groupBox1.Controls.Add(this.browse);
-            this.groupBox1.Controls.Add(this.label1);
+            this.groupBox1.Controls.Add(this.configurationFileLocationLabel);
             this.groupBox1.Location = new System.Drawing.Point(12, 117);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(568, 81);
@@ -176,18 +176,17 @@
             this.statuslabel.TabIndex = 0;
             this.statuslabel.Text = "ProActiveAgent Service is currently";
             // 
-            // pictureBox1
+            // proActiveLogoPictureBox
             // 
-            this.pictureBox1.BackColor = System.Drawing.Color.White;
-            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.InitialImage = ((System.Drawing.Image)(resources.GetObject("pictureBox1.InitialImage")));
-            this.pictureBox1.Location = new System.Drawing.Point(12, 12);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(0);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(568, 102);
-            this.pictureBox1.TabIndex = 4;
-            this.pictureBox1.TabStop = false;
-            this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
+            this.proActiveLogoPictureBox.BackColor = System.Drawing.Color.White;
+            this.proActiveLogoPictureBox.Image = ((System.Drawing.Image)(resources.GetObject("proActiveLogoPictureBox.Image")));
+            this.proActiveLogoPictureBox.InitialImage = ((System.Drawing.Image)(resources.GetObject("proActiveLogoPictureBox.InitialImage")));
+            this.proActiveLogoPictureBox.Location = new System.Drawing.Point(12, 12);
+            this.proActiveLogoPictureBox.Margin = new System.Windows.Forms.Padding(0);
+            this.proActiveLogoPictureBox.Name = "proActiveLogoPictureBox";
+            this.proActiveLogoPictureBox.Size = new System.Drawing.Size(568, 102);
+            this.proActiveLogoPictureBox.TabIndex = 4;
+            this.proActiveLogoPictureBox.TabStop = false;
             // 
             // label3
             // 
@@ -296,7 +295,7 @@
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.proActiveLogoPictureBox);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -304,14 +303,14 @@
             this.MaximizeBox = false;
             this.Name = "ConfigurationDialog";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "ProActiveAgent Configuration";
+            this.Text = "ProActive Agent Configuration";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ConfigurationDialog_FormClosing);
             this.Resize += new System.EventHandler(this.ConfigurationDialog_Resize);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.proActiveLogoPictureBox)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
@@ -322,7 +321,7 @@
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label configurationFileLocationLabel;
         private System.Windows.Forms.TextBox configLocation;
         private System.Windows.Forms.Button browse;
         private System.Windows.Forms.GroupBox groupBox1;
@@ -331,7 +330,7 @@
         private System.Windows.Forms.Button stopService;
         private System.Windows.Forms.Button startService;
         private System.Windows.Forms.Label statuslabel;
-        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.PictureBox proActiveLogoPictureBox;
         //private System.Windows.Forms.Button close;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;

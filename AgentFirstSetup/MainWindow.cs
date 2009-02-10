@@ -1,17 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
+using System.Runtime.InteropServices;
+using System.Security.Principal;
 using System.Windows.Forms;
 using ConfigParser;
 using Microsoft.Win32;
-using System.Collections;
-using System.Security.Principal;
-using System.Runtime.InteropServices;
-using System.Diagnostics;
 using ProActiveAgent;
 
 namespace AgentFirstSetup
@@ -37,34 +29,23 @@ namespace AgentFirstSetup
         public MainWindow(string path)
         {
             this.path = path;
-            RegistryKey confKey = Registry.LocalMachine.OpenSubKey("Software\\ProActiveAgent");
+
             this.configLocation = "";
             this.agentDir = "";
-            if (confKey != null)
-            {
-                if (confKey.GetValue("ConfigLocation") != null)
-                {
-                    configLocation = (string)confKey.GetValue("ConfigLocation");
-                }
-                else
-                {
-                    MessageBox.Show("The ProActiveAgent is not installed properly. Please restart the installation process.", "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Environment.Exit(0);
-                }
-                if (confKey.GetValue("AgentDirectory") != null)
-                {
-                    agentDir = (string)confKey.GetValue("AgentDirectory");
-                }
-                else
-                {
-                    MessageBox.Show("The ProActiveAgent is not installed properly. Please restart the installation process.", "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Environment.Exit(0);
-                }
 
-            }
-            else
+            RegistryKey confKey = Registry.LocalMachine.OpenSubKey(Constants.PROACTIVE_AGENT_REG_SUBKEY);
+            if (confKey == null)
             {
-                MessageBox.Show("The ProActiveAgent is not installed properly. Please restart the installation process.", "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("The " + Constants.PROACTIVE_AGENT_SERVICE_NAME + " is not installed properly." + " Missing " + Constants.PROACTIVE_AGENT_REG_SUBKEY + " reg key. Please restart the installation process.", "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Environment.Exit(0);
+            }
+
+            this.agentDir = (string)confKey.GetValue(Constants.PROACTIVE_AGENT_INSTALL_REG_VALUE_NAME);
+            this.configLocation = (string)confKey.GetValue(Constants.PROACTIVE_AGENT_CONFIG_REG_VALUE_NAME);
+
+            if (this.agentDir == null || this.configLocation == null)
+            {
+                MessageBox.Show("The " + Constants.PROACTIVE_AGENT_SERVICE_NAME + " is not installed properly. Please restart the installation process.", "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Environment.Exit(0);
             }
 
@@ -72,9 +53,9 @@ namespace AgentFirstSetup
             {
                 this.conf = ConfigurationParser.parseXml(configLocation, agentDir);
             }
-            catch (IncorrectConfigurationException)
+            catch (Exception ex)
             {
-                MessageBox.Show("The ProActiveAgent is not installed properly. Please restart the installation process.", "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("The " + Constants.PROACTIVE_AGENT_SERVICE_NAME + " is not installed properly. Please restart the installation process.\n" + ex.ToString(), "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Environment.Exit(0);
             }
 
@@ -164,12 +145,21 @@ namespace AgentFirstSetup
             try
             {
                 // Save the config
-                ConfigurationParser.saveXml(this.configLocation, conf);
+                ConfigurationParser.saveXml(this.configLocation, this.conf);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Could not save the configuration.");
+            }
+
+            try
+            {
+                // Install new version
                 SrvInstaller.Install(path + "\\" + Constants.PROACTIVE_AGENT_EXECUTABLE_NAME, Constants.PROACTIVE_AGENT_SERVICE_NAME, Constants.PROACTIVE_AGENT_SERVICE_NAME, accountDomain, accountUser, accountPassword);
             }
             catch (Exception)
             {
-                MessageBox.Show("Error");
+                MessageBox.Show("Could not install the " + Constants.PROACTIVE_AGENT_SERVICE_NAME + " service.");
             }
             Close();
         }

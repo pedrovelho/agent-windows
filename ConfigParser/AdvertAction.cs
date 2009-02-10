@@ -16,10 +16,18 @@ namespace ConfigParser
     {
         /** The string description of this action **/
         public const string DESCRIPTION = "RMI Registration";
+        /// <summary>
+        /// The java class that corresponds to this action.</summary>
+        public const string DEFAULT_JAVA_STARTER_CLASS = "org.objectweb.proactive.core.util.winagent.PAAgentServiceRMIStarter";
 
         // Name of the node to create
         // If the name is null, a default name will be used
         private string myNodeName;
+
+        public AdvertAction() {
+            base.javaStarterClass = DEFAULT_JAVA_STARTER_CLASS;
+            this.myNodeName = "";
+        }
 
         [XmlElement("nodeName", IsNullable=false)]
         public string nodeName

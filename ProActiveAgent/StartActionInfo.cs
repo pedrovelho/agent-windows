@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using ConfigParser;
+using System.Diagnostics;
 
 namespace ProActiveAgent
 {
@@ -9,6 +10,8 @@ namespace ProActiveAgent
     {
         private ConfigParser.Action action;
         private long stopTime; // in ticks
+        private ProcessPriorityClass processPriority;
+        private uint maxCpuUsage;
 
         public long getStopTime()
         {
@@ -28,6 +31,26 @@ namespace ProActiveAgent
         public void setStopTime(long ticks)
         {
             this.stopTime = ticks;
+        }
+
+        public void setProcessPriority(ProcessPriorityClass processPriority)
+        {
+            this.processPriority = processPriority;
+        }
+
+        public ProcessPriorityClass getProcessPriority()
+        {
+            return this.processPriority;
+        }
+
+        public void setMaxCpuUsage(uint maxCpuUsage)
+        {
+            this.maxCpuUsage = maxCpuUsage;
+        }
+
+        public uint getMaxCpuUsage()
+        {
+            return this.maxCpuUsage;
         }
 
     }

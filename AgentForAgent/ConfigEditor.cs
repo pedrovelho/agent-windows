@@ -1,41 +1,38 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using ConfigParser;
 using Microsoft.Win32;
+using System.Diagnostics;
 
 namespace AgentForAgent
 {
-    public partial class ConfigEditor : Form
+    public partial class ConfigurationEditor : Form
     {
-        private Configuration conf;
-        private string location;
+        private const uint MINIMAL_REQUIRED_MEMORY = 96; // 64 for initial heap size + 32 jvm internals
+        private Configuration configuration;
+        private string configurationLocation;
         private ConfigurationDialog hook;
-        private Chart chart;
-        private string[] usersList;
+        private Chart chart;        
 
-        private string _typeOfNewAction;
-        public string typeofNewAction
-        {
-            get { return _typeOfNewAction; }
-            set { _typeOfNewAction = value; }
-        }
+        // Internal data used for jvm parameters list customization
+        private const int DELTA = 5;
+        private System.Windows.Forms.TextBox editBox;
+        int itemSelected = -1;
 
-        private IniFile configuration;
+        private IniFile iniConfiguration;
         //--Constructor
-        public ConfigEditor(Configuration conf, string confLocation, string agentDir, ConfigurationDialog hook)
+        public ConfigurationEditor(Configuration conf, string confLocation, string agentDir, ConfigurationDialog hook)
         {
-            InitializeComponent();
+            // First initialize all widgets (gui-generated)
+            InitializeComponent();            
 
-            this.conf = conf;
-            this.location = confLocation;
+            this.configuration = conf;
+            this.configurationLocation = confLocation;
             this.hook = hook;
 
-            proactiveLocation.Text = conf.agentConfig.proactiveLocation;
+            // Load the proactive location from the configuration into the gui
+            this.proactiveLocation.Text = conf.agentConfig.proactiveLocation;
 
             if (conf.agentConfig.javaHome.Equals(""))
             {
@@ -48,62 +45,157 @@ namespace AgentForAgent
                 jvmDirectory.Text = conf.agentConfig.javaHome;
             }
 
-            jvmParams.Text = conf.agentConfig.jvmParams;
+            ///////////////////////////////////////////////////
+            // Load memory management from the configuration //
+            ///////////////////////////////////////////////////
+            this.memoryManagementBox.Enabled = this.enableMemoryManagementCheckBox.Checked = conf.agentConfig.enableMemoryManagement;
+            // Get total physical memory
+            System.Decimal val = ProActiveAgent.Utils.getAvailablePhysicalMemory();
+            this.availablePhysicalMemoryValue.Text = val.ToString();
+            // Set maximums
+            this.javaMemoryNumericUpDown.Maximum = val;
+            this.nativeMemoryNumericUpDown.Maximum = val;
+            // Load memory limit values from the configuration
+            this.javaMemoryNumericUpDown.Value = conf.agentConfig.javaMemory;
+            this.nativeMemoryNumericUpDown.Value = conf.agentConfig.nativeMemory;
+            this.totalProcessMemoryValue.Text = "" + (MINIMAL_REQUIRED_MEMORY + conf.agentConfig.javaMemory + conf.agentConfig.nativeMemory);
 
-            foreach (Event ev in conf.events.events)
+            ////////////////////////////////////////
+            // Load events from the configuration //
+            ////////////////////////////////////////            
+
+            foreach (Event ev in this.configuration.events)
             {
                 CalendarEvent cEv = (CalendarEvent)ev;
-                if (cEv.durationDays == 6 && cEv.durationHours == 23 && cEv.durationMinutes == 59 && cEv.durationSeconds == 59)
+                this.eventsList.Items.Add(cEv);  
+                if (cEv.isAlwaysAvailable())
                 {
-                    checkBox2.Checked = true;
-                    eventEditorGroup.Enabled = false;
-                    eventsList.Enabled = false;
-                    newEventButton.Enabled = false;
-                    deleteEventButton.Enabled = false;
-                }
-                eventsList.Items.Add(makeEventName(cEv));
+                    this.alwaysAvailableCheckBox.Checked = true;                    
+                }                              
             }
 
-            // Iterate through all actions in configuration then 
-            // add its description in the actions list
-            foreach (ConfigParser.Action act in conf.actions.actions)
+            // Init default values for list boxes
+            this.weekdayStart.SelectedIndex = 0;
+            this.processPriorityComboBox.SelectedIndex = 0;
+            this.maxCpuUsageNumericUpDown.Value = this.maxCpuUsageNumericUpDown.Maximum;
+
+            /////////////////////////////////////////////
+            // Load the actions from the configuration //
+            /////////////////////////////////////////////
+
+            // Iterate through all actions in the configuration then 
+            // load them into the gui            
+            foreach (ConfigParser.Action action in this.configuration.actions)
             {
-                if (act.GetType() == typeof(AdvertAction))
+                if (action.GetType() == typeof(AdvertAction))
                 {
-                    actionsList.Items.Add(AdvertAction.DESCRIPTION);
+                    if (action.isEnabled)
+                    {
+                        this.rmiRegistrationRadioButton.Select();
+                        this.connectionTypeTabControl.SelectedTab = this.rmiRegistrationTabPage;
+                    }
+                    if (action.javaStarterClass == null || action.javaStarterClass.Equals(""))
+                    {
+                        this.rmiRegistrationJavaActionClassTextBox.Text = AdvertAction.DEFAULT_JAVA_STARTER_CLASS;
+                    }
+                    else
+                    {
+                        this.rmiRegistrationJavaActionClassTextBox.Text = action.javaStarterClass;
+                    }
+                    AdvertAction advertAction = (AdvertAction)action;
+                    this.rmiNodeEnabled.Checked = advertAction.nodeName == null || advertAction.nodeName.Equals("");
+                    this.rmiNodeName.Text = advertAction.nodeName;
                 }
-                else if (act.GetType() == typeof(RMAction))
+                else if (action.GetType() == typeof(RMAction))
                 {
-                    actionsList.Items.Add(RMAction.DESCRIPTION);
+                    if (action.isEnabled){
+                        this.resourceManagerRegistrationRadioButton.Select();
+                        this.connectionTypeTabControl.SelectedTab = this.resourceManagerRegistrationTabPage;
+                    }
+                    if (action.javaStarterClass == null || action.javaStarterClass.Equals(""))
+                    {
+                        this.resourceManagerRegistrationJavaActionClassTextBox.Text = RMAction.DEFAULT_JAVA_STARTER_CLASS;
+                    }
+                    else
+                    {
+                        this.resourceManagerRegistrationJavaActionClassTextBox.Text = action.javaStarterClass;
+                    }
+                    RMAction rmAction = (RMAction)action;
+                    this.rmUrl.Text = rmAction.url;
+                    this.rmNodeName.Text = rmAction.nodeName;
                 }
-                else if (act.GetType() == typeof(P2PAction))
+                else if (action.GetType() == typeof(P2PAction))
                 {
-                    actionsList.Items.Add(P2PAction.DESCRIPTION);
+                    if (action.isEnabled)
+                    {
+                        this.peerToPeerRadioButton.Select();
+                        this.connectionTypeTabControl.SelectedTab = this.peerToPeerTabPage;
+                    }
+                    if (action.javaStarterClass == null || action.javaStarterClass.Equals(""))
+                    {
+                        this.peerToPeerJavaActionClassTextBox.Text = P2PAction.DEFAULT_JAVA_STARTER_CLASS;
+                    }
+                    else
+                    {
+                        this.peerToPeerJavaActionClassTextBox.Text = action.javaStarterClass;
+                    }
+                    P2PAction p2pAction = (P2PAction)action;
+                    this.p2pProtocol.Text = p2pAction.protocol;
+                    if (p2pAction.contacts != null) {
+                        this.peerToPeerContactsListBox.Items.AddRange(p2pAction.contacts);
+                    }
                 }
                 else
                 {
                     // Unknown action
-                };
+                }
             }
-
-            p2pactionGroup.Visible = false;
-            rmiActionGroup.Visible = false;
-            rmActionGroup.Visible = false;
 
             //--Chart
-            chart = new Chart(ref conf);
+            chart = new Chart();
+            iniConfiguration = new IniFile("configuration.ini");
 
-            //--Users list
-            string users_reg_key = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\DocFolderPaths";
-            //The registry key for reading user list.
-            RegistryKey key = Registry.LocalMachine.OpenSubKey(users_reg_key, true);
-            //string[] winusers;
-            if (key != null && key.ValueCount > 0)
+            this.saveConfig.Enabled = false;
+        }
+
+        private void CreateEditBox(object sender)
+        {
+            this.jvmParametersListBox = (ListBox)sender;
+            this.itemSelected = this.jvmParametersListBox.SelectedIndex;
+            Rectangle r = this.jvmParametersListBox.GetItemRectangle(this.itemSelected);
+            string itemText = (string)this.jvmParametersListBox.Items[this.itemSelected];
+
+            editBox.Location = new System.Drawing.Point(r.X /*+ DELTA*/, r.Y/* + DELTA*/);
+            editBox.Size = new System.Drawing.Size(r.Width /*- 10*/, r.Height/* - DELTA*/);
+            editBox.Show();
+            this.jvmParametersListBox.Controls.AddRange(new System.Windows.Forms.Control[] { this.editBox });
+            editBox.Text = itemText;
+            editBox.Focus();
+            editBox.SelectAll();
+            editBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.EditOver);
+            editBox.LostFocus += new System.EventHandler(this.FocusOver);
+
+            this.saveConfig.Enabled = true;
+        }
+
+        private void FocusOver(object sender, System.EventArgs e)
+        {
+            this.jvmParametersListBox.Items[this.itemSelected] = editBox.Text;
+            editBox.Hide();
+        }
+
+        private void EditOver(object sender, System.Windows.Forms.KeyPressEventArgs e)
+        {
+            if (e.KeyChar == 13) //Keys.Enter
             {
-                usersList = key.GetValueNames();
+                this.jvmParametersListBox.Items[this.itemSelected] = editBox.Text;
+                this.editBox.Hide();
+                this.jvmParametersListBox.Focus();
+                return;
             }
 
-            configuration = new IniFile("configuration.ini");
+            if (e.KeyChar == 27) //Keys.Escape
+                editBox.Hide();
         }
 
         /**************************************************************
@@ -111,114 +203,123 @@ namespace AgentForAgent
         * ************************************************************/
         //--Click to "Cancel" button
         private void closeConfig_Click(object sender, EventArgs e)
-        {
+        {            
             Close();
         }
 
-        //--Form close
-        private void ConfigEditor_FormClosed(object sender, FormClosedEventArgs e)
+        private void ConfigEditor_FormClosing(object sender, FormClosingEventArgs e)
         {
-            this.Dispose();
+            // If the save button is enabled
+            if (this.saveConfig.Enabled)
+            {
+                // Ask the user to be sure to exit without saving the configuration
+                DialogResult res = MessageBox.Show("Are you sure you want to exit without saving ?", "Exit Configuration Editor", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                if (res == DialogResult.No)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+            }            
         }
 
         //--Save current config
         private void saveConfig_Click(object sender, EventArgs e)
         {
-            saveConfig.Enabled = false;
-            //--Events list
-            int i = 0;
-            foreach (Event item in conf.events.events)
-            {
-                if (((CalendarEvent)item).startDay == null)
-                {
-                    //Delete event
-                    conf.events.removeEvent(i);
-                }
-                else
-                    i++;
-
-            }
-
-            try
-            {
-                ConfigurationParser.saveXml(location, conf);
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("");
-            }
-
-
-
-            if (configuration.GetValue("params", "saveWarning") != "0")
-            {
-                DialogResult res = MessageBox.Show("Service must be restarted to apply changes.\nDisplay again this message ?", "Restart service", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-                if (res == DialogResult.No)
-                {
-                    configuration.SetValue("params", "saveWarning", "0");
-                    configuration.Save();
-                }
-            }
-            //Close();
+            this.saveConfig.Enabled = false;
+            this.internalSave(this.configurationLocation);
         }
 
         //--Save as new file
         private void saveConfigAs_Click(object sender, EventArgs e)
         {
+            saveConfig.Enabled = false;
             //--Show dialog form
             saveFileDialog1.Filter = "Xml File|*.xml";
             saveFileDialog1.Title = "Save an xml configuration file";
             saveFileDialog1.ShowDialog();
-            string locationAs = "";
-            locationAs = saveFileDialog1.FileName;
-
-
-            if (locationAs != "")
+            string locationAs = saveFileDialog1.FileName;
+            if (locationAs == null || locationAs.Equals(""))
             {
-                /*browseConfig.FileName = configLocation.Text;
-                browseConfig.ShowDialog();
-                configLocation.Text = browseConfig.FileName;*/
+                return;
+            }
+            this.configurationLocation = locationAs;
+            hook.setConfigLocation(locationAs);
+            this.internalSave(this.configurationLocation);
+        }
 
-                //--Events list
-                int i = 0;
-                foreach (Event item in conf.events.events)
-                {
-                    if (((CalendarEvent)item).startDay == null)
-                    {
-                        //Delete event
-                        conf.events.removeEvent(i);
-                    }
-                    else
-                        i++;
+        private void internalSave(string internalLocation)
+        {            
+            // Copy all jvm parameters from listbox into the cofiguration
+            string[] values = new string[this.jvmParametersListBox.Items.Count];
+            this.jvmParametersListBox.Items.CopyTo(values, 0);
+            this.configuration.agentConfig.jvmParameters = values;
+            // Save memory management configuration
+            this.configuration.agentConfig.enableMemoryManagement = this.enableMemoryManagementCheckBox.Checked;
+            this.configuration.agentConfig.javaMemory = System.Decimal.ToUInt32(this.javaMemoryNumericUpDown.Value);
+            this.configuration.agentConfig.nativeMemory = System.Decimal.ToUInt32(this.nativeMemoryNumericUpDown.Value);            
+            //--Events list                        
+            this.internalCopyEventsList();
+            // Save all defined actions                        
+            if (this.configuration.actions == null || this.configuration.actions.Length < 3)
+            {
+                this.configuration.actions = new ConfigParser.Action[3];
+            }
+            // Save rmi registration action definition
+            AdvertAction advertAction = new AdvertAction();
+            advertAction.nodeName = rmiNodeEnabled.Checked ? rmiNodeName.Text : "";
+            advertAction.javaStarterClass = this.rmiRegistrationJavaActionClassTextBox.Text;
+            advertAction.isEnabled = this.rmiRegistrationRadioButton.Checked;            
+            this.configuration.actions[0] = advertAction;
+            // Save resource manager registration action definition
+            RMAction rmAction = new RMAction();
+            rmAction.url = rmUrl.Text;
+            rmAction.nodeName = rmNodeName.Text;
+            rmAction.javaStarterClass = this.resourceManagerRegistrationJavaActionClassTextBox.Text;
+            rmAction.isEnabled = this.resourceManagerRegistrationRadioButton.Checked;
+            this.configuration.actions[1] = rmAction;
+            // Save peer to peer action definition
+            P2PAction p2pAction = new P2PAction();
+            string[] hosts = new string[this.peerToPeerContactsListBox.Items.Count];
+            peerToPeerContactsListBox.Items.CopyTo(hosts, 0);
+            p2pAction.contacts = hosts;
+            p2pAction.protocol = (p2pProtocol.Text == null || p2pProtocol.Text.Equals("") ? P2PAction.DEFAULT_P2P_PROTOCOL : p2pProtocol.Text);
+            p2pAction.javaStarterClass = this.peerToPeerJavaActionClassTextBox.Text;
+            p2pAction.isEnabled = this.peerToPeerRadioButton.Checked;
+            this.configuration.actions[2] = p2pAction;                 
+            // Save the configuration into a file
+            try
+            {
+                ConfigurationParser.saveXml(internalLocation, this.configuration);
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show("Could not save the configuration file: " + exception.ToString());
+            }
 
+            if (this.iniConfiguration.GetValue("params", "saveWarning") != "0")
+            {
+                DialogResult res = MessageBox.Show("Service must be restarted to apply changes.\nDisplay again this message ?", "Restart service", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                if (res == DialogResult.No)
+                {
+                    this.iniConfiguration.SetValue("params", "saveWarning", "0");
+                    this.iniConfiguration.Save();
                 }
+            }
+        }
 
-                try
+        private void internalCopyEventsList() {
+            this.configuration.events.Clear();
+            foreach (object item in this.eventsList.Items)
+            {
+                if (((CalendarEvent)item).startDay != null)
                 {
-                    ConfigurationParser.saveXml(locationAs, conf);
-                    location = locationAs;
-                    hook.setConfigLocation(locationAs);
+                    this.configuration.events.Add((CalendarEvent)item);
                 }
-                catch (Exception)
-                {
-                    MessageBox.Show("Cannot save your file");
-                }
-
-                if (configuration.GetValue("params", "saveWarning") != "0")
-                {
-                    DialogResult res = MessageBox.Show("Service must be restarted to apply changes.\nDisplay again this message ?", "Restart service", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-                    if (res == DialogResult.No)
-                    {
-                        configuration.SetValue("params", "saveWarning", "0");
-                        configuration.Save();
-                    }
-                }
-                Close();
             }
         }
 
         /**************************************************************
-        * PROACTIVE CONFIGURATION                                     *
+        * GENERAL CONFIGURATION                                     *
         * ************************************************************/
         //--Checkbox (Use system-wide JVM location)
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -227,7 +328,7 @@ namespace AgentForAgent
             {
                 jvmDirectory.Enabled = false;
                 jvmLocationButton.Enabled = false;
-                conf.agentConfig.javaHome = "";
+                configuration.agentConfig.javaHome = "";
             }
             else
             {
@@ -243,209 +344,126 @@ namespace AgentForAgent
             proActiveLocationBrowser.SelectedPath = proactiveLocation.Text;
             proActiveLocationBrowser.ShowDialog();
             proactiveLocation.Text = proActiveLocationBrowser.SelectedPath;
+            // Once the proactive location is specified check if classpath can be read
+            try
+            {
+                ProActiveAgent.Utils.readClasspath(this.configuration.agentConfig);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Invalid ProActive location : " + ex.ToString(), "Invalid ProActive location", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
         }
 
         //--Show dialog box to select jvm path
         private void jvmLocationButton_Click(object sender, EventArgs e)
         {
             jvmLocationBrowser.ShowDialog();
-            jvmDirectory.Text = jvmLocationBrowser.SelectedPath;
+            jvmDirectory.Text = jvmLocationBrowser.SelectedPath;            
         }
 
         //--Update config if it change
         private void proactiveLocation_TextChanged(object sender, EventArgs e)
         {
-            conf.agentConfig.proactiveLocation = proactiveLocation.Text;
-
+            configuration.agentConfig.proactiveLocation = proactiveLocation.Text;
             saveConfig.Enabled = true;
         }
 
         //--Update config if it change
         private void jvmDirectory_TextChanged(object sender, EventArgs e)
         {
-            conf.agentConfig.javaHome = jvmDirectory.Text;
-
-            saveConfig.Enabled = true;
-        }
-
-        //--Update config if it change
-        private void jvmParams_TextChanged(object sender, EventArgs e)
-        {
-            conf.agentConfig.jvmParams = jvmParams.Text;
-
+            configuration.agentConfig.javaHome = jvmDirectory.Text;
             saveConfig.Enabled = true;
         }
 
         /**************************************************************
         * EVENTS                                                      *
         * ************************************************************/
-        //--Make the name of the event for the listBox
-        private string makeEventName(CalendarEvent cEv)
-        {
-            if (cEv.durationDays == 6 && cEv.durationHours == 23 && cEv.durationMinutes == 59 && cEv.durationSeconds == 59)
-            {
-                return "Always available";
-            }
-            //--Compute after duration
-            int finishSecond = 0;
-            int finishMinute = 0;
-            int finishHour = 0;
-            string finishDay = "";
-
-            finishSecond = cEv.startSecond;
-            finishMinute = cEv.startMinute;
-            finishHour = cEv.startHour;
-
-            finishSecond += cEv.durationSeconds;
-            if (finishSecond >= 60)
-            {
-                finishMinute += finishSecond - 60;
-                finishSecond -= 60;
-            }
-
-            finishMinute += cEv.durationMinutes;
-            if (finishMinute >= 60)
-            {
-                finishHour += finishMinute - 60;
-                finishMinute -= 60;
-            }
-
-            finishHour += cEv.durationHours;
-            if (finishHour >= 24)
-            {
-                finishDay = resolveDayIntToString((int)(((cEv.resolveDay() + cEv.durationDays) + 1) % 7));
-                finishHour -= 24;
-            }
-            else
-            {
-                finishDay = resolveDayIntToString((int)((cEv.resolveDay() + cEv.durationDays) % 7));
-            }
-
-            //return cEv.startDay.Substring(0, 3) + "/" + cEv.startHour + "/" + cEv.startMinute + "/" + cEv.startSecond;
-            return cEv.startDay + " - " + formatDate(cEv.startHour) + ":" + formatDate(cEv.startMinute) + ":" + formatDate(cEv.startSecond) + " => " + finishDay + " - " + formatDate(finishHour) + ":" + formatDate(finishMinute) + ":" + formatDate(finishSecond);
-        }
-
-        public static string resolveDayIntToString(int day)
-        {
-            if (day == 5)
-                return "friday";
-            if (day == 1)
-                return "monday";
-            if (day == 6)
-                return "saturday";
-            if (day == 0)
-                return "sunday";
-            if (day == 4)
-                return "thursday";
-            if (day == 2)
-                return "tuesday";
-            if (day == 3)
-                return "wednesday";
-            return "";
-        }
-
-        private static string formatDate(int num)
-        {
-            if (num < 10)
-                return "0" + num.ToString();
-            return num.ToString();
-        }
 
         //--Fill the fields with the values of the selected event
         private void eventsList_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (eventsList.SelectedIndex == -1)
-            {
-                eventEditorGroup.Enabled = false;
-                return;
-            }
-            eventEditorGroup.Enabled = true;
-            CalendarEvent cEv = (CalendarEvent)conf.events.events[eventsList.SelectedIndex];
+        {            
+            CalendarEvent cEv = (CalendarEvent)this.eventsList.SelectedItem;
+            if (cEv == null) {return;}
+            this.weekdayStart.SelectedIndex = cEv.resolveDay();
+            this.hourStart.Value = cEv.startHour;
+            this.minuteStart.Value = cEv.startMinute;
+            this.secondStart.Value = cEv.startSecond;
+            this.dayDuration.Value = cEv.durationDays;
+            this.hoursDuration.Value = cEv.durationHours;
+            this.minutesDuration.Value = cEv.durationMinutes;
+            this.secondsDuration.Value = cEv.durationSeconds;
+            this.processPriorityComboBox.SelectedItem = Enum.GetName(typeof(ProcessPriorityClass), cEv.processPriority);
+            this.maxCpuUsageNumericUpDown.Value = cEv.maxCpuUsage;
+            this.eventEditorGroup.Enabled = true;
+        }
 
-            if (weekdayStart.FindString(cEv.startDay) == -1)
-                weekdayStart.SelectedIndex = 0;
-            else
-                weekdayStart.SelectedIndex = weekdayStart.FindString(cEv.startDay);
-            hourStart.Value = cEv.startHour;
-            minuteStart.Value = cEv.startMinute;
-            secondStart.Value = cEv.startSecond;
-            dayDuration.Value = cEv.durationDays;
-            hoursDuration.Value = cEv.durationHours;
-            minutesDuration.Value = cEv.durationMinutes;
-            secondsDuration.Value = cEv.durationSeconds;
+
+        //--Add event
+        private void createEventButton_Click(object sender, EventArgs e)
+        {
+            CalendarEvent calEvent = new CalendarEvent();            
+            int indexToSelect = this.eventsList.Items.Add(calEvent);
+            // Select the created item
+            this.eventsList.SelectedIndex = indexToSelect;
+            this.saveConfig.Enabled = true;
         }
 
         //--Delete event
         private void deleteEventButton_Click(object sender, EventArgs e)
         {
-            int selectedIdx = eventsList.SelectedIndex;
-            if (selectedIdx == -1)
-                return;
-            eventsList.Items.RemoveAt(selectedIdx);
-            conf.events.removeEvent(selectedIdx);
+            int selectedIndex = this.eventsList.SelectedIndex;
+            if (selectedIndex != -1)
+            {                
+                this.eventsList.Items.RemoveAt(selectedIndex--);
+                
+                // After deletion automatically select precedent if there is one
+                if (selectedIndex > -1)
+                {
+                    this.eventsList.SelectedIndex = selectedIndex;
+                }
+                else
+                {
+                    // Try to select the last if there is one
+                    if (this.eventsList.Items.Count > 0)
+                    {
+                        this.eventsList.SelectedIndex = this.eventsList.Items.Count - 1;
+                    }
+                    else
+                    {
+                        // Disable other widgets if there is no more items
+                        this.eventEditorGroup.Enabled = false;
+                    }
+                }
+                this.saveConfig.Enabled = true;
+            }
 
-            saveConfig.Enabled = true;
-        }
-
-        //--Add event
-        private void newEventButton_Click(object sender, EventArgs e)
-        {
-            CalendarEvent calEvent = new CalendarEvent();
-            // calEvent.startDay = (string)weekdayStart.SelectedItem;
-            conf.events.addEvent(calEvent);
-            eventsList.Items.Add("new Event");
-            //updateEvent();
         }
 
         //--Show chart
-        private void button2_Click(object sender, EventArgs e)
+        private void showButton_Click(object sender, EventArgs e)
         {
-            chart.loadEvents();
+            // Save the configuration
+            System.Collections.Generic.List<Event> copyList = new System.Collections.Generic.List<Event>(this.eventsList.Items.Count);
+            foreach(Event ev in this.eventsList.Items){
+                copyList.Add(ev);
+            }
+            chart.loadEvents(copyList);
             chart.Show();
         }
 
-        /*private void updateEvent()
-        {
-            if (eventsList.SelectedIndex == -1)
-                return;
-            CalendarEvent calEvent = (CalendarEvent)conf.events.events[eventsList.SelectedIndex];
-            calEvent.durationSeconds = (int)secondsDuration.Value;
-            calEvent.durationMinutes = (int)minutesDuration.Value;
-            calEvent.durationHours = (int)hoursDuration.Value;
-            calEvent.durationDays = (int)dayDuration.Value;
-            calEvent.startDay = (string)weekdayStart.SelectedItem;
-            calEvent.startHour = (int)hourStart.Value;
-            calEvent.startMinute = (int)minuteStart.Value;
-            calEvent.startSecond = (int)secondStart.Value;
-            conf.events.modifyEvent(eventsList.SelectedIndex, calEvent);
-
-            // change name in the event list control
-            eventsList.Items[eventsList.SelectedIndex] = makeEventName(calEvent);
-        }*/
-
         //--Change start day
         private void weekdayStart_SelectedIndexChanged(object sender, EventArgs e)
-        {
+        {            
             if (eventsList.SelectedIndex == -1)
                 return;
-            CalendarEvent calEvent = (CalendarEvent)conf.events.events[eventsList.SelectedIndex];
-            calEvent.startDay = (string)weekdayStart.SelectedItem;
-            conf.events.modifyEvent(eventsList.SelectedIndex, calEvent);
-            // change name in the event list control
-            eventsList.Items[eventsList.SelectedIndex] = makeEventName(calEvent);
-        }
+            CalendarEvent calEvent = (CalendarEvent)this.eventsList.SelectedItem;
+            calEvent.startDay = (string)weekdayStart.SelectedItem;            
+            // Refresh widget
+            this.eventsList.RefreshItem(eventsList.SelectedIndex);
 
-        //-- Check state of the "Always" checkbox and update it after each change on one property of th event
-        private void checkAlwaysAvailable(CalendarEvent cEv)
-        {
-            if (cEv.durationDays == 6 && cEv.durationHours == 23 && cEv.durationMinutes == 59 && cEv.durationSeconds == 59)
-            {
-                checkBox2.Checked = true;
-            }
-            else
-            {
-                checkBox2.Checked = false;
-            }
+            this.saveConfig.Enabled = true;
         }
 
         //--LISTENERS
@@ -453,11 +471,10 @@ namespace AgentForAgent
         {
             if (eventsList.SelectedIndex == -1)
                 return;
-            CalendarEvent calEvent = (CalendarEvent)conf.events.events[eventsList.SelectedIndex];
+            CalendarEvent calEvent = (CalendarEvent)this.eventsList.SelectedItem;
             calEvent.startHour = (int)hourStart.Value;
-            conf.events.modifyEvent(eventsList.SelectedIndex, calEvent);
-            // change name in the event list control
-            eventsList.Items[eventsList.SelectedIndex] = makeEventName(calEvent);
+            // Refresh widget
+            this.eventsList.RefreshItem(eventsList.SelectedIndex);
 
             saveConfig.Enabled = true;
         }
@@ -466,11 +483,10 @@ namespace AgentForAgent
         {
             if (eventsList.SelectedIndex == -1)
                 return;
-            CalendarEvent calEvent = (CalendarEvent)conf.events.events[eventsList.SelectedIndex];
+            CalendarEvent calEvent = (CalendarEvent)this.eventsList.SelectedItem;
             calEvent.startMinute = (int)minuteStart.Value;
-            conf.events.modifyEvent(eventsList.SelectedIndex, calEvent);
-            // change name in the event list control
-            eventsList.Items[eventsList.SelectedIndex] = makeEventName(calEvent);
+            // Refresh widget
+            this.eventsList.RefreshItem(eventsList.SelectedIndex);
 
             saveConfig.Enabled = true;
         }
@@ -479,11 +495,10 @@ namespace AgentForAgent
         {
             if (eventsList.SelectedIndex == -1)
                 return;
-            CalendarEvent calEvent = (CalendarEvent)conf.events.events[eventsList.SelectedIndex];
+            CalendarEvent calEvent = (CalendarEvent)this.eventsList.SelectedItem;
             calEvent.startSecond = (int)secondStart.Value;
-            conf.events.modifyEvent(eventsList.SelectedIndex, calEvent);
-            // change name in the event list control
-            eventsList.Items[eventsList.SelectedIndex] = makeEventName(calEvent);
+            // Refresh widget
+            this.eventsList.RefreshItem(eventsList.SelectedIndex);
 
             saveConfig.Enabled = true;
         }
@@ -492,88 +507,95 @@ namespace AgentForAgent
         {
             if (eventsList.SelectedIndex == -1)
                 return;
-            CalendarEvent calEvent = (CalendarEvent)conf.events.events[eventsList.SelectedIndex];
-
+            CalendarEvent calEvent = (CalendarEvent)this.eventsList.SelectedItem;
             calEvent.durationDays = (int)dayDuration.Value;
+            // Refresh widget
+            this.eventsList.RefreshItem(eventsList.SelectedIndex);
+            this.alwaysAvailableCheckBox.Checked = calEvent.isAlwaysAvailable();
 
-            conf.events.modifyEvent(eventsList.SelectedIndex, calEvent);
-            // change name in the event list control
-            eventsList.Items[eventsList.SelectedIndex] = makeEventName(calEvent);
-            checkAlwaysAvailable(calEvent);
-
-            saveConfig.Enabled = true;
+            this.saveConfig.Enabled = true;
         }
 
         private void durationHourChanged(object sender, EventArgs e)
         {
             if (eventsList.SelectedIndex == -1)
                 return;
-            CalendarEvent calEvent = (CalendarEvent)conf.events.events[eventsList.SelectedIndex];
-
+            CalendarEvent calEvent = (CalendarEvent)this.eventsList.SelectedItem;
             calEvent.durationHours = (int)hoursDuration.Value;
+            // Refresh widget
+            this.eventsList.RefreshItem(eventsList.SelectedIndex);
+            this.alwaysAvailableCheckBox.Checked = calEvent.isAlwaysAvailable();
 
-            conf.events.modifyEvent(eventsList.SelectedIndex, calEvent);
-            // change name in the event list control
-            eventsList.Items[eventsList.SelectedIndex] = makeEventName(calEvent);
-            checkAlwaysAvailable(calEvent);
-
-            saveConfig.Enabled = true;
+            this.saveConfig.Enabled = true;
         }
 
         private void durationMinuteChanged(object sender, EventArgs e)
         {
             if (eventsList.SelectedIndex == -1)
                 return;
-            CalendarEvent calEvent = (CalendarEvent)conf.events.events[eventsList.SelectedIndex];
-
+            CalendarEvent calEvent = (CalendarEvent)this.eventsList.SelectedItem;
             calEvent.durationMinutes = (int)minutesDuration.Value;
+            // Refresh widget
+            this.eventsList.RefreshItem(eventsList.SelectedIndex);
+            this.alwaysAvailableCheckBox.Checked = calEvent.isAlwaysAvailable();
 
-            conf.events.modifyEvent(eventsList.SelectedIndex, calEvent);
-            // change name in the event list control
-            eventsList.Items[eventsList.SelectedIndex] = makeEventName(calEvent);
-            checkAlwaysAvailable(calEvent);
-
-            saveConfig.Enabled = true;
+            this.saveConfig.Enabled = true;
         }
 
         private void durationSecondChanged(object sender, EventArgs e)
         {
             if (eventsList.SelectedIndex == -1)
                 return;
-            CalendarEvent calEvent = (CalendarEvent)conf.events.events[eventsList.SelectedIndex];
-
+            CalendarEvent calEvent = (CalendarEvent)this.eventsList.SelectedItem;
             calEvent.durationSeconds = (int)secondsDuration.Value;
+            // Refresh widget
+            this.eventsList.RefreshItem(eventsList.SelectedIndex);
+            this.alwaysAvailableCheckBox.Checked = calEvent.isAlwaysAvailable();
 
-            conf.events.modifyEvent(eventsList.SelectedIndex, calEvent);
-            // change name in the event list control
-            eventsList.Items[eventsList.SelectedIndex] = makeEventName(calEvent);
-            checkAlwaysAvailable(calEvent);
-            saveConfig.Enabled = true;
+            this.saveConfig.Enabled = true;
         }
+
+        private void processPriorityComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (eventsList.SelectedIndex == -1)
+                return;
+            CalendarEvent calEvent = (CalendarEvent)this.eventsList.SelectedItem;
+            calEvent.processPriority = (ProcessPriorityClass)Enum.Parse(typeof(ProcessPriorityClass), (string)this.processPriorityComboBox.SelectedItem);
+            this.saveConfig.Enabled = true;
+        }
+
+        private void maxCpuUsageNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            if (eventsList.SelectedIndex == -1)
+                return;
+            CalendarEvent calEvent = (CalendarEvent)this.eventsList.SelectedItem;
+            calEvent.maxCpuUsage = Convert.ToUInt32(this.maxCpuUsageNumericUpDown.Value);            
+            this.saveConfig.Enabled = true;
+        }
+
         //-- END LISTENERS
 
         //--Behaviour of the "Always" Checkbox
-        private void checkBox2_CheckStateChanged(object sender, EventArgs e)
+        private void alwaysAvailableCheckBox_CheckStateChanged(object sender, EventArgs e)
         {
-            if (checkBox2.Checked)
+            if (alwaysAvailableCheckBox.Checked)
             {
                 //--Check if the event always exist
                 bool isExist = false;
-                foreach (Event ev in conf.events.events)
+                foreach (Event ev in this.eventsList.Items)
                 {
-                    CalendarEvent cEv = (CalendarEvent)ev;
-                    if (cEv.durationDays == 6 && cEv.durationHours == 23 && cEv.durationMinutes == 59 && cEv.durationSeconds == 59)
+                    CalendarEvent cEv = (CalendarEvent)ev;                    
+                    if (cEv.isAlwaysAvailable())
                     {
                         isExist = true;
+                        break;
                     }
                 }
 
                 if (!isExist)
                 {
                     //--We create the event if it doesnt exist
-                    CalendarEvent cEv = new CalendarEvent();
-                    // calEvent.startDay = (string)weekdayStart.SelectedItem;
-                    cEv.startDay = "monday";
+                    CalendarEvent cEv = new CalendarEvent();                                        
                     cEv.startHour = 0;
                     cEv.startMinute = 0;
                     cEv.startSecond = 0;
@@ -581,544 +603,294 @@ namespace AgentForAgent
                     cEv.durationDays = 6;
                     cEv.durationHours = 23;
                     cEv.durationMinutes = 59;
-                    cEv.durationSeconds = 59;
-
-                    conf.events.addEvent(cEv);
-                    eventsList.Items.Add("Always available");
+                    cEv.durationSeconds = 59;                    
+                    
+                    this.eventsList.Items.Add(cEv);
                 }
 
-                //--Disabled buttons
-                eventEditorGroup.Enabled = false;
+                // Disable buttons and group boxes                
+                this.eventEditorGroup.Enabled = false;
                 eventsList.Enabled = false;
-                newEventButton.Enabled = false;
+                createEventButton.Enabled = false;
                 deleteEventButton.Enabled = false;
             }
             else
             {
                 //--Enabled buttons
-                eventEditorGroup.Enabled = true;
+                if (this.eventsList.SelectedIndex != -1)
+                {
+                    this.eventEditorGroup.Enabled = true;
+                }
                 eventsList.Enabled = true;
-                newEventButton.Enabled = true;
+                createEventButton.Enabled = true;
                 deleteEventButton.Enabled = true;
 
                 //--Delete always available event if it exist
                 int idx = -1;
-                for (int i = 0; i < conf.events.events.Length; i++)
+                for (int i = 0; i < this.eventsList.Items.Count; i++)
                 {
-                    CalendarEvent cEv = (CalendarEvent)conf.events.events[i];
-                    if (cEv.durationDays == 6 && cEv.durationHours == 23 && cEv.durationMinutes == 59 && cEv.durationSeconds == 59)
+                    CalendarEvent cEv = (CalendarEvent)this.eventsList.Items[i];
+                    if (cEv.isAlwaysAvailable())
                     {
                         idx = i;
+                        break;
                     }
                 }
 
                 if (idx == -1)
                     return;
-                eventsList.Items.RemoveAt(idx);
-                conf.events.removeEvent(idx);
+                eventsList.Items.RemoveAt(idx);                
 
             }
             saveConfig.Enabled = true;
         }
 
+        /**************************************/
+        /** ACTION TYPE GUI HANDLING METHODS **/
+        /**************************************/
 
+        /****************************************************************/
+        /** ADVERT ACTION TYPE - rmi registration gui handling methods **/
+        /****************************************************************/
 
-        /**************************************************************
-        * ACTIONS                                                    *
-        * ***********************************************************/
-        private void hostList_SelectedIndexChanged(object sender, EventArgs e)
+        private void rmiRegistrationRadioButton_CheckedChanged(object sender, EventArgs e)
         {
-            if (hostList.SelectedIndex == -1)
-            {
-                peerUrl.Enabled = false;
-                saveHost.Enabled = false;
-                deleteHost.Enabled = false;
-                return;
-            }
-            peerUrl.Enabled = true;
-            saveHost.Enabled = true;
-            deleteHost.Enabled = true;
-
-            peerUrl.Text = (string)hostList.Items[hostList.SelectedIndex];
+            this.connectionTypeTabControl.SelectedTab = this.rmiRegistrationTabPage;
+            this.saveConfig.Enabled = true;
         }
-
-        //--P2P - save host
-        private void saveHost_Click(object sender, EventArgs e)
-        {
-            actionPropertyChanged(sender, e);
-
-            P2PAction ourAction = (P2PAction)conf.actions.actions[actionsList.SelectedIndex];
-            //P2PAction ourAction = (P2PAction)conf.action;
-            hostList.Items[hostList.SelectedIndex] = peerUrl.Text;
-            ourAction.modifyContact(hostList.SelectedIndex, peerUrl.Text);
-        }
-
-        //--P2P - add host
-        private void addHost_Click(object sender, EventArgs e)
-        {
-            actionPropertyChanged(sender, e);
-
-            P2PAction ourAction = (P2PAction)conf.actions.actions[actionsList.SelectedIndex];
-            //P2PAction ourAction = (P2PAction)conf.action;
-            hostList.Items.Add("newPeer");
-            ourAction.addContact("newPeer");
-        }
-
-        //--P2P - delete host
-        private void deleteHost_Click(object sender, EventArgs e)
-        {
-            actionPropertyChanged(sender, e);
-
-            P2PAction ourAction = (P2PAction)conf.actions.actions[actionsList.SelectedIndex];
-            //P2PAction ourAction = (P2PAction)conf.action;
-            int index = hostList.SelectedIndex;
-            hostList.Items.RemoveAt(index);
-            ourAction.deleteContact(index);
-        }
-
-        private void actionTypeBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            actionPropertyChanged(sender, e);
-
-            switch ((string)(actionTypeBox.SelectedItem))
-            {
-                case AdvertAction.DESCRIPTION:
-                    {
-                        p2pactionGroup.Enabled = false;
-                        rmiActionGroup.Enabled = true;
-                        rmActionGroup.Enabled = false;
-
-                        p2pactionGroup.Visible = false;
-                        rmiActionGroup.Visible = true;
-                        rmActionGroup.Visible = false;
-
-                        AdvertAction newAction = new AdvertAction();
-                        newAction.nodeName = rmiNodeEnabled.Checked ? rmiNodeName.Text : "";
-                        newAction.priority = (string)priorityBox.SelectedItem;
-
-                        if (actionsList.SelectedIndex != -1)
-                        {
-                            conf.actions.actions[actionsList.SelectedIndex] = newAction;
-                        }
-
-                        //conf.action = newAction;
-                    }
-                    break;
-
-                case P2PAction.DESCRIPTION:
-                    {
-                        p2pactionGroup.Enabled = true;
-                        rmiActionGroup.Enabled = false;
-                        rmActionGroup.Enabled = false;
-
-                        p2pactionGroup.Visible = true;
-                        rmiActionGroup.Visible = false;
-                        rmActionGroup.Visible = false;
-
-                        P2PAction newAction = new P2PAction();
-                        string[] hosts = new string[hostList.Items.Count];
-                        hostList.Items.CopyTo(hosts, 0);
-                        newAction.contacts = hosts;
-                        newAction.priority = (string)priorityBox.SelectedItem;
-                        newAction.protocol = p2pProtocol.Text;
-
-                        if (actionsList.SelectedIndex != -1)
-                        {
-                            conf.actions.actions[actionsList.SelectedIndex] = newAction;
-                            //actionsList.Items[actionsList.SelectedIndex] = newAction;
-                            //conf.action = newAction;
-                        }
-                    }
-                    break;
-
-                case RMAction.DESCRIPTION:
-                    {
-                        p2pactionGroup.Enabled = false;
-                        rmiActionGroup.Enabled = false;
-                        rmActionGroup.Enabled = true;
-
-                        p2pactionGroup.Visible = false;
-                        rmiActionGroup.Visible = false;
-                        rmActionGroup.Visible = true;
-
-                        RMAction newAction = new RMAction();
-                        newAction.url = rmUrl.Text;
-                        newAction.nodeName = rmNodeName.Text;
-                        newAction.priority = (string)priorityBox.SelectedItem;
-
-                        if (actionsList.SelectedIndex != -1)
-                        {
-                            conf.actions.actions[actionsList.SelectedIndex] = newAction;
-                            //conf.action = newAction;
-                        }
-                    }
-                    break;
-
-                default:
-                    break;
-            }
-        }
-
-        private void actionsList_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (actionsList.SelectedIndex == -1)
-            {
-                actionEditorGroup.Enabled = false;
-                return;
-            }
-            actionEditorGroup.Enabled = true;
-            ConfigParser.Action action = (ConfigParser.Action)conf.actions.actions[actionsList.SelectedIndex];
-
-            if (action.GetType() == typeof(P2PAction))
-            {
-
-                p2pactionGroup.Enabled = true;
-                rmiActionGroup.Enabled = false;
-                rmActionGroup.Enabled = false;
-
-                p2pactionGroup.Visible = true;
-                rmiActionGroup.Visible = false;
-                rmActionGroup.Visible = false;
-
-                actionTypeBox.SelectedItem = P2PAction.DESCRIPTION;
-
-                P2PAction p2pAction = (P2PAction)action;
-                //--Vide
-                hostList.Items.Clear();
-                foreach (string host in p2pAction.contacts)
-                {
-                    hostList.Items.Add(host);
-                }
-
-                if (hostList.Items.Count == 0)
-                {
-                    peerUrl.Enabled = false;
-                    saveHost.Enabled = false;
-                    deleteHost.Enabled = false;
-                }
-                else
-                    hostList.SelectedIndex = 0;
-
-                p2pProtocol.Text = p2pAction.protocol;
-            }
-            else if (action.GetType() == typeof(RMAction))
-            {
-                p2pactionGroup.Enabled = false;
-                rmiActionGroup.Enabled = false;
-                rmActionGroup.Enabled = true;
-
-                p2pactionGroup.Visible = false;
-                rmiActionGroup.Visible = false;
-                rmActionGroup.Visible = true;
-
-                actionTypeBox.SelectedItem = RMAction.DESCRIPTION;
-                RMAction rmAction = (RMAction)action;
-                rmUrl.Text = rmAction.url;
-                rmNodeName.Text = rmAction.nodeName;
-            }
-            else if (action.GetType() == typeof(AdvertAction))
-            {
-                p2pactionGroup.Enabled = false;
-                rmiActionGroup.Enabled = true;
-                rmActionGroup.Enabled = false;
-
-                p2pactionGroup.Visible = false;
-                rmiActionGroup.Visible = true;
-                rmActionGroup.Visible = false;
-
-                actionTypeBox.SelectedItem = AdvertAction.DESCRIPTION;
-                AdvertAction advAction = (AdvertAction)action;
-                if (advAction.nodeName.Equals(""))
-                    rmiNodeEnabled.Checked = false;
-                else
-                    rmiNodeEnabled.Checked = true;
-                rmiNodeName.Text = advAction.nodeName;
-            }
-            else
-            {
-                p2pactionGroup.Enabled = false;
-                rmiActionGroup.Enabled = false;
-                rmActionGroup.Enabled = false;
-
-                p2pactionGroup.Visible = false;
-                rmiActionGroup.Visible = false;
-                rmActionGroup.Visible = false;
-
-                actionTypeBox.SelectedIndex = -1;
-                rmUrl.Text = "";
-                rmNodeName.Text = "";
-
-                rmiNodeName.Text = "";
-                rmiNodeEnabled.Enabled = true;
-                hostList.Items.Clear();
-
-                p2pProtocol.Text = "";
-                peerUrl.Text = "";
-                hostList.Items.Clear();
-            }
-
-
-            if (action.priority.Equals(""))
-            {
-                priorityBox.SelectedIndex = 0;
-            }
-            else
-            {
-                priorityBox.SelectedIndex = priorityBox.FindString(action.priority);
-            }
-            userBox.SelectedIndex = userBox.FindString(action.user);
-        }
-
-        private void saveActionButton_Click(object sender, EventArgs e)
-        {
-            updateAction();
-        }
-
-        private void updateAction()
-        {
-            if (actionsList.SelectedIndex == -1)
-                return;
-
-            switch ((string)(actionTypeBox.SelectedItem))
-            {
-                case AdvertAction.DESCRIPTION:
-                    {
-                        AdvertAction newAction = new AdvertAction();
-                        if (rmiNodeEnabled.Checked)
-                        {
-                            newAction.nodeName = rmiNodeName.Text;
-                        }
-                        else
-                        {
-                            newAction.nodeName = "";
-                        }
-
-                        newAction.priority = (string)priorityBox.SelectedItem;
-                        newAction.user = (string)userBox.SelectedItem;
-
-                        if (actionsList.SelectedIndex != -1)
-                        {
-                            conf.actions.modifyAction(actionsList.SelectedIndex, newAction);
-                            actionsList.Items[actionsList.SelectedIndex] = AdvertAction.DESCRIPTION;
-                        }
-                    }
-                    break;
-
-                case P2PAction.DESCRIPTION:
-                    {
-                        P2PAction newAction = new P2PAction();
-                        string[] hosts = new string[hostList.Items.Count];
-                        hostList.Items.CopyTo(hosts, 0);
-                        newAction.contacts = hosts;
-                        newAction.priority = (string)priorityBox.SelectedItem;
-                        newAction.user = (string)userBox.SelectedItem;
-
-                        newAction.protocol = p2pProtocol.Text;
-
-                        if (actionsList.SelectedIndex != -1)
-                        {
-                            conf.actions.modifyAction(actionsList.SelectedIndex, newAction);
-                            actionsList.Items[actionsList.SelectedIndex] = P2PAction.DESCRIPTION;
-                        }
-                    }
-                    break;
-
-                case RMAction.DESCRIPTION:
-                    {
-                        p2pactionGroup.Enabled = false;
-                        rmiActionGroup.Enabled = false;
-                        rmActionGroup.Enabled = true;
-
-                        p2pactionGroup.Visible = false;
-                        rmiActionGroup.Visible = false;
-                        rmActionGroup.Visible = true;
-
-                        RMAction newAction = new RMAction();
-                        newAction.url = rmUrl.Text;
-                        newAction.nodeName = rmNodeName.Text;
-                        newAction.priority = (string)priorityBox.SelectedItem;
-                        newAction.user = (string)userBox.SelectedItem;
-
-                        if (actionsList.SelectedIndex != -1)
-                        {
-                            conf.actions.modifyAction(actionsList.SelectedIndex, newAction);
-                            actionsList.Items[actionsList.SelectedIndex] = RMAction.DESCRIPTION;
-                        }
-                    }
-                    break;
-
-                default:
-                    break;
-            }
-        }
-
-
 
         //--Checkbox (Define a nodeName for RMI registration)
-        private void checkDefineNodeName_CheckedChanged(object sender, EventArgs e)
+        private void rmiNodeEnabled_CheckedChanged(object sender, EventArgs e)
         {
-            actionPropertyChanged(sender, e);
             if (rmiNodeEnabled.Checked)
-                rmiNodeName.Enabled = true;
+                this.rmiNodeName.Enabled = true;
             else
             {
-                rmiNodeName.Enabled = false;
-                rmiNodeName.Text = "";
+                // Empty TextBox
+                this.rmiNodeName.Text = "";
+                // Disable node name TextBox
+                this.rmiNodeName.Enabled = false;
             }
-
+            this.saveConfig.Enabled = true;
         }
 
-        private void newActionButton_Click(object sender, EventArgs e)
-        {
-            CreateAction guiCreate = new CreateAction(this);
-            guiCreate.ShowDialog();
+        /*************************************************************************/
+        /** RM ACTION TYPE - resource manager registration gui handling methods **/
+        /*************************************************************************/
 
-            switch (_typeOfNewAction)
+        private void resourceManagerRegistrationRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            this.connectionTypeTabControl.SelectedTab = this.resourceManagerRegistrationTabPage;
+            this.saveConfig.Enabled = true;
+        }
+
+        private void rmUrl_TextChanged(object sender, EventArgs e)
+        {
+            this.saveConfig.Enabled = true;
+        }
+
+        /***********************************************************************/
+        /** P2P ACTION TYPE - Peer-To-Peer collaboration gui handling methods **/
+        /***********************************************************************/
+
+        private void peerToPeerRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            this.connectionTypeTabControl.SelectedTab = this.peerToPeerTabPage;
+            this.saveConfig.Enabled = true;
+        }
+
+        private void p2pProtocol_TextChanged(object sender, EventArgs e)
+        {
+            this.saveConfig.Enabled = true;
+        }
+
+        private void peerToPeerAddHostButton_Click(object sender, EventArgs e)
+        {
+            string contactUrl = this.peerToPeerUrlTextBox.Text;
+            int addedIndex;
+            if (contactUrl == null || contactUrl.Equals(""))
             {
-                case AdvertAction.DESCRIPTION:
-                    {
-                        AdvertAction action = new AdvertAction();
-                        action.priority = "Normal";
-                        action.nodeName = "";
-                        conf.actions.addAction(action);
-                        actionsList.Items.Add(AdvertAction.DESCRIPTION);
-                    }
-                    break;
-
-                case RMAction.DESCRIPTION:
-                    {
-                        RMAction action = new RMAction();
-                        action.priority = "Normal";
-                        action.nodeName = "";
-                        action.url = "";
-                        action.user = "";
-
-                        conf.actions.addAction(action);
-                        actionsList.Items.Add(RMAction.DESCRIPTION);
-                    }
-                    break;
-
-                case P2PAction.DESCRIPTION:
-                    {
-                        P2PAction action = new P2PAction();
-                        action.priority = "Normal";
-                        conf.actions.addAction(action);
-                        actionsList.Items.Add(P2PAction.DESCRIPTION);
-                    }
-                    break;
+                addedIndex = this.peerToPeerContactsListBox.Items.Add("new Peer");
             }
+            else {
+                addedIndex = this.peerToPeerContactsListBox.Items.Add(contactUrl);
+            }
+            this.peerToPeerContactsListBox.SelectedIndex = addedIndex;
+            this.saveConfig.Enabled = true;
         }
 
-        private void deleteActionButton_Click(object sender, EventArgs e)
+        private void peerToPeerContactsListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            int selectedIdx = actionsList.SelectedIndex;
-            if (selectedIdx == -1)
-                return;
-            actionsList.Items.RemoveAt(selectedIdx);
-            conf.actions.removeAction(selectedIdx);
-
-            saveConfig.Enabled = true;
+            this.peerToPeerUrlTextBox.Text = (string)this.peerToPeerContactsListBox.SelectedItem;
+            this.peerToPeerSaveHostButton.Enabled = true;
         }
 
-        private void actionPropertyChanged(object sender, EventArgs e)
+        private void peerToPeerDeleteHostButton_Click(object sender, EventArgs e)
         {
-            saveConfig.Enabled = true;
-        }
-
-        //--Save Priority of the action after change
-        private void actionPriorityChanged(object sender, EventArgs e)
-        {
-            if (actionsList.SelectedIndex == -1)
-                return;
-
-            switch ((string)(actionTypeBox.SelectedItem))
+            int selectedIndex = this.peerToPeerContactsListBox.SelectedIndex;
+            if (selectedIndex != -1)
             {
-                case AdvertAction.DESCRIPTION:
-                    {
-                        AdvertAction newAction = new AdvertAction();
-                        newAction = (AdvertAction)(conf.actions.actions[actionsList.SelectedIndex]);
-                        newAction.priority = (string)priorityBox.SelectedItem;
-                        conf.actions.modifyAction(actionsList.SelectedIndex, newAction);
-                    }
-                    break;
+                this.peerToPeerContactsListBox.Items.RemoveAt(selectedIndex--);
+                this.peerToPeerUrlTextBox.Text = "";
+                this.peerToPeerSaveHostButton.Enabled = false;
 
-                case P2PAction.DESCRIPTION:
+                // After deletion automatically select precedent if there is one
+                if (selectedIndex > -1)
+                {
+                    this.peerToPeerContactsListBox.SelectedIndex = selectedIndex;
+                }
+                else
+                {
+                    // Try to select the last if there is one
+                    if (this.peerToPeerContactsListBox.Items.Count > 0)
                     {
-                        P2PAction newAction = new P2PAction();
-                        newAction = (P2PAction)(conf.actions.actions[actionsList.SelectedIndex]);
-                        newAction.priority = (string)priorityBox.SelectedItem;
-                        conf.actions.modifyAction(actionsList.SelectedIndex, newAction);
+                        this.peerToPeerContactsListBox.SelectedIndex = this.peerToPeerContactsListBox.Items.Count - 1;
                     }
-                    break;
-
-                case RMAction.DESCRIPTION:
-                    {
-                        RMAction newAction = new RMAction();
-                        newAction = (RMAction)(conf.actions.actions[actionsList.SelectedIndex]);
-                        newAction.priority = (string)priorityBox.SelectedItem;
-                        conf.actions.modifyAction(actionsList.SelectedIndex, newAction);
-                    }
-                    break;
-
-                default:
-                    break;
+                }
+                this.saveConfig.Enabled = true;
             }
-            saveConfig.Enabled = true;
         }
 
-        private void actionAdvertNodeNameChanged(object sender, EventArgs e)
+        private void peerToPeerSaveHostButton_Click(object sender, EventArgs e)
         {
-            if (actionsList.SelectedIndex == -1)
-                return;
-
-            AdvertAction newAction = new AdvertAction();
-            newAction = (AdvertAction)(conf.actions.actions[actionsList.SelectedIndex]);
-            newAction.nodeName = rmiNodeName.Text;
-            conf.actions.modifyAction(actionsList.SelectedIndex, newAction);
-
-            saveConfig.Enabled = true;
-        }
-
-        private void actionRMUrlChanged(object sender, EventArgs e)
-        {
-            RMAction newAction = new RMAction();
-            newAction = (RMAction)(conf.actions.actions[actionsList.SelectedIndex]);
-            newAction.url = rmUrl.Text;
-            conf.actions.modifyAction(actionsList.SelectedIndex, newAction);
-
-            saveConfig.Enabled = true;
-        }
-
-        private void actionRMNodNameChanged(object sender, EventArgs e)
-        {
-            RMAction newAction = new RMAction();
-            newAction = (RMAction)(conf.actions.actions[actionsList.SelectedIndex]);
-            newAction.nodeName = rmNodeName.Text;
-            conf.actions.modifyAction(actionsList.SelectedIndex, newAction);
-
-            saveConfig.Enabled = true;
-        }
-
-        private void actionP2PProtocolChanged(object sender, EventArgs e)
-        {
-            P2PAction newAction = new P2PAction();
-            newAction = (P2PAction)(conf.actions.actions[actionsList.SelectedIndex]);
-            newAction.protocol = p2pProtocol.Text;
-            conf.actions.modifyAction(actionsList.SelectedIndex, newAction);
-
-            saveConfig.Enabled = true;
-        }
-
-        private void actionP2PUrlChanged(object sender, EventArgs e)
-        {
-            if (hostList.SelectedIndex != -1)
+            int selectedIndex = this.peerToPeerContactsListBox.SelectedIndex;
+            if (selectedIndex != -1)
             {
-                P2PAction ourAction = new P2PAction();
-                ourAction = (P2PAction)conf.actions.actions[actionsList.SelectedIndex];
-                hostList.Items[hostList.SelectedIndex] = peerUrl.Text;
-                ourAction.modifyContact(hostList.SelectedIndex, peerUrl.Text);
+                this.peerToPeerContactsListBox.Items[selectedIndex] = this.peerToPeerUrlTextBox.Text;
+                this.saveConfig.Enabled = true;
             }
+        }
+
+        /****************************************************/
+        /** GENERAL configuration tab GUI HANDLING METHODS **/
+        /****************************************************/
+
+        private void addJvmParameterButton_Click(object sender, EventArgs e)
+        {
+            // Add a new entry in the jvm parameter list box
+            int i = this.jvmParametersListBox.Items.Add("New parameter");
+            this.jvmParametersListBox.SetSelected(i, true);
             saveConfig.Enabled = true;
+        }
+
+        private void removeJvmParameterButton_Click(object sender, EventArgs e)
+        {
+            int selectedIndex = this.jvmParametersListBox.SelectedIndex;
+            if (selectedIndex != -1)
+            {
+                this.jvmParametersListBox.Items.RemoveAt(selectedIndex--);
+                // After deletion automatically select precedent if there is one
+                if (selectedIndex > -1)
+                {
+                    this.jvmParametersListBox.SelectedIndex = selectedIndex;
+                }
+                else
+                {
+                    // Try to select the last if there is one
+                    if (this.jvmParametersListBox.Items.Count > 0)
+                    {
+                        this.jvmParametersListBox.SelectedIndex = this.jvmParametersListBox.Items.Count - 1;
+                    }
+                }
+                saveConfig.Enabled = true;
+            }
+        }
+
+        private void ConfigEditor_Load(object sender, EventArgs e)
+        {
+            this.editBox = new System.Windows.Forms.TextBox();
+            this.editBox.Location = new System.Drawing.Point(0, 0);
+            this.editBox.Size = new System.Drawing.Size(0, 0);
+            this.editBox.Hide();
+            this.jvmParametersListBox.Controls.AddRange(new System.Windows.Forms.Control[] { this.editBox });
+            this.editBox.Text = "";
+            this.editBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.EditOver);
+            this.editBox.LostFocus += new System.EventHandler(this.FocusOver);
+            //this.editBox.BackColor = Color.Beige;
+            //this.editBox.Font = new Font("Varanda", 15, FontStyle.Regular | FontStyle.Underline, GraphicsUnit.Pixel);
+            //this.editBox.ForeColor = Color.Blue;
+            this.editBox.BorderStyle = BorderStyle.FixedSingle;
+
+            if (this.configuration.agentConfig.jvmParameters != null)
+            {
+                this.jvmParametersListBox.Items.AddRange(this.configuration.agentConfig.jvmParameters);
+            }
+        }
+
+        private void jvmParametersListBox_DoubleClick(object sender, EventArgs e)
+        {
+            // If no selected items and list box is empty add one item and select it
+            // otherwise select current item
+            if (this.jvmParametersListBox.SelectedIndex == -1)
+            {
+                if (this.jvmParametersListBox.Items.Count == 0)
+                {
+                    this.jvmParametersListBox.SelectedIndex = this.jvmParametersListBox.Items.Add("New parameter");
+                }
+                else
+                {
+                    this.jvmParametersListBox.SelectedIndex = this.jvmParametersListBox.Items.Count - 1;
+                }
+            }
+            this.CreateEditBox(sender);
+        }
+
+        private void jvmParametersListBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == 13 ) // Enter key
+            {
+                if (this.jvmParametersListBox.SelectedIndex > -1) 
+                {
+                    this.CreateEditBox(sender);
+                }                
+            }            
+        }
+
+        /********************************************/
+        /** MEMORY MANAGEMENT GUI HANDLING METHODS **/
+        /********************************************/
+
+        private void enableMemoryManagementCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            this.memoryManagementBox.Enabled = this.enableMemoryManagementCheckBox.Checked;
+            this.saveConfig.Enabled = true;
+        }
+
+        private void javaMemoryNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            this.totalProcessMemoryValue.Text = "" + (MINIMAL_REQUIRED_MEMORY + this.javaMemoryNumericUpDown.Value + this.nativeMemoryNumericUpDown.Value);
+            saveConfig.Enabled = true;
+        }
+
+        private void nativeMemoryNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            this.totalProcessMemoryValue.Text = "" + (MINIMAL_REQUIRED_MEMORY + this.javaMemoryNumericUpDown.Value + this.nativeMemoryNumericUpDown.Value);
+            saveConfig.Enabled = true;
+        }
+
+        private void actionTypeTabControl_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            Graphics g = e.Graphics;           
+            // Get the item from the collection.
+            TabPage _TabPage = this.connectionTypeTabControl.TabPages[e.Index];
+
+            // Get the real bounds for the tab rectangle.
+            Rectangle _TabBounds = this.connectionTypeTabControl.GetTabRect(e.Index);
+
+            Brush _TextBrush = new SolidBrush(Color.Black);
+
+            if (e.State == DrawItemState.Selected)
+            {
+                // Draw a different background color, and don't paint a focus rectangle.                
+                g.FillRectangle(Brushes.Gray, e.Bounds);
+            }                                
+
+            // Draw string. Center the text.
+            StringFormat _StringFlags = new StringFormat();
+            _StringFlags.Alignment = StringAlignment.Center;
+            _StringFlags.LineAlignment = StringAlignment.Center;
+            g.DrawString(_TabPage.Text, _TabPage.Font, _TextBrush,
+                         _TabBounds, _StringFlags);
         }
     }
 }

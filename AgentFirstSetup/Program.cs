@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.ServiceProcess;
 using System.Windows.Forms;
 using ProActiveAgent;
 
@@ -15,7 +14,7 @@ namespace AgentFirstSetup
         static void Main(string[] args)
         {
             // If no args then print usage
-            if (args == null || args.Length  == 0 || args[0].Equals("-h"))
+            if (args == null || args.Length == 0 || args[0].Equals("-h"))
             {
                 string usage = "Usage:\n";
                 usage += "-i agent_exe_dir\t to install the ProActive Agent service. The agent_exe_dir must contain " + Constants.PROACTIVE_AGENT_EXECUTABLE_NAME + "\n";
@@ -34,22 +33,77 @@ namespace AgentFirstSetup
                 }
                 else
                 {
+                    // Uninstall precedent versions
+                    internalUninstall();
+
                     Application.EnableVisualStyles();
                     Application.SetCompatibleTextRenderingDefault(false);
                     Application.Run(new MainWindow(args[1]));
-
                 }
             }
             // -u for unistall
             else if (args[0].Equals("-u"))
             {
-                SrvInstaller.UnInstallService("ProActive Agent");
+                internalUninstall();
             }
             // Unknown option
             else
             {
-                Console.WriteLine("Uknown option: " + args[0] + " Use -h option for more help.");
-            }                                         
+                Console.WriteLine("Unknown option: " + args[0] + " Use -h option for more help.");
+            }
+        }
+
+        private static void internalUninstall()
+        {
+            try
+            {
+                // Stop the service 
+                ServiceController sc = new ServiceController(Constants.PROACTIVE_AGENT_SERVICE_NAME);
+                sc.Stop();
+            }
+            catch (Exception)
+            {
+                // Nothing to do ...
+            }
+            // Before uninstallation of the service kill AgentForAgent.exe if it's running            
+            System.Diagnostics.Process[] processes = System.Diagnostics.Process.GetProcesses();
+            foreach (System.Diagnostics.Process process in processes)
+            {
+                try
+                {
+                    if (process.ProcessName.Equals("AgentForAgent.exe"))
+                    {
+                        process.Kill();
+                        if (!process.HasExited)
+                        {
+                            process.WaitForExit();
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    // Do nothing ... 
+                }
+            }
+
+            // Proceed with uninstallation
+            // Try sc windows utility method
+            try
+            {
+                // Uninstall previous version of the service                
+                System.Diagnostics.Process proc = new System.Diagnostics.Process();
+                proc.EnableRaisingEvents = false;
+                proc.StartInfo.CreateNoWindow = true;
+                proc.StartInfo.FileName = "sc";
+                proc.StartInfo.Arguments = "delete \"" + Constants.PROACTIVE_AGENT_SERVICE_NAME + "\"";
+                proc.Start();
+                proc.WaitForExit(5 * 1000);  // 5 sec timeout   
+            }
+            catch (Exception)
+            {
+                // If failed use manual method
+                SrvInstaller.UnInstallService(Constants.PROACTIVE_AGENT_SERVICE_NAME);
+            }
         }
     }
 }

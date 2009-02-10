@@ -12,19 +12,17 @@ namespace AgentForAgent
 {
     public partial class Chart : Form
     {
-
         private Pen pen;
         private Brush brush;
         private Graphics G;
-        private ArrayList rects;
-        private Configuration conf;
+        private ArrayList rects;        
 
         private static int WITH_BAR = 15;
 
-        public Chart(ref Configuration conf)
+        public Chart()
         {
             InitializeComponent();
-            this.conf = conf;
+            
             pen = new Pen(Color.BlueViolet);
             brush = new SolidBrush(Color.BlueViolet);
             rects = new ArrayList();
@@ -46,8 +44,7 @@ namespace AgentForAgent
                 labelHour1.TabIndex = 0;
                 labelHour1.Text = i.ToString();
                 this.Controls.Add(labelHour1);
-            }
-            loadEvents();
+            }            
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -68,14 +65,12 @@ namespace AgentForAgent
             }
         }
 
-        public void loadEvents()
+        public void loadEvents(List<Event> eventsList)
         {
             rects.Clear();
-            foreach (Event ev in conf.events.events)
+            foreach (Event ev in eventsList)
             {
-                CalendarEvent cEv = (CalendarEvent)ev;
-
-                //Rectangle rect = new Rectangle(new Point(43 + cEv.resolveDay()*35, 30), new Size(15, 240));
+                CalendarEvent cEv = (CalendarEvent)ev;                
 
                 //--Start
                 int dayTimeslot = 43 + cEv.resolveDay() * 35;

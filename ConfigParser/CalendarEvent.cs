@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml.Serialization;
+using System.Diagnostics;
 
 /**
  * An event type that allows to start actions based on time. 
@@ -11,10 +12,32 @@ using System.Xml.Serialization;
 namespace ConfigParser
 {
     public class CalendarEvent : Event
-    {
-        // START CONFIGURATION
+    {        
         // day of week
         private String myStartDay;
+        private int myStartHour;
+        // minute
+        private int myStartMinute;
+        // second
+        private int myStartSecond;
+        // number of days
+        private int myDurationDays;
+        // number of hours
+        private int myDurationHours;
+        // number of minutes
+        private int myDurationMinutes;
+        // number of seconds
+        private int myDurationSeconds;
+        // The process priority        
+        private ProcessPriorityClass myProcessPriority;
+        // The max cpu usage
+        private uint myMaxCpuUsage;
+
+        public CalendarEvent() {
+            this.myStartDay = "monday";
+            this.processPriority = ProcessPriorityClass.Normal;
+            this.maxCpuUsage = 100;
+        }
 
         [XmlElement("startDay", IsNullable = false)]
         public String startDay
@@ -29,9 +52,7 @@ namespace ConfigParser
                 return myStartDay;
             }
         }
-
-        private int myStartHour;
-
+        
         [XmlElement("startHour", IsNullable = false)]
         public int startHour
         {
@@ -45,8 +66,7 @@ namespace ConfigParser
             }
         }
 
-        // minute
-        private int myStartMinute;
+
 
         [XmlElement("startMinute", IsNullable = false)]
         public int startMinute
@@ -60,9 +80,6 @@ namespace ConfigParser
                 return myStartMinute;
             }
         }
-
-        // second
-        private int myStartSecond;
 
         [XmlElement("startSecond", IsNullable = false)]
         public int startSecond
@@ -78,10 +95,6 @@ namespace ConfigParser
         }
 
         // DURATION OF EVENT
-
-        // number of days
-        private int myDurationDays;
-
         [XmlElement("durationDays", IsNullable = false)]
         public int durationDays
         {
@@ -94,9 +107,6 @@ namespace ConfigParser
                 return myDurationDays;
             }
         }
-
-        // number of hours
-        private int myDurationHours;
 
         [XmlElement("durationHours", IsNullable = false)]
         public int durationHours
@@ -111,9 +121,6 @@ namespace ConfigParser
             }
         }
         
-        // number of minutes
-        private int myDurationMinutes;
-
         [XmlElement("durationMinutes", IsNullable = false)]
         public int durationMinutes
         {
@@ -127,9 +134,6 @@ namespace ConfigParser
             }
         }
 
-        // number of seconds
-        private int myDurationSeconds;
-
         [XmlElement("durationSeconds", IsNullable = false)]
         public int durationSeconds
         {
@@ -140,6 +144,32 @@ namespace ConfigParser
             get
             {
                 return myDurationSeconds;
+            }
+        }
+
+        [XmlElement("processPriority", IsNullable = false)]
+        public System.Diagnostics.ProcessPriorityClass processPriority
+        {
+            set
+            {
+                this.myProcessPriority = value;
+            }
+            get
+            {
+                return this.myProcessPriority;
+            }
+        }
+
+        [XmlElement("maxCpuUsage", IsNullable = false)]
+        public uint maxCpuUsage
+        {
+            set
+            {
+                this.myMaxCpuUsage = value;
+            }
+            get
+            {
+                return this.myMaxCpuUsage;
             }
         }
 
@@ -164,6 +194,76 @@ namespace ConfigParser
             return -1;
         }
 
+        public string resolveDayIntToString(int day)
+        {
+            if (day == 1)
+                return "monday";
+            if (day == 2)
+                return "tuesday";
+            if (day == 3)
+                return "wednesday";
+            if (day == 4)
+                return "thursday";
+            if (day == 5)
+                return "friday";
+            if (day == 6)
+                return "saturday";
+            if (day == 0)
+                return "sunday";
+            return "";
+        }
 
+        public bool isAlwaysAvailable() {
+            return this.durationDays == 6 && this.durationHours == 23 && this.durationMinutes == 59 && this.durationSeconds == 59;
+        }
+
+        public override string ToString()
+        {
+            if (this.isAlwaysAvailable())
+            {
+                return "Always available";
+            }
+
+            //--Compute after duration
+            int finishSecond = this.startSecond;
+            int finishMinute = this.startMinute;
+            int finishHour = this.startHour;
+            string finishDay = "";
+
+            finishSecond += this.durationSeconds;
+            if (finishSecond >= 60)
+            {
+                finishMinute += finishSecond - 60;
+                finishSecond -= 60;
+            }
+
+            finishMinute += this.durationMinutes;
+            if (finishMinute >= 60)
+            {
+                finishHour += finishMinute - 60;
+                finishMinute -= 60;
+            }
+
+            finishHour += this.durationHours;
+            if (finishHour >= 24)
+            {
+                finishDay = resolveDayIntToString((int)(((this.resolveDay() + this.durationDays) + 1) % 7));
+                finishHour -= 24;
+            }
+            else
+            {
+                finishDay = resolveDayIntToString((int)((this.resolveDay() + this.durationDays) % 7));
+            }
+
+            //return this.startDay.Substring(0, 3) + "/" + this.startHour + "/" + this.startMinute + "/" + this.startSecond;
+            return this.startDay + " - " + formatDate(this.startHour) + ":" + formatDate(this.startMinute) + ":" + formatDate(this.startSecond) + " => " + finishDay + " - " + formatDate(finishHour) + ":" + formatDate(finishMinute) + ":" + formatDate(finishSecond);
+        }
+
+        private static string formatDate(int num)
+        {
+            if (num < 10)
+                return "0" + num.ToString();
+            return num.ToString();
+        }
     }
 }

@@ -1,30 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.ServiceProcess;
+using System.ComponentModel;
+using System.Data;
 using System.Diagnostics;
 using System.IO;
-using ConfigParser;
-using System.Threading;
-using Microsoft.Win32;
-using System.Collections;
+using System.Management;
+using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Principal;
+using System.ServiceProcess;
+using System.Text;
+using System.Threading;
+using ConfigParser;
 using log4net;
+using Microsoft.Win32;
 
 namespace ProActiveAgent
 {
     class WindowsService : ServiceBase
     {
         private static readonly ILog LOGGER = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
+        /// <summary>
+        /// The location whre the agent is installed.</summary>
         private readonly string agentInstallLocation;
+        /// <summary>
+        /// The location of the cofig file.</summary>
         private readonly string agentConfigLocation;
-
-        private Configuration configuration;
-        private TimerManager timerManager;
-        private ProActiveExec exec;
-        private ArrayList agregations;        
+        /// <summary>
+        /// Process object that represents running runner script.</summary>                        
+        private readonly List<ProActiveExec> processExecutors;
 
         /// <summary>
         /// Public Constructor for WindowsService.
@@ -67,11 +71,9 @@ namespace ProActiveAgent
             this.CanHandleSessionChangeEvent = true;
             this.CanPauseAndContinue = true;
             this.CanShutdown = true;
-            this.CanStop = true;
+            this.CanStop = true;            
 
-            this.timerManager = null;
-            this.exec = null;
-            this.agregations = new ArrayList();
+            this.processExecutors = new List<ProActiveExec>();
         }
 
         /// <summary>
@@ -95,48 +97,51 @@ namespace ProActiveAgent
             {
                 LOGGER.Debug("Starting ProActive Agent service.");
             }
-
-            // TODO: zero all of the members/properties
-            //-- runtime started = true
+                        
             ProActiveExec.setRegistryIsRuntimeStarted(false);
 
-            // Parse the configuration file
-            this.configuration = ConfigurationParser.parseXml(this.agentConfigLocation, this.agentInstallLocation);
+            // Parse the configuration file once per start for all ProActive executors
+            Configuration configuration = ConfigurationParser.parseXml(this.agentConfigLocation, this.agentInstallLocation);
 
-            // Init loggers
-            // LoggerComposite composite = new LoggerComposite();
-            // composite.addLogger(new FileLogger(this.agentLocation));
-            // composite.addLogger(new EventLogger());
-            // logger = composite;
-
-            //--Foreach action
-            ProActiveExec exe;
-            TimerManager tim;
-            Agregation agre;
-
-            foreach (ConfigParser.Action action in configuration.actions.actions)
+            // Read classpath
+            if (configuration.agentConfig.classpath == null || configuration.agentConfig.classpath.Equals(""))
             {
-                if (LOGGER.IsDebugEnabled)
+                try
                 {
-                    LOGGER.Debug("Starting action " + action.GetType().Name);                    
-                } 
-
-                exe = new ProActiveExec(agentInstallLocation, configuration.agentConfig.jvmParams,
-                configuration.agentConfig.javaHome, configuration.agentConfig.proactiveLocation,
-                action.priority, action.initialRestartDelay);
-
-                tim = new TimerManager(this.configuration, action, exe);
-
-                exe.setTimerMgr(tim);
-
-                //--Save in collection
-                agre = new Agregation(exe, tim, action);
-                agregations.Add(agre);
+                    Utils.readClasspath(configuration.agentConfig);
+                }
+                catch (Exception ex)
+                {
+                    LOGGER.Error("An exception occured when reading the classpath!", ex);
+                    return;
+                }
             }
+
+            // Find enabled action, ONLY ONE ACTION CAN BE ENABLED
+            ConfigParser.Action enabledAction = null;
+            foreach (ConfigParser.Action action in configuration.actions)
+            {
+                if (action.isEnabled) {
+                    enabledAction = action;
+                    break;
+                } 
+            }
+
+            if (enabledAction == null) {
+                LOGGER.Warn("No enabled action in the configuration. Exiting ...");
+                return;
+            }
+
             if (LOGGER.IsDebugEnabled)
             {
-                LOGGER.Debug("All actions are scheduled.");                
-            }             
+                LOGGER.Debug("Starting action " + enabledAction.GetType().Name);
+            }            
+
+            // Create new executor and initialize it
+            ProActiveExec executor = new ProActiveExec(configuration, enabledAction);
+            this.processExecutors.Add(executor);
+            executor.init();
+
             base.OnStart(args);
         }
 
@@ -150,18 +155,14 @@ namespace ProActiveAgent
             {
                 LOGGER.Debug("Stopping ProActive Agent service.");
             }
-            
-            foreach (Agregation a in agregations)
+            if (this.processExecutors != null && this.processExecutors.Count > 0)
             {
-                a.exec.dispose();
-                a.timerManager.dispose();
-                a.exec.sendGlobalStop();
+                foreach (ProActiveExec p in processExecutors)
+                {
+                    p.dispose();
+                }
+                processExecutors.Clear();
             }
-            agregations.Clear();
-            
-            this.configuration = null;
-            this.timerManager = null;
-            this.exec = null;            
 
             //-- runtime started = false
             ProActiveExec.setRegistryIsRuntimeStarted(false);
@@ -176,7 +177,6 @@ namespace ProActiveAgent
         /// </summary>
         protected override void OnPause()
         {
-            timerManager.onPause();
             base.OnPause();
         }
 
@@ -186,7 +186,6 @@ namespace ProActiveAgent
         /// </summary>
         protected override void OnContinue()
         {
-            timerManager.onResume();
             base.OnContinue();
         }
 
@@ -201,17 +200,11 @@ namespace ProActiveAgent
             if (LOGGER.IsDebugEnabled)
             {
                 LOGGER.Debug("Shutting down the ProActive Agent service.");
-            }            
-            exec.disableRestarting();
-            /*            exec.disableRestarting();
-                        exec.sendGlobalStop();
-                        this.configuration = null;
-                        this.timerManager = null;
-                        this.exec = null; */
-
-            //-- runtime started = false
-            //TODO: need to think if you should keep this: 
-            //ProActiveExec.setRegistryIsRuntimeStarted(false);
+            }
+            foreach (ProActiveExec p in processExecutors)
+            {
+                p.disableRestarting();
+            }
             base.OnShutdown();
         }
 
@@ -234,32 +227,22 @@ namespace ProActiveAgent
                     {
                         LOGGER.Debug("Received start command from ProActive Agent screenSaver.");
                     }
-                    foreach (Agregation agregation in agregations)
+                    foreach (ProActiveExec p in processExecutors)
                     {
-                        agregation.exec.sendStartAction(agregation.action, ApplicationType.AgentScreensaver);
+                        p.sendStartAction(ApplicationType.AgentScreensaver);
                     }
                     break;
                 case PAACommands.ScreenSaverStop:
                     if (LOGGER.IsDebugEnabled)
                     {
                         LOGGER.Debug("Received stop command from ProActive Agent screenSaver.");
-                    }                    
-                    foreach (Agregation agregation in agregations)
+                    }
+                    foreach (ProActiveExec p in processExecutors)
                     {
-                        agregation.exec.sendStopAction(agregation.action, ApplicationType.AgentScreensaver);
+                        p.sendStopAction(ApplicationType.AgentScreensaver);
                     }
                     break;
-                case PAACommands.GlobalStop:                    
-                    if (LOGGER.IsDebugEnabled)
-                    {
-                        LOGGER.Debug("Received global stop command.");
-                    }  
-                    foreach (Agregation agregation in agregations)
-                    {
-                        agregation.exec.sendGlobalStop();
-                    }
-                    break;
-                default:                    
+                default:
                     break;
             }
             base.OnCustomCommand(command);
@@ -297,20 +280,6 @@ namespace ProActiveAgent
         static void Main()
         {
             ServiceBase.Run(new WindowsService());
-        }
-    }
-
-    public class Agregation
-    {
-        public readonly TimerManager timerManager;
-        public readonly ProActiveExec exec;
-        public readonly ConfigParser.Action action;
-
-        public Agregation(ProActiveExec exec, TimerManager timerManager, ConfigParser.Action action)
-        {
-            this.timerManager = timerManager;
-            this.exec = exec;
-            this.action = action;            
         }
     }
 }
