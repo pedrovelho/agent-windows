@@ -124,25 +124,25 @@ namespace AgentForAgent
                     this.rmUrl.Text = rmAction.url;
                     this.rmNodeName.Text = rmAction.nodeName;
                 }
-                else if (action.GetType() == typeof(P2PAction))
+                else if (action.GetType() == typeof(CustomAction))
                 {
                     if (action.isEnabled)
                     {
-                        this.peerToPeerRadioButton.Select();
-                        this.connectionTypeTabControl.SelectedTab = this.peerToPeerTabPage;
+                        this.customRadioButton.Select();
+                        this.connectionTypeTabControl.SelectedTab = this.customTabPage;
                     }
                     if (action.javaStarterClass == null || action.javaStarterClass.Equals(""))
                     {
-                        this.peerToPeerJavaActionClassTextBox.Text = P2PAction.DEFAULT_JAVA_STARTER_CLASS;
+                        this.customJavaActionClassTextBox.Text = CustomAction.DEFAULT_JAVA_STARTER_CLASS;
                     }
                     else
                     {
-                        this.peerToPeerJavaActionClassTextBox.Text = action.javaStarterClass;
+                        this.customJavaActionClassTextBox.Text = action.javaStarterClass;
                     }
-                    P2PAction p2pAction = (P2PAction)action;
-                    this.p2pProtocol.Text = p2pAction.protocol;
-                    if (p2pAction.contacts != null) {
-                        this.peerToPeerContactsListBox.Items.AddRange(p2pAction.contacts);
+                    CustomAction customAction = (CustomAction)action;
+                    if (customAction.args != null)
+                    {
+                        this.customArgumentsListBox.Items.AddRange(customAction.args);
                     }
                 }
                 else
@@ -277,15 +277,14 @@ namespace AgentForAgent
             rmAction.javaStarterClass = this.resourceManagerRegistrationJavaActionClassTextBox.Text;
             rmAction.isEnabled = this.resourceManagerRegistrationRadioButton.Checked;
             this.configuration.actions[1] = rmAction;
-            // Save peer to peer action definition
-            P2PAction p2pAction = new P2PAction();
-            string[] hosts = new string[this.peerToPeerContactsListBox.Items.Count];
-            peerToPeerContactsListBox.Items.CopyTo(hosts, 0);
-            p2pAction.contacts = hosts;
-            p2pAction.protocol = (p2pProtocol.Text == null || p2pProtocol.Text.Equals("") ? P2PAction.DEFAULT_P2P_PROTOCOL : p2pProtocol.Text);
-            p2pAction.javaStarterClass = this.peerToPeerJavaActionClassTextBox.Text;
-            p2pAction.isEnabled = this.peerToPeerRadioButton.Checked;
-            this.configuration.actions[2] = p2pAction;                 
+            // Save custom action definition
+            CustomAction customAction = new CustomAction();
+            string[] arguments = new string[this.customArgumentsListBox.Items.Count];
+            customArgumentsListBox.Items.CopyTo(arguments, 0);
+            customAction.args = arguments;           
+            customAction.javaStarterClass = this.customJavaActionClassTextBox.Text;
+            customAction.isEnabled = this.customRadioButton.Checked;
+            this.configuration.actions[2] = customAction;                 
             // Save the configuration into a file
             try
             {
@@ -690,73 +689,68 @@ namespace AgentForAgent
         }
 
         /***********************************************************************/
-        /** P2P ACTION TYPE - Peer-To-Peer collaboration gui handling methods **/
+        /** CUSTOM ACTION TYPE - custom conenction gui handling methods **/
         /***********************************************************************/
 
-        private void peerToPeerRadioButton_CheckedChanged(object sender, EventArgs e)
+        private void customRadioButton_CheckedChanged(object sender, EventArgs e)
         {
-            this.connectionTypeTabControl.SelectedTab = this.peerToPeerTabPage;
+            this.connectionTypeTabControl.SelectedTab = this.customTabPage;
             this.saveConfig.Enabled = true;
         }
 
-        private void p2pProtocol_TextChanged(object sender, EventArgs e)
+        private void customAddHostButton_Click(object sender, EventArgs e)
         {
-            this.saveConfig.Enabled = true;
-        }
-
-        private void peerToPeerAddHostButton_Click(object sender, EventArgs e)
-        {
-            string contactUrl = this.peerToPeerUrlTextBox.Text;
+            string contactUrl = this.customArgumentTextBox.Text;
             int addedIndex;
             if (contactUrl == null || contactUrl.Equals(""))
             {
-                addedIndex = this.peerToPeerContactsListBox.Items.Add("new Peer");
+                addedIndex = this.customArgumentsListBox.Items.Add("new Arg");
             }
             else {
-                addedIndex = this.peerToPeerContactsListBox.Items.Add(contactUrl);
+                addedIndex = this.customArgumentsListBox.Items.Add(contactUrl);
             }
-            this.peerToPeerContactsListBox.SelectedIndex = addedIndex;
+            this.customArgumentsListBox.SelectedIndex = addedIndex;
             this.saveConfig.Enabled = true;
         }
 
-        private void peerToPeerContactsListBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void customArgumentsListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            this.peerToPeerUrlTextBox.Text = (string)this.peerToPeerContactsListBox.SelectedItem;
-            this.peerToPeerSaveHostButton.Enabled = true;
+            this.customArgumentTextBox.Text = (string)this.customArgumentsListBox.SelectedItem;
+            this.customSaveArgumentButton.Enabled = true;
         }
 
-        private void peerToPeerDeleteHostButton_Click(object sender, EventArgs e)
+        private void customDeleteArgumentButton_Click(object sender, EventArgs e)
         {
-            int selectedIndex = this.peerToPeerContactsListBox.SelectedIndex;
+            int selectedIndex = this.customArgumentsListBox.SelectedIndex;
             if (selectedIndex != -1)
             {
-                this.peerToPeerContactsListBox.Items.RemoveAt(selectedIndex--);
-                this.peerToPeerUrlTextBox.Text = "";
-                this.peerToPeerSaveHostButton.Enabled = false;
+                this.customArgumentsListBox.Items.RemoveAt(selectedIndex--);
+                this.customArgumentTextBox.Text = "";
+                this.customSaveArgumentButton.Enabled = false;
 
                 // After deletion automatically select precedent if there is one
                 if (selectedIndex > -1)
                 {
-                    this.peerToPeerContactsListBox.SelectedIndex = selectedIndex;
+                    this.customArgumentsListBox.SelectedIndex = selectedIndex;
                 }
                 else
                 {
                     // Try to select the last if there is one
-                    if (this.peerToPeerContactsListBox.Items.Count > 0)
+                    if (this.customArgumentsListBox.Items.Count > 0)
                     {
-                        this.peerToPeerContactsListBox.SelectedIndex = this.peerToPeerContactsListBox.Items.Count - 1;
+                        this.customArgumentsListBox.SelectedIndex = this.customArgumentsListBox.Items.Count - 1;
                     }
                 }
                 this.saveConfig.Enabled = true;
             }
         }
 
-        private void peerToPeerSaveHostButton_Click(object sender, EventArgs e)
+        private void customSaveArgumentButton_Click(object sender, EventArgs e)
         {
-            int selectedIndex = this.peerToPeerContactsListBox.SelectedIndex;
+            int selectedIndex = this.customArgumentsListBox.SelectedIndex;
             if (selectedIndex != -1)
             {
-                this.peerToPeerContactsListBox.Items[selectedIndex] = this.peerToPeerUrlTextBox.Text;
+                this.customArgumentsListBox.Items[selectedIndex] = this.customArgumentTextBox.Text;
                 this.saveConfig.Enabled = true;
             }
         }

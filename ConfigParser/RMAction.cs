@@ -26,7 +26,7 @@ namespace ConfigParser
         private string myNodeName;
 
         public RMAction() {
-            this.javaStarterClass = DEFAULT_JAVA_STARTER_CLASS;
+            base.javaStarterClass = DEFAULT_JAVA_STARTER_CLASS;
             this.myUrl = "";
             this.myNodeName = "";
         }

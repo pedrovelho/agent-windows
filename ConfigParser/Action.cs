@@ -13,7 +13,7 @@ namespace ConfigParser
 {
     [XmlInclude(typeof(AdvertAction)),
     XmlInclude(typeof(RMAction)),    
-    XmlInclude(typeof(P2PAction))
+    XmlInclude(typeof(CustomAction))
     ]
     public class Action
     {        

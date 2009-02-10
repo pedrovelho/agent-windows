@@ -23,12 +23,11 @@
       <url />
       <nodeName />
     </action>
-    <action xsi:type="P2PAction">
+    <action xsi:type="CustomAction">
       <initialRestartDelay>0</initialRestartDelay>
-      <javaStarterClass>org.objectweb.proactive.extra.p2p.daemon.PAAgentServiceP2PStarter</javaStarterClass>
+      <javaStarterClass>user.Starter</javaStarterClass>
       <isEnabled>false</isEnabled>
-      <protocol>RMI</protocol>
-      <contacts />
+      <args></args>      
     </action>
   </actions>  
 </agent>

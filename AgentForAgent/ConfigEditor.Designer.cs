@@ -68,7 +68,7 @@ namespace AgentForAgent
             this.enabledConnectionGroupBox = new System.Windows.Forms.GroupBox();
             this.resourceManagerRegistrationRadioButton = new System.Windows.Forms.RadioButton();
             this.rmiRegistrationRadioButton = new System.Windows.Forms.RadioButton();
-            this.peerToPeerRadioButton = new System.Windows.Forms.RadioButton();
+            this.customRadioButton = new System.Windows.Forms.RadioButton();
             this.connectionTypeTabControl = new System.Windows.Forms.TabControl();
             this.rmiRegistrationTabPage = new System.Windows.Forms.TabPage();
             this.rmiRegistrationAdditionalConfigurationGroupBox = new System.Windows.Forms.GroupBox();
@@ -86,24 +86,25 @@ namespace AgentForAgent
             this.label16 = new System.Windows.Forms.Label();
             this.rmUrl = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.peerToPeerTabPage = new System.Windows.Forms.TabPage();
-            this.peerToPeerAdditionalConfigurationGroupBox = new System.Windows.Forms.GroupBox();
-            this.peerToPeerJavaActionClassTextBox = new System.Windows.Forms.TextBox();
+            this.customTabPage = new System.Windows.Forms.TabPage();
+            this.customAdditionalConfigurationGroupBox = new System.Windows.Forms.GroupBox();
+            this.customJavaActionClassTextBox = new System.Windows.Forms.TextBox();
             this.label19 = new System.Windows.Forms.Label();
-            this.p2pactionGroup = new System.Windows.Forms.GroupBox();
-            this.label17 = new System.Windows.Forms.Label();
-            this.p2pProtocol = new System.Windows.Forms.TextBox();
-            this.peerToPeerSaveHostButton = new System.Windows.Forms.Button();
-            this.peerToPeerUrlTextBox = new System.Windows.Forms.TextBox();
+            this.customActionGroup = new System.Windows.Forms.GroupBox();
+            this.customSaveArgumentButton = new System.Windows.Forms.Button();
+            this.customArgumentTextBox = new System.Windows.Forms.TextBox();
             this.label15 = new System.Windows.Forms.Label();
-            this.peerToPeerDeleteHostButton = new System.Windows.Forms.Button();
-            this.peerToPeerAddHostButton = new System.Windows.Forms.Button();
-            this.peerToPeerContactsListBox = new System.Windows.Forms.ListBox();
+            this.customDeleteButton = new System.Windows.Forms.Button();
+            this.customAddButton = new System.Windows.Forms.Button();
+            this.customArgumentsListBox = new System.Windows.Forms.ListBox();
             this.label14 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.alwaysAvailableCheckBox = new System.Windows.Forms.CheckBox();
             this.eventEditorGroup = new System.Windows.Forms.GroupBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.label20 = new System.Windows.Forms.Label();
+            this.maxCpuUsageNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.maxCpuUsageLabel = new System.Windows.Forms.Label();
             this.processPriorityLabel = new System.Windows.Forms.Label();
             this.processPriorityComboBox = new System.Windows.Forms.ComboBox();
             this.startTimeGroupBox = new System.Windows.Forms.GroupBox();
@@ -128,16 +129,13 @@ namespace AgentForAgent
             this.showButton = new System.Windows.Forms.Button();
             this.createEventButton = new System.Windows.Forms.Button();
             this.deleteEventButton = new System.Windows.Forms.Button();
+            this.eventsList = new AgentForAgent.RefreshingListBox();
             this.saveConfig = new System.Windows.Forms.Button();
             this.closeConfig = new System.Windows.Forms.Button();
             this.proActiveLocationBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.jvmLocationBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.saveConfigAs = new System.Windows.Forms.Button();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.maxCpuUsageLabel = new System.Windows.Forms.Label();
-            this.maxCpuUsageNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.label20 = new System.Windows.Forms.Label();
-            this.eventsList = new AgentForAgent.RefreshingListBox();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.generalTabPage.SuspendLayout();
@@ -153,12 +151,13 @@ namespace AgentForAgent
             this.resourceManagerRegistrationTabPage.SuspendLayout();
             this.resourceManagerRegistrationAdditionalConfigurationGroupBox.SuspendLayout();
             this.rmActionGroup.SuspendLayout();
-            this.peerToPeerTabPage.SuspendLayout();
-            this.peerToPeerAdditionalConfigurationGroupBox.SuspendLayout();
-            this.p2pactionGroup.SuspendLayout();
+            this.customTabPage.SuspendLayout();
+            this.customAdditionalConfigurationGroupBox.SuspendLayout();
+            this.customActionGroup.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.eventEditorGroup.SuspendLayout();
             this.groupBox4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.maxCpuUsageNumericUpDown)).BeginInit();
             this.startTimeGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.secondStart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.hourStart)).BeginInit();
@@ -169,7 +168,6 @@ namespace AgentForAgent
             ((System.ComponentModel.ISupportInitialize)(this.minutesDuration)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.hoursDuration)).BeginInit();
             this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.maxCpuUsageNumericUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -444,10 +442,10 @@ namespace AgentForAgent
             // 
             this.enabledConnectionGroupBox.Controls.Add(this.resourceManagerRegistrationRadioButton);
             this.enabledConnectionGroupBox.Controls.Add(this.rmiRegistrationRadioButton);
-            this.enabledConnectionGroupBox.Controls.Add(this.peerToPeerRadioButton);
-            this.enabledConnectionGroupBox.Location = new System.Drawing.Point(142, 6);
+            this.enabledConnectionGroupBox.Controls.Add(this.customRadioButton);
+            this.enabledConnectionGroupBox.Location = new System.Drawing.Point(158, 6);
             this.enabledConnectionGroupBox.Name = "enabledConnectionGroupBox";
-            this.enabledConnectionGroupBox.Size = new System.Drawing.Size(391, 45);
+            this.enabledConnectionGroupBox.Size = new System.Drawing.Size(359, 45);
             this.enabledConnectionGroupBox.TabIndex = 4;
             this.enabledConnectionGroupBox.TabStop = false;
             this.enabledConnectionGroupBox.Text = "Enabled Connection";
@@ -476,24 +474,24 @@ namespace AgentForAgent
             this.rmiRegistrationRadioButton.UseVisualStyleBackColor = true;
             this.rmiRegistrationRadioButton.CheckedChanged += new System.EventHandler(this.rmiRegistrationRadioButton_CheckedChanged);
             // 
-            // peerToPeerRadioButton
+            // customRadioButton
             // 
-            this.peerToPeerRadioButton.AutoSize = true;
-            this.peerToPeerRadioButton.Location = new System.Drawing.Point(297, 19);
-            this.peerToPeerRadioButton.Name = "peerToPeerRadioButton";
-            this.peerToPeerRadioButton.Size = new System.Drawing.Size(88, 17);
-            this.peerToPeerRadioButton.TabIndex = 3;
-            this.peerToPeerRadioButton.TabStop = true;
-            this.peerToPeerRadioButton.Text = "Peer-To-Peer";
-            this.peerToPeerRadioButton.UseVisualStyleBackColor = true;
-            this.peerToPeerRadioButton.CheckedChanged += new System.EventHandler(this.peerToPeerRadioButton_CheckedChanged);
+            this.customRadioButton.AutoSize = true;
+            this.customRadioButton.Location = new System.Drawing.Point(297, 19);
+            this.customRadioButton.Name = "customRadioButton";
+            this.customRadioButton.Size = new System.Drawing.Size(60, 17);
+            this.customRadioButton.TabIndex = 3;
+            this.customRadioButton.TabStop = true;
+            this.customRadioButton.Text = "Custom";
+            this.customRadioButton.UseVisualStyleBackColor = true;
+            this.customRadioButton.CheckedChanged += new System.EventHandler(this.customRadioButton_CheckedChanged);
             // 
             // connectionTypeTabControl
             // 
             this.connectionTypeTabControl.Alignment = System.Windows.Forms.TabAlignment.Left;
             this.connectionTypeTabControl.Controls.Add(this.rmiRegistrationTabPage);
             this.connectionTypeTabControl.Controls.Add(this.resourceManagerRegistrationTabPage);
-            this.connectionTypeTabControl.Controls.Add(this.peerToPeerTabPage);
+            this.connectionTypeTabControl.Controls.Add(this.customTabPage);
             this.connectionTypeTabControl.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             this.connectionTypeTabControl.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.connectionTypeTabControl.ItemSize = new System.Drawing.Size(19, 175);
@@ -660,35 +658,35 @@ namespace AgentForAgent
             this.label4.TabIndex = 0;
             this.label4.Text = "Resource Manager URL:";
             // 
-            // peerToPeerTabPage
+            // customTabPage
             // 
-            this.peerToPeerTabPage.Controls.Add(this.peerToPeerAdditionalConfigurationGroupBox);
-            this.peerToPeerTabPage.Controls.Add(this.p2pactionGroup);
-            this.peerToPeerTabPage.Location = new System.Drawing.Point(179, 4);
-            this.peerToPeerTabPage.Name = "peerToPeerTabPage";
-            this.peerToPeerTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.peerToPeerTabPage.Size = new System.Drawing.Size(485, 255);
-            this.peerToPeerTabPage.TabIndex = 2;
-            this.peerToPeerTabPage.Text = "Peer-To-Peer";
-            this.peerToPeerTabPage.UseVisualStyleBackColor = true;
+            this.customTabPage.Controls.Add(this.customAdditionalConfigurationGroupBox);
+            this.customTabPage.Controls.Add(this.customActionGroup);
+            this.customTabPage.Location = new System.Drawing.Point(179, 4);
+            this.customTabPage.Name = "customTabPage";
+            this.customTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.customTabPage.Size = new System.Drawing.Size(485, 255);
+            this.customTabPage.TabIndex = 2;
+            this.customTabPage.Text = "Custom";
+            this.customTabPage.UseVisualStyleBackColor = true;
             // 
-            // peerToPeerAdditionalConfigurationGroupBox
+            // customAdditionalConfigurationGroupBox
             // 
-            this.peerToPeerAdditionalConfigurationGroupBox.Controls.Add(this.peerToPeerJavaActionClassTextBox);
-            this.peerToPeerAdditionalConfigurationGroupBox.Controls.Add(this.label19);
-            this.peerToPeerAdditionalConfigurationGroupBox.Location = new System.Drawing.Point(6, 201);
-            this.peerToPeerAdditionalConfigurationGroupBox.Name = "peerToPeerAdditionalConfigurationGroupBox";
-            this.peerToPeerAdditionalConfigurationGroupBox.Size = new System.Drawing.Size(473, 48);
-            this.peerToPeerAdditionalConfigurationGroupBox.TabIndex = 5;
-            this.peerToPeerAdditionalConfigurationGroupBox.TabStop = false;
-            this.peerToPeerAdditionalConfigurationGroupBox.Text = "Additional Configuration";
+            this.customAdditionalConfigurationGroupBox.Controls.Add(this.customJavaActionClassTextBox);
+            this.customAdditionalConfigurationGroupBox.Controls.Add(this.label19);
+            this.customAdditionalConfigurationGroupBox.Location = new System.Drawing.Point(6, 201);
+            this.customAdditionalConfigurationGroupBox.Name = "customAdditionalConfigurationGroupBox";
+            this.customAdditionalConfigurationGroupBox.Size = new System.Drawing.Size(473, 48);
+            this.customAdditionalConfigurationGroupBox.TabIndex = 5;
+            this.customAdditionalConfigurationGroupBox.TabStop = false;
+            this.customAdditionalConfigurationGroupBox.Text = "Additional Configuration";
             // 
-            // peerToPeerJavaActionClassTextBox
+            // customJavaActionClassTextBox
             // 
-            this.peerToPeerJavaActionClassTextBox.Location = new System.Drawing.Point(106, 19);
-            this.peerToPeerJavaActionClassTextBox.Name = "peerToPeerJavaActionClassTextBox";
-            this.peerToPeerJavaActionClassTextBox.Size = new System.Drawing.Size(361, 20);
-            this.peerToPeerJavaActionClassTextBox.TabIndex = 1;
+            this.customJavaActionClassTextBox.Location = new System.Drawing.Point(106, 19);
+            this.customJavaActionClassTextBox.Name = "customJavaActionClassTextBox";
+            this.customJavaActionClassTextBox.Size = new System.Drawing.Size(361, 20);
+            this.customJavaActionClassTextBox.TabIndex = 1;
             // 
             // label19
             // 
@@ -699,105 +697,86 @@ namespace AgentForAgent
             this.label19.TabIndex = 0;
             this.label19.Text = "Java Starter Class:";
             // 
-            // p2pactionGroup
+            // customActionGroup
             // 
-            this.p2pactionGroup.Controls.Add(this.label17);
-            this.p2pactionGroup.Controls.Add(this.p2pProtocol);
-            this.p2pactionGroup.Controls.Add(this.peerToPeerSaveHostButton);
-            this.p2pactionGroup.Controls.Add(this.peerToPeerUrlTextBox);
-            this.p2pactionGroup.Controls.Add(this.label15);
-            this.p2pactionGroup.Controls.Add(this.peerToPeerDeleteHostButton);
-            this.p2pactionGroup.Controls.Add(this.peerToPeerAddHostButton);
-            this.p2pactionGroup.Controls.Add(this.peerToPeerContactsListBox);
-            this.p2pactionGroup.Controls.Add(this.label14);
-            this.p2pactionGroup.Location = new System.Drawing.Point(6, 6);
-            this.p2pactionGroup.Name = "p2pactionGroup";
-            this.p2pactionGroup.Size = new System.Drawing.Size(436, 181);
-            this.p2pactionGroup.TabIndex = 3;
-            this.p2pactionGroup.TabStop = false;
-            this.p2pactionGroup.Text = "Peer-To-Peer Collaboration";
+            this.customActionGroup.Controls.Add(this.customSaveArgumentButton);
+            this.customActionGroup.Controls.Add(this.customArgumentTextBox);
+            this.customActionGroup.Controls.Add(this.label15);
+            this.customActionGroup.Controls.Add(this.customDeleteButton);
+            this.customActionGroup.Controls.Add(this.customAddButton);
+            this.customActionGroup.Controls.Add(this.customArgumentsListBox);
+            this.customActionGroup.Controls.Add(this.label14);
+            this.customActionGroup.Location = new System.Drawing.Point(6, 6);
+            this.customActionGroup.Name = "customActionGroup";
+            this.customActionGroup.Size = new System.Drawing.Size(436, 181);
+            this.customActionGroup.TabIndex = 3;
+            this.customActionGroup.TabStop = false;
+            this.customActionGroup.Text = "Custom";
             // 
-            // label17
+            // customSaveArgumentButton
             // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(6, 22);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(49, 13);
-            this.label17.TabIndex = 7;
-            this.label17.Text = "Protocol:";
+            this.customSaveArgumentButton.Enabled = false;
+            this.customSaveArgumentButton.Location = new System.Drawing.Point(350, 93);
+            this.customSaveArgumentButton.Name = "customSaveArgumentButton";
+            this.customSaveArgumentButton.Size = new System.Drawing.Size(75, 23);
+            this.customSaveArgumentButton.TabIndex = 6;
+            this.customSaveArgumentButton.Text = "Save Arg";
+            this.customSaveArgumentButton.UseVisualStyleBackColor = true;
+            this.customSaveArgumentButton.Click += new System.EventHandler(this.customSaveArgumentButton_Click);
             // 
-            // p2pProtocol
+            // customArgumentTextBox
             // 
-            this.p2pProtocol.Location = new System.Drawing.Point(61, 19);
-            this.p2pProtocol.Name = "p2pProtocol";
-            this.p2pProtocol.Size = new System.Drawing.Size(283, 20);
-            this.p2pProtocol.TabIndex = 8;
-            this.p2pProtocol.TextChanged += new System.EventHandler(this.p2pProtocol_TextChanged);
-            // 
-            // peerToPeerSaveHostButton
-            // 
-            this.peerToPeerSaveHostButton.Enabled = false;
-            this.peerToPeerSaveHostButton.Location = new System.Drawing.Point(350, 123);
-            this.peerToPeerSaveHostButton.Name = "peerToPeerSaveHostButton";
-            this.peerToPeerSaveHostButton.Size = new System.Drawing.Size(75, 23);
-            this.peerToPeerSaveHostButton.TabIndex = 6;
-            this.peerToPeerSaveHostButton.Text = "Save Peer";
-            this.peerToPeerSaveHostButton.UseVisualStyleBackColor = true;
-            this.peerToPeerSaveHostButton.Click += new System.EventHandler(this.peerToPeerSaveHostButton_Click);
-            // 
-            // peerToPeerUrlTextBox
-            // 
-            this.peerToPeerUrlTextBox.Location = new System.Drawing.Point(69, 152);
-            this.peerToPeerUrlTextBox.Name = "peerToPeerUrlTextBox";
-            this.peerToPeerUrlTextBox.Size = new System.Drawing.Size(356, 20);
-            this.peerToPeerUrlTextBox.TabIndex = 5;
+            this.customArgumentTextBox.Location = new System.Drawing.Point(69, 122);
+            this.customArgumentTextBox.Name = "customArgumentTextBox";
+            this.customArgumentTextBox.Size = new System.Drawing.Size(356, 20);
+            this.customArgumentTextBox.TabIndex = 5;
             // 
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(6, 155);
+            this.label15.Location = new System.Drawing.Point(6, 125);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(57, 13);
+            this.label15.Size = new System.Drawing.Size(55, 13);
             this.label15.TabIndex = 4;
-            this.label15.Text = "Peer URL:";
+            this.label15.Text = "Argument:";
             // 
-            // peerToPeerDeleteHostButton
+            // customDeleteButton
             // 
-            this.peerToPeerDeleteHostButton.Location = new System.Drawing.Point(350, 93);
-            this.peerToPeerDeleteHostButton.Name = "peerToPeerDeleteHostButton";
-            this.peerToPeerDeleteHostButton.Size = new System.Drawing.Size(75, 23);
-            this.peerToPeerDeleteHostButton.TabIndex = 3;
-            this.peerToPeerDeleteHostButton.Text = "Delete";
-            this.peerToPeerDeleteHostButton.UseVisualStyleBackColor = true;
-            this.peerToPeerDeleteHostButton.Click += new System.EventHandler(this.peerToPeerDeleteHostButton_Click);
+            this.customDeleteButton.Location = new System.Drawing.Point(350, 63);
+            this.customDeleteButton.Name = "customDeleteButton";
+            this.customDeleteButton.Size = new System.Drawing.Size(75, 23);
+            this.customDeleteButton.TabIndex = 3;
+            this.customDeleteButton.Text = "Delete";
+            this.customDeleteButton.UseVisualStyleBackColor = true;
+            this.customDeleteButton.Click += new System.EventHandler(this.customDeleteArgumentButton_Click);
             // 
-            // peerToPeerAddHostButton
+            // customAddButton
             // 
-            this.peerToPeerAddHostButton.Location = new System.Drawing.Point(350, 64);
-            this.peerToPeerAddHostButton.Name = "peerToPeerAddHostButton";
-            this.peerToPeerAddHostButton.Size = new System.Drawing.Size(75, 23);
-            this.peerToPeerAddHostButton.TabIndex = 2;
-            this.peerToPeerAddHostButton.Text = "Add";
-            this.peerToPeerAddHostButton.UseVisualStyleBackColor = true;
-            this.peerToPeerAddHostButton.Click += new System.EventHandler(this.peerToPeerAddHostButton_Click);
+            this.customAddButton.Location = new System.Drawing.Point(350, 34);
+            this.customAddButton.Name = "customAddButton";
+            this.customAddButton.Size = new System.Drawing.Size(75, 23);
+            this.customAddButton.TabIndex = 2;
+            this.customAddButton.Text = "Add";
+            this.customAddButton.UseVisualStyleBackColor = true;
+            this.customAddButton.Click += new System.EventHandler(this.customAddHostButton_Click);
             // 
-            // peerToPeerContactsListBox
+            // customArgumentsListBox
             // 
-            this.peerToPeerContactsListBox.FormattingEnabled = true;
-            this.peerToPeerContactsListBox.Location = new System.Drawing.Point(9, 64);
-            this.peerToPeerContactsListBox.Name = "peerToPeerContactsListBox";
-            this.peerToPeerContactsListBox.Size = new System.Drawing.Size(335, 82);
-            this.peerToPeerContactsListBox.TabIndex = 1;
-            this.peerToPeerContactsListBox.SelectedIndexChanged += new System.EventHandler(this.peerToPeerContactsListBox_SelectedIndexChanged);
+            this.customArgumentsListBox.FormattingEnabled = true;
+            this.customArgumentsListBox.Location = new System.Drawing.Point(9, 34);
+            this.customArgumentsListBox.Name = "customArgumentsListBox";
+            this.customArgumentsListBox.Size = new System.Drawing.Size(335, 82);
+            this.customArgumentsListBox.TabIndex = 1;
+            this.customArgumentsListBox.SelectedIndexChanged += new System.EventHandler(this.customArgumentsListBox_SelectedIndexChanged);
             // 
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(6, 48);
+            this.label14.Location = new System.Drawing.Point(6, 16);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(99, 13);
+            this.label14.Size = new System.Drawing.Size(60, 13);
             this.label14.TabIndex = 0;
-            this.label14.Text = "First Contact Peers:";
+            this.label14.Text = "Arguments:";
             // 
             // tabPage2
             // 
@@ -849,6 +828,42 @@ namespace AgentForAgent
             this.groupBox4.TabIndex = 20;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Process Management";
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(376, 22);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(15, 13);
+            this.label20.TabIndex = 4;
+            this.label20.Text = "%";
+            // 
+            // maxCpuUsageNumericUpDown
+            // 
+            this.maxCpuUsageNumericUpDown.Location = new System.Drawing.Point(331, 20);
+            this.maxCpuUsageNumericUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.maxCpuUsageNumericUpDown.Name = "maxCpuUsageNumericUpDown";
+            this.maxCpuUsageNumericUpDown.Size = new System.Drawing.Size(39, 20);
+            this.maxCpuUsageNumericUpDown.TabIndex = 3;
+            this.maxCpuUsageNumericUpDown.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.maxCpuUsageNumericUpDown.ValueChanged += new System.EventHandler(this.maxCpuUsageNumericUpDown_ValueChanged);
+            // 
+            // maxCpuUsageLabel
+            // 
+            this.maxCpuUsageLabel.AutoSize = true;
+            this.maxCpuUsageLabel.Location = new System.Drawing.Point(233, 22);
+            this.maxCpuUsageLabel.Name = "maxCpuUsageLabel";
+            this.maxCpuUsageLabel.Size = new System.Drawing.Size(92, 13);
+            this.maxCpuUsageLabel.TabIndex = 2;
+            this.maxCpuUsageLabel.Text = "Max CPU Usage: ";
             // 
             // processPriorityLabel
             // 
@@ -1133,6 +1148,15 @@ namespace AgentForAgent
             this.deleteEventButton.UseVisualStyleBackColor = true;
             this.deleteEventButton.Click += new System.EventHandler(this.deleteEventButton_Click);
             // 
+            // eventsList
+            // 
+            this.eventsList.FormattingEnabled = true;
+            this.eventsList.Location = new System.Drawing.Point(6, 19);
+            this.eventsList.Name = "eventsList";
+            this.eventsList.Size = new System.Drawing.Size(235, 251);
+            this.eventsList.TabIndex = 0;
+            this.eventsList.SelectedIndexChanged += new System.EventHandler(this.eventsList_SelectedIndexChanged);
+            // 
             // saveConfig
             // 
             this.saveConfig.Enabled = false;
@@ -1171,51 +1195,6 @@ namespace AgentForAgent
             this.saveConfigAs.Text = "Save as ...";
             this.saveConfigAs.UseVisualStyleBackColor = true;
             this.saveConfigAs.Click += new System.EventHandler(this.saveConfigAs_Click);
-            // 
-            // maxCpuUsageLabel
-            // 
-            this.maxCpuUsageLabel.AutoSize = true;
-            this.maxCpuUsageLabel.Location = new System.Drawing.Point(233, 22);
-            this.maxCpuUsageLabel.Name = "maxCpuUsageLabel";
-            this.maxCpuUsageLabel.Size = new System.Drawing.Size(92, 13);
-            this.maxCpuUsageLabel.TabIndex = 2;
-            this.maxCpuUsageLabel.Text = "Max CPU Usage: ";
-            // 
-            // maxCpuUsageNumericUpDown
-            // 
-            this.maxCpuUsageNumericUpDown.Location = new System.Drawing.Point(331, 20);
-            this.maxCpuUsageNumericUpDown.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.maxCpuUsageNumericUpDown.Name = "maxCpuUsageNumericUpDown";
-            this.maxCpuUsageNumericUpDown.Size = new System.Drawing.Size(39, 20);
-            this.maxCpuUsageNumericUpDown.TabIndex = 3;
-            this.maxCpuUsageNumericUpDown.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.maxCpuUsageNumericUpDown.ValueChanged += new System.EventHandler(this.maxCpuUsageNumericUpDown_ValueChanged);
-            // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(376, 22);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(15, 13);
-            this.label20.TabIndex = 4;
-            this.label20.Text = "%";
-            // 
-            // eventsList
-            // 
-            this.eventsList.FormattingEnabled = true;
-            this.eventsList.Location = new System.Drawing.Point(6, 19);
-            this.eventsList.Name = "eventsList";
-            this.eventsList.Size = new System.Drawing.Size(235, 251);
-            this.eventsList.TabIndex = 0;
-            this.eventsList.SelectedIndexChanged += new System.EventHandler(this.eventsList_SelectedIndexChanged);
             // 
             // ConfigurationEditor
             // 
@@ -1258,16 +1237,17 @@ namespace AgentForAgent
             this.resourceManagerRegistrationAdditionalConfigurationGroupBox.PerformLayout();
             this.rmActionGroup.ResumeLayout(false);
             this.rmActionGroup.PerformLayout();
-            this.peerToPeerTabPage.ResumeLayout(false);
-            this.peerToPeerAdditionalConfigurationGroupBox.ResumeLayout(false);
-            this.peerToPeerAdditionalConfigurationGroupBox.PerformLayout();
-            this.p2pactionGroup.ResumeLayout(false);
-            this.p2pactionGroup.PerformLayout();
+            this.customTabPage.ResumeLayout(false);
+            this.customAdditionalConfigurationGroupBox.ResumeLayout(false);
+            this.customAdditionalConfigurationGroupBox.PerformLayout();
+            this.customActionGroup.ResumeLayout(false);
+            this.customActionGroup.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
             this.eventEditorGroup.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.maxCpuUsageNumericUpDown)).EndInit();
             this.startTimeGroupBox.ResumeLayout(false);
             this.startTimeGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.secondStart)).EndInit();
@@ -1280,7 +1260,6 @@ namespace AgentForAgent
             ((System.ComponentModel.ISupportInitialize)(this.minutesDuration)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.hoursDuration)).EndInit();
             this.groupBox2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.maxCpuUsageNumericUpDown)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1349,20 +1328,18 @@ namespace AgentForAgent
         private System.Windows.Forms.TabPage connectionTabPage;
         private System.Windows.Forms.TabPage rmiRegistrationTabPage;
         private System.Windows.Forms.TabPage resourceManagerRegistrationTabPage;
-        private System.Windows.Forms.TabPage peerToPeerTabPage;
+        private System.Windows.Forms.TabPage customTabPage;
         private System.Windows.Forms.RadioButton rmiRegistrationRadioButton;
-        private System.Windows.Forms.RadioButton peerToPeerRadioButton;
+        private System.Windows.Forms.RadioButton customRadioButton;
         private System.Windows.Forms.RadioButton resourceManagerRegistrationRadioButton;
         private System.Windows.Forms.TabControl connectionTypeTabControl;
-        private System.Windows.Forms.GroupBox p2pactionGroup;
-        private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.TextBox p2pProtocol;
-        private System.Windows.Forms.Button peerToPeerSaveHostButton;
-        private System.Windows.Forms.TextBox peerToPeerUrlTextBox;
+        private System.Windows.Forms.GroupBox customActionGroup;
+        private System.Windows.Forms.Button customSaveArgumentButton;
+        private System.Windows.Forms.TextBox customArgumentTextBox;
         private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.Button peerToPeerDeleteHostButton;
-        private System.Windows.Forms.Button peerToPeerAddHostButton;
-        private System.Windows.Forms.ListBox peerToPeerContactsListBox;
+        private System.Windows.Forms.Button customDeleteButton;
+        private System.Windows.Forms.Button customAddButton;
+        private System.Windows.Forms.ListBox customArgumentsListBox;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.GroupBox rmiActionGroup;
         private System.Windows.Forms.TextBox rmiNodeName;
@@ -1378,8 +1355,8 @@ namespace AgentForAgent
         private System.Windows.Forms.GroupBox resourceManagerRegistrationAdditionalConfigurationGroupBox;
         private System.Windows.Forms.TextBox resourceManagerRegistrationJavaActionClassTextBox;
         private System.Windows.Forms.Label label18;
-        private System.Windows.Forms.GroupBox peerToPeerAdditionalConfigurationGroupBox;
-        private System.Windows.Forms.TextBox peerToPeerJavaActionClassTextBox;
+        private System.Windows.Forms.GroupBox customAdditionalConfigurationGroupBox;
+        private System.Windows.Forms.TextBox customJavaActionClassTextBox;
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.GroupBox enabledConnectionGroupBox;
         private System.Windows.Forms.Label maxCpuUsageLabel;

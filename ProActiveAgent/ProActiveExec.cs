@@ -67,7 +67,7 @@ namespace ProActiveAgent
         private readonly uint maximumJavaHeapSize;
         /// <summary>
         /// The cpu limiter used to set a max allowed cpu usage for the ProActive Runtime process.</summary>
-        private CPULimiter cpuLimiter;
+        private readonly CPULimiter cpuLimiter;
 
         /// <summary>
         /// Process object that represents running runner script.</summary>                        
@@ -104,17 +104,18 @@ namespace ProActiveAgent
             // Add default parameters
             ConfigParser.Action.addDefaultJvmParameters(jvmParametersList, this.configuration.agentConfig.proactiveLocation);
 
+            this.cmd = action.javaStarterClass;
+
             // user defined jvm parameters will be added after in order to let the user redefine default parameters                        
-            if (action is P2PAction)
+            if (action is AdvertAction)
             {
-                P2PAction p2pAction = (P2PAction)action;
+                AdvertAction advertAction = (AdvertAction)action;
                 // Add action specific default jvm parameters
                 // ... nothing to add
                 // Add user defined jvm parameters
                 this.addUserDefinedJvmParameters(jvmParametersList);
-                this.jvmParameters = jvmParametersList.ToArray();
-                this.cmd = P2PAction.DEFAULT_JAVA_STARTER_CLASS;
-                this.args = p2pAction.contacts;
+                this.jvmParameters = jvmParametersList.ToArray();                
+                this.args = new string[] { advertAction.nodeName };
             }
             else if (action is RMAction)
             {
@@ -123,20 +124,18 @@ namespace ProActiveAgent
                 RMAction.addDefaultJvmParameters(jvmParametersList, this.configuration.agentConfig.proactiveLocation);
                 // Add user defined jvm parameters
                 this.addUserDefinedJvmParameters(jvmParametersList);
-                this.jvmParameters = jvmParametersList.ToArray();
-                this.cmd = RMAction.DEFAULT_JAVA_STARTER_CLASS;
+                this.jvmParameters = jvmParametersList.ToArray();                
                 this.args = new string[] { rmAction.url, rmAction.nodeName };
             }
-            else if (action is AdvertAction)
+            else if (action is CustomAction)
             {
-                AdvertAction advertAction = (AdvertAction)action;
+                CustomAction customAction = (CustomAction)action;
                 // Add action specific default jvm parameters
                 // ... nothing to add
                 // Add user defined jvm parameters
                 this.addUserDefinedJvmParameters(jvmParametersList);
-                this.jvmParameters = jvmParametersList.ToArray();
-                this.cmd = AdvertAction.DEFAULT_JAVA_STARTER_CLASS;
-                this.args = new string[] { advertAction.nodeName };
+                this.jvmParameters = jvmParametersList.ToArray();                
+                this.args = customAction.args;
             }
             else
             {
