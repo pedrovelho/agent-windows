@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
 using System.Diagnostics;
+using System.Drawing;
 using System.ServiceProcess;
-using System.Threading;
-using Microsoft.Win32;
+using System.Windows.Forms;
 using ConfigParser;
+using Microsoft.Win32;
 using ProActiveAgent;
-using System.Security;
 
 namespace AgentForAgent
 {
@@ -406,7 +401,7 @@ namespace AgentForAgent
                         //Handle application exit call
                         setVisibleCore = false;
                         Hide();
-                        e.Cancel = true;                        
+                        e.Cancel = true;
                         break;
                     }
                 case CloseReason.FormOwnerClosing:
@@ -435,7 +430,7 @@ namespace AgentForAgent
                         // Handle User close
                         setVisibleCore = false;
                         Hide();
-                        e.Cancel = true;                        
+                        e.Cancel = true;
                         break;
                     }
                 case CloseReason.WindowsShutDown:
@@ -444,11 +439,11 @@ namespace AgentForAgent
                         this.kill();
                         break;
                     }
-            }         
+            }
         }
 
         private void kill()
-        {            
+        {
             // if the service is running stop it then exit
             try
             {
@@ -506,23 +501,6 @@ namespace AgentForAgent
             base.SetVisibleCore(setVisibleCore);
         }
 
-        /*private void allowForbidRT_Click(object sender, EventArgs e)
-        {
-            //change state
-            allowRuntime = !allowRuntime;
-
-            if (allowRuntime)
-            {
-                sc.ExecuteCommand((int)PAACommands.AllowRuntime);
-                allowForbidRT.Text = "Forbid RT";
-            }
-            else
-            {
-                sc.ExecuteCommand((int)PAACommands.ForbidRuntime);
-                allowForbidRT.Text = "Allow RT";
-            }
-        }*/
-
         private void notifyIcon1_Click(object sender, EventArgs e)
         {
             /*Form infoBox = new Form();
@@ -557,8 +535,6 @@ namespace AgentForAgent
             }*/
         }
 
-
-
         private void closeAdministrationPanelToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             DialogResult res = MessageBox.Show("This operation doesn't change the state of ProActive service", "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
@@ -578,6 +554,13 @@ namespace AgentForAgent
         private void toolStripStatusLabel1_Click(object sender, EventArgs e)
         {
             new VersionChecker().ShowDialog();
+        }
+
+        private void proActiveInriaLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            // If the value looks like a URL, navigate to it.
+            // Otherwise, display it in a message box.
+            System.Diagnostics.Process.Start(this.proActiveInriaLinkLabel.Text);            
         }
     }
 }

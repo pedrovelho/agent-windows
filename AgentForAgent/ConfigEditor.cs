@@ -103,7 +103,7 @@ namespace AgentForAgent
                         this.rmiRegistrationJavaActionClassTextBox.Text = action.javaStarterClass;
                     }
                     AdvertAction advertAction = (AdvertAction)action;
-                    this.rmiNodeEnabled.Checked = advertAction.nodeName == null || advertAction.nodeName.Equals("");
+                    this.rmiNodeEnabled.Checked = advertAction.nodeName != null && !advertAction.nodeName.Equals("");
                     this.rmiNodeName.Text = advertAction.nodeName;
                 }
                 else if (action.GetType() == typeof(RMAction))
@@ -644,9 +644,9 @@ namespace AgentForAgent
             saveConfig.Enabled = true;
         }
 
-        /**************************************/
-        /** ACTION TYPE GUI HANDLING METHODS **/
-        /**************************************/
+        /******************************************/
+        /** CONNECTION TYPE GUI HANDLING METHODS **/
+        /******************************************/
 
         /****************************************************************/
         /** ADVERT ACTION TYPE - rmi registration gui handling methods **/
@@ -655,6 +655,11 @@ namespace AgentForAgent
         private void rmiRegistrationRadioButton_CheckedChanged(object sender, EventArgs e)
         {
             this.connectionTypeTabControl.SelectedTab = this.rmiRegistrationTabPage;
+            this.saveConfig.Enabled = true;
+        }
+
+        private void rmiNodeName_TextChanged(object sender, EventArgs e)
+        {
             this.saveConfig.Enabled = true;
         }
 

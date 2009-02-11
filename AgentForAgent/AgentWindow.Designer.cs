@@ -54,6 +54,7 @@
             this.closeAdministrationPanelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.proActiveInriaLinkLabel = new System.Windows.Forms.LinkLabel();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.proActiveLogoPictureBox)).BeginInit();
@@ -202,11 +203,11 @@
             // 
             this.label4.AutoSize = true;
             this.label4.BackColor = System.Drawing.Color.White;
-            this.label4.Location = new System.Drawing.Point(444, 68);
+            this.label4.Location = new System.Drawing.Point(430, 61);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(79, 13);
+            this.label4.Size = new System.Drawing.Size(106, 13);
             this.label4.TabIndex = 6;
-            this.label4.Text = "(C) 2008 INRIA";
+            this.label4.Text = "(C) 2008-2009 INRIA";
             // 
             // timer1
             // 
@@ -287,14 +288,28 @@
             this.toolStripStatusLabel1.Text = "Check for update";
             this.toolStripStatusLabel1.Click += new System.EventHandler(this.toolStripStatusLabel1_Click);
             // 
+            // proActiveInriaLinkLabel
+            // 
+            this.proActiveInriaLinkLabel.AutoSize = true;
+            this.proActiveInriaLinkLabel.BackColor = System.Drawing.Color.White;
+            this.proActiveInriaLinkLabel.DisabledLinkColor = System.Drawing.Color.White;
+            this.proActiveInriaLinkLabel.Location = new System.Drawing.Point(430, 74);
+            this.proActiveInriaLinkLabel.Name = "proActiveInriaLinkLabel";
+            this.proActiveInriaLinkLabel.Size = new System.Drawing.Size(118, 13);
+            this.proActiveInriaLinkLabel.TabIndex = 9;
+            this.proActiveInriaLinkLabel.TabStop = true;
+            this.proActiveInriaLinkLabel.Text = "http://proactive.inria.fr/";
+            this.proActiveInriaLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.proActiveInriaLinkLabel_LinkClicked);
+            // 
             // ConfigurationDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(595, 311);
+            this.Controls.Add(this.proActiveInriaLinkLabel);
             this.Controls.Add(this.statusStrip1);
-            this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.proActiveLogoPictureBox);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -303,7 +318,7 @@
             this.MaximizeBox = false;
             this.Name = "ConfigurationDialog";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "ProActive Agent Configuration";
+            this.Text = "ProActive Agent Control";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ConfigurationDialog_FormClosing);
             this.Resize += new System.EventHandler(this.ConfigurationDialog_Resize);
             this.groupBox1.ResumeLayout(false);
@@ -349,6 +364,7 @@
         private System.Windows.Forms.ToolStripMenuItem stopServiceToolStripMenuItem;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.LinkLabel proActiveInriaLinkLabel;
         //private System.Windows.Forms.Button allowForbidRT;
     }
 }

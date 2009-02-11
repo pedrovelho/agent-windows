@@ -561,6 +561,7 @@ namespace AgentForAgent
             this.rmiNodeName.Name = "rmiNodeName";
             this.rmiNodeName.Size = new System.Drawing.Size(333, 20);
             this.rmiNodeName.TabIndex = 1;
+            this.rmiNodeName.TextChanged += new System.EventHandler(this.rmiNodeName_TextChanged);
             // 
             // rmiNodeEnabled
             // 
