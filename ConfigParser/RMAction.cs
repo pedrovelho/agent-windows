@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 
 /**
@@ -21,14 +19,50 @@ namespace ConfigParser
         /// <summary>
         /// The java class that corresponds to this action.</summary>
         public const string DEFAULT_JAVA_STARTER_CLASS = "org.ow2.proactive.resourcemanager.utils.PAAgentServiceRMStarter";
+        /// <summary>
+        /// The username used in case of anonymous authetication.</summary>
+        public const string ANONYMOUS_USERNAME = "anonymous";
+        /// <summary>
+        /// The password used in case of anonymous authetication.</summary>
+        public const string ANONYMOUS_PASSWORD = "anonymous";
 
-        private string myUrl;
+        private string myUsername;
+        private string myPassword;
+        private string myRmUrl;
         private string myNodeName;
 
         public RMAction() {
             base.javaStarterClass = DEFAULT_JAVA_STARTER_CLASS;
-            this.myUrl = "";
+            this.myUsername = "";
+            this.myPassword = "";
+            this.myRmUrl = "";
             this.myNodeName = "";
+        }
+
+        [XmlElement("username", IsNullable = false)]
+        public string username
+        {
+            get
+            {
+                return this.myUsername;
+            }
+            set
+            {
+                this.myUsername = value;
+            }
+        }
+
+        [XmlElement("password", IsNullable = false)]
+        public string password
+        {
+            get
+            {
+                return this.myPassword;
+            }
+            set
+            {
+                this.myPassword = value;
+            }
         }
 
         [XmlElement("url", IsNullable = false)]
@@ -36,26 +70,30 @@ namespace ConfigParser
         {
             get
             {
-                return myUrl;
+                return this.myRmUrl;
             }
             set
             {
-                myUrl = value;
+                this.myRmUrl = value;
             }
         }
-
 
         [XmlElement("nodeName", IsNullable = false)]
         public string nodeName
         {
             get
             {
-                return myNodeName;
+                return this.myNodeName;
             }
             set
             {
-                myNodeName = value;
+                this.myNodeName = value;
             }
+        }
+
+        public override string[] getArgs()
+        {
+            return new string[] { this.myUsername, this.myPassword, this.myRmUrl, this.myNodeName };
         }
 
         // Default jvm parameters needed for this type of action

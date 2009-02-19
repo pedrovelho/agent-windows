@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Diagnostics;
-using System.ComponentModel;
-using System.Data;
-using Microsoft.Win32;
-using System.Management;
-
+using System.IO;
+using System.Text;
 
 namespace ProActiveAgent
 {
@@ -151,6 +147,50 @@ namespace ProActiveAgent
             //}
             // Fill classpath in the configuration
             config.classpath = VariableEchoer.echoVariable(initScript, Constants.CLASSPATH_VAR_NAME, info);
+        }
+    }
+
+    public static class JavaNetworkInterfaceLister {
+
+        public static string[] listJavaNetworkInterfaces(string javaLocation, string agentLocation)
+        {
+            ProcessStartInfo info = new ProcessStartInfo();
+            // Prepare to create a process that will run the java class
+            info.FileName = javaLocation + "\\bin\\java.exe";
+            // Add the agent location as classpath and the name of the java class to execute
+            info.Arguments = "-cp \"" + agentLocation + "\" ListNetworkInterfaces";
+            info.UseShellExecute = false;
+            info.CreateNoWindow = true;
+            info.RedirectStandardOutput = true;
+
+            // Create new process 
+            Process p = new Process();
+            p.StartInfo = info;            
+
+            try
+            {
+                // Start the process
+                if (!p.Start())
+                {
+                    throw new ApplicationException("Could not start the process " + info.FileName);
+                }
+
+                StreamReader myStreamReader = p.StandardOutput;
+                List<string> ar = new List<string>();
+                string line = myStreamReader.ReadLine();
+                while (line != null && !line.Equals("")) {                    
+                    ar.Add(line);
+                    // Read the standard output of the spawned process.
+                    line = myStreamReader.ReadLine();
+                }                
+                p.Close();
+
+                return ar.ToArray();
+            }
+            catch (Exception e)
+            {
+                throw new ApplicationException("Could not list java network interfaces ", e);
+            }
         }
     }
 

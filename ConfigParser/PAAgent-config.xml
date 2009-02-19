@@ -20,6 +20,8 @@
       <initialRestartDelay>0</initialRestartDelay>
       <javaStarterClass>org.ow2.proactive.resourcemanager.utils.PAAgentServiceRMStarter</javaStarterClass>
       <isEnabled>false</isEnabled>
+      <username />
+      <password />
       <url />
       <nodeName />
     </action>

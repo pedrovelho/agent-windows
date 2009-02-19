@@ -1,16 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.IO;
-using System.Management;
-using System.Runtime.InteropServices;
-using System.Security;
-using System.Security.Principal;
 using System.ServiceProcess;
-using System.Text;
-using System.Threading;
 using ConfigParser;
 using log4net;
 using Microsoft.Win32;

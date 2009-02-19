@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using ConfigParser;
 using log4net;
-using System.Diagnostics;
 
 /** TimeManager implements semantics of calendar events
  *  It creates timers in order to start or stop actions

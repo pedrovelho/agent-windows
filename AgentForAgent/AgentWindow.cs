@@ -562,5 +562,10 @@ namespace AgentForAgent
             // Otherwise, display it in a message box.
             System.Diagnostics.Process.Start(this.proActiveInriaLinkLabel.Text);            
         }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

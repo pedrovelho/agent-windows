@@ -54,6 +54,10 @@ namespace AgentForAgent
             this.proactiveLocation = new System.Windows.Forms.TextBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.generalTabPage = new System.Windows.Forms.TabPage();
+            this.networkInterfaceListGroupBox = new System.Windows.Forms.GroupBox();
+            this.useNetworkInterfaceButton = new System.Windows.Forms.Button();
+            this.networkInterfacesListBox = new System.Windows.Forms.ListBox();
+            this.refreshNetworkInterfacesButton = new System.Windows.Forms.Button();
             this.enableMemoryManagementCheckBox = new System.Windows.Forms.CheckBox();
             this.memoryManagementBox = new System.Windows.Forms.GroupBox();
             this.totalProcessMemoryValue = new System.Windows.Forms.Label();
@@ -82,6 +86,11 @@ namespace AgentForAgent
             this.resourceManagerRegistrationJavaActionClassTextBox = new System.Windows.Forms.TextBox();
             this.label18 = new System.Windows.Forms.Label();
             this.rmActionGroup = new System.Windows.Forms.GroupBox();
+            this.rmAnonymousCheckBox = new System.Windows.Forms.CheckBox();
+            this.rmPasswordTextBox = new System.Windows.Forms.TextBox();
+            this.rmPasswordLabel = new System.Windows.Forms.Label();
+            this.rmUsernameTextBox = new System.Windows.Forms.TextBox();
+            this.rmUsernameLabel = new System.Windows.Forms.Label();
             this.rmNodeName = new System.Windows.Forms.TextBox();
             this.label16 = new System.Windows.Forms.Label();
             this.rmUrl = new System.Windows.Forms.TextBox();
@@ -139,6 +148,7 @@ namespace AgentForAgent
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.generalTabPage.SuspendLayout();
+            this.networkInterfaceListGroupBox.SuspendLayout();
             this.memoryManagementBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.javaMemoryNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nativeMemoryNumericUpDown)).BeginInit();
@@ -307,6 +317,7 @@ namespace AgentForAgent
             // 
             // generalTabPage
             // 
+            this.generalTabPage.Controls.Add(this.networkInterfaceListGroupBox);
             this.generalTabPage.Controls.Add(this.enableMemoryManagementCheckBox);
             this.generalTabPage.Controls.Add(this.memoryManagementBox);
             this.generalTabPage.Controls.Add(this.groupBox1);
@@ -317,6 +328,48 @@ namespace AgentForAgent
             this.generalTabPage.TabIndex = 0;
             this.generalTabPage.Text = "General";
             this.generalTabPage.UseVisualStyleBackColor = true;
+            // 
+            // networkInterfaceListGroupBox
+            // 
+            this.networkInterfaceListGroupBox.Controls.Add(this.useNetworkInterfaceButton);
+            this.networkInterfaceListGroupBox.Controls.Add(this.networkInterfacesListBox);
+            this.networkInterfaceListGroupBox.Controls.Add(this.refreshNetworkInterfacesButton);
+            this.networkInterfaceListGroupBox.Location = new System.Drawing.Point(235, 184);
+            this.networkInterfaceListGroupBox.Name = "networkInterfaceListGroupBox";
+            this.networkInterfaceListGroupBox.Size = new System.Drawing.Size(433, 133);
+            this.networkInterfaceListGroupBox.TabIndex = 3;
+            this.networkInterfaceListGroupBox.TabStop = false;
+            this.networkInterfaceListGroupBox.Text = "Available Network Interfaces";
+            // 
+            // useNetworkInterfaceButton
+            // 
+            this.useNetworkInterfaceButton.Enabled = false;
+            this.useNetworkInterfaceButton.Location = new System.Drawing.Point(271, 104);
+            this.useNetworkInterfaceButton.Name = "useNetworkInterfaceButton";
+            this.useNetworkInterfaceButton.Size = new System.Drawing.Size(75, 23);
+            this.useNetworkInterfaceButton.TabIndex = 3;
+            this.useNetworkInterfaceButton.Text = "Use";
+            this.useNetworkInterfaceButton.UseVisualStyleBackColor = true;
+            this.useNetworkInterfaceButton.Click += new System.EventHandler(this.useNetworkInterfaceButton_Click);
+            // 
+            // networkInterfacesListBox
+            // 
+            this.networkInterfacesListBox.FormattingEnabled = true;
+            this.networkInterfacesListBox.HorizontalScrollbar = true;
+            this.networkInterfacesListBox.Location = new System.Drawing.Point(6, 19);
+            this.networkInterfacesListBox.Name = "networkInterfacesListBox";
+            this.networkInterfacesListBox.Size = new System.Drawing.Size(421, 82);
+            this.networkInterfacesListBox.TabIndex = 2;
+            // 
+            // refreshNetworkInterfacesButton
+            // 
+            this.refreshNetworkInterfacesButton.Location = new System.Drawing.Point(352, 104);
+            this.refreshNetworkInterfacesButton.Name = "refreshNetworkInterfacesButton";
+            this.refreshNetworkInterfacesButton.Size = new System.Drawing.Size(75, 23);
+            this.refreshNetworkInterfacesButton.TabIndex = 1;
+            this.refreshNetworkInterfacesButton.Text = "Refresh";
+            this.refreshNetworkInterfacesButton.UseVisualStyleBackColor = true;
+            this.refreshNetworkInterfacesButton.Click += new System.EventHandler(this.listNetworkInterfacesButton_Click);
             // 
             // enableMemoryManagementCheckBox
             // 
@@ -615,16 +668,67 @@ namespace AgentForAgent
             // 
             // rmActionGroup
             // 
+            this.rmActionGroup.Controls.Add(this.rmAnonymousCheckBox);
+            this.rmActionGroup.Controls.Add(this.rmPasswordTextBox);
+            this.rmActionGroup.Controls.Add(this.rmPasswordLabel);
+            this.rmActionGroup.Controls.Add(this.rmUsernameTextBox);
+            this.rmActionGroup.Controls.Add(this.rmUsernameLabel);
             this.rmActionGroup.Controls.Add(this.rmNodeName);
             this.rmActionGroup.Controls.Add(this.label16);
             this.rmActionGroup.Controls.Add(this.rmUrl);
             this.rmActionGroup.Controls.Add(this.label4);
             this.rmActionGroup.Location = new System.Drawing.Point(6, 6);
             this.rmActionGroup.Name = "rmActionGroup";
-            this.rmActionGroup.Size = new System.Drawing.Size(436, 74);
+            this.rmActionGroup.Size = new System.Drawing.Size(436, 154);
             this.rmActionGroup.TabIndex = 3;
             this.rmActionGroup.TabStop = false;
             this.rmActionGroup.Text = "Resource Manager Registration";
+            // 
+            // rmAnonymousCheckBox
+            // 
+            this.rmAnonymousCheckBox.AutoSize = true;
+            this.rmAnonymousCheckBox.Location = new System.Drawing.Point(138, 104);
+            this.rmAnonymousCheckBox.Name = "rmAnonymousCheckBox";
+            this.rmAnonymousCheckBox.Size = new System.Drawing.Size(81, 17);
+            this.rmAnonymousCheckBox.TabIndex = 8;
+            this.rmAnonymousCheckBox.Text = "Anonymous";
+            this.rmAnonymousCheckBox.UseVisualStyleBackColor = true;
+            this.rmAnonymousCheckBox.CheckedChanged += new System.EventHandler(this.rmAnonymousCheckBox_CheckedChanged);
+            // 
+            // rmPasswordTextBox
+            // 
+            this.rmPasswordTextBox.Location = new System.Drawing.Point(311, 128);
+            this.rmPasswordTextBox.Name = "rmPasswordTextBox";
+            this.rmPasswordTextBox.PasswordChar = '*';
+            this.rmPasswordTextBox.Size = new System.Drawing.Size(119, 20);
+            this.rmPasswordTextBox.TabIndex = 7;
+            this.rmPasswordTextBox.TextChanged += new System.EventHandler(this.rmPasswordTextBox_TextChanged);
+            // 
+            // rmPasswordLabel
+            // 
+            this.rmPasswordLabel.AutoSize = true;
+            this.rmPasswordLabel.Location = new System.Drawing.Point(249, 131);
+            this.rmPasswordLabel.Name = "rmPasswordLabel";
+            this.rmPasswordLabel.Size = new System.Drawing.Size(56, 13);
+            this.rmPasswordLabel.TabIndex = 6;
+            this.rmPasswordLabel.Text = "Password:";
+            // 
+            // rmUsernameTextBox
+            // 
+            this.rmUsernameTextBox.Location = new System.Drawing.Point(311, 102);
+            this.rmUsernameTextBox.Name = "rmUsernameTextBox";
+            this.rmUsernameTextBox.Size = new System.Drawing.Size(119, 20);
+            this.rmUsernameTextBox.TabIndex = 5;
+            this.rmUsernameTextBox.TextChanged += new System.EventHandler(this.rmUsernameTextBox_TextChanged);
+            // 
+            // rmUsernameLabel
+            // 
+            this.rmUsernameLabel.AutoSize = true;
+            this.rmUsernameLabel.Location = new System.Drawing.Point(247, 105);
+            this.rmUsernameLabel.Name = "rmUsernameLabel";
+            this.rmUsernameLabel.Size = new System.Drawing.Size(58, 13);
+            this.rmUsernameLabel.TabIndex = 4;
+            this.rmUsernameLabel.Text = "Username:";
             // 
             // rmNodeName
             // 
@@ -632,6 +736,7 @@ namespace AgentForAgent
             this.rmNodeName.Name = "rmNodeName";
             this.rmNodeName.Size = new System.Drawing.Size(292, 20);
             this.rmNodeName.TabIndex = 3;
+            this.rmNodeName.TextChanged += new System.EventHandler(this.rmNodeName_TextChanged);
             // 
             // label16
             // 
@@ -841,14 +946,14 @@ namespace AgentForAgent
             // 
             // maxCpuUsageNumericUpDown
             // 
-            this.maxCpuUsageNumericUpDown.Location = new System.Drawing.Point(331, 20);
+            this.maxCpuUsageNumericUpDown.Location = new System.Drawing.Point(321, 20);
             this.maxCpuUsageNumericUpDown.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
             this.maxCpuUsageNumericUpDown.Name = "maxCpuUsageNumericUpDown";
-            this.maxCpuUsageNumericUpDown.Size = new System.Drawing.Size(39, 20);
+            this.maxCpuUsageNumericUpDown.Size = new System.Drawing.Size(49, 20);
             this.maxCpuUsageNumericUpDown.TabIndex = 3;
             this.maxCpuUsageNumericUpDown.Value = new decimal(new int[] {
             1,
@@ -860,7 +965,7 @@ namespace AgentForAgent
             // maxCpuUsageLabel
             // 
             this.maxCpuUsageLabel.AutoSize = true;
-            this.maxCpuUsageLabel.Location = new System.Drawing.Point(233, 22);
+            this.maxCpuUsageLabel.Location = new System.Drawing.Point(223, 22);
             this.maxCpuUsageLabel.Name = "maxCpuUsageLabel";
             this.maxCpuUsageLabel.Size = new System.Drawing.Size(92, 13);
             this.maxCpuUsageLabel.TabIndex = 2;
@@ -1220,6 +1325,7 @@ namespace AgentForAgent
             this.tabControl1.ResumeLayout(false);
             this.generalTabPage.ResumeLayout(false);
             this.generalTabPage.PerformLayout();
+            this.networkInterfaceListGroupBox.ResumeLayout(false);
             this.memoryManagementBox.ResumeLayout(false);
             this.memoryManagementBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.javaMemoryNumericUpDown)).EndInit();
@@ -1363,6 +1469,15 @@ namespace AgentForAgent
         private System.Windows.Forms.Label maxCpuUsageLabel;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.NumericUpDown maxCpuUsageNumericUpDown;
+        private System.Windows.Forms.Label rmUsernameLabel;
+        private System.Windows.Forms.Label rmPasswordLabel;
+        private System.Windows.Forms.TextBox rmUsernameTextBox;
+        private System.Windows.Forms.TextBox rmPasswordTextBox;
+        private System.Windows.Forms.CheckBox rmAnonymousCheckBox;
+        private System.Windows.Forms.GroupBox networkInterfaceListGroupBox;
+        private System.Windows.Forms.Button refreshNetworkInterfacesButton;
+        private System.Windows.Forms.ListBox networkInterfacesListBox;
+        private System.Windows.Forms.Button useNetworkInterfaceButton;
     }
 
 

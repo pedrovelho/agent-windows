@@ -35,5 +35,10 @@ namespace ConfigParser
                 this.myArgs = value;
             }
         }
+
+        public override string[] getArgs()
+        {
+            return this.myArgs;
+        }
     }
 }

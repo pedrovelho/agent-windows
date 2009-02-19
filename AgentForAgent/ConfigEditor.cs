@@ -1,9 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using ConfigParser;
-using Microsoft.Win32;
-using System.Diagnostics;
 
 namespace AgentForAgent
 {
@@ -12,8 +11,9 @@ namespace AgentForAgent
         private const uint MINIMAL_REQUIRED_MEMORY = 96; // 64 for initial heap size + 32 jvm internals
         private Configuration configuration;
         private string configurationLocation;
+        private string agentLocation;
         private ConfigurationDialog hook;
-        private Chart chart;        
+        private Chart chart;                
 
         // Internal data used for jvm parameters list customization
         private const int DELTA = 5;
@@ -22,13 +22,14 @@ namespace AgentForAgent
 
         private IniFile iniConfiguration;
         //--Constructor
-        public ConfigurationEditor(Configuration conf, string confLocation, string agentDir, ConfigurationDialog hook)
+        public ConfigurationEditor(Configuration conf, string confLocation, string agentLocation, ConfigurationDialog hook)
         {
             // First initialize all widgets (gui-generated)
             InitializeComponent();            
 
             this.configuration = conf;
             this.configurationLocation = confLocation;
+            this.agentLocation = agentLocation;
             this.hook = hook;
 
             // Load the proactive location from the configuration into the gui
@@ -123,6 +124,15 @@ namespace AgentForAgent
                     RMAction rmAction = (RMAction)action;
                     this.rmUrl.Text = rmAction.url;
                     this.rmNodeName.Text = rmAction.nodeName;
+
+                    if (rmAction.username.Equals(RMAction.ANONYMOUS_USERNAME) && rmAction.username.Equals(RMAction.ANONYMOUS_PASSWORD))
+                    {
+                        this.rmAnonymousCheckBox.Checked = true;
+                    }
+                    else {
+                        this.rmUsernameTextBox.Text = rmAction.username;
+                        this.rmPasswordTextBox.Text = rmAction.password;
+                    }
                 }
                 else if (action.GetType() == typeof(CustomAction))
                 {
@@ -274,6 +284,8 @@ namespace AgentForAgent
             RMAction rmAction = new RMAction();
             rmAction.url = rmUrl.Text;
             rmAction.nodeName = rmNodeName.Text;
+            rmAction.username = this.rmUsernameTextBox.Text;
+            rmAction.password = this.rmPasswordTextBox.Text;
             rmAction.javaStarterClass = this.resourceManagerRegistrationJavaActionClassTextBox.Text;
             rmAction.isEnabled = this.resourceManagerRegistrationRadioButton.Checked;
             this.configuration.actions[1] = rmAction;
@@ -374,6 +386,64 @@ namespace AgentForAgent
         {
             configuration.agentConfig.javaHome = jvmDirectory.Text;
             saveConfig.Enabled = true;
+        }
+
+        //--List Available network interfaces to get java style names
+        private void listNetworkInterfacesButton_Click(object sender, EventArgs e)
+        {            
+            try
+            {
+                if (this.jvmDirectory.Text == null || this.jvmDirectory.Text.Equals(""))
+                {
+                    return;
+                }
+                string[] values = ProActiveAgent.JavaNetworkInterfaceLister.listJavaNetworkInterfaces(this.jvmDirectory.Text, this.agentLocation);
+                this.networkInterfacesListBox.Items.Clear();
+                this.networkInterfacesListBox.Items.AddRange(values);
+                this.useNetworkInterfaceButton.Enabled = values.Length > 0;
+            }
+            catch (Exception ex) {
+                MessageBox.Show(ex.ToString(), "Problem", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void useNetworkInterfaceButton_Click(object sender, EventArgs e)
+        {
+            // Get the selected element in the network interfaces list box then 
+            // extract the java interface name add add it as jvm parameter
+
+            int selectedIndex = this.networkInterfacesListBox.SelectedIndex;
+            if (selectedIndex == -1)
+            {
+                return;
+            }
+            else { 
+                // Extract the interface name from the selected string
+                string str = (string)this.networkInterfacesListBox.Items[selectedIndex];
+                // The java interface name should be the word before the first white space
+                string[] splittedStr = str.Split(new char[]{' '});
+                string paramNetworkInterface = "-Dproactive.net.interface=" + splittedStr[0];
+
+                // Search in the JVM parameters the -Dproactive.net.interface string
+                int indexOfJvmParameter = -1;
+                for (int i=0; i < this.jvmParametersListBox.Items.Count ; i++) {
+                    string s = (string)this.jvmParametersListBox.Items[i];
+                    if (s.StartsWith("-Dproactive.net.interface="))
+                    {                        
+                        indexOfJvmParameter = i;
+                        break;
+                    }
+                }
+                if(indexOfJvmParameter == -1) {
+                    // No parameter was found so add a new one
+                    this.jvmParametersListBox.Items.Add(paramNetworkInterface);
+                } else {
+                    this.jvmParametersListBox.Items[indexOfJvmParameter] = paramNetworkInterface;
+                }
+
+                saveConfig.Enabled = true;
+            }
+
         }
 
         /**************************************************************
@@ -689,6 +759,39 @@ namespace AgentForAgent
         }
 
         private void rmUrl_TextChanged(object sender, EventArgs e)
+        {
+            this.saveConfig.Enabled = true;
+        }
+
+        private void rmNodeName_TextChanged(object sender, EventArgs e)
+        {
+            this.saveConfig.Enabled = true;
+        }
+
+        private void rmAnonymousCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.rmAnonymousCheckBox.Checked)
+            {
+                // Fill the text boxes with predef values
+                this.rmUsernameTextBox.Text = RMAction.ANONYMOUS_USERNAME;
+                this.rmPasswordTextBox.Text = RMAction.ANONYMOUS_PASSWORD;
+                this.rmUsernameTextBox.Enabled = this.rmPasswordTextBox.Enabled = false;
+            }
+            else {
+                // Fill the text boxes with predef values
+                this.rmUsernameTextBox.Text = "";
+                this.rmPasswordTextBox.Text = "";
+                this.rmUsernameTextBox.Enabled = this.rmPasswordTextBox.Enabled = true;
+            }                        
+            this.saveConfig.Enabled = true;
+        }
+
+        private void rmUsernameTextBox_TextChanged(object sender, EventArgs e)
+        {
+            this.saveConfig.Enabled = true;
+        }
+
+        private void rmPasswordTextBox_TextChanged(object sender, EventArgs e)
         {
             this.saveConfig.Enabled = true;
         }

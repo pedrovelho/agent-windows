@@ -28,6 +28,8 @@
     <xs:complexContent mixed="false">
       <xs:extension base="Action">
         <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="username" type="xs:string" />
+          <xs:element minOccurs="1" maxOccurs="1" name="password" type="xs:string" />
           <xs:element minOccurs="1" maxOccurs="1" name="url" type="xs:string" />
           <xs:element minOccurs="1" maxOccurs="1" name="nodeName" type="xs:string" />
         </xs:sequence>

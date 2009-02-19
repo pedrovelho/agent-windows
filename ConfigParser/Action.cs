@@ -63,11 +63,14 @@ namespace ConfigParser
             }
         }
 
+        // Sub classes must override this class
+        public virtual string[] getArgs() { return new string[0]; }
+
         // Default jvm parameters needed for this type of action
         public static void addDefaultJvmParameters(List<string> jvmParameters, string proactiveLocation)
         {
             jvmParameters.Add("-Dproactive.home=\"" + proactiveLocation + "\"");
-            jvmParameters.Add("-Dproactive.configuration=\"" + proactiveLocation + "\\config\\proactive\\ProActiveConfiguration.xml\"");
+            jvmParameters.Add("-Dproactive.configuration=\"file:" + proactiveLocation + "\\config\\proactive\\ProActiveConfiguration.xml\"");
             jvmParameters.Add("-Djava.security.manager");
         }
     }

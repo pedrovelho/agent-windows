@@ -105,6 +105,7 @@ namespace ProActiveAgent
             ConfigParser.Action.addDefaultJvmParameters(jvmParametersList, this.configuration.agentConfig.proactiveLocation);
 
             this.cmd = action.javaStarterClass;
+            this.args = action.getArgs();
 
             // user defined jvm parameters will be added after in order to let the user redefine default parameters                        
             if (action is AdvertAction)
@@ -114,8 +115,7 @@ namespace ProActiveAgent
                 // ... nothing to add
                 // Add user defined jvm parameters
                 this.addUserDefinedJvmParameters(jvmParametersList);
-                this.jvmParameters = jvmParametersList.ToArray();                
-                this.args = new string[] { advertAction.nodeName };
+                this.jvmParameters = jvmParametersList.ToArray();                 
             }
             else if (action is RMAction)
             {
@@ -125,7 +125,6 @@ namespace ProActiveAgent
                 // Add user defined jvm parameters
                 this.addUserDefinedJvmParameters(jvmParametersList);
                 this.jvmParameters = jvmParametersList.ToArray();                
-                this.args = new string[] { rmAction.url, rmAction.nodeName };
             }
             else if (action is CustomAction)
             {
@@ -135,7 +134,6 @@ namespace ProActiveAgent
                 // Add user defined jvm parameters
                 this.addUserDefinedJvmParameters(jvmParametersList);
                 this.jvmParameters = jvmParametersList.ToArray();                
-                this.args = customAction.args;
             }
             else
             {
@@ -236,7 +234,7 @@ namespace ProActiveAgent
                 info.UseShellExecute = false; // needed to redirect output
                 info.CreateNoWindow = false;
                 info.RedirectStandardOutput = true;
-                info.RedirectStandardError = true;
+                info.RedirectStandardError = true;                
                 // Set the process start info 
                 this.proActiveRuntimeProcess.StartInfo = info;
 

@@ -34,12 +34,17 @@ namespace ConfigParser
         {
             get
             {
-                return myNodeName;
+                return this.myNodeName;
             }
             set
             {
-                myNodeName = value;
+                this.myNodeName = value;
             }
+        }
+
+        public override string[] getArgs()
+        {
+            return new string[] { this.myNodeName };
         }
     }
 }
