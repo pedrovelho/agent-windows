@@ -17,9 +17,7 @@ namespace ProActiveAgent
     /// The cpu usage limit works only on Windows XP, Windows 2003 and Vista.    
     /// </summary>
     class CPULimiter
-    {
-        private static readonly ILog LOGGER = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
+    {        
         // Works on Windows XP, 2003 and Vista only
         [DllImport("ntdll.dll", EntryPoint = "NtResumeProcess", SetLastError = true)]
         private static extern uint NtResumeProcess(IntPtr processHandle);
