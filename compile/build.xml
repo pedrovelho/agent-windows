@@ -13,14 +13,5 @@
 		<format property="TODAY" pattern="yyyy-MM-dd" />
 
 	</tstamp>
-
-<!--	<if name="version">
-		<property name="isRelease" value="true" />
-
-		<else>
-			<property name="version" value="${TODAY}" />
-		</else>
-	</if>-->
-
-
+	<property name="version" value="${TODAY}" />
 </project>

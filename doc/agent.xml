@@ -4,7 +4,9 @@
 	<property name="agent.file.set" value="../doc/toolchain" />
 	<property name="agent.src.dir" value="../doc/src" />
 	<property name="agent.doc.name" value="ProActiveAgent" />
-<!--	<property name="docs.tmp.dir"	value="${basedir}/../doc/tmp" />-->
+	<!--snippets do not exist for now, providing a folder to start from-->
+	<property name="snippets.start"		value="${agent.src.dir}" /> 
+	<property name="docs.tmp.dir"	value="${basedir}/../doc/tmp" />
 
 	<!-- ================================================================ -->
 	<!--            Create docs, which is the javadoc + manual            -->
