@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ProActiveAgent" default="compile.all" basedir=".">
+
+	<!-- ************
+		Imports		
+	-->
+   	<property name="base.dir"           value="${basedir}/.." />
+
+	<import file="../doc/agent.xml"  optional="true" />
+	
+	<tstamp>
+<!-- 	<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" /> -->
+		<format property="TODAY" pattern="yyyy-MM-dd" />
+
+	</tstamp>
+
+<!--	<if name="version">
+		<property name="isRelease" value="true" />
+
+		<else>
+			<property name="version" value="${TODAY}" />
+		</else>
+	</if>-->
+
+
+</project>

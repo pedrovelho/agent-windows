@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  
+	<property name="agent.file.set" value="../doc/toolchain" />
+	<property name="agent.src.dir" value="../doc/src" />
+	<property name="agent.doc.name" value="ProActiveAgent" />
+<!--	<property name="docs.tmp.dir"	value="${basedir}/../doc/tmp" />-->
+
+	<!-- ================================================================ -->
+	<!--            Create docs, which is the javadoc + manual            -->
+	<!--  =============================================================== -->
+	<target name="doc.Agent.docs" depends="doc.Agent.manual, doc.Agent.doc.zips" description="Generate the ProActive Agent manual, and zip archives" />
+	
+	<!-- ================================================================ -->
+	<!--            Create docs, which is the javadoc + manual            -->
+	<!--  =============================================================== -->
+	<target name="doc.Agent.doc.zips" depends="doc.Agent.manualSingleHtmlZip, doc.Agent.manualHtmlZip" description="Generate the ProActive Agent javadoc and manual zip archives" />
+	
+	<!-- ==================================================================== -->
+	<!--          Make just the html files for the manual                     -->
+	<!-- ==================================================================== -->
+	<target name="doc.Agent.manualHtml" description="Generate the ProActive Agent HTML manual">
+		<subant target="manualHtml" 			inheritall="true">
+			<property name="doc.name"               value="${agent.doc.name}" />
+			<property name="docs.src.dir"           value="${agent.src.dir}" />
+			<fileset dir="${agent.file.set}" 	includes="doc.xml"/>
+		</subant>
+	</target>
+	<!-- ==================================================================== -->
+	<!--   Make an archive from the files for the multiple html manual        -->
+	<!-- ==================================================================== -->
+	<target name="doc.Agent.manualHtmlZip" description="Generate the ProActive Agent HTML manual zip" depends="doc.Agent.manualHtml" >
+		<subant target="manualHtmlZip" inheritall="true">
+			<property name="doc.name"               value="${agent.doc.name}" />
+			<property name="docs.src.dir"           value="${agent.src.dir}" />  
+			<fileset dir="${agent.file.set}" includes="doc.xml"/>
+		</subant>
+	</target>
+
+	<!-- ==================================================================== -->
+	<!--               Make just the pdf files for the manual                 -->
+	<!-- ==================================================================== -->
+	<target name="doc.Agent.manualPdf" description="Generate the ProActive Agent PDF manual">
+		<subant target="manualPdf" inheritall="true">
+			<property name="doc.name"               value="${agent.doc.name}" />
+			<property name="docs.src.dir"           value="${agent.src.dir}" />  
+			<fileset dir="${agent.file.set}" includes="doc.xml"/>
+		</subant>
+	</target>
+	<!-- ==================================================================== -->
+	<!--           Make only one huge html-file from the doc                  -->
+	<!-- ==================================================================== -->
+	<target name="doc.Agent.manualSingleHtml" description="Generate the ProActive Agent single HTML manual">
+		<subant target="manualSingleHtml" inheritall="true">
+			<property name="doc.name"               value="${agent.doc.name}" />
+			<property name="docs.src.dir"           value="${agent.src.dir}" />  
+			<fileset dir="${agent.file.set}" includes="doc.xml"/>
+		</subant>
+	</target>
+	
+	<!-- ==================================================================== -->
+	<!--      Make an archive from the files for the single html manual       -->
+	<!-- ==================================================================== -->
+	<target name="doc.Agent.manualSingleHtmlZip" description="Generate the ProActive Agent single HTML manual zip" depends="doc.Agent.manualSingleHtml" >
+		<subant target="manualSingleHtmlZip" inheritall="true">
+			<property name="doc.name"               value="${agent.doc.name}" />
+			<property name="docs.src.dir"           value="${agent.src.dir}" />  
+			<fileset dir="${agent.file.set}" includes="doc.xml"/>
+		</subant>
+	</target>
+
+	<!-- ==================================================================== -->
+	<!-- Construct the manual from the XML files in {docs.src}                -->
+	<!-- ==================================================================== -->
+	<target name="doc.Agent.manual" description="Generate all the ProActive Agent manuals  (html, single html, pdf)" depends="doc.Agent.manualSingleHtml,doc.Agent.manualHtml,doc.Agent.manualPdf" />
+</project>
