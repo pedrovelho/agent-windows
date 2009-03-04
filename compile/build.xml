@@ -14,4 +14,10 @@
 
 	</tstamp>
 	<property name="version" value="${TODAY}" />
+	<target name="clean" description="Remove all generated files">
+		<subant target="doc.clean" inheritall="true">
+			<fileset dir="../doc/toolchain" includes="doc.xml"/>
+		</subant>
+	</target>
+
 </project>
