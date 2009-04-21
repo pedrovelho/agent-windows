@@ -3,61 +3,88 @@ using System.Collections.Generic;
 using System.Threading;
 using ConfigParser;
 using log4net;
+using Microsoft.Win32;
 
-/** TimeManager implements semantics of calendar events
- *  It creates timers in order to start or stop actions
- *  
+/** 
+ * ExecutorsManager manages scheduled start/stop of executors.
+ *    
  * The configuration cannot contain overlapping calendar events!
  */
 
 namespace ProActiveAgent
 {
-    public class TimerManager
+    public class ExecutorsManager
     {
         private static readonly ILog LOGGER = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private static int WEEK_DELAY = 3600 * 24 * 7 * 1000;
-        private static int BARRIER_SAFETY_MARGIN = 15000;
-
+        private const int WEEK_DELAY = 3600 * 24 * 7 * 1000;
+        private const int BARRIER_SAFETY_MARGIN_MS = 15000;
+        // The barrier a safety margin interval    
+        private static TimeSpan SAFETY_MARGIN_TIMESPAN = new TimeSpan(0, 0, 0, 0, BARRIER_SAFETY_MARGIN_MS);
         // start - action timers
         private readonly List<Timer> startTimers;
         // stop - action timers
         private readonly List<Timer> stopTimers;
-        // retry timers
-        private readonly List<Timer> retryTimers;
-
-        private readonly ProActiveExec exec;
-        private readonly ConfigParser.Action action;
-        private long retryTimeBarrier = 0;
+        /// <summary>
+        /// The list of executors.</summary>                        
+        private readonly List<ProActiveRuntimeExecutor> proActiveRuntimeExecutors;
 
         // The constructor should be called only during starting the service
+        public ExecutorsManager(Configuration configuration)
+        {
+            // Get the runtime common start info shared between all executors
+            CommonStartInfo commonStartInfo = new CommonStartInfo(configuration);
 
-        public TimerManager(ProActiveExec paExec,ConfigParser.Action action)
-        {                                
+            // The configuration specifies the number of executors
+            int nbProcesses = configuration.agentConfig.useAllCPUs ? Environment.ProcessorCount : configuration.agentConfig.nbProcesses;
+            LOGGER.Info("Creating " + nbProcesses + " executors.");
+
+            this.proActiveRuntimeExecutors = new List<ProActiveRuntimeExecutor>(nbProcesses);
+
+            // Get the initial value for the ProActive Rmi Port specified in the configuration
+            int lastProActiveRmiPort = configuration.agentConfig.proActiveRmiPortInitialValue;
+
+            // Create as many executors as specified in the configuration
+            for (int rank = 0; rank < nbProcesses; rank++)
+            {                
+
+                // Create new executor with a unique rank and a valid ProActive Rmi Port
+                ProActiveRuntimeExecutor executor = new ProActiveRuntimeExecutor(commonStartInfo, rank);
+                this.proActiveRuntimeExecutors.Add(executor);
+            }
+
+            // Try to create the sub key in registry for executors stats            
+            // delete all sub keys of the executors key
+            RegistryKey key = Registry.LocalMachine.OpenSubKey(Constants.PROACTIVE_AGENT_EXECUTORS_REG_SUBKEY, true);
+            if (key != null)
+            {                
+                foreach (string name in key.GetValueNames())
+                {
+                    key.DeleteValue(name);
+                }
+                key.Close();
+            }
+            else
+            {
+                key = Registry.LocalMachine.CreateSubKey(Constants.PROACTIVE_AGENT_EXECUTORS_REG_SUBKEY);
+                if (key != null)
+                {
+                    key.Close();
+                }
+            }
+            // Create the start/stop timers for scheduled events
             this.startTimers = new List<Timer>();
             this.stopTimers = new List<Timer>();
-            this.retryTimers = new List<Timer>();
 
-            this.exec = paExec;
-            this.action = action;
-        }
-
-        public ConfigParser.Action getAssociatedAction()
-        {
-            return this.action;
-        }
-
-        public void loadEvents(List<Event> events)
-        {
             if (LOGGER.IsDebugEnabled)
             {
-                LOGGER.Debug("Loading events in the Time Manager.");
-            }            
+                LOGGER.Debug("Loading events in the Executors Manager.");
+            }
 
             // Get the current date time
             DateTime currentTime = System.DateTime.Now;
 
-            foreach (Event e in events)
+            foreach (Event e in configuration.events)
             {
                 if (e is CalendarEvent)
                 {
@@ -84,6 +111,7 @@ namespace ProActiveAgent
                     {
                         LOGGER.Debug("Loading CalendardEvent " + accurateStartTime.ToString() + " -> " + accurateStartTime.Add(duration).ToString());
                     }
+                    // Get the due time for timers
                     long dueStart = countDelay((accurateStartTime - currentTime));
                     long dueStop = countDelay((accurateStartTime - currentTime).Add(duration));
                     // if now we are in the middle of the event just start
@@ -93,11 +121,7 @@ namespace ProActiveAgent
                     if (dueStop < 0)
                         dueStop += WEEK_DELAY;
 
-                    StartActionInfo startInfo = new StartActionInfo();
-                    startInfo.setAction(this.action);
-                    startInfo.setStopTime(accurateStartTime.Add(duration).Ticks);
-                    startInfo.setProcessPriority(cEvent.processPriority);
-                    startInfo.setMaxCpuUsage(cEvent.maxCpuUsage);
+                    StartActionInfo startInfo = new StartActionInfo(commonStartInfo.selectedAction, accurateStartTime.Add(duration), cEvent.processPriority, cEvent.maxCpuUsage);
 
                     // timer registration
                     Timer startT = new Timer(new TimerCallback(mySendStartAction), startInfo, dueStart, WEEK_DELAY);
@@ -109,84 +133,57 @@ namespace ProActiveAgent
                     if (startNow)
                     {
                         this.mySendStartAction(startInfo);
-                    }                    
-                } 
+                    }
+                }
                 // Only a single type of event
             }
         }
 
-        // used to add delayed retry-actions
-        public void addDelayedRetry(int delay)
+        public List<ProActiveRuntimeExecutor> getExecutors()
         {
-            long absoluteDelay = System.DateTime.Now.Ticks + delay * 10000L;
-            DateTime absoluteDelayDateTime = new DateTime(absoluteDelay);
-
-            if (LOGGER.IsDebugEnabled)
-            {
-                LOGGER.Debug("Trying to schedule restart at "
-                    + absoluteDelayDateTime.ToString()
-                    + " Limit time barrier is " + new DateTime(retryTimeBarrier).ToString()+ " (we cannot restart after this time point).");
-            }   
-
-            if (absoluteDelay < retryTimeBarrier)
-            {
-                Timer newTimer = new Timer(new TimerCallback(mySendRestartAction), null, delay, System.Threading.Timeout.Infinite);
-                retryTimers.Add(newTimer);
-                if (LOGGER.IsDebugEnabled)
-                {
-                    LOGGER.Debug("Restart action " + absoluteDelayDateTime.ToString() + " succesfully scheduled.");
-                }                
-            }
-            else
-            {                
-                if (LOGGER.IsDebugEnabled)
-                {
-                    LOGGER.Debug("Discarding restarting of " + absoluteDelayDateTime.ToString() + " because it would happen outside the job allocated time.");
-                }                
-            }
+            return this.proActiveRuntimeExecutors;
         }
 
         //note : it does not refer to restarted actions, but started according to calendar event
         private void mySendStartAction(object action)
-        {            
+        {
             StartActionInfo actionInfo = (StartActionInfo)action;
-            long stopTime = actionInfo.getStopTime();
+            DateTime stopTime = actionInfo.stopTime;
 
-            while (stopTime < DateTime.Now.Ticks)
+            while (stopTime < DateTime.Now)
             {
-                stopTime += WEEK_DELAY * 10000;
+                stopTime = stopTime.AddMilliseconds(WEEK_DELAY);
             }
 
-            if (retryTimeBarrier < stopTime)
+            foreach (ProActiveRuntimeExecutor p in this.proActiveRuntimeExecutors)
             {
-                retryTimeBarrier = stopTime;
-            }
+                DateTime restartBarrierDateTime = p.restartBarrierDateTime;
 
-            retryTimeBarrier -= BARRIER_SAFETY_MARGIN * 10000;
-            exec.resetRestartDelay();
-            exec.sendStartAction(ApplicationType.AgentScheduler);
-            // Apply process priority and max cpu usage
-            exec.setProcessBehaviour(actionInfo.getProcessPriority(), actionInfo.getMaxCpuUsage());            
+                if (restartBarrierDateTime < stopTime)
+                {
+                    restartBarrierDateTime = stopTime;
+                }
+                // Substract from the barrier a safety margin interval
+                p.restartBarrierDateTime = restartBarrierDateTime.Subtract(SAFETY_MARGIN_TIMESPAN);
+                // Send the start
+                p.sendStartAction(ApplicationType.AgentScheduler);
+                // Apply process priority and max cpu usage
+                p.setProcessBehaviour(actionInfo.processPriority, actionInfo.maxCpuUsage);
+            }
         }
 
         private void mySendStopAction(object stateInfo)
-        {            
-            retryTimeBarrier = 0;
-            exec.sendStopAction(ApplicationType.AgentScheduler);
-        }
-
-        private void mySendRestartAction(object stateInfo)
         {
-            if (LOGGER.IsDebugEnabled)
+            foreach (ProActiveRuntimeExecutor p in this.proActiveRuntimeExecutors)
             {
-                LOGGER.Debug("Invoking restart action.");
-            } 
-            exec.sendRestartAction();
+                p.restartBarrierDateTime = System.DateTime.Now;
+                p.sendStopAction(ApplicationType.AgentScheduler);
+            }
         }
 
         // we count a number of milliseconds in a given timespan
         private long countDelay(TimeSpan timeSpan)
-        {            
+        {
             return timeSpan.Days * 86400000L + timeSpan.Hours * 3600000L + timeSpan.Minutes * 60000L + timeSpan.Seconds * 1000L + timeSpan.Milliseconds;
         }
 
@@ -227,24 +224,25 @@ namespace ProActiveAgent
 
         // releasing resources
         public void dispose()
-        {         
+        {
+            // Dispose all start timers
             foreach (Timer t in this.startTimers)
             {
                 t.Dispose();
             }
             this.startTimers.Clear();
-
+            // Dispose all stop timers
             foreach (Timer t in this.stopTimers)
             {
                 t.Dispose();
             }
-            this.startTimers.Clear();
-
-            foreach (Timer t in this.retryTimers)
+            this.stopTimers.Clear();
+            // Dispose all executors
+            foreach (ProActiveRuntimeExecutor p in this.proActiveRuntimeExecutors)
             {
-                t.Dispose();
+                p.dispose();
             }
-            this.retryTimers.Clear();
+            this.proActiveRuntimeExecutors.Clear();          
         }
     }
 }

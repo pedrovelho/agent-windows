@@ -91,9 +91,9 @@ namespace ConfigParser
             }
         }
 
-        public override string[] getArgs()
+        public override string[] getArgs(int processRank)
         {
-            return new string[] { this.myUsername, this.myPassword, this.myRmUrl, this.myNodeName };
+            return new string[] { this.myUsername, this.myPassword, this.myRmUrl, this.myNodeName+processRank };
         }
 
         // Default jvm parameters needed for this type of action
@@ -101,7 +101,7 @@ namespace ConfigParser
             jvmParameters.Add("-Dpa.scheduler.home=\"" + proactiveLocation + "\"");
             jvmParameters.Add("-Dpa.rm.home=\"" + proactiveLocation + "\"");
             jvmParameters.Add("-Djava.security.policy=\"" + proactiveLocation + "\\config\\scheduler.java.policy\"");
-            jvmParameters.Add("-Dlog4j.configuration=\"file:///" + proactiveLocation + "\\config\\scheduler-log4j\"");
+            jvmParameters.Add("-Dlog4j.configuration=\"file:///" + proactiveLocation + "\\config\\log4j\\log4j-client\"");
         }
     }
 }

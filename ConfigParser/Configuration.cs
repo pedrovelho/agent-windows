@@ -71,5 +71,20 @@ namespace ConfigParser
                 this.myActions = value;
             }
         }
+
+        public ConfigParser.Action getSelectedAction()
+        {
+            // Find enabled action, ONLY ONE ACTION CAN BE ENABLED
+            ConfigParser.Action enabledAction = null;
+            foreach (ConfigParser.Action action in this.actions)
+            {
+                if (action.isEnabled)
+                {
+                    enabledAction = action;
+                    break;
+                }
+            }
+            return enabledAction;
+        }
     }
 }

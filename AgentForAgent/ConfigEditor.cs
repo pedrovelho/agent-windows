@@ -49,7 +49,7 @@ namespace AgentForAgent
             ///////////////////////////////////////////////////
             // Load memory management from the configuration //
             ///////////////////////////////////////////////////
-            this.memoryManagementBox.Enabled = this.enableMemoryManagementCheckBox.Checked = conf.agentConfig.enableMemoryManagement;
+            this.memoryManagementGroupBox.Enabled = this.enableMemoryManagementCheckBox.Checked = conf.agentConfig.enableMemoryManagement;
             // Get total physical memory
             System.Decimal val = ProActiveAgent.Utils.getAvailablePhysicalMemory();
             this.availablePhysicalMemoryValue.Text = val.ToString();
@@ -60,6 +60,14 @@ namespace AgentForAgent
             this.javaMemoryNumericUpDown.Value = conf.agentConfig.javaMemory;
             this.nativeMemoryNumericUpDown.Value = conf.agentConfig.nativeMemory;
             this.totalProcessMemoryValue.Text = "" + (MINIMAL_REQUIRED_MEMORY + conf.agentConfig.javaMemory + conf.agentConfig.nativeMemory);
+
+            ///////////////////////////////////////
+            // Load Multi-Runtime related config //
+            ///////////////////////////////////////
+            this.availableCPUsValue.Text = "" + Environment.ProcessorCount;
+            this.nbRuntimesNumericUpDown.Value = conf.agentConfig.nbProcesses;
+            this.useAllAvailableCPUsCheckBox.Checked = conf.agentConfig.useAllCPUs;
+            this.nbRuntimesNumericUpDown.Enabled = !conf.agentConfig.useAllCPUs;
 
             ////////////////////////////////////////
             // Load events from the configuration //
@@ -80,9 +88,13 @@ namespace AgentForAgent
             this.processPriorityComboBox.SelectedIndex = 0;
             this.maxCpuUsageNumericUpDown.Value = this.maxCpuUsageNumericUpDown.Maximum;
 
+
+            // Init default values for ProActive Rmi Port
+            this.initialValueNumericUpDown.Value = conf.agentConfig.proActiveRmiPortInitialValue;
+
             /////////////////////////////////////////////
             // Load the actions from the configuration //
-            /////////////////////////////////////////////
+            /////////////////////////////////////////////            
 
             // Iterate through all actions in the configuration then 
             // load them into the gui            
@@ -267,8 +279,13 @@ namespace AgentForAgent
             this.configuration.agentConfig.enableMemoryManagement = this.enableMemoryManagementCheckBox.Checked;
             this.configuration.agentConfig.javaMemory = System.Decimal.ToUInt32(this.javaMemoryNumericUpDown.Value);
             this.configuration.agentConfig.nativeMemory = System.Decimal.ToUInt32(this.nativeMemoryNumericUpDown.Value);            
+            // Save multi process related config
+            this.configuration.agentConfig.nbProcesses = Convert.ToInt32(this.nbRuntimesNumericUpDown.Value);
+            this.configuration.agentConfig.useAllCPUs = this.useAllAvailableCPUsCheckBox.Checked;
             //--Events list                        
             this.internalCopyEventsList();
+            // Save ProActive Rmi Port initial value
+            this.configuration.agentConfig.proActiveRmiPortInitialValue = System.Decimal.ToInt32(this.initialValueNumericUpDown.Value);
             // Save all defined actions                        
             if (this.configuration.actions == null || this.configuration.actions.Length < 3)
             {
@@ -954,7 +971,7 @@ namespace AgentForAgent
 
         private void enableMemoryManagementCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            this.memoryManagementBox.Enabled = this.enableMemoryManagementCheckBox.Checked;
+            this.memoryManagementGroupBox.Enabled = this.enableMemoryManagementCheckBox.Checked;
             this.saveConfig.Enabled = true;
         }
 
@@ -993,6 +1010,26 @@ namespace AgentForAgent
             _StringFlags.LineAlignment = StringAlignment.Center;
             g.DrawString(_TabPage.Text, _TabPage.Font, _TextBrush,
                          _TabBounds, _StringFlags);
+        }
+
+        /*******************************************************/
+        /** MULTI-PROCESS RELATED CONFIG GUI HANDLING METHODS **/
+        /*******************************************************/
+
+        private void nbRuntimesNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            this.saveConfig.Enabled = true;
+        }
+
+        private void useAllAvailableCPUsCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            this.nbRuntimesNumericUpDown.Enabled = !this.useAllAvailableCPUsCheckBox.Checked;
+            this.saveConfig.Enabled = true;
+        }
+
+        private void initialValueNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            this.saveConfig.Enabled = true;
         }
     }
 }

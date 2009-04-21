@@ -82,17 +82,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="CommonStartInfo.cs" />
     <Compile Include="CPULimiter.cs" />
     <Compile Include="Misc.cs" />
-    <Compile Include="ProActiveExec.cs" />
+    <Compile Include="WindowsService.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ProActiveRuntimeExecutor.cs" />
     <Compile Include="StartActionInfo.cs" />
     <Compile Include="Test.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="TimerManager.cs" />
-    <Compile Include="WindowsService.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="ExecutorsManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ConfigParser\ConfigParser.csproj">

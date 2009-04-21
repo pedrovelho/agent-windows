@@ -24,6 +24,12 @@ namespace ConfigParser
 
         private uint myNativeMemory;
 
+        private int myNbProcesses;
+
+        private bool myUseAllCPUs;
+
+        private int myProActiveRmiPortInitialValue;
+
         // Not serialized used only during runtime
         private string myClasspath;
 
@@ -104,6 +110,46 @@ namespace ConfigParser
             set
             {
                 this.myNativeMemory = value;
+            }
+        }
+
+        [XmlElement("nb_processes", IsNullable = false)] 
+        public int nbProcesses
+        {
+            get
+            {
+                return this.myNbProcesses;
+            }
+            set
+            {
+                this.myNbProcesses = value;
+            }
+        }
+
+        [XmlElement("use_all_cpus", IsNullable = false)] 
+        public bool useAllCPUs
+        {
+            get
+            {
+                return this.myUseAllCPUs;
+            }
+            set
+            {
+                this.myUseAllCPUs = value;
+            }
+        }
+
+        [XmlElement("proActiveRmiPortInitialValue")]
+        public int proActiveRmiPortInitialValue
+        {
+            get
+            {
+                return this.myProActiveRmiPortInitialValue;
+            }
+
+            set
+            {
+                this.myProActiveRmiPortInitialValue = value;
             }
         }
 

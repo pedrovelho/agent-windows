@@ -12,7 +12,7 @@
     <xs:sequence>
       <xs:element minOccurs="1" maxOccurs="1" name="initialRestartDelay" type="xs:int" />
       <xs:element minOccurs="1" maxOccurs="1" name="javaStarterClass" type="xs:string" />
-      <xs:element minOccurs="1" maxOccurs="1" name="isEnabled" type="xs:boolean" />
+      <xs:element minOccurs="1" maxOccurs="1" name="isEnabled" type="xs:boolean" />      
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="AdvertAction">
@@ -93,6 +93,9 @@
       <xs:element minOccurs="1" maxOccurs="1" name="enable_memory_management" type="xs:boolean" />
       <xs:element minOccurs="1" maxOccurs="1" name="java_memory" type="xs:unsignedInt" />
       <xs:element minOccurs="1" maxOccurs="1" name="native_memory" type="xs:unsignedInt" />
+      <xs:element minOccurs="1" maxOccurs="1" name="nb_processes" type="xs:unsignedInt" />
+      <xs:element minOccurs="1" maxOccurs="1" name="use_all_cpus" type="xs:boolean" />
+      <xs:element minOccurs="1" maxOccurs="1" name="proActiveRmiPortInitialValue" type="xs:int" />
     </xs:sequence>
   </xs:complexType>
   <xs:element name="ConfigurationParser" nillable="true" type="ConfigurationParser" />

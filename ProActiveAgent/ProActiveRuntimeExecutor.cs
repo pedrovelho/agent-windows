@@ -6,56 +6,56 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
-using ConfigParser;
 using JobManagement;
 using log4net;
+using log4net.Appender;
+using log4net.Layout;
+using log4net.Repository.Hierarchy;
 using Microsoft.Win32;
 
-/** Executor of runner script and thus ProActive runtime.
- *  This class implements semantics of all actions available
+/**
+ * Executor of the ProActive Runtime process. If the executed process exits, the executor handles the restart with a Timer.
  */
-
 namespace ProActiveAgent
 {
-    public class ProActiveExec
+    public class ProActiveRuntimeExecutor
     {
-        private static readonly ILog LOGGER = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private const int INITIAL_RESTART_DELAY_IN_MS = 5000;
+        private const int MAX_RESTART_DELAY_IN_MS = 25000;
+        private const int RESTART_DELAY_INCREMENT_IN_MS = 5000;
 
-        private static readonly ILog PROACTIVE_RUNTIME_PROCESS_LOGGER = LogManager.GetLogger("ProActiveRuntimeProcessLogger");
+        /// <summary>
+        /// A lock shared between multiple instances of executors.</summary>
+        private static readonly object interExecutorLock = new object();
 
-        //[DllImport("pkill.dll", EntryPoint = "_KillProcessEx@8", CallingConvention = CallingConvention.Winapi)]
-        //private static extern bool KillProcessEx(uint dwProcessId, bool bTree);
-        private const int INITIAL_RESTART_DELAY = 3000;
-        private const int MAX_RESTART_DELAY = 10000;
-        private const uint DEFAULT_JAVA_HEAP_SIZE_IN_MBYTES = 64; // for the -Xms jvm option
-        private const uint MINIMAL_REQUIRED_MEMORY_FOR_PROACTIVE_RUNTIME_PROCESS_IN_MBYTES = 32; // for the job memory limitation
         /// <summary>
-        /// The timer manager responsible of scheduling timed actions</summary>
-        private readonly TimerManager timerManager;
+        /// The current ProActive Rmi Port that will be initialized by the first executor, then it cycles incrementally until max value.</summary>
+        private static int currentProActiveRmiPort;
+
         /// <summary>
-        /// The configuration used to run the process.</summary>
-        private readonly Configuration configuration;
+        /// The unique rank of this executor</summary>
+        private readonly int rank;
+        /// <summary>
+        /// The logger of this class, logs all info about this executor.</summary>
+        private readonly ILog LOGGER;
+        /// <summary>
+        /// The logger used to append the logs of the ProActive Runtime Process.</summary>
+        private readonly ILog processLogger;
         /// <summary>
         /// Process object that represents running runner script.</summary>                
         private bool disabledRestarting = false; // restarting of the process is disabled when the system shuts down
         /// <summary>
-        /// The initial delay before restart.</summary>
-        private int initialRestartDelay;
+        /// The delay before restart in ms.</summary>
+        private long restartDelayInMs;
+        /// <summary>
+        /// The restart barrier date time, after this point now restart can occur.</summary>
+        public DateTime restartBarrierDateTime;
+        /// <summary>
+        /// A timer used to delay the restart of the ProActive Runtime process.</summary>
+        private readonly System.Threading.Timer restartTimer;
         /// <summary>
         /// For an application type (i.e AgentScheduler) boolean value = true if this type has sent the "start command". It is set to false when the same app type sends stop command.</summary>
         private readonly Dictionary<ApplicationType, Int32> callersState;
-        /// <summary>
-        /// The current delay before restart.</summary>
-        private int restartDelay;
-        /// <summary>
-        /// All jvm parameters (default and user defined).</summary>
-        private readonly string[] jvmParameters;
-        /// <summary>
-        /// The starter class name.</summary>
-        private readonly string cmd;
-        /// <summary>
-        /// The arguments used for starter class.</summary>
-        private readonly string[] args;
         /// <summary>
         /// Process object that represents running runner script.</summary>
         private Process proActiveRuntimeProcess;
@@ -63,132 +63,56 @@ namespace ProActiveAgent
         /// The job object used to set the usage limits for the ProActive Runtime process and its child processes.</summary>
         private readonly JobObject jobObject;
         /// <summary>
-        /// The maximum java heap size for the ProActive Runtime process.</summary>
-        private readonly uint maximumJavaHeapSize;
-        /// <summary>
         /// The cpu limiter used to set a max allowed cpu usage for the ProActive Runtime process.</summary>
         private readonly CPULimiter cpuLimiter;
+        /// <summary>
+        /// The common start information shared between all executors.</summary>
+        private readonly CommonStartInfo commonStartInfo;
 
         /// <summary>
         /// Process object that represents running runner script.</summary>                        
-        public ProActiveExec(Configuration configuration, ConfigParser.Action action)
+        public ProActiveRuntimeExecutor(CommonStartInfo commonStartInfo, int rank)
         {
-            this.timerManager = new TimerManager(this, action);
-            this.configuration = configuration;
-            this.initialRestartDelay = (action.initialRestartDelay > 0 ? action.initialRestartDelay : INITIAL_RESTART_DELAY);
+            this.rank = rank;
+            // The first executor initializes the current value of the ProActive Rmi Port
+            if (this.rank == 0)
+            {
+                // Get the initial ProActive Rmi Port specified by the configuration
+                currentProActiveRmiPort = commonStartInfo.configuration.agentConfig.proActiveRmiPortInitialValue;
+            }
+            this.LOGGER = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType + "" + this.rank);
+            // The logger needs to be customized programmatically to log stout/stderr into a separate file
+            this.processLogger = LogManager.GetLogger("Executor" + this.rank + "ProcessLogger");
+            Logger customLogger = this.processLogger.Logger as log4net.Repository.Hierarchy.Logger;
+            if (customLogger != null)
+            {
+                customLogger.Additivity = false;
+                customLogger.AddAppender(CreateRollingFileAppender("Executor" + this.rank + "RollingFileAppender", "Executor" + this.rank + "Process-log.txt"));
+            }
+            this.commonStartInfo = commonStartInfo;
+            // The restart timer is only created it will not start until Timer.Change() method is called
+            this.restartTimer = new Timer(new TimerCallback(internalRestart), null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
             this.callersState = new Dictionary<ApplicationType, Int32>();
             this.proActiveRuntimeProcess = null;
             // Create a new job object for limits
-            this.jobObject = new JobObject(Constants.JOB_OBJECT_NAME);
+            this.jobObject = new JobObject(Constants.JOB_OBJECT_NAME + this.rank);
             this.jobObject.Events.OnNewProcess += new jobEventHandler<NewProcessEventArgs>(Events_OnNewProcess);
-            this.maximumJavaHeapSize = DEFAULT_JAVA_HEAP_SIZE_IN_MBYTES;
             // If memory management is enabled
-            if (this.configuration.agentConfig.enableMemoryManagement)
+            if (this.commonStartInfo.configuration.agentConfig.enableMemoryManagement)
             {
                 // Add user defined memory limitations
-                this.maximumJavaHeapSize += this.configuration.agentConfig.javaMemory;
-                uint memoryLimit = this.maximumJavaHeapSize + this.configuration.agentConfig.nativeMemory + MINIMAL_REQUIRED_MEMORY_FOR_PROACTIVE_RUNTIME_PROCESS_IN_MBYTES;
-                LOGGER.Info("A memory limitation of " + memoryLimit + " Mbytes is set for the ProActive Runtime process.");
-                this.jobObject.Limits.JobMemoryLimit = new IntPtr(memoryLimit * 1024 * 1024);
+                this.jobObject.Limits.JobMemoryLimit = new IntPtr(this.commonStartInfo.memoryLimit * 1024 * 1024);
+                LOGGER.Info("A memory limitation of " + this.commonStartInfo.memoryLimit + " Mbytes is set for the ProActive Runtime process");
                 // Add event handlers to keep track of job events
                 this.jobObject.Events.OnJobMemoryLimit += new jobEventHandler<JobMemoryLimitEventArgs>(Events_OnJobMemoryLimit);
             }
             // Create new instance of the cpu limiter
             this.cpuLimiter = new CPULimiter();
-
-            // Prepare jvm parameters, cmd and args from the given action type
-
-            // All jvm parameters
-            List<string> jvmParametersList = new List<string>();
-
-            // Add default parameters
-            ConfigParser.Action.addDefaultJvmParameters(jvmParametersList, this.configuration.agentConfig.proactiveLocation);
-
-            this.cmd = action.javaStarterClass;
-            this.args = action.getArgs();
-
-            // user defined jvm parameters will be added after in order to let the user redefine default parameters                        
-            if (action is AdvertAction)
-            {
-                AdvertAction advertAction = (AdvertAction)action;
-                // Add action specific default jvm parameters
-                // ... nothing to add
-                // Add user defined jvm parameters
-                this.addUserDefinedJvmParameters(jvmParametersList);
-                this.jvmParameters = jvmParametersList.ToArray();                 
-            }
-            else if (action is RMAction)
-            {
-                RMAction rmAction = (RMAction)action;
-                // Add action specific default jvm parameters
-                RMAction.addDefaultJvmParameters(jvmParametersList, this.configuration.agentConfig.proactiveLocation);
-                // Add user defined jvm parameters
-                this.addUserDefinedJvmParameters(jvmParametersList);
-                this.jvmParameters = jvmParametersList.ToArray();                
-            }
-            else if (action is CustomAction)
-            {
-                CustomAction customAction = (CustomAction)action;
-                // Add action specific default jvm parameters
-                // ... nothing to add
-                // Add user defined jvm parameters
-                this.addUserDefinedJvmParameters(jvmParametersList);
-                this.jvmParameters = jvmParametersList.ToArray();                
-            }
-            else
-            {
-                // Unknown action
-            }
-        }
-
-        private void addUserDefinedJvmParameters(List<string> jvmParameters)
-        {
-            // Add all user defined jvm parameters             
-            // Init -Xms and -Xmx jvm paremeters to default values from the configuration
-            string xms = "-Xms" + DEFAULT_JAVA_HEAP_SIZE_IN_MBYTES + "M";
-            string xmx = "-Xmx" + this.maximumJavaHeapSize + "M";
-            // Append all params and check for overriden jvm memory parameters
-            foreach (string s in this.configuration.agentConfig.jvmParameters)
-            {
-                // Check if user specifically defined jvm memory params and override them with user values
-                if (s != null && s.Contains("-Xms"))
-                {
-                    xms = s;
-                    continue;
-                }
-                if (s != null && s.Contains("-Xmx"))
-                {
-                    xmx = s;
-                    continue;
-                }
-                jvmParameters.Add(s);
-            }
-            // Log the memory jvm parameters
-            LOGGER.Info("The initial java heap size is " + xms + " and maximum java heap size is " + xmx);
-            jvmParameters.Add(xms);
-            jvmParameters.Add(xmx);
         }
 
         /// <summary>
-        /// The initialization method loads events on the current timer manager.
-        /// </summary>
-        public void init()
-        {
-            this.timerManager.loadEvents(this.configuration.events);
-        }
-
-        /// <summary>
-        /// Resets the restart delay to the initial restart delay.
-        /// </summary>
-        public void resetRestartDelay()
-        {
-            this.restartDelay = initialRestartDelay;
-        }
-
-        /// <summary>
-        /// Creates a new ProActive Runtime process from the builded java command and starts it with given [command] argument
-        /// and optionally other arguments (args parameter)
-        /// this method has to be synchronized as it is dealing with a process object.
+        /// Creates a new ProActive Runtime process from the java command and starts it with given [command] argument
+        /// and optionally other arguments this method has to be synchronized as it is dealing with a process object.
         /// </summary>
         [MethodImpl(MethodImplOptions.Synchronized)]
         private bool start()
@@ -198,9 +122,38 @@ namespace ProActiveAgent
                 return false;
             }
 
-            if (LOGGER.IsDebugEnabled)
+            // Before starting a ProActive Runtime process an available ProActive Rmi Port is needed.
+            // In rare cases an external process can take the port between the test of its availablity and its occupation by the ProActive Runtime process
+            // in that case the runtime will not start.
+
+            // Lock all executors in this section
+            lock (interExecutorLock)
             {
-                LOGGER.Debug("Preparing to start new ProActive Runtime process with cmd : " + cmd + " args : " + args);
+                // If the maximum is reached then re-cycle to the initial value
+                if (currentProActiveRmiPort >= Constants.MAX_PROACTIVE_RMI_PORT)
+                {
+                    currentProActiveRmiPort = this.commonStartInfo.configuration.agentConfig.proActiveRmiPortInitialValue;
+                }
+            }
+            int proActiveRmiPort = currentProActiveRmiPort;
+
+
+            // Check the port availability and if it's not available increment and retry until max value
+            while (!Utils.isTcpPortAvailable(proActiveRmiPort))
+            {
+                // This avoids cycling infinitely if the whole intervall is occupied
+                if (++proActiveRmiPort >= Constants.MAX_PROACTIVE_RMI_PORT)
+                {
+                    // If the maximum is reached then exit from this method
+                    LOGGER.Error("Could not start the ProActive Runtime process, unable to find an available ProActive Rmi Port");
+                    return false;
+                }
+            }
+
+            // Lock all executors here
+            lock (interExecutorLock)
+            {
+                currentProActiveRmiPort = proActiveRmiPort + 1;
             }
 
             ProcessStartInfo info = new ProcessStartInfo();
@@ -208,14 +161,17 @@ namespace ProActiveAgent
             {
                 // Merge all jvm parameters
                 StringBuilder jvmParametersBuilder = new StringBuilder();
-                foreach (string parameter in this.jvmParameters)
+                foreach (string parameter in this.commonStartInfo.jvmParameters)
                 {
                     jvmParametersBuilder.Append(" " + parameter);
                 }
+                jvmParametersBuilder.Append(" ");
+                // Add the property to force the ProActive Runtime to use the port
+                jvmParametersBuilder.Append(Constants.PROACTIVE_RMI_PORT_JAVA_PROPERTY + "=" + proActiveRmiPort);
 
                 // Merge all arguments
                 StringBuilder argumentsBuilder = new StringBuilder();
-                foreach (string arg in this.args)
+                foreach (string arg in this.commonStartInfo.selectedAction.getArgs(this.rank))
                 {
                     argumentsBuilder.Append(" " + arg);
                 }
@@ -225,16 +181,16 @@ namespace ProActiveAgent
 
                 // Use process info to specify all options               
                 // Application filename is java executable with full path
-                info.FileName = this.configuration.agentConfig.javaHome + "\\bin\\java.exe";
+                info.FileName = this.commonStartInfo.configuration.agentConfig.javaHome + "\\bin\\java.exe";
                 // Application arguments will be 
-                info.Arguments = jvmParametersBuilder.ToString() + " " + this.cmd + " " + argumentsBuilder.ToString();
+                info.Arguments = jvmParametersBuilder.ToString() + " " + this.commonStartInfo.cmd + " " + argumentsBuilder.ToString();
                 // Set the classpath 
-                info.EnvironmentVariables[Constants.CLASSPATH_VAR_NAME] = this.configuration.agentConfig.classpath;
+                info.EnvironmentVariables[Constants.CLASSPATH_VAR_NAME] = this.commonStartInfo.configuration.agentConfig.classpath;
                 // Configure runtime specifics
                 info.UseShellExecute = false; // needed to redirect output
                 info.CreateNoWindow = false;
                 info.RedirectStandardOutput = true;
-                info.RedirectStandardError = true;                
+                info.RedirectStandardError = true;
                 // Set the process start info 
                 this.proActiveRuntimeProcess.StartInfo = info;
 
@@ -250,11 +206,10 @@ namespace ProActiveAgent
                     int errorCode = Marshal.GetLastWin32Error();
                     throw new System.ComponentModel.Win32Exception(errorCode);
                 }
+
                 LOGGER.Info("Started ProActive Runtime process [pid:" + this.proActiveRuntimeProcess.Id + "]" + System.Environment.NewLine +
+                            "CLASSPATH=" + info.EnvironmentVariables[Constants.CLASSPATH_VAR_NAME] + System.Environment.NewLine +
                             "Command-line: " + info.FileName + " " + info.Arguments);
-                //if (LOGGER.IsDebugEnabled) {
-                //    LOGGER.Debug(Constants.CLASSPATH_VAR_NAME + ": " + info.EnvironmentVariables[Constants.CLASSPATH_VAR_NAME]);
-                //}
             }
             catch (Exception ex)
             {
@@ -286,7 +241,7 @@ namespace ProActiveAgent
         }
 
         // fires whenever errors output is produced
-        private static void Events_OnProActiveRuntimeProcessErrorDataReceived(object sender, DataReceivedEventArgs e)
+        private void Events_OnProActiveRuntimeProcessErrorDataReceived(object sender, DataReceivedEventArgs e)
         {
             if (e.Data == null || e.Data.Length == 0)
             {
@@ -294,16 +249,16 @@ namespace ProActiveAgent
             }
             try
             {
-                PROACTIVE_RUNTIME_PROCESS_LOGGER.Info(e.Data);
+                processLogger.Info(e.Data);
             }
             catch (Exception ex)
             {
-                LOGGER.Error("Error occurred while trying to log the ProActive Runtime process stderr.", ex);
+                LOGGER.Error("Error occurred while trying to log the ProActive Runtime process stderr", ex);
             }
         }
 
         // fires whenever standard output is produced
-        private static void Events_OnProActiveRuntimeProcessOutputDataReceived(object sender, DataReceivedEventArgs e)
+        private void Events_OnProActiveRuntimeProcessOutputDataReceived(object sender, DataReceivedEventArgs e)
         {
             if (e.Data == null || e.Data.Length == 0)
             {
@@ -311,11 +266,11 @@ namespace ProActiveAgent
             }
             try
             {
-                PROACTIVE_RUNTIME_PROCESS_LOGGER.Info(e.Data);
+                processLogger.Info(e.Data);
             }
             catch (Exception ex)
             {
-                LOGGER.Error("Error occurred while trying to log the ProActive Runtime process stdout.", ex);
+                LOGGER.Error("Error occurred while trying to log the ProActive Runtime process stdout", ex);
             }
         }
 
@@ -331,12 +286,12 @@ namespace ProActiveAgent
             // If the incriminated process is the ProActiveRuntime process then stop it permanently
             if (this.proActiveRuntimeProcess.Id == incriminatedProcess.Id)
             {
-                LOGGER.Info("The ProActive Runtime process [pid:" + this.proActiveRuntimeProcess.Id + "] reached the memory limit and will be killed.");
+                LOGGER.Info("The ProActive Runtime process [pid:" + this.proActiveRuntimeProcess.Id + "] reached the memory limit and will be killed");
                 this.stop();
                 return;
             }
             // Log info about the incriminated process            
-            LOGGER.Info("The process " + incriminatedProcess.ProcessName + " [pid:" + incriminatedProcess.Id + "] reached the memory limit and will be killed.");
+            LOGGER.Info("The process " + incriminatedProcess.ProcessName + " [pid:" + incriminatedProcess.Id + "] reached the memory limit and will be killed");
             // Kill the incriminated process that reached the job memory limit
             try
             {
@@ -347,7 +302,7 @@ namespace ProActiveAgent
             }
             catch (Exception ex)
             {
-                LOGGER.Error("Could not kill the incriminated process [pid:" + args.TheProcessId + "].", ex);
+                LOGGER.Error("Could not kill the incriminated process [pid:" + args.TheProcessId + "]", ex);
             }
         }
 
@@ -365,9 +320,9 @@ namespace ProActiveAgent
                 if (this.proActiveRuntimeProcess.Id != incriminatedProcess.Id)
                 {
                     // Log info about the incriminated process            
-                    LOGGER.Info("A new process " + incriminatedProcess.ProcessName + " [pid:" + incriminatedProcess.Id + "] has been detected.");
+                    LOGGER.Info("A new process " + incriminatedProcess.ProcessName + " [pid:" + incriminatedProcess.Id + "] has been detected");
                 }
-                LOGGER.Info("Adding new process " + incriminatedProcess.ProcessName + " [pid:" + incriminatedProcess.Id + "] to the cpu limiter.");
+                LOGGER.Info("Adding new process " + incriminatedProcess.ProcessName + " [pid:" + incriminatedProcess.Id + "] to the cpu limiter");
                 // add the process to the cpu limiter
                 this.cpuLimiter.addProcessToWatchList(incriminatedProcess);
             }
@@ -383,62 +338,84 @@ namespace ProActiveAgent
         /// </summary>
         /// <param name="o">The sender object</param>
         /// <param name="e">The arguments of this event</param>
-        [MethodImpl(MethodImplOptions.Synchronized)] // to avoid concurrent problems with stop method
+        [MethodImpl(MethodImplOptions.Synchronized)] // to avoid concurrent problems while calling stop method
         private void Events_OnProActiveRuntimeProcessExit(object o, EventArgs e)
         {
-            LOGGER.Info("The ProActive Runtime process has exited for unknown reason.");
+            LOGGER.Info("The ProActive Runtime process has exited for unknown reason");
 
             Thread.Sleep(1000);
 
             // remove listeners and kill all forked processes
             this.internalClean();
 
+            // Set current process to null
+            this.proActiveRuntimeProcess = null;
+
             //this registry shows that the runtime is not running:
             setRegistryIsRuntimeStarted(false);
 
-            if (!disabledRestarting)
+            if (disabledRestarting)
             {
                 if (LOGGER.IsDebugEnabled)
                 {
-                    LOGGER.Debug("Preparing to restart the ProActive Runtime process.");
+                    LOGGER.Debug("The restarting has been disabled. Aborting restart ...");
                 }
+                return;
+            }
 
-                // if we use timer based config then we will use binary expotential backoff retry
-                // in other case we restart process immediately
+            // if we use timer based config then we will use binary expotential backoff retry
+            // in other case we restart process immediately
 
-                // we only perform delayed restart when action originated from scheduled calendar event
-                bool delayRestart = callersState.ContainsKey(ApplicationType.AgentScheduler) && (callersState[ApplicationType.AgentScheduler]) > 0;
+            // we only perform delayed restart when action originated from scheduled calendar event
+            bool delayRestart = callersState.ContainsKey(ApplicationType.AgentScheduler) && (callersState[ApplicationType.AgentScheduler]) > 0;
 
-                // Set current process to null
-                this.proActiveRuntimeProcess = null;
-
-                if (delayRestart)
+            if (delayRestart)
+            {
+                // In order to restart correctly the delay must not be greater than the restart barrier date time
+                // To do so add the restart delay in ms to now, the AddMilliseconds() method return a new instance of the modified date
+                System.DateTime delayDateTime = System.DateTime.Now.AddMilliseconds(this.restartDelayInMs);
+                if (delayDateTime < this.restartBarrierDateTime)
                 {
+                    // The restart timer will call the internalRestart method in the given delay
+                    this.restartTimer.Change(this.restartDelayInMs, System.Threading.Timeout.Infinite);
                     if (LOGGER.IsDebugEnabled)
                     {
-                        LOGGER.Debug("Restarting the ProActive Runtime process in " + restartDelay + " ms.");
+                        LOGGER.Debug("The ProActive Runtime process restart delay is " + this.restartDelayInMs + " ms [barrier is " + this.restartBarrierDateTime.ToString() + "]");
                     }
-                    timerManager.addDelayedRetry(restartDelay);
                 }
                 else
                 {
                     if (LOGGER.IsDebugEnabled)
                     {
-                        LOGGER.Debug("Restarting the ProActive Runtime process immediately !");
+                        LOGGER.Debug("Discarding the restart of the ProActive Runtime process because it would happen outside the allocated time. [delayDateTime: " + delayDateTime.ToString() + " and restartBarrierDateTime: " + this.restartBarrierDateTime.ToString() + "]");
                     }
-                    this.start();
                 }
+            }
+            else
+            {
+                if (LOGGER.IsDebugEnabled)
+                {
+                    LOGGER.Debug("Restarting the ProActive Runtime process immediately");
+                }
+                this.start();
             }
         }
 
-        public static void setRegistryIsRuntimeStarted(bool value)
+        public void setRegistryIsRuntimeStarted(bool value)
         {
-            RegistryKey confKey = Registry.LocalMachine.OpenSubKey(Constants.PROACTIVE_AGENT_REG_SUBKEY, true);
-            if (confKey != null)
+            try
             {
-                confKey.SetValue("IsRuntimeStarted", value);
+                RegistryKey confKey = Registry.LocalMachine.OpenSubKey(Constants.PROACTIVE_AGENT_EXECUTORS_REG_SUBKEY, true);
+                if (confKey != null)
+                {
+                    confKey.SetValue(this.rank + Constants.PROACTIVE_AGENT_IS_RUNNING_EXECUTOR_REG_VALUE_NAME, value);
+                    confKey.Close();
+                }
             }
-            confKey.Close();
+            catch (Exception e)
+            {
+                LOGGER.Error("The executor " + this.rank + " cannot write its state into the registry", e);
+            }
         }
 
         // this method has to be synchronized as it is dealing with a process object
@@ -458,21 +435,18 @@ namespace ProActiveAgent
             }
             if (LOGGER.IsDebugEnabled)
             {
-                LOGGER.Debug("Stopping the ProActive Runtime process.");
+                LOGGER.Debug("Stopping the ProActive Runtime process");
             }
 
-            if (!this.proActiveRuntimeProcess.HasExited)
+            // Remove event listeners of the job object
+            this.jobObject.Events.OnNewProcess -= Events_OnNewProcess;
+            if (this.commonStartInfo.configuration.agentConfig.enableMemoryManagement)
             {
-                // Remove event listeners of the job object
-                this.jobObject.Events.OnNewProcess -= Events_OnNewProcess;
-                if (this.configuration.agentConfig.enableMemoryManagement)
-                {
-                    this.jobObject.Events.OnJobMemoryLimit -= Events_OnJobMemoryLimit;
-                }
-
-                // clean listeners and kill all forked processes
-                this.internalClean();
+                this.jobObject.Events.OnJobMemoryLimit -= Events_OnJobMemoryLimit;
             }
+
+            // clean listeners and kill all forked processes
+            this.internalClean();
             this.proActiveRuntimeProcess = null;
             //-- runtime started = false
             setRegistryIsRuntimeStarted(false);
@@ -480,7 +454,8 @@ namespace ProActiveAgent
 
         // !!WARNING!! This method removes all listeners and kills all processes in the job object
         // use it with caution, only inside a OnExit event or stop
-        private void internalClean() {
+        private void internalClean()
+        {
             // Remove event listeners of the process
             this.proActiveRuntimeProcess.Exited -= Events_OnProActiveRuntimeProcessExit;
             this.proActiveRuntimeProcess.ErrorDataReceived -= Events_OnProActiveRuntimeProcessErrorDataReceived;
@@ -490,7 +465,7 @@ namespace ProActiveAgent
             this.cpuLimiter.clearWatchList();
 
             // Use the job object to kill the ProActive Runtime process and its forked processes
-            this.jobObject.TerminateAllProcesses(42); // this exit code was used in the examples of the JobObjectWrapper API
+            this.jobObject.TerminateAllProcesses(42); // this exit code was used in the examples of the JobObjectWrapper API                       
         }
 
         // called from other parts of ProActive Agent
@@ -511,23 +486,8 @@ namespace ProActiveAgent
             {
                 callersState.Add(appType, 1);
             }
-            
-            // Invoke start
-            this.start();
-        }
 
-        // called when the process is to be restarted after given amount of time
-        public void sendRestartAction()
-        {
-            if (LOGGER.IsDebugEnabled)
-            {
-                LOGGER.Debug("Received start action request from AgentScheduler");
-            }
-            restartDelay <<= 1;
-            if (restartDelay > MAX_RESTART_DELAY)
-            {
-                restartDelay = MAX_RESTART_DELAY;
-            }
+            // Invoke start
             this.start();
         }
 
@@ -551,7 +511,7 @@ namespace ProActiveAgent
             {
                 if (LOGGER.IsDebugEnabled)
                 {
-                    LOGGER.Debug("This app type didn't start the action so it doesn't have the right to stop it.");
+                    LOGGER.Debug("This app type didn't start the action so it doesn't have the right to stop it");
                 }
                 // this app type didn't start the action so it doesn't have the right to stop it
                 return;
@@ -574,17 +534,33 @@ namespace ProActiveAgent
             this.stop();
         }
 
+        // Called by the restart timer the ProActive Runtime process needs to be restarted after a delay
+        // !! WARNING !! This method must be called by the restart timer only !
+        private void internalRestart(object obj)
+        {
+            this.restartDelayInMs = this.restartDelayInMs + RESTART_DELAY_INCREMENT_IN_MS;
+            if (this.restartDelayInMs > MAX_RESTART_DELAY_IN_MS)
+            {
+                this.restartDelayInMs = MAX_RESTART_DELAY_IN_MS;
+            }
+            if (LOGGER.IsDebugEnabled)
+            {
+                LOGGER.Debug("Restart delay is now set to " + this.restartDelayInMs + " ms");
+            }
+            this.start();
+        }
+
         [MethodImpl(MethodImplOptions.Synchronized)]
         public void dispose()
         {
             // Delete everything from the state
             callersState.Clear();
+            // Dispose the restart timer
+            this.restartTimer.Dispose();
             // Stop the current process
-            stop();
-            // Dispose the timer manger
-            this.timerManager.dispose();
+            this.stop();
             // Dispose the job object
-            this.jobObject.Dispose();           
+            this.jobObject.Dispose();
         }
 
         /// <summary>
@@ -608,6 +584,27 @@ namespace ProActiveAgent
                 }
             }
             this.cpuLimiter.setNewMaxCpuUsage(maxCpuUsage);
+        }
+
+        private static IAppender CreateRollingFileAppender(string name, string fileName)
+        {
+            log4net.Appender.RollingFileAppender appender = new log4net.Appender.RollingFileAppender();
+            appender.Name = name;
+            appender.File = fileName;
+            appender.AppendToFile = true;
+            appender.RollingStyle = log4net.Appender.RollingFileAppender.RollingMode.Size;
+            appender.MaxSizeRollBackups = 10;
+            appender.MaximumFileSize = "5MB";
+            appender.StaticLogFileName = true;
+
+            PatternLayout layout = new PatternLayout();
+            layout.ConversionPattern = "%date - %m%n";
+            layout.ActivateOptions();
+
+            appender.Layout = layout;
+            appender.ActivateOptions();
+
+            return appender;
         }
     }
 }

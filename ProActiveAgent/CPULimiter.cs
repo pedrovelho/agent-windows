@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Timers;
-using log4net;
 
 namespace ProActiveAgent
 {

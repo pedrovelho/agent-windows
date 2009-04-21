@@ -158,10 +158,9 @@ Function SetupDotNetSectionIfNeeded
   yesDotNet:
  
 FunctionEnd
-
 ; ---------------------------------------------------------------------------------
 
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Section "ProActive Agent"
 
 ; Check if .NET framework is installed >= 2.0
@@ -179,11 +178,15 @@ StrCmp $0 '1' +8 0
   StrCmp $0 '0' +3 0
     MessageBox MB_YESNO "It appears that redistributable package might not have been installed properly. If you are sure everything is allright hit YES.$\nDo you want to continue the installation ?" IDYES +2
       Abort
+      
+; Check if User Account Protection is Activated (Windows Vista)
+ReadRegDWORD $1 HKLM Software\Microsoft\Windows\CurrentVersion\Policies\System EnableLUA
+StrCmp $1 '1' 0 +3
+  MessageBox MB_OK "It appears that the User Account Control (UAC) feature is enabled. The installation cannot continue. Please disable the UAC feature and restart the installation."
+    Abort
         
-WriteRegStr HKLM SOFTWARE\ProActiveAgent "AgentDirectory" "$INSTDIR"
+WriteRegStr HKLM SOFTWARE\ProActiveAgent "AgentLocation" "$INSTDIR"
 WriteRegStr HKLM SOFTWARE\ProActiveAgent "ConfigLocation" "$INSTDIR\PAAgent-config.xml"
-WriteRegStr HKLM SOFTWARE\ProActiveAgent "IsRuntimeStarted" "false"
-WriteRegStr HKLM SOFTWARE\ProActiveAgent "AllowRuntime" "true"
 
 ; write the uninstall keys for Windows
 WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ProActiveAgent" "DisplayName" "ProActive Agent (remove only)"
@@ -195,72 +198,69 @@ SetOutPath $INSTDIR
 WriteUninstaller uninstall.exe
 
 ;write files
-
 File "agentservice.bat"
 File "config.xsd"
 File "Copying"
-
 File "ConfigParser.exe"
-;File "ConfigParser.exe.config"
-;File "ConfigParser.pdb"
 File "ProActiveAgent.exe"
-;File "ProActiveAgent.pdb"
 File "install.bat"
 File "PAAgent-config.xml"
 File "pkill.dll"
 File "log4net.dll"
 File "log4net.config"
 File "uninstall.bat"
-
+File "JobManagement.dll"
+File "InJobProcessCreator.exe"
 File "AgentFirstSetup.exe"
-;File "AgentFirstSetup.pdb"
-
 File "icon.ico"
 File "proactive-log4j"
+File "ListNetworkInterfaces.class"
+File "documentation.pdf"
 
 ExecWait "$INSTDIR\AgentFirstSetup.exe -i $\"$INSTDIR$\""
-
 SectionEnd
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Section "ProActive Agent Control"
-
 SetOutPath $INSTDIR
-
 File "AgentForAgent.exe"
 ;File "AgentForAgent.pdb"
-
-
 SectionEnd
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Section "ProActive ScreenSaver"
-
 SetOutPath $SYSDIR
-
 File "ProActiveSSaver.scr"
-
 SectionEnd
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Section "Desktop shortcuts"
-
 SetShellVarContext all ; All users
 IfFileExists $INSTDIR\AgentForAgent.exe 0 +2
-  CreateShortCut "$DESKTOP\AgentControl.lnk" "$INSTDIR\AgentForAgent.exe" "" "$INSTDIR\icon.ico" 0
+  CreateShortCut "$DESKTOP\ProActive Agent Control.lnk" "$INSTDIR\AgentForAgent.exe" "" "$INSTDIR\icon.ico" 0
 SetShellVarContext current ; Current User
-
 SectionEnd
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Section "Start Menu Shortcuts"
-
 SetShellVarContext all ; All users
 CreateDirectory "$SMPROGRAMS\ProActiveAgent"
-CreateShortCut  "$SMPROGRAMS\ProActiveAgent\AgentControl.lnk" "$INSTDIR\AgentForAgent.exe" "" "$INSTDIR\icon.ico" 0
+CreateShortCut  "$SMPROGRAMS\ProActiveAgent\ProActive Agent Control.lnk" "$INSTDIR\AgentForAgent.exe" "" "$INSTDIR\icon.ico" 0
 CreateShortCut  "$SMPROGRAMS\ProActiveAgent\Uninstall ProActive Agent.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
+CreateShortCut  "$SMPROGRAMS\ProActiveAgent\ProActive Agent Documentation.lnk" "$INSTDIR\documentation.pdf" "" "$INSTDIR\documentation.pdf" 0
 SetShellVarContext current ; reset to current user
 
+;; Ask user if he wants to run Agent GUI
+MessageBox MB_YESNO "Run ProActive Agent Control ?" /SD IDYES IDNO endActiveSync
+  Exec "$INSTDIR\AgentForAgent.exe"
+  Goto endActiveSync
+ endActiveSync:
 SectionEnd
-
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;uninstall section
 
@@ -273,20 +273,26 @@ Section "Uninstall"
 	Abort "Quiting the uninstall process"
 	
 	DoUnInstall:
+	SetOutPath $INSTDIR
+	ExecWait "$INSTDIR\AgentFirstSetup.exe -u"
+	
+	; Delete from uninstall
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ProActiveAgent"
+	; Delete entry from auto start
+        DeleteRegValue HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "ProActiveAgent"
 	DeleteRegKey HKLM SOFTWARE\ProActiveAgent
 	
 	SetShellVarContext all ; All users
-	Delete "$DESKTOP\AgentControl.lnk"
+	Delete "$DESKTOP\ProActive Agent Control.lnk"
+	
 	RMDir /r "$SMPROGRAMS\ProActiveAgent"
 	SetShellVarContext current ; reset to current user
-
-	    
-	SetOutPath $INSTDIR
-	;ExecWait '"$INSTDIR\uninstall.bat"'
-	ExecWait "$INSTDIR\AgentFirstSetup.exe -u"
-
+	
+	Delete "$INSTDIR\AgentForAgent.exe"
+	Delete "$INSTDIR\ConfigParser.exe"
+        Delete "$INSTDIR\ProActiveAgent.exe"
 	RMDir /r "$INSTDIR"
+	
 	Delete $SYSDIR\ProActiveSSaver.scr
 
 SectionEnd

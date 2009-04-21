@@ -18,8 +18,8 @@ namespace ConfigParser
     public class Action
     {        
         private int myInitialRestartDelay;        
-        private String myJavaStarterClass;
-        private bool myIsEnabled;
+        private string myJavaStarterClass;
+        private bool myIsEnabled;        
 
         [XmlElement("initialRestartDelay")]
         public int initialRestartDelay
@@ -36,7 +36,7 @@ namespace ConfigParser
         }
 
         [XmlElement("javaStarterClass")]
-        public String javaStarterClass
+        public string javaStarterClass
         {
             get
             {
@@ -64,7 +64,7 @@ namespace ConfigParser
         }
 
         // Sub classes must override this class
-        public virtual string[] getArgs() { return new string[0]; }
+        public virtual string[] getArgs(int processRank) { return new string[0]; }        
 
         // Default jvm parameters needed for this type of action
         public static void addDefaultJvmParameters(List<string> jvmParameters, string proactiveLocation)

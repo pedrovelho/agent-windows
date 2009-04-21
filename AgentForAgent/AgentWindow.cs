@@ -12,214 +12,152 @@ namespace AgentForAgent
 {
     public partial class ConfigurationDialog : Form
     {
-        // The configuration location registery key name
-        public const string CONFIG_LOCATION_KEY = "ConfigLocation";
-        public const string PROACTIVE_AGENT_SUB_KEY = "Software\\ProActiveAgent";
+
+        public const string AGENT_AUTO_RUN_SUBKEY = "Software\\Microsoft\\Windows\\CurrentVersion\\Run";
 
         // The following constants are used by the gui
-        public const string STOP_PENDING = "StopPending";
+        public const string STOP_PENDING = "Stopping";
         public const string STOPPED = "Stopped";
-        public const string START_PENDING = "StartPending";
+        public const string START_PENDING = "Starting";
         public const string RUNNING = "Running";
-        public const string UNKNOWN = "unknown";
-        // The default location of the ProActive Agent configuration file
-        public const string DEFAULT_CONFIG_LOCATION = "C:\\PAAgent-config.xml";
+        public const string UNKNOWN = "Unknown";                
 
-        private ServiceController sc = new ServiceController(Constants.PROACTIVE_AGENT_SERVICE_NAME);
-        private ServiceControllerStatus agentStatus;
+        private readonly ServiceController sc;
 
-        private string agentLocation;
-        private string agentStatusString;
+        private readonly string agentLocation;
 
-        private bool isRuntimeStarted = false;
         private bool setVisibleCore = false;
-        //private bool allowRuntime = true;
 
         private ConfigurationEditor window;
 
-        public ConfigurationDialog()
-        {
+        public ConfigurationDialog(string agentLocation, string configLocation)
+        {            
+            // First of all, try to connect to the agent service
+            try
+            {
+                this.sc = new ServiceController(Constants.PROACTIVE_AGENT_SERVICE_NAME);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Could not connect to the service " + Constants.PROACTIVE_AGENT_SERVICE_NAME + ". It appears that the agent might not have been installed properly. "+e.ToString(), "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }            
+
             // Init all visuals
             InitializeComponent();
             this.Hide();
             UpdateStatus();
-            ReadConfigLocation();
-            ReadAgentLocation();
 
-            //Retrieve register value
-            RegistryKey confKey = Registry.LocalMachine.CreateSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Run");
-            if (confKey != null)
-            {
-                if (confKey.GetValue("ProActive Agent Interface") != null)
-                {
-                    this.startToolStripMenuItem.CheckState = CheckState.Checked;
-                }
-            }
-            confKey.Close();
-        }
+            this.agentLocation = agentLocation;
+            this.configLocation.Text = configLocation;
 
-        private void ReadConfigLocation()
-        {
-            RegistryKey confKey = Registry.LocalMachine.OpenSubKey(PROACTIVE_AGENT_SUB_KEY);
-            if (confKey == null)
-            {
-                confKey = Registry.LocalMachine.CreateSubKey(PROACTIVE_AGENT_SUB_KEY);
-                confKey.SetValue(CONFIG_LOCATION_KEY, DEFAULT_CONFIG_LOCATION);
-            }
-            else
-            {
-                string configLocation = (string)confKey.GetValue(CONFIG_LOCATION_KEY);
-                if (configLocation != null)
-                {
-                    this.configLocation.Text = configLocation;
-                }
-                else
-                {
-                    confKey.SetValue(CONFIG_LOCATION_KEY, DEFAULT_CONFIG_LOCATION);
-                }
-            }
-            confKey.Close();
-        }
 
-        private void ReadAgentLocation()
-        {
-            RegistryKey confKey = Registry.LocalMachine.OpenSubKey(PROACTIVE_AGENT_SUB_KEY);
-            if (confKey != null)
+            // Retrieve register value for auto start agent
+            try
             {
-                if (confKey.GetValue("AgentDirectory") != null)
+                RegistryKey confKey = Registry.LocalMachine.CreateSubKey(AGENT_AUTO_RUN_SUBKEY);
+                if (confKey != null)
                 {
-                    this.agentLocation = (string)confKey.GetValue("AgentDirectory");
+                    if (confKey.GetValue(Constants.PROACTIVE_AGENT_SERVICE_NAME) != null)
+                    {
+                        this.startToolStripMenuItem.CheckState = CheckState.Checked;
+                    }
+                    confKey.Close();
                 }
-                else
-                {
-                    this.agentLocation = "";
-                }
+            } catch (Exception e) {
+                MessageBox.Show("Cannot create the following subkey " + AGENT_AUTO_RUN_SUBKEY + ". " + e.ToString(), "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            confKey.Close();
         }
 
         private void UpdateConfigLocation()
         {
-            RegistryKey confKey = Registry.LocalMachine.OpenSubKey(PROACTIVE_AGENT_SUB_KEY, true);
-            if (confKey == null)
-                return;
-            confKey.SetValue(CONFIG_LOCATION_KEY, configLocation.Text);
-            confKey.Close();
+            RegistryKey confKey = Registry.LocalMachine.OpenSubKey(Constants.PROACTIVE_AGENT_REG_SUBKEY, true);
+            if (confKey != null)
+            {
+                confKey.SetValue(Constants.PROACTIVE_AGENT_CONFIG_LOCATION_REG_VALUE_NAME, configLocation.Text);
+                confKey.Close();
+            }
         }
 
         private void UpdateStatus()
         {
-            agentStatus = sc.Status;
-            if (agentStatus == ServiceControllerStatus.StopPending)
+            switch (this.sc.Status)
             {
-                agentStatusString = "stopping";
-                //this.troubleshoot.Enabled = false;
-                this.startService.Enabled = false;
-                this.stopService.Enabled = false;
-                this.startServiceToolStripMenuItem.Enabled = false;
-                this.stopServiceToolStripMenuItem.Enabled = false;
-                this.notifyIcon1.Text = STOP_PENDING;
-                //this.globalStop.Enabled = false;
-                //this.contextMenuStrip1.Items[1].Enabled = false;
-                //this.allowForbidRT.Enabled = false;
-            }
-            else if (agentStatus == ServiceControllerStatus.Stopped)
-            {
-                agentStatusString = "stopped";
-                //this.troubleshoot.Enabled = false;
-                this.startService.Enabled = true;
-                this.stopService.Enabled = false;
-                this.startServiceToolStripMenuItem.Enabled = true;
-                this.stopServiceToolStripMenuItem.Enabled = false;
+                case ServiceControllerStatus.StopPending:
+                    this.agentStatusValue.Text = STOP_PENDING;
+                    this.startService.Enabled = false;
+                    this.stopService.Enabled = false;
+                    this.startServiceToolStripMenuItem.Enabled = false;
+                    this.stopServiceToolStripMenuItem.Enabled = false;
 
-                this.notifyIcon1.Text = STOPPED;
-                //this.globalStop.Enabled = false;
-                //this.contextMenuStrip1.Items[1].Enabled = false;
-                //this.allowForbidRT.Enabled = false;
-            }
-            else if (agentStatus == ServiceControllerStatus.StartPending)
-            {
-                agentStatusString = "starting";
-                //this.troubleshoot.Enabled = false;
-                this.startService.Enabled = false;
-                this.stopService.Enabled = false;
-                this.startServiceToolStripMenuItem.Enabled = false;
-                this.stopServiceToolStripMenuItem.Enabled = false;
+                    this.agentStatusNotifyIcon.Text = STOP_PENDING;
+                    break;
+                case ServiceControllerStatus.Stopped:
+                    this.agentStatusValue.Text = STOPPED;
+                    this.startService.Enabled = true;
+                    this.stopService.Enabled = false;
+                    this.startServiceToolStripMenuItem.Enabled = true;
+                    this.stopServiceToolStripMenuItem.Enabled = false;
 
-                this.notifyIcon1.Text = START_PENDING;
-                //this.globalStop.Enabled = false;
-                //this.contextMenuStrip1.Items[1].Enabled = false;
-                //this.allowForbidRT.Enabled = false;
-            }
-            else if (agentStatus == ServiceControllerStatus.Running)
-            {
-                agentStatusString = "running";
-                //this.troubleshoot.Enabled = false;
-                this.startService.Enabled = false;
-                this.stopService.Enabled = true;
-                this.startServiceToolStripMenuItem.Enabled = false;
-                this.stopServiceToolStripMenuItem.Enabled = true;
+                    this.agentStatusNotifyIcon.Text = STOPPED;
+                    break;
+                case ServiceControllerStatus.StartPending:
+                    this.agentStatusValue.Text = START_PENDING;
+                    this.startService.Enabled = false;
+                    this.stopService.Enabled = false;
+                    this.startServiceToolStripMenuItem.Enabled = false;
+                    this.stopServiceToolStripMenuItem.Enabled = false;
 
-                this.notifyIcon1.Text = RUNNING;
-                //this.globalStop.Enabled = true;
-                //this.contextMenuStrip1.Items[1].Enabled = true;
-                //this.allowForbidRT.Enabled = true;
-            }
-            else
-            {
-                agentStatusString = "in unknown state.";
-                //this.troubleshoot.Enabled = true;
-                this.startService.Enabled = false;
-                this.stopService.Enabled = false;
-                this.startServiceToolStripMenuItem.Enabled = false;
-                this.stopServiceToolStripMenuItem.Enabled = false;
+                    this.agentStatusNotifyIcon.Text = START_PENDING;
+                    break;
+                case ServiceControllerStatus.Running:
+                    this.agentStatusValue.Text = RUNNING;
+                    this.startService.Enabled = false;
+                    this.stopService.Enabled = true;
+                    this.startServiceToolStripMenuItem.Enabled = false;
+                    this.stopServiceToolStripMenuItem.Enabled = true;
 
-                this.notifyIcon1.Text = UNKNOWN;
-                //this.globalStop.Enabled = false;
-                //this.allowForbidRT.Enabled = false;
+                    this.agentStatusNotifyIcon.Text = RUNNING;
+                    break;
+                default:
+                    this.agentStatusValue.Text = UNKNOWN;
+                    this.startService.Enabled = false;
+                    this.stopService.Enabled = false;
+                    this.startServiceToolStripMenuItem.Enabled = false;
+                    this.stopServiceToolStripMenuItem.Enabled = false;
+
+                    this.agentStatusNotifyIcon.Text = UNKNOWN;
+                    break;
             }
 
-            this.statuslabel.Text = "The ProActive Agent is currently " + agentStatusString;
-            if (agentStatus != ServiceControllerStatus.Running)
+            // We consider that the runtime is started if there is more than one subkey 
+            int runningExecutorsCount = 0;
+            //--Read the register and update the trayIcon
+            RegistryKey confKey = Registry.LocalMachine.OpenSubKey(Constants.PROACTIVE_AGENT_EXECUTORS_REG_SUBKEY);
+            if (confKey != null)
+            {
+                // Count all true values
+                string[] isRunningValues = confKey.GetValueNames();
+
+                foreach (string name in isRunningValues)
+                {
+                    if (Convert.ToBoolean(confKey.GetValue(name)))
+                    {
+                        runningExecutorsCount++;
+                    }
+                }
+                this.spawnedRuntimesValue.Text = ""+runningExecutorsCount;
+                confKey.Close();
+            }
+
+            if (sc.Status != ServiceControllerStatus.Running)
             {
                 //-- stopped icon
-                notifyIcon1.Icon = (Icon)Resource1.icon_stop;
-                Icon = (Icon)Resource1.icon_stop;
+                agentStatusNotifyIcon.Icon = Icon = (Icon)Resource1.icon_stop;
             }
             else
             {
-                //--Read the register and update the trayIcon
-                RegistryKey confKey = Registry.LocalMachine.OpenSubKey("Software\\ProActiveAgent");
-                if (confKey != null)
-                {
-                    if (confKey.GetValue("IsRuntimeStarted") != null)
-                    {
-                        isRuntimeStarted = (bool)TypeDescriptor.GetConverter(isRuntimeStarted).ConvertFrom(confKey.GetValue("IsRuntimeStarted"));
-                    }
-                    else
-                    {
-                        isRuntimeStarted = false;
-                    }
-                }
-
-                try
-                {
-                    if (isRuntimeStarted)
-                    {
-                        notifyIcon1.Icon = (Icon)Resource1.icon_active;
-                        Icon = (Icon)Resource1.icon_active;
-                    }
-                    else
-                    {
-                        notifyIcon1.Icon = (Icon)Resource1.icon_passive;
-                        Icon = (Icon)Resource1.icon_passive; ;
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
-                confKey.Close();
+                agentStatusNotifyIcon.Icon = Icon = (runningExecutorsCount > 0 ? (Icon)Resource1.icon_active : (Icon)Resource1.icon_passive);
             }
         }
 
@@ -279,10 +217,19 @@ namespace AgentForAgent
         {
             startService.Enabled = false;
             stopService.Enabled = false;
-            //troubleshoot.Enabled = true;
             startServiceToolStripMenuItem.Enabled = false;
             stopServiceToolStripMenuItem.Enabled = false;
-            sc.Stop();
+            try
+            {
+                if (sc != null && sc.CanStop && sc.Status != ServiceControllerStatus.Stopped)
+                {
+                    sc.Stop();
+                }
+            }
+            catch (Exception ex) {
+                // Cannot continue show error message box and exit from this method
+                MessageBox.Show("Cannot stop the service. " + ex.ToString(), "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -470,69 +417,24 @@ namespace AgentForAgent
 
         private void startToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
         {
-            if (((ToolStripMenuItem)sender).CheckState == CheckState.Checked)
+            // Add Register the automatic launch
+            RegistryKey confKey = Registry.LocalMachine.CreateSubKey(AGENT_AUTO_RUN_SUBKEY);
+            if (confKey != null)
             {
-                //--Register the automatic launch
-                RegistryKey confKey = Registry.LocalMachine.CreateSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Run");
-                //MessageBox.Show("==>" + System.Environment.CurrentDirectory + "   " + System.Environment.CommandLine);
-                if (confKey != null)
+                if (((ToolStripMenuItem)sender).CheckState == CheckState.Checked)                
                 {
-                    confKey.SetValue("ProActive Agent Interface", System.Environment.CommandLine);
-                    //                    confKey.SetValue("ProActive Agent Interface", System.Environment.CurrentDirectory + "\\AgentForAgent.exe");
-                }
-                confKey.Close();
-            }
-            else
-            {
-                //--Remove the automatic launch key
-                RegistryKey confKey = Registry.LocalMachine.CreateSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Run");
-                if (confKey != null)
-                {
-                    if (confKey.GetValue("ProActive Agent Interface") != null)
-                    {
-                        confKey.DeleteValue("ProActive Agent Interface");
-                    }
-                }
+                    confKey.SetValue(Constants.PROACTIVE_AGENT_SERVICE_NAME, System.Environment.CommandLine);
+                } else {
+                    confKey.DeleteValue(Constants.PROACTIVE_AGENT_SERVICE_NAME);
+                }                
+                
                 confKey.Close();
             }
         }
+
         protected override void SetVisibleCore(bool value)
         {
             base.SetVisibleCore(setVisibleCore);
-        }
-
-        private void notifyIcon1_Click(object sender, EventArgs e)
-        {
-            /*Form infoBox = new Form();
-
-            infoBox.FormBorderStyle = FormBorderStyle.None;
-            infoBox.ShowInTaskbar = false;
-            infoBox.ControlBox = false;
-            infoBox.StartPosition = FormStartPosition.Manual;
-            infoBox.Width = 200;
-            infoBox.Height = 100;
-            infoBox.Top = Screen.PrimaryScreen.Bounds.Bottom - infoBox.Height - 35;
-            infoBox.Left = Screen.PrimaryScreen.Bounds.Right - infoBox.Width - 10;
-            infoBox.AllowTransparency = true;
-            infoBox.Opacity = 0;
-
-            RichTextBox textBox = new RichTextBox();
-            textBox.Multiline = true;
-            textBox.BackColor = Color.LightCyan;
-            textBox.ForeColor = Color.DarkBlue;
-            textBox.Font = new Font("Tahoma", 8, FontStyle.Bold | FontStyle.Underline);
-            textBox.Text = "Message pour vous";
-            textBox.Dock = DockStyle.Fill;
-            textBox.ReadOnly = true;
-
-            infoBox.Controls.Add(textBox);
-            infoBox.Show();
-            infoBox.Refresh();
-            for (double opacity = 0.1; opacity < 0.80; opacity+=0.1)
-            {
-                infoBox.Opacity = opacity;
-                Thread.Sleep(100);
-            }*/
         }
 
         private void closeAdministrationPanelToolStripMenuItem_Click_1(object sender, EventArgs e)
@@ -540,7 +442,7 @@ namespace AgentForAgent
             DialogResult res = MessageBox.Show("This operation doesn't change the state of ProActive service", "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
             if (res == DialogResult.OK)
             {
-                this.notifyIcon1.Dispose();
+                this.agentStatusNotifyIcon.Dispose();
                 this.Close();
                 Application.ExitThread();
             }
@@ -558,14 +460,15 @@ namespace AgentForAgent
 
         private void proActiveInriaLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            // If the value looks like a URL, navigate to it.
-            // Otherwise, display it in a message box.
-            System.Diagnostics.Process.Start(this.proActiveInriaLinkLabel.Text);            
+            System.Diagnostics.Process.Start(this.proActiveInriaLinkLabel.Text);
         }
 
-        private void label3_Click(object sender, EventArgs e)
+        private void viewLogsWithIExplorerButton_Click(object sender, EventArgs e)
         {
-
+            Process p = new Process();
+            p.StartInfo.FileName = "iexplore.exe";
+            p.StartInfo.Arguments = this.agentLocation + "\\ProActiveAgent-log.txt";
+            p.Start();
         }
     }
 }

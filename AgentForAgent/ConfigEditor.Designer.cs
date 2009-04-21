@@ -39,6 +39,7 @@ namespace AgentForAgent
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfigurationEditor));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.jvmParametersListBox = new System.Windows.Forms.ListBox();
@@ -54,12 +55,18 @@ namespace AgentForAgent
             this.proactiveLocation = new System.Windows.Forms.TextBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.generalTabPage = new System.Windows.Forms.TabPage();
+            this.multiRuntimeGroupBox = new System.Windows.Forms.GroupBox();
+            this.useAllAvailableCPUsCheckBox = new System.Windows.Forms.CheckBox();
+            this.nbRuntimesLabel = new System.Windows.Forms.Label();
+            this.availableCPUsValue = new System.Windows.Forms.Label();
+            this.availableCPUsLabel = new System.Windows.Forms.Label();
+            this.nbRuntimesNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.networkInterfaceListGroupBox = new System.Windows.Forms.GroupBox();
             this.useNetworkInterfaceButton = new System.Windows.Forms.Button();
             this.networkInterfacesListBox = new System.Windows.Forms.ListBox();
             this.refreshNetworkInterfacesButton = new System.Windows.Forms.Button();
             this.enableMemoryManagementCheckBox = new System.Windows.Forms.CheckBox();
-            this.memoryManagementBox = new System.Windows.Forms.GroupBox();
+            this.memoryManagementGroupBox = new System.Windows.Forms.GroupBox();
             this.totalProcessMemoryValue = new System.Windows.Forms.Label();
             this.totalProcessMemoryLabel = new System.Windows.Forms.Label();
             this.javaMemoryNumericUpDown = new System.Windows.Forms.NumericUpDown();
@@ -69,6 +76,9 @@ namespace AgentForAgent
             this.nativeMemoryNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.nativeMemoryLabel = new System.Windows.Forms.Label();
             this.connectionTabPage = new System.Windows.Forms.TabPage();
+            this.proActiveRmiPortGroupBox = new System.Windows.Forms.GroupBox();
+            this.rmiTcpPortInitialValue = new System.Windows.Forms.Label();
+            this.initialValueNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.enabledConnectionGroupBox = new System.Windows.Forms.GroupBox();
             this.resourceManagerRegistrationRadioButton = new System.Windows.Forms.RadioButton();
             this.rmiRegistrationRadioButton = new System.Windows.Forms.RadioButton();
@@ -144,15 +154,20 @@ namespace AgentForAgent
             this.jvmLocationBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.saveConfigAs = new System.Windows.Forms.Button();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.connectionTabToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.eventsList = new AgentForAgent.RefreshingListBox();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.generalTabPage.SuspendLayout();
+            this.multiRuntimeGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nbRuntimesNumericUpDown)).BeginInit();
             this.networkInterfaceListGroupBox.SuspendLayout();
-            this.memoryManagementBox.SuspendLayout();
+            this.memoryManagementGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.javaMemoryNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nativeMemoryNumericUpDown)).BeginInit();
             this.connectionTabPage.SuspendLayout();
+            this.proActiveRmiPortGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.initialValueNumericUpDown)).BeginInit();
             this.enabledConnectionGroupBox.SuspendLayout();
             this.connectionTypeTabControl.SuspendLayout();
             this.rmiRegistrationTabPage.SuspendLayout();
@@ -317,9 +332,10 @@ namespace AgentForAgent
             // 
             // generalTabPage
             // 
+            this.generalTabPage.Controls.Add(this.multiRuntimeGroupBox);
             this.generalTabPage.Controls.Add(this.networkInterfaceListGroupBox);
             this.generalTabPage.Controls.Add(this.enableMemoryManagementCheckBox);
-            this.generalTabPage.Controls.Add(this.memoryManagementBox);
+            this.generalTabPage.Controls.Add(this.memoryManagementGroupBox);
             this.generalTabPage.Controls.Add(this.groupBox1);
             this.generalTabPage.Location = new System.Drawing.Point(4, 22);
             this.generalTabPage.Name = "generalTabPage";
@@ -329,14 +345,90 @@ namespace AgentForAgent
             this.generalTabPage.Text = "General";
             this.generalTabPage.UseVisualStyleBackColor = true;
             // 
+            // multiRuntimeGroupBox
+            // 
+            this.multiRuntimeGroupBox.Controls.Add(this.useAllAvailableCPUsCheckBox);
+            this.multiRuntimeGroupBox.Controls.Add(this.nbRuntimesLabel);
+            this.multiRuntimeGroupBox.Controls.Add(this.availableCPUsValue);
+            this.multiRuntimeGroupBox.Controls.Add(this.availableCPUsLabel);
+            this.multiRuntimeGroupBox.Controls.Add(this.nbRuntimesNumericUpDown);
+            this.multiRuntimeGroupBox.Location = new System.Drawing.Point(235, 206);
+            this.multiRuntimeGroupBox.Name = "multiRuntimeGroupBox";
+            this.multiRuntimeGroupBox.Size = new System.Drawing.Size(153, 111);
+            this.multiRuntimeGroupBox.TabIndex = 4;
+            this.multiRuntimeGroupBox.TabStop = false;
+            this.multiRuntimeGroupBox.Text = "Multi-Runtime";
+            // 
+            // useAllAvailableCPUsCheckBox
+            // 
+            this.useAllAvailableCPUsCheckBox.AutoSize = true;
+            this.useAllAvailableCPUsCheckBox.Location = new System.Drawing.Point(9, 89);
+            this.useAllAvailableCPUsCheckBox.Name = "useAllAvailableCPUsCheckBox";
+            this.useAllAvailableCPUsCheckBox.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.useAllAvailableCPUsCheckBox.Size = new System.Drawing.Size(133, 17);
+            this.useAllAvailableCPUsCheckBox.TabIndex = 4;
+            this.useAllAvailableCPUsCheckBox.Text = "Use all available CPUs";
+            this.useAllAvailableCPUsCheckBox.UseVisualStyleBackColor = true;
+            this.useAllAvailableCPUsCheckBox.CheckedChanged += new System.EventHandler(this.useAllAvailableCPUsCheckBox_CheckedChanged);
+            // 
+            // nbRuntimesLabel
+            // 
+            this.nbRuntimesLabel.AutoSize = true;
+            this.nbRuntimesLabel.Location = new System.Drawing.Point(15, 45);
+            this.nbRuntimesLabel.Name = "nbRuntimesLabel";
+            this.nbRuntimesLabel.Size = new System.Drawing.Size(71, 13);
+            this.nbRuntimesLabel.TabIndex = 3;
+            this.nbRuntimesLabel.Text = "Nb Runtimes:";
+            // 
+            // availableCPUsValue
+            // 
+            this.availableCPUsValue.AutoSize = true;
+            this.availableCPUsValue.Location = new System.Drawing.Point(97, 21);
+            this.availableCPUsValue.Name = "availableCPUsValue";
+            this.availableCPUsValue.Size = new System.Drawing.Size(13, 13);
+            this.availableCPUsValue.TabIndex = 2;
+            this.availableCPUsValue.Text = "0";
+            // 
+            // availableCPUsLabel
+            // 
+            this.availableCPUsLabel.AutoSize = true;
+            this.availableCPUsLabel.Location = new System.Drawing.Point(8, 21);
+            this.availableCPUsLabel.Name = "availableCPUsLabel";
+            this.availableCPUsLabel.Size = new System.Drawing.Size(83, 13);
+            this.availableCPUsLabel.TabIndex = 1;
+            this.availableCPUsLabel.Text = "Available CPUs:";
+            // 
+            // nbRuntimesNumericUpDown
+            // 
+            this.nbRuntimesNumericUpDown.Location = new System.Drawing.Point(97, 43);
+            this.nbRuntimesNumericUpDown.Maximum = new decimal(new int[] {
+            32,
+            0,
+            0,
+            0});
+            this.nbRuntimesNumericUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nbRuntimesNumericUpDown.Name = "nbRuntimesNumericUpDown";
+            this.nbRuntimesNumericUpDown.Size = new System.Drawing.Size(48, 20);
+            this.nbRuntimesNumericUpDown.TabIndex = 0;
+            this.nbRuntimesNumericUpDown.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nbRuntimesNumericUpDown.ValueChanged += new System.EventHandler(this.nbRuntimesNumericUpDown_ValueChanged);
+            // 
             // networkInterfaceListGroupBox
             // 
             this.networkInterfaceListGroupBox.Controls.Add(this.useNetworkInterfaceButton);
             this.networkInterfaceListGroupBox.Controls.Add(this.networkInterfacesListBox);
             this.networkInterfaceListGroupBox.Controls.Add(this.refreshNetworkInterfacesButton);
-            this.networkInterfaceListGroupBox.Location = new System.Drawing.Point(235, 184);
+            this.networkInterfaceListGroupBox.Location = new System.Drawing.Point(394, 184);
             this.networkInterfaceListGroupBox.Name = "networkInterfaceListGroupBox";
-            this.networkInterfaceListGroupBox.Size = new System.Drawing.Size(433, 133);
+            this.networkInterfaceListGroupBox.Size = new System.Drawing.Size(274, 133);
             this.networkInterfaceListGroupBox.TabIndex = 3;
             this.networkInterfaceListGroupBox.TabStop = false;
             this.networkInterfaceListGroupBox.Text = "Available Network Interfaces";
@@ -344,7 +436,7 @@ namespace AgentForAgent
             // useNetworkInterfaceButton
             // 
             this.useNetworkInterfaceButton.Enabled = false;
-            this.useNetworkInterfaceButton.Location = new System.Drawing.Point(271, 104);
+            this.useNetworkInterfaceButton.Location = new System.Drawing.Point(110, 104);
             this.useNetworkInterfaceButton.Name = "useNetworkInterfaceButton";
             this.useNetworkInterfaceButton.Size = new System.Drawing.Size(75, 23);
             this.useNetworkInterfaceButton.TabIndex = 3;
@@ -358,12 +450,12 @@ namespace AgentForAgent
             this.networkInterfacesListBox.HorizontalScrollbar = true;
             this.networkInterfacesListBox.Location = new System.Drawing.Point(6, 19);
             this.networkInterfacesListBox.Name = "networkInterfacesListBox";
-            this.networkInterfacesListBox.Size = new System.Drawing.Size(421, 82);
+            this.networkInterfacesListBox.Size = new System.Drawing.Size(260, 82);
             this.networkInterfacesListBox.TabIndex = 2;
             // 
             // refreshNetworkInterfacesButton
             // 
-            this.refreshNetworkInterfacesButton.Location = new System.Drawing.Point(352, 104);
+            this.refreshNetworkInterfacesButton.Location = new System.Drawing.Point(191, 104);
             this.refreshNetworkInterfacesButton.Name = "refreshNetworkInterfacesButton";
             this.refreshNetworkInterfacesButton.Size = new System.Drawing.Size(75, 23);
             this.refreshNetworkInterfacesButton.TabIndex = 1;
@@ -382,23 +474,23 @@ namespace AgentForAgent
             this.enableMemoryManagementCheckBox.UseVisualStyleBackColor = true;
             this.enableMemoryManagementCheckBox.CheckedChanged += new System.EventHandler(this.enableMemoryManagementCheckBox_CheckedChanged);
             // 
-            // memoryManagementBox
+            // memoryManagementGroupBox
             // 
-            this.memoryManagementBox.Controls.Add(this.totalProcessMemoryValue);
-            this.memoryManagementBox.Controls.Add(this.totalProcessMemoryLabel);
-            this.memoryManagementBox.Controls.Add(this.javaMemoryNumericUpDown);
-            this.memoryManagementBox.Controls.Add(this.javaMemoryLabel);
-            this.memoryManagementBox.Controls.Add(this.availablePhysicalMemoryValue);
-            this.memoryManagementBox.Controls.Add(this.availablePhysicalMemoryLabel);
-            this.memoryManagementBox.Controls.Add(this.nativeMemoryNumericUpDown);
-            this.memoryManagementBox.Controls.Add(this.nativeMemoryLabel);
-            this.memoryManagementBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.memoryManagementBox.Location = new System.Drawing.Point(3, 206);
-            this.memoryManagementBox.Name = "memoryManagementBox";
-            this.memoryManagementBox.Size = new System.Drawing.Size(226, 111);
-            this.memoryManagementBox.TabIndex = 1;
-            this.memoryManagementBox.TabStop = false;
-            this.memoryManagementBox.Text = "Memory Management (Mbytes)";
+            this.memoryManagementGroupBox.Controls.Add(this.totalProcessMemoryValue);
+            this.memoryManagementGroupBox.Controls.Add(this.totalProcessMemoryLabel);
+            this.memoryManagementGroupBox.Controls.Add(this.javaMemoryNumericUpDown);
+            this.memoryManagementGroupBox.Controls.Add(this.javaMemoryLabel);
+            this.memoryManagementGroupBox.Controls.Add(this.availablePhysicalMemoryValue);
+            this.memoryManagementGroupBox.Controls.Add(this.availablePhysicalMemoryLabel);
+            this.memoryManagementGroupBox.Controls.Add(this.nativeMemoryNumericUpDown);
+            this.memoryManagementGroupBox.Controls.Add(this.nativeMemoryLabel);
+            this.memoryManagementGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.memoryManagementGroupBox.Location = new System.Drawing.Point(3, 206);
+            this.memoryManagementGroupBox.Name = "memoryManagementGroupBox";
+            this.memoryManagementGroupBox.Size = new System.Drawing.Size(226, 111);
+            this.memoryManagementGroupBox.TabIndex = 1;
+            this.memoryManagementGroupBox.TabStop = false;
+            this.memoryManagementGroupBox.Text = "Memory Management (Mbytes)";
             // 
             // totalProcessMemoryValue
             // 
@@ -482,6 +574,7 @@ namespace AgentForAgent
             // 
             // connectionTabPage
             // 
+            this.connectionTabPage.Controls.Add(this.proActiveRmiPortGroupBox);
             this.connectionTabPage.Controls.Add(this.enabledConnectionGroupBox);
             this.connectionTabPage.Controls.Add(this.connectionTypeTabControl);
             this.connectionTabPage.Location = new System.Drawing.Point(4, 22);
@@ -491,12 +584,57 @@ namespace AgentForAgent
             this.connectionTabPage.Text = "Connection";
             this.connectionTabPage.UseVisualStyleBackColor = true;
             // 
+            // proActiveRmiPortGroupBox
+            // 
+            this.proActiveRmiPortGroupBox.Controls.Add(this.rmiTcpPortInitialValue);
+            this.proActiveRmiPortGroupBox.Controls.Add(this.initialValueNumericUpDown);
+            this.proActiveRmiPortGroupBox.Location = new System.Drawing.Point(534, 6);
+            this.proActiveRmiPortGroupBox.Name = "proActiveRmiPortGroupBox";
+            this.proActiveRmiPortGroupBox.Size = new System.Drawing.Size(137, 45);
+            this.proActiveRmiPortGroupBox.TabIndex = 5;
+            this.proActiveRmiPortGroupBox.TabStop = false;
+            this.proActiveRmiPortGroupBox.Text = "ProActive RMI Port";
+            // 
+            // rmiTcpPortInitialValue
+            // 
+            this.rmiTcpPortInitialValue.AutoSize = true;
+            this.rmiTcpPortInitialValue.Location = new System.Drawing.Point(4, 21);
+            this.rmiTcpPortInitialValue.Name = "rmiTcpPortInitialValue";
+            this.rmiTcpPortInitialValue.Size = new System.Drawing.Size(64, 13);
+            this.rmiTcpPortInitialValue.TabIndex = 1;
+            this.rmiTcpPortInitialValue.Text = "Initial Value:";
+            // 
+            // initialValueNumericUpDown
+            // 
+            this.initialValueNumericUpDown.Location = new System.Drawing.Point(74, 19);
+            this.initialValueNumericUpDown.Maximum = new decimal(new int[] {
+            65534,
+            0,
+            0,
+            0});
+            this.initialValueNumericUpDown.Minimum = new decimal(new int[] {
+            1099,
+            0,
+            0,
+            0});
+            this.initialValueNumericUpDown.Name = "initialValueNumericUpDown";
+            this.initialValueNumericUpDown.Size = new System.Drawing.Size(57, 20);
+            this.initialValueNumericUpDown.TabIndex = 0;
+            this.connectionTabToolTip.SetToolTip(this.initialValueNumericUpDown, "Defines the value of the \"-Dproactive.rmi.port\" property. The used value will alw" +
+                    "ays be greater by 1 or more if there is more than one runtime.");
+            this.initialValueNumericUpDown.Value = new decimal(new int[] {
+            1099,
+            0,
+            0,
+            0});
+            this.initialValueNumericUpDown.ValueChanged += new System.EventHandler(this.initialValueNumericUpDown_ValueChanged);
+            // 
             // enabledConnectionGroupBox
             // 
             this.enabledConnectionGroupBox.Controls.Add(this.resourceManagerRegistrationRadioButton);
             this.enabledConnectionGroupBox.Controls.Add(this.rmiRegistrationRadioButton);
             this.enabledConnectionGroupBox.Controls.Add(this.customRadioButton);
-            this.enabledConnectionGroupBox.Location = new System.Drawing.Point(158, 6);
+            this.enabledConnectionGroupBox.Location = new System.Drawing.Point(3, 6);
             this.enabledConnectionGroupBox.Name = "enabledConnectionGroupBox";
             this.enabledConnectionGroupBox.Size = new System.Drawing.Size(359, 45);
             this.enabledConnectionGroupBox.TabIndex = 4;
@@ -1325,12 +1463,18 @@ namespace AgentForAgent
             this.tabControl1.ResumeLayout(false);
             this.generalTabPage.ResumeLayout(false);
             this.generalTabPage.PerformLayout();
+            this.multiRuntimeGroupBox.ResumeLayout(false);
+            this.multiRuntimeGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nbRuntimesNumericUpDown)).EndInit();
             this.networkInterfaceListGroupBox.ResumeLayout(false);
-            this.memoryManagementBox.ResumeLayout(false);
-            this.memoryManagementBox.PerformLayout();
+            this.memoryManagementGroupBox.ResumeLayout(false);
+            this.memoryManagementGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.javaMemoryNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nativeMemoryNumericUpDown)).EndInit();
             this.connectionTabPage.ResumeLayout(false);
+            this.proActiveRmiPortGroupBox.ResumeLayout(false);
+            this.proActiveRmiPortGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.initialValueNumericUpDown)).EndInit();
             this.enabledConnectionGroupBox.ResumeLayout(false);
             this.enabledConnectionGroupBox.PerformLayout();
             this.connectionTypeTabControl.ResumeLayout(false);
@@ -1413,7 +1557,7 @@ namespace AgentForAgent
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
         private System.Windows.Forms.Button showButton;
         private System.Windows.Forms.CheckBox alwaysAvailableCheckBox;
-        private System.Windows.Forms.GroupBox memoryManagementBox;
+        private System.Windows.Forms.GroupBox memoryManagementGroupBox;
         private System.Windows.Forms.Label nativeMemoryLabel;
         private System.Windows.Forms.NumericUpDown nativeMemoryNumericUpDown;
         private System.Windows.Forms.Label availablePhysicalMemoryLabel;
@@ -1478,6 +1622,16 @@ namespace AgentForAgent
         private System.Windows.Forms.Button refreshNetworkInterfacesButton;
         private System.Windows.Forms.ListBox networkInterfacesListBox;
         private System.Windows.Forms.Button useNetworkInterfaceButton;
+        private System.Windows.Forms.GroupBox multiRuntimeGroupBox;
+        private System.Windows.Forms.Label availableCPUsValue;
+        private System.Windows.Forms.Label availableCPUsLabel;
+        private System.Windows.Forms.NumericUpDown nbRuntimesNumericUpDown;
+        private System.Windows.Forms.Label nbRuntimesLabel;
+        private System.Windows.Forms.CheckBox useAllAvailableCPUsCheckBox;
+        private System.Windows.Forms.GroupBox proActiveRmiPortGroupBox;
+        private System.Windows.Forms.NumericUpDown initialValueNumericUpDown;
+        private System.Windows.Forms.Label rmiTcpPortInitialValue;
+        private System.Windows.Forms.ToolTip connectionTabToolTip;
     }
 
 

@@ -37,8 +37,6 @@
             this.jvmDirectory = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.closeConfig = new System.Windows.Forms.Button();
-            this.saveConfig = new System.Windows.Forms.Button();
             this.proActiveLocationBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.jvmLocationBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -52,6 +50,7 @@
             this.password = new System.Windows.Forms.TextBox();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
+            this.continueButton = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.panelAccount.SuspendLayout();
@@ -140,26 +139,6 @@
             this.label4.Size = new System.Drawing.Size(359, 13);
             this.label4.TabIndex = 15;
             this.label4.Text = "NOTE: You can change these settings later using AgentControl application";
-            // 
-            // closeConfig
-            // 
-            this.closeConfig.Location = new System.Drawing.Point(496, 274);
-            this.closeConfig.Name = "closeConfig";
-            this.closeConfig.Size = new System.Drawing.Size(75, 23);
-            this.closeConfig.TabIndex = 17;
-            this.closeConfig.Text = "Cancel";
-            this.closeConfig.UseVisualStyleBackColor = true;
-            this.closeConfig.Click += new System.EventHandler(this.closeConfig_Click);
-            // 
-            // saveConfig
-            // 
-            this.saveConfig.Location = new System.Drawing.Point(415, 274);
-            this.saveConfig.Name = "saveConfig";
-            this.saveConfig.Size = new System.Drawing.Size(75, 23);
-            this.saveConfig.TabIndex = 16;
-            this.saveConfig.Text = "Save";
-            this.saveConfig.UseVisualStyleBackColor = true;
-            this.saveConfig.Click += new System.EventHandler(this.saveConfig_Click);
             // 
             // proActiveLocationBrowser
             // 
@@ -287,13 +266,22 @@
             this.radioButton1.Text = "Install as LocalSystem Account";
             this.radioButton1.UseVisualStyleBackColor = true;
             // 
+            // continueButton
+            // 
+            this.continueButton.Location = new System.Drawing.Point(496, 274);
+            this.continueButton.Name = "continueButton";
+            this.continueButton.Size = new System.Drawing.Size(75, 23);
+            this.continueButton.TabIndex = 17;
+            this.continueButton.Text = "Continue";
+            this.continueButton.UseVisualStyleBackColor = true;
+            this.continueButton.Click += new System.EventHandler(this.continueButton_Click);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(583, 306);
-            this.Controls.Add(this.closeConfig);
-            this.Controls.Add(this.saveConfig);
+            this.Controls.Add(this.continueButton);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.label3);
@@ -323,8 +311,6 @@
         private System.Windows.Forms.TextBox jvmDirectory;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Button closeConfig;
-        private System.Windows.Forms.Button saveConfig;
         private System.Windows.Forms.FolderBrowserDialog proActiveLocationBrowser;
         private System.Windows.Forms.FolderBrowserDialog jvmLocationBrowser;
         private System.Windows.Forms.GroupBox groupBox1;
@@ -338,6 +324,7 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Panel panelAccount;
+        private System.Windows.Forms.Button continueButton;
 
     }
 }

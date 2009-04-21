@@ -1,53 +1,53 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 
 namespace ProActiveAgent
 {
     public class StartActionInfo
     {
-        private ConfigParser.Action action;
-        private long stopTime; // in ticks
-        private ProcessPriorityClass processPriority;
-        private uint maxCpuUsage;
+        private readonly ConfigParser.Action _action;
+        private readonly DateTime _stopTime;
+        private readonly ProcessPriorityClass _processPriority;
+        private readonly uint _maxCpuUsage;        
 
-        public long getStopTime()
+        public StartActionInfo(ConfigParser.Action action, DateTime stopTime, ProcessPriorityClass processPriority, uint maxCpuUsage)
         {
-            return stopTime;
+            this._action = action;
+            this._stopTime = stopTime;
+            this._processPriority = processPriority;
+            this._maxCpuUsage = maxCpuUsage;
         }
 
-        public ConfigParser.Action getAction()
+        public ConfigParser.Action action
         {
-            return action;
+            get
+            {
+                return this._action;
+            }
         }
 
-        public void setAction(ConfigParser.Action action)
+        public DateTime stopTime
         {
-            this.action = action;
+            get
+            {
+                return this._stopTime;
+            }
         }
 
-        public void setStopTime(long ticks)
+        public ProcessPriorityClass processPriority
         {
-            this.stopTime = ticks;
+            get
+            {
+               return this._processPriority;
+            }
         }
 
-        public void setProcessPriority(ProcessPriorityClass processPriority)
+        public uint maxCpuUsage
         {
-            this.processPriority = processPriority;
+            get
+            {
+                return this._maxCpuUsage;
+            }
         }
-
-        public ProcessPriorityClass getProcessPriority()
-        {
-            return this.processPriority;
-        }
-
-        public void setMaxCpuUsage(uint maxCpuUsage)
-        {
-            this.maxCpuUsage = maxCpuUsage;
-        }
-
-        public uint getMaxCpuUsage()
-        {
-            return this.maxCpuUsage;
-        }
-
     }
 }

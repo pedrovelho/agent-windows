@@ -19,14 +19,14 @@ namespace ScreenSaver
 		private System.Windows.Forms.Timer timer;           // timer for moving picture
 		private Rectangle VisibleRect;
 		private System.Windows.Forms.PictureBox pictureBox;
-		private Random rand;
+        private Random rand;
 
-        private ScreenSaver.ServiceCommunicator exec = new ScreenSaver.ServiceCommunicator();
+        private readonly ScreenSaver.ServiceCommunicator exec = new ScreenSaver.ServiceCommunicator();
 
 		public ScreenSaverForm()
 		{
 			InitializeComponent();
-            exec.sendStartAction(); // we contact system service
+            exec.sendStartAction();            
 		}
 
         protected override void Dispose( bool disposing )
@@ -57,8 +57,8 @@ namespace ScreenSaver
 
 		private void timer_Tick(object sender, System.EventArgs e)
 		{
-			rand = new Random();
-			pictureBox.Location = new Point(rand.Next(VisibleRect.Width), rand.Next(VisibleRect.Height));
+			rand = new Random();            
+            pictureBox.Location = new Point(rand.Next(VisibleRect.Width), rand.Next(VisibleRect.Height));            
 		}
 
         // the screensaver closes on mouse movement or click

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using ProActiveAgent;
 using System.ServiceProcess;
+using System.Windows.Forms;
 
 /**
  * This class is used to communicate with ProActive Agent system service
@@ -13,17 +14,17 @@ namespace ScreenSaver
 {
     public class ServiceCommunicator
     {
-        private ServiceController sc = new ServiceController("ProActive Agent");
+        private readonly ServiceController sc = new ServiceController(Constants.PROACTIVE_AGENT_SERVICE_NAME);
 
         public void sendStartAction()
         {
             try
-            {
-                sc.ExecuteCommand((int)PAACommands.ScreenSaverStart);
+            {             
+                sc.ExecuteCommand((int)PAACommands.ScreenSaverStart);                
             }
             catch (InvalidOperationException)
-            {
-            }
+            {                
+            }            
         }
 
         public void sendStopAction()
@@ -33,7 +34,7 @@ namespace ScreenSaver
                 sc.ExecuteCommand((int)PAACommands.ScreenSaverStop);
             }
             catch (InvalidOperationException)
-            {
+            {             
             }
         }
 

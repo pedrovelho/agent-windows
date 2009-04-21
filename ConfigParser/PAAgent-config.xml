@@ -7,6 +7,9 @@
     <enable_memory_management>false</enable_memory_management>
     <java_memory>0</java_memory>
     <native_memory>0</native_memory>
+    <nb_processes>1</nb_processes>
+    <use_all_cpus>false</use_all_cpus>
+    <proActiveRmiPortInitialValue>1099</proActiveRmiPortInitialValue>
   </internalConfig>
   <events />
   <actions>

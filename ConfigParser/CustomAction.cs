@@ -36,7 +36,7 @@ namespace ConfigParser
             }
         }
 
-        public override string[] getArgs()
+        public override string[] getArgs(int processRank)
         {
             return this.myArgs;
         }

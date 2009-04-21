@@ -40,8 +40,8 @@ namespace AgentFirstSetup
                 Environment.Exit(0);
             }
 
-            this.agentDir = (string)confKey.GetValue(Constants.PROACTIVE_AGENT_INSTALL_REG_VALUE_NAME);
-            this.configLocation = (string)confKey.GetValue(Constants.PROACTIVE_AGENT_CONFIG_REG_VALUE_NAME);
+            this.agentDir = (string)confKey.GetValue(Constants.PROACTIVE_AGENT_INSTALL_LOCATION_REG_VALUE_NAME);
+            this.configLocation = (string)confKey.GetValue(Constants.PROACTIVE_AGENT_CONFIG_LOCATION_REG_VALUE_NAME);
 
             if (this.agentDir == null || this.configLocation == null)
             {
@@ -214,12 +214,6 @@ namespace AgentFirstSetup
             }
         }
 
-        private void closeConfig_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("The ProActiveAgent is not configured properly. Thus, it may not work. You can configure it later using AgentControl application.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            Close();
-        }
-
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
         {
             if (radioButton2.Checked)
@@ -238,6 +232,11 @@ namespace AgentFirstSetup
             {
                 save();
             }
+        }
+
+        private void continueButton_Click(object sender, EventArgs e)
+        {
+            save();
         }
     }
 }

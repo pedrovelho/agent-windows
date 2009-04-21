@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Net.NetworkInformation;
 using System.Text;
+using System.Net;
 
 namespace ProActiveAgent
 {
@@ -14,7 +16,7 @@ namespace ProActiveAgent
     {
         /// <summary>
         /// The name of the ProActive Agent service</summary>
-        public const string PROACTIVE_AGENT_SERVICE_NAME = "ProActive Agent";
+        public const string PROACTIVE_AGENT_SERVICE_NAME = "ProActiveAgent";
         /// <summary>
         /// The name of the ProActive Agent executable</summary>
         public const string PROACTIVE_AGENT_EXECUTABLE_NAME = "ProActiveAgent.exe";
@@ -33,10 +35,16 @@ namespace ProActiveAgent
         public const string PROACTIVE_AGENT_REG_SUBKEY = "Software\\ProActiveAgent";
         /// <summary>
         /// The name of the reg value used for install location.</summary>
-        public const string PROACTIVE_AGENT_INSTALL_REG_VALUE_NAME = "AgentDirectory";
+        public const string PROACTIVE_AGENT_INSTALL_LOCATION_REG_VALUE_NAME = "AgentLocation";
         /// <summary>
         /// The name of the reg value used for config location.</summary>
-        public const string PROACTIVE_AGENT_CONFIG_REG_VALUE_NAME = "ConfigLocation";
+        public const string PROACTIVE_AGENT_CONFIG_LOCATION_REG_VALUE_NAME = "ConfigLocation";
+        /// <summary>
+        /// The name of the reg value used for config location.</summary>
+        public const string PROACTIVE_AGENT_IS_RUNNING_EXECUTOR_REG_VALUE_NAME = "IsRunning";
+        /// <summary>
+        /// The windows registry subkey used for storing executors status.</summary>
+        public const string PROACTIVE_AGENT_EXECUTORS_REG_SUBKEY = "Software\\ProActiveAgent\\Executors";
         /// <summary>
         /// This timeout can be usefull in case of service re-installation to avoid "1072 - Service marked for deletion problem".</summary>
         public const int PROACTIVE_AGENT_POST_UNINSTALL_SERVICE_TIMEOUT = 3; 
@@ -49,6 +57,12 @@ namespace ProActiveAgent
         /// <summary>
         /// The name of the classpath variable.</summary>
         public const string CLASSPATH_VAR_NAME = "CLASSPATH";
+        /// <summary>
+        /// The name of the ProActive Rmi Port java property.</summary>
+        public const string PROACTIVE_RMI_PORT_JAVA_PROPERTY = "-Dproactive.rmi.port";
+        /// <summary>
+        /// The maximum value allowed for the proactive rmi port.</summary>
+        public const int MAX_PROACTIVE_RMI_PORT = 65534;
     }
 
     /// <summary>
@@ -147,6 +161,39 @@ namespace ProActiveAgent
             //}
             // Fill classpath in the configuration
             config.classpath = VariableEchoer.echoVariable(initScript, Constants.CLASSPATH_VAR_NAME, info);
+        }
+
+        /// <summary>        
+        /// This method checks if a tcp port is available.
+        /// </summary>
+        /// <param name="config">The user defined configuration.</param>
+        public static bool isTcpPortAvailable(int port)
+        {            
+            // Evaluate current system tcp connections. This is the same information provided
+            // by the netstat -ano | find "port_num" command line application, just in .Net strongly-typed object
+            // form.  We will look through the list, and if our port we would like to use
+            // in our TcpClient is occupied, we will return false
+            IPGlobalProperties ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();            
+            // Search through active tcp listeners            
+            foreach (IPEndPoint tcpl in ipGlobalProperties.GetActiveTcpListeners())
+            {
+                if (tcpl.Port == port)
+                {
+
+                    return false;
+                }
+            }               
+            // Search through active tcp connections
+            foreach (TcpConnectionInformation tcpi in ipGlobalProperties.GetActiveTcpConnections())
+            {                
+                if (tcpi.LocalEndPoint.Port == port)
+                {
+                    
+                    return false;
+                }
+            }
+            
+            return true;
         }
     }
 

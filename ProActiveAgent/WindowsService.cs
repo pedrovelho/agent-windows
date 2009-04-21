@@ -12,68 +12,26 @@ namespace ProActiveAgent
         private static readonly ILog LOGGER = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         /// <summary>
         /// The location whre the agent is installed.</summary>
-        private readonly string agentInstallLocation;
+        private string agentInstallLocation;
         /// <summary>
         /// The location of the cofig file.</summary>
-        private readonly string agentConfigLocation;
+        private string agentConfigLocation;
         /// <summary>
-        /// Process object that represents running runner script.</summary>                        
-        private readonly List<ProActiveExec> processExecutors;
-
+        /// The executors manager that loads events and keeps start/stop timers.</summary>
+        private ExecutorsManager executorsManager;
         /// <summary>
         /// Public Constructor for WindowsService.
         /// - Put all of your Initialization code here.
         /// </summary>
         public WindowsService()
         {
-            if (LOGGER.IsDebugEnabled)
-            {
-                LOGGER.Debug("ProActive Agent application loaded successfully.");
-            }
-
             // Set the service name
             base.ServiceName = Constants.PROACTIVE_AGENT_SERVICE_NAME;
-            // Set the windows event log type
-            base.EventLog.Log = Constants.PROACTIVE_AGENT_WINDOWS_EVENTLOG_LOG;
-
-            // Try to read install and config locations from registry
-            RegistryKey confKey = Registry.LocalMachine.OpenSubKey(Constants.PROACTIVE_AGENT_REG_SUBKEY);
-            if (confKey == null)
-            {
-                if (LOGGER.IsWarnEnabled)
-                {
-                    LOGGER.Warn("ProActive Agent could not read " + Constants.PROACTIVE_AGENT_REG_SUBKEY + " from windows registry.");
-                }
-                // If registry key is unknown set default locations
-                this.agentInstallLocation = Constants.PROACTIVE_AGENT_DEFAULT_INSTALL_LOCATION;
-                this.agentConfigLocation = Constants.PROACTIVE_AGENT_DEFAULT_CONFIG_LOCATION;
-            }
-            else
-            {
-                this.agentInstallLocation = (string)confKey.GetValue(Constants.PROACTIVE_AGENT_INSTALL_REG_VALUE_NAME);
-                this.agentConfigLocation = (string)confKey.GetValue(Constants.PROACTIVE_AGENT_CONFIG_REG_VALUE_NAME);
-                confKey.Close();
-            }
-
             // These Flags set whether or not to handle that specific
-            //  type of event. Set to true if you need it, false otherwise.
-            this.CanHandlePowerEvent = true;
-            this.CanHandleSessionChangeEvent = true;
+            //  type of event. Set to true if you need it, false otherwise.            
             this.CanPauseAndContinue = true;
             this.CanShutdown = true;
-            this.CanStop = true;            
-
-            this.processExecutors = new List<ProActiveExec>();
-        }
-
-        /// <summary>
-        /// Dispose of objects that need it here.
-        /// </summary>
-        /// <param name="disposing">Whether
-        ///    or not disposing is going on.</param>
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
+            this.CanStop = true; 
         }
 
         /// <summary>
@@ -83,55 +41,43 @@ namespace ProActiveAgent
         /// <param name="args"></param>
         protected override void OnStart(string[] args)
         {
-            if (LOGGER.IsDebugEnabled)
-            {
-                LOGGER.Debug("Starting ProActive Agent service.");
-            }
-                        
-            ProActiveExec.setRegistryIsRuntimeStarted(false);
+            LOGGER.Info("Starting ProActive Agent service");            
 
-            // Parse the configuration file once per start for all ProActive executors
+            // Try to read install and config locations from registry
+            RegistryKey confKey = Registry.LocalMachine.OpenSubKey(Constants.PROACTIVE_AGENT_REG_SUBKEY);
+            if (confKey == null)
+            {
+                if (LOGGER.IsWarnEnabled)
+                {
+                    LOGGER.Warn("ProActive Agent could not read " + Constants.PROACTIVE_AGENT_REG_SUBKEY + " from windows registry");
+                }
+                // If registry key is unknown set default locations
+                this.agentInstallLocation = Constants.PROACTIVE_AGENT_DEFAULT_INSTALL_LOCATION;
+                this.agentConfigLocation = Constants.PROACTIVE_AGENT_DEFAULT_CONFIG_LOCATION;
+            }
+            else
+            {
+                this.agentInstallLocation = (string)confKey.GetValue(Constants.PROACTIVE_AGENT_INSTALL_LOCATION_REG_VALUE_NAME);
+                this.agentConfigLocation = (string)confKey.GetValue(Constants.PROACTIVE_AGENT_CONFIG_LOCATION_REG_VALUE_NAME);
+                confKey.Close();
+            }
+
+            // Parse the configuration file once per start
             Configuration configuration = ConfigurationParser.parseXml(this.agentConfigLocation, this.agentInstallLocation);
 
             // Read classpath
-            if (configuration.agentConfig.classpath == null || configuration.agentConfig.classpath.Equals(""))
+            try
             {
-                try
-                {
-                    Utils.readClasspath(configuration.agentConfig);
-                }
-                catch (Exception ex)
-                {
-                    LOGGER.Error("An exception occured when reading the classpath!", ex);
-                    return;
-                }
+               Utils.readClasspath(configuration.agentConfig);
             }
-
-            // Find enabled action, ONLY ONE ACTION CAN BE ENABLED
-            ConfigParser.Action enabledAction = null;
-            foreach (ConfigParser.Action action in configuration.actions)
+            catch (Exception ex)
             {
-                if (action.isEnabled) {
-                    enabledAction = action;
-                    break;
-                } 
+               LOGGER.Error("An exception occured when reading the classpath", ex);
+               return;
             }
-
-            if (enabledAction == null) {
-                LOGGER.Warn("No enabled action in the configuration. Exiting ...");
-                return;
-            }
-
-            if (LOGGER.IsDebugEnabled)
-            {
-                LOGGER.Debug("Starting action " + enabledAction.GetType().Name);
-            }            
-
-            // Create new executor and initialize it
-            ProActiveExec executor = new ProActiveExec(configuration, enabledAction);
-            this.processExecutors.Add(executor);
-            executor.init();
-
+            
+            this.executorsManager = new ExecutorsManager(configuration);            
+            
             base.OnStart(args);
         }
 
@@ -143,19 +89,12 @@ namespace ProActiveAgent
         {
             if (LOGGER.IsDebugEnabled)
             {
-                LOGGER.Debug("Stopping ProActive Agent service.");
+                LOGGER.Debug("Stopping ProActive Agent service");
             }
-            if (this.processExecutors != null && this.processExecutors.Count > 0)
-            {
-                foreach (ProActiveExec p in processExecutors)
-                {
-                    p.dispose();
-                }
-                processExecutors.Clear();
+            
+            if(this.executorsManager != null){
+                this.executorsManager.dispose();
             }
-
-            //-- runtime started = false
-            ProActiveExec.setRegistryIsRuntimeStarted(false);
 
             //BUT THIS SHOULD NOT BE NECESSARY:
             base.OnStop();
@@ -189,9 +128,10 @@ namespace ProActiveAgent
         {
             if (LOGGER.IsDebugEnabled)
             {
-                LOGGER.Debug("Shutting down the ProActive Agent service.");
+                LOGGER.Debug("Shutting down the ProActive Agent service");
             }
-            foreach (ProActiveExec p in processExecutors)
+
+            foreach (ProActiveRuntimeExecutor p in this.executorsManager.getExecutors())
             {
                 p.disableRestarting();
             }
@@ -205,7 +145,7 @@ namespace ProActiveAgent
         /// </summary>
         /// <param name="command">Arbitrary Integer between 128 & 256</param>
         protected override void OnCustomCommand(int command)
-        {
+        {            
             //  A custom command can be sent to a service by using this method:
             //#  int command = 128; //Some Arbitrary number between 128 & 256
             //#  ServiceController sc = new ServiceController("NameOfService");
@@ -213,21 +153,13 @@ namespace ProActiveAgent
             switch ((PAACommands)command)
             {
                 case PAACommands.ScreenSaverStart:
-                    if (LOGGER.IsDebugEnabled)
-                    {
-                        LOGGER.Debug("Received start command from ProActive Agent screenSaver.");
-                    }
-                    foreach (ProActiveExec p in processExecutors)
+                    foreach (ProActiveRuntimeExecutor p in this.executorsManager.getExecutors())
                     {
                         p.sendStartAction(ApplicationType.AgentScreensaver);
                     }
                     break;
                 case PAACommands.ScreenSaverStop:
-                    if (LOGGER.IsDebugEnabled)
-                    {
-                        LOGGER.Debug("Received stop command from ProActive Agent screenSaver.");
-                    }
-                    foreach (ProActiveExec p in processExecutors)
+                    foreach (ProActiveRuntimeExecutor p in this.executorsManager.getExecutors())
                     {
                         p.sendStopAction(ApplicationType.AgentScreensaver);
                     }
@@ -239,29 +171,13 @@ namespace ProActiveAgent
         }
 
         /// <summary>
-        /// OnPowerEvent(): Useful for detecting power status changes,
-        ///   such as going into Suspend mode or Low Battery for laptops.
+        /// Dispose of objects that need it here.
         /// </summary>
-        /// <param name="powerStatus">The Power Broadcast Status
-        /// (BatteryLow, Suspend, etc.)</param>
-        protected override bool OnPowerEvent(PowerBroadcastStatus powerStatus)
+        /// <param name="disposing">Whether
+        ///    or not disposing is going on.</param>
+        protected override void Dispose(bool disposing)
         {
-            return base.OnPowerEvent(powerStatus);
-        }
-
-        /// <summary>
-        /// OnSessionChange(): To handle a change event
-        ///   from a Terminal Server session.
-        ///   Useful if you need to determine
-        ///   when a user logs in remotely or logs off,
-        ///   or when someone logs into the console.
-        /// </summary>
-        /// <param name="changeDescription">The Session Change
-        /// Event that occured.</param>
-        protected override void OnSessionChange(
-                  SessionChangeDescription changeDescription)
-        {
-            base.OnSessionChange(changeDescription);
+            base.Dispose(disposing);
         }
 
         /// <summary>
