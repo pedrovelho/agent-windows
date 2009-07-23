@@ -345,7 +345,9 @@ namespace ProActiveAgent
 
             Thread.Sleep(1000);
 
-            // remove listeners and kill all forked processes
+            int proActiveRuntimeProcessPid = this.proActiveRuntimeProcess.Id;
+
+            // Remove listeners and kill all forked processes
             this.internalClean();
 
             // Set current process to null
@@ -466,6 +468,27 @@ namespace ProActiveAgent
 
             // Use the job object to kill the ProActive Runtime process and its forked processes
             this.jobObject.TerminateAllProcesses(42); // this exit code was used in the examples of the JobObjectWrapper API                       
+
+            // If a "On Runtime Exit" script was specified run it (this can cause serious issues in case of never-ending script)
+            // Check if a script was specified 
+            string scriptAbsolutePath = this.commonStartInfo.configuration.agentConfig.onRuntimeExitScript;
+            if (scriptAbsolutePath == null || scriptAbsolutePath.Equals(""))
+            {
+                return;
+            }
+
+            LOGGER.Info("On runtime exit script: " + scriptAbsolutePath + " " + this.proActiveRuntimeProcess.Id);
+            try
+            {
+                string scriptOutput = ScriptExecutor.executeScript(scriptAbsolutePath, "" + this.proActiveRuntimeProcess.Id);
+                if (LOGGER.IsDebugEnabled)
+                {
+                    LOGGER.Debug(scriptOutput);
+                }
+            } catch (Exception e)
+            {
+                LOGGER.Error("Unable to execute on runtime exit script!", e);
+            }
         }
 
         // called from other parts of ProActive Agent

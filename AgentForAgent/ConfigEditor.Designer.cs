@@ -55,6 +55,10 @@ namespace AgentForAgent
             this.proactiveLocation = new System.Windows.Forms.TextBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.generalTabPage = new System.Windows.Forms.TabPage();
+            this.onRuntimeExitGroupBox = new System.Windows.Forms.GroupBox();
+            this.scriptLocationButton = new System.Windows.Forms.Button();
+            this.scriptLocationLabel = new System.Windows.Forms.Label();
+            this.scriptLocationTextBox = new System.Windows.Forms.TextBox();
             this.multiRuntimeGroupBox = new System.Windows.Forms.GroupBox();
             this.useAllAvailableCPUsCheckBox = new System.Windows.Forms.CheckBox();
             this.nbRuntimesLabel = new System.Windows.Forms.Label();
@@ -155,10 +159,12 @@ namespace AgentForAgent
             this.saveConfigAs = new System.Windows.Forms.Button();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.connectionTabToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.scriptLocationFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.eventsList = new AgentForAgent.RefreshingListBox();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.generalTabPage.SuspendLayout();
+            this.onRuntimeExitGroupBox.SuspendLayout();
             this.multiRuntimeGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nbRuntimesNumericUpDown)).BeginInit();
             this.networkInterfaceListGroupBox.SuspendLayout();
@@ -218,9 +224,9 @@ namespace AgentForAgent
             // jvmParametersListBox
             // 
             this.jvmParametersListBox.FormattingEnabled = true;
-            this.jvmParametersListBox.Location = new System.Drawing.Point(127, 95);
+            this.jvmParametersListBox.Location = new System.Drawing.Point(112, 95);
             this.jvmParametersListBox.Name = "jvmParametersListBox";
-            this.jvmParametersListBox.Size = new System.Drawing.Size(389, 69);
+            this.jvmParametersListBox.Size = new System.Drawing.Size(404, 69);
             this.jvmParametersListBox.TabIndex = 12;
             this.jvmParametersListBox.DoubleClick += new System.EventHandler(this.jvmParametersListBox_DoubleClick);
             this.jvmParametersListBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.jvmParametersListBox_KeyPress);
@@ -248,7 +254,7 @@ namespace AgentForAgent
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(127, 72);
+            this.checkBox1.Location = new System.Drawing.Point(112, 72);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(169, 17);
             this.checkBox1.TabIndex = 9;
@@ -305,17 +311,17 @@ namespace AgentForAgent
             // 
             // jvmDirectory
             // 
-            this.jvmDirectory.Location = new System.Drawing.Point(127, 44);
+            this.jvmDirectory.Location = new System.Drawing.Point(112, 44);
             this.jvmDirectory.Name = "jvmDirectory";
-            this.jvmDirectory.Size = new System.Drawing.Size(389, 20);
+            this.jvmDirectory.Size = new System.Drawing.Size(404, 20);
             this.jvmDirectory.TabIndex = 1;
             this.jvmDirectory.TextChanged += new System.EventHandler(this.jvmDirectory_TextChanged);
             // 
             // proactiveLocation
             // 
-            this.proactiveLocation.Location = new System.Drawing.Point(127, 16);
+            this.proactiveLocation.Location = new System.Drawing.Point(112, 16);
             this.proactiveLocation.Name = "proactiveLocation";
-            this.proactiveLocation.Size = new System.Drawing.Size(389, 20);
+            this.proactiveLocation.Size = new System.Drawing.Size(404, 20);
             this.proactiveLocation.TabIndex = 0;
             this.proactiveLocation.TextChanged += new System.EventHandler(this.proactiveLocation_TextChanged);
             // 
@@ -327,11 +333,12 @@ namespace AgentForAgent
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(682, 349);
+            this.tabControl1.Size = new System.Drawing.Size(682, 400);
             this.tabControl1.TabIndex = 1;
             // 
             // generalTabPage
             // 
+            this.generalTabPage.Controls.Add(this.onRuntimeExitGroupBox);
             this.generalTabPage.Controls.Add(this.multiRuntimeGroupBox);
             this.generalTabPage.Controls.Add(this.networkInterfaceListGroupBox);
             this.generalTabPage.Controls.Add(this.enableMemoryManagementCheckBox);
@@ -340,10 +347,49 @@ namespace AgentForAgent
             this.generalTabPage.Location = new System.Drawing.Point(4, 22);
             this.generalTabPage.Name = "generalTabPage";
             this.generalTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.generalTabPage.Size = new System.Drawing.Size(674, 323);
+            this.generalTabPage.Size = new System.Drawing.Size(674, 374);
             this.generalTabPage.TabIndex = 0;
             this.generalTabPage.Text = "General";
             this.generalTabPage.UseVisualStyleBackColor = true;
+            // 
+            // onRuntimeExitGroupBox
+            // 
+            this.onRuntimeExitGroupBox.Controls.Add(this.scriptLocationButton);
+            this.onRuntimeExitGroupBox.Controls.Add(this.scriptLocationLabel);
+            this.onRuntimeExitGroupBox.Controls.Add(this.scriptLocationTextBox);
+            this.onRuntimeExitGroupBox.Location = new System.Drawing.Point(4, 185);
+            this.onRuntimeExitGroupBox.Name = "onRuntimeExitGroupBox";
+            this.onRuntimeExitGroupBox.Size = new System.Drawing.Size(384, 43);
+            this.onRuntimeExitGroupBox.TabIndex = 5;
+            this.onRuntimeExitGroupBox.TabStop = false;
+            this.onRuntimeExitGroupBox.Text = "On Runtime Exit";
+            // 
+            // scriptLocationButton
+            // 
+            this.scriptLocationButton.Location = new System.Drawing.Point(303, 12);
+            this.scriptLocationButton.Name = "scriptLocationButton";
+            this.scriptLocationButton.Size = new System.Drawing.Size(75, 25);
+            this.scriptLocationButton.TabIndex = 2;
+            this.scriptLocationButton.Text = "Browse...";
+            this.scriptLocationButton.UseVisualStyleBackColor = true;
+            this.scriptLocationButton.Click += new System.EventHandler(this.scriptLocationButton_Click);
+            // 
+            // scriptLocationLabel
+            // 
+            this.scriptLocationLabel.AutoSize = true;
+            this.scriptLocationLabel.Location = new System.Drawing.Point(6, 17);
+            this.scriptLocationLabel.Name = "scriptLocationLabel";
+            this.scriptLocationLabel.Size = new System.Drawing.Size(81, 13);
+            this.scriptLocationLabel.TabIndex = 1;
+            this.scriptLocationLabel.Text = "Script Location:";
+            // 
+            // scriptLocationTextBox
+            // 
+            this.scriptLocationTextBox.Location = new System.Drawing.Point(111, 14);
+            this.scriptLocationTextBox.Name = "scriptLocationTextBox";
+            this.scriptLocationTextBox.Size = new System.Drawing.Size(186, 20);
+            this.scriptLocationTextBox.TabIndex = 0;
+            this.scriptLocationTextBox.TextChanged += new System.EventHandler(this.scriptLocationTextBox_TextChanged);
             // 
             // multiRuntimeGroupBox
             // 
@@ -352,7 +398,7 @@ namespace AgentForAgent
             this.multiRuntimeGroupBox.Controls.Add(this.availableCPUsValue);
             this.multiRuntimeGroupBox.Controls.Add(this.availableCPUsLabel);
             this.multiRuntimeGroupBox.Controls.Add(this.nbRuntimesNumericUpDown);
-            this.multiRuntimeGroupBox.Location = new System.Drawing.Point(235, 206);
+            this.multiRuntimeGroupBox.Location = new System.Drawing.Point(235, 257);
             this.multiRuntimeGroupBox.Name = "multiRuntimeGroupBox";
             this.multiRuntimeGroupBox.Size = new System.Drawing.Size(153, 111);
             this.multiRuntimeGroupBox.TabIndex = 4;
@@ -426,17 +472,17 @@ namespace AgentForAgent
             this.networkInterfaceListGroupBox.Controls.Add(this.useNetworkInterfaceButton);
             this.networkInterfaceListGroupBox.Controls.Add(this.networkInterfacesListBox);
             this.networkInterfaceListGroupBox.Controls.Add(this.refreshNetworkInterfacesButton);
-            this.networkInterfaceListGroupBox.Location = new System.Drawing.Point(394, 184);
+            this.networkInterfaceListGroupBox.Location = new System.Drawing.Point(394, 185);
             this.networkInterfaceListGroupBox.Name = "networkInterfaceListGroupBox";
-            this.networkInterfaceListGroupBox.Size = new System.Drawing.Size(274, 133);
+            this.networkInterfaceListGroupBox.Size = new System.Drawing.Size(274, 183);
             this.networkInterfaceListGroupBox.TabIndex = 3;
             this.networkInterfaceListGroupBox.TabStop = false;
-            this.networkInterfaceListGroupBox.Text = "Available Network Interfaces";
+            this.networkInterfaceListGroupBox.Text = "Available Network Interfaces (Java 6 only)";
             // 
             // useNetworkInterfaceButton
             // 
             this.useNetworkInterfaceButton.Enabled = false;
-            this.useNetworkInterfaceButton.Location = new System.Drawing.Point(110, 104);
+            this.useNetworkInterfaceButton.Location = new System.Drawing.Point(112, 154);
             this.useNetworkInterfaceButton.Name = "useNetworkInterfaceButton";
             this.useNetworkInterfaceButton.Size = new System.Drawing.Size(75, 23);
             this.useNetworkInterfaceButton.TabIndex = 3;
@@ -450,12 +496,12 @@ namespace AgentForAgent
             this.networkInterfacesListBox.HorizontalScrollbar = true;
             this.networkInterfacesListBox.Location = new System.Drawing.Point(6, 19);
             this.networkInterfacesListBox.Name = "networkInterfacesListBox";
-            this.networkInterfacesListBox.Size = new System.Drawing.Size(260, 82);
+            this.networkInterfacesListBox.Size = new System.Drawing.Size(262, 121);
             this.networkInterfacesListBox.TabIndex = 2;
             // 
             // refreshNetworkInterfacesButton
             // 
-            this.refreshNetworkInterfacesButton.Location = new System.Drawing.Point(191, 104);
+            this.refreshNetworkInterfacesButton.Location = new System.Drawing.Point(193, 154);
             this.refreshNetworkInterfacesButton.Name = "refreshNetworkInterfacesButton";
             this.refreshNetworkInterfacesButton.Size = new System.Drawing.Size(75, 23);
             this.refreshNetworkInterfacesButton.TabIndex = 1;
@@ -466,7 +512,7 @@ namespace AgentForAgent
             // enableMemoryManagementCheckBox
             // 
             this.enableMemoryManagementCheckBox.AutoSize = true;
-            this.enableMemoryManagementCheckBox.Location = new System.Drawing.Point(3, 183);
+            this.enableMemoryManagementCheckBox.Location = new System.Drawing.Point(3, 234);
             this.enableMemoryManagementCheckBox.Name = "enableMemoryManagementCheckBox";
             this.enableMemoryManagementCheckBox.Size = new System.Drawing.Size(164, 17);
             this.enableMemoryManagementCheckBox.TabIndex = 2;
@@ -485,7 +531,7 @@ namespace AgentForAgent
             this.memoryManagementGroupBox.Controls.Add(this.nativeMemoryNumericUpDown);
             this.memoryManagementGroupBox.Controls.Add(this.nativeMemoryLabel);
             this.memoryManagementGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.memoryManagementGroupBox.Location = new System.Drawing.Point(3, 206);
+            this.memoryManagementGroupBox.Location = new System.Drawing.Point(3, 257);
             this.memoryManagementGroupBox.Name = "memoryManagementGroupBox";
             this.memoryManagementGroupBox.Size = new System.Drawing.Size(226, 111);
             this.memoryManagementGroupBox.TabIndex = 1;
@@ -579,7 +625,7 @@ namespace AgentForAgent
             this.connectionTabPage.Controls.Add(this.connectionTypeTabControl);
             this.connectionTabPage.Location = new System.Drawing.Point(4, 22);
             this.connectionTabPage.Name = "connectionTabPage";
-            this.connectionTabPage.Size = new System.Drawing.Size(674, 323);
+            this.connectionTabPage.Size = new System.Drawing.Size(674, 374);
             this.connectionTabPage.TabIndex = 3;
             this.connectionTabPage.Text = "Connection";
             this.connectionTabPage.UseVisualStyleBackColor = true;
@@ -620,8 +666,8 @@ namespace AgentForAgent
             this.initialValueNumericUpDown.Name = "initialValueNumericUpDown";
             this.initialValueNumericUpDown.Size = new System.Drawing.Size(57, 20);
             this.initialValueNumericUpDown.TabIndex = 0;
-            this.connectionTabToolTip.SetToolTip(this.initialValueNumericUpDown, "Defines the value of the \"-Dproactive.rmi.port\" property. The used value will alw" +
-                    "ays be greater by 1 or more if there is more than one runtime.");
+            this.connectionTabToolTip.SetToolTip(this.initialValueNumericUpDown, "Defines the value of the \"-Dproactive.rmi.port\" property. This value will always " +
+                    "be increased by 1 or more if there is more than one runtime.");
             this.initialValueNumericUpDown.Value = new decimal(new int[] {
             1099,
             0,
@@ -690,7 +736,7 @@ namespace AgentForAgent
             this.connectionTypeTabControl.Multiline = true;
             this.connectionTypeTabControl.Name = "connectionTypeTabControl";
             this.connectionTypeTabControl.SelectedIndex = 0;
-            this.connectionTypeTabControl.Size = new System.Drawing.Size(668, 263);
+            this.connectionTypeTabControl.Size = new System.Drawing.Size(668, 314);
             this.connectionTypeTabControl.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.connectionTypeTabControl.TabIndex = 0;
             this.connectionTypeTabControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.actionTypeTabControl_DrawItem);
@@ -702,7 +748,7 @@ namespace AgentForAgent
             this.rmiRegistrationTabPage.Location = new System.Drawing.Point(179, 4);
             this.rmiRegistrationTabPage.Name = "rmiRegistrationTabPage";
             this.rmiRegistrationTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.rmiRegistrationTabPage.Size = new System.Drawing.Size(485, 255);
+            this.rmiRegistrationTabPage.Size = new System.Drawing.Size(485, 306);
             this.rmiRegistrationTabPage.TabIndex = 0;
             this.rmiRegistrationTabPage.Text = "RMI Registration";
             this.rmiRegistrationTabPage.UseVisualStyleBackColor = true;
@@ -711,7 +757,7 @@ namespace AgentForAgent
             // 
             this.rmiRegistrationAdditionalConfigurationGroupBox.Controls.Add(this.rmiRegistrationJavaActionClassTextBox);
             this.rmiRegistrationAdditionalConfigurationGroupBox.Controls.Add(this.label13);
-            this.rmiRegistrationAdditionalConfigurationGroupBox.Location = new System.Drawing.Point(6, 201);
+            this.rmiRegistrationAdditionalConfigurationGroupBox.Location = new System.Drawing.Point(6, 252);
             this.rmiRegistrationAdditionalConfigurationGroupBox.Name = "rmiRegistrationAdditionalConfigurationGroupBox";
             this.rmiRegistrationAdditionalConfigurationGroupBox.Size = new System.Drawing.Size(473, 48);
             this.rmiRegistrationAdditionalConfigurationGroupBox.TabIndex = 2;
@@ -772,7 +818,7 @@ namespace AgentForAgent
             this.resourceManagerRegistrationTabPage.Location = new System.Drawing.Point(179, 4);
             this.resourceManagerRegistrationTabPage.Name = "resourceManagerRegistrationTabPage";
             this.resourceManagerRegistrationTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.resourceManagerRegistrationTabPage.Size = new System.Drawing.Size(485, 255);
+            this.resourceManagerRegistrationTabPage.Size = new System.Drawing.Size(485, 306);
             this.resourceManagerRegistrationTabPage.TabIndex = 1;
             this.resourceManagerRegistrationTabPage.Text = "Resource Manager Registration";
             this.resourceManagerRegistrationTabPage.UseVisualStyleBackColor = true;
@@ -781,7 +827,7 @@ namespace AgentForAgent
             // 
             this.resourceManagerRegistrationAdditionalConfigurationGroupBox.Controls.Add(this.resourceManagerRegistrationJavaActionClassTextBox);
             this.resourceManagerRegistrationAdditionalConfigurationGroupBox.Controls.Add(this.label18);
-            this.resourceManagerRegistrationAdditionalConfigurationGroupBox.Location = new System.Drawing.Point(6, 201);
+            this.resourceManagerRegistrationAdditionalConfigurationGroupBox.Location = new System.Drawing.Point(6, 252);
             this.resourceManagerRegistrationAdditionalConfigurationGroupBox.Name = "resourceManagerRegistrationAdditionalConfigurationGroupBox";
             this.resourceManagerRegistrationAdditionalConfigurationGroupBox.Size = new System.Drawing.Size(473, 48);
             this.resourceManagerRegistrationAdditionalConfigurationGroupBox.TabIndex = 4;
@@ -909,7 +955,7 @@ namespace AgentForAgent
             this.customTabPage.Location = new System.Drawing.Point(179, 4);
             this.customTabPage.Name = "customTabPage";
             this.customTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.customTabPage.Size = new System.Drawing.Size(485, 255);
+            this.customTabPage.Size = new System.Drawing.Size(485, 306);
             this.customTabPage.TabIndex = 2;
             this.customTabPage.Text = "Custom";
             this.customTabPage.UseVisualStyleBackColor = true;
@@ -918,7 +964,7 @@ namespace AgentForAgent
             // 
             this.customAdditionalConfigurationGroupBox.Controls.Add(this.customJavaActionClassTextBox);
             this.customAdditionalConfigurationGroupBox.Controls.Add(this.label19);
-            this.customAdditionalConfigurationGroupBox.Location = new System.Drawing.Point(6, 201);
+            this.customAdditionalConfigurationGroupBox.Location = new System.Drawing.Point(6, 252);
             this.customAdditionalConfigurationGroupBox.Name = "customAdditionalConfigurationGroupBox";
             this.customAdditionalConfigurationGroupBox.Size = new System.Drawing.Size(473, 48);
             this.customAdditionalConfigurationGroupBox.TabIndex = 5;
@@ -1030,7 +1076,7 @@ namespace AgentForAgent
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(674, 323);
+            this.tabPage2.Size = new System.Drawing.Size(674, 374);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Planning";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -1038,7 +1084,7 @@ namespace AgentForAgent
             // alwaysAvailableCheckBox
             // 
             this.alwaysAvailableCheckBox.AutoSize = true;
-            this.alwaysAvailableCheckBox.Location = new System.Drawing.Point(491, 292);
+            this.alwaysAvailableCheckBox.Location = new System.Drawing.Point(488, 351);
             this.alwaysAvailableCheckBox.Name = "alwaysAvailableCheckBox";
             this.alwaysAvailableCheckBox.Size = new System.Drawing.Size(180, 17);
             this.alwaysAvailableCheckBox.TabIndex = 18;
@@ -1357,14 +1403,14 @@ namespace AgentForAgent
             this.groupBox2.Controls.Add(this.eventsList);
             this.groupBox2.Location = new System.Drawing.Point(6, 6);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(247, 311);
+            this.groupBox2.Size = new System.Drawing.Size(247, 362);
             this.groupBox2.TabIndex = 0;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Weekly Planning";
             // 
             // showButton
             // 
-            this.showButton.Location = new System.Drawing.Point(171, 282);
+            this.showButton.Location = new System.Drawing.Point(171, 333);
             this.showButton.Name = "showButton";
             this.showButton.Size = new System.Drawing.Size(70, 23);
             this.showButton.TabIndex = 6;
@@ -1374,7 +1420,7 @@ namespace AgentForAgent
             // 
             // createEventButton
             // 
-            this.createEventButton.Location = new System.Drawing.Point(6, 282);
+            this.createEventButton.Location = new System.Drawing.Point(6, 333);
             this.createEventButton.Name = "createEventButton";
             this.createEventButton.Size = new System.Drawing.Size(87, 23);
             this.createEventButton.TabIndex = 3;
@@ -1384,7 +1430,7 @@ namespace AgentForAgent
             // 
             // deleteEventButton
             // 
-            this.deleteEventButton.Location = new System.Drawing.Point(99, 282);
+            this.deleteEventButton.Location = new System.Drawing.Point(99, 333);
             this.deleteEventButton.Name = "deleteEventButton";
             this.deleteEventButton.Size = new System.Drawing.Size(66, 23);
             this.deleteEventButton.TabIndex = 1;
@@ -1395,7 +1441,7 @@ namespace AgentForAgent
             // saveConfig
             // 
             this.saveConfig.Enabled = false;
-            this.saveConfig.Location = new System.Drawing.Point(531, 367);
+            this.saveConfig.Location = new System.Drawing.Point(538, 418);
             this.saveConfig.Name = "saveConfig";
             this.saveConfig.Size = new System.Drawing.Size(75, 23);
             this.saveConfig.TabIndex = 20;
@@ -1405,7 +1451,7 @@ namespace AgentForAgent
             // 
             // closeConfig
             // 
-            this.closeConfig.Location = new System.Drawing.Point(612, 367);
+            this.closeConfig.Location = new System.Drawing.Point(619, 418);
             this.closeConfig.Name = "closeConfig";
             this.closeConfig.Size = new System.Drawing.Size(75, 23);
             this.closeConfig.TabIndex = 21;
@@ -1423,7 +1469,7 @@ namespace AgentForAgent
             // 
             // saveConfigAs
             // 
-            this.saveConfigAs.Location = new System.Drawing.Point(450, 367);
+            this.saveConfigAs.Location = new System.Drawing.Point(457, 418);
             this.saveConfigAs.Name = "saveConfigAs";
             this.saveConfigAs.Size = new System.Drawing.Size(75, 23);
             this.saveConfigAs.TabIndex = 19;
@@ -1431,12 +1477,17 @@ namespace AgentForAgent
             this.saveConfigAs.UseVisualStyleBackColor = true;
             this.saveConfigAs.Click += new System.EventHandler(this.saveConfigAs_Click);
             // 
+            // scriptLocationFileDialog
+            // 
+            this.scriptLocationFileDialog.DefaultExt = "bat";
+            this.scriptLocationFileDialog.Filter = "Scripts .bat/.cmd|*.bat;*.cmd|Executables .exe|*.exe";
+            // 
             // eventsList
             // 
             this.eventsList.FormattingEnabled = true;
             this.eventsList.Location = new System.Drawing.Point(6, 19);
             this.eventsList.Name = "eventsList";
-            this.eventsList.Size = new System.Drawing.Size(235, 251);
+            this.eventsList.Size = new System.Drawing.Size(235, 303);
             this.eventsList.TabIndex = 0;
             this.eventsList.SelectedIndexChanged += new System.EventHandler(this.eventsList_SelectedIndexChanged);
             // 
@@ -1444,7 +1495,7 @@ namespace AgentForAgent
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(702, 395);
+            this.ClientSize = new System.Drawing.Size(702, 453);
             this.Controls.Add(this.closeConfig);
             this.Controls.Add(this.saveConfigAs);
             this.Controls.Add(this.saveConfig);
@@ -1463,6 +1514,8 @@ namespace AgentForAgent
             this.tabControl1.ResumeLayout(false);
             this.generalTabPage.ResumeLayout(false);
             this.generalTabPage.PerformLayout();
+            this.onRuntimeExitGroupBox.ResumeLayout(false);
+            this.onRuntimeExitGroupBox.PerformLayout();
             this.multiRuntimeGroupBox.ResumeLayout(false);
             this.multiRuntimeGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nbRuntimesNumericUpDown)).EndInit();
@@ -1632,6 +1685,11 @@ namespace AgentForAgent
         private System.Windows.Forms.NumericUpDown initialValueNumericUpDown;
         private System.Windows.Forms.Label rmiTcpPortInitialValue;
         private System.Windows.Forms.ToolTip connectionTabToolTip;
+        private System.Windows.Forms.GroupBox onRuntimeExitGroupBox;
+        private System.Windows.Forms.TextBox scriptLocationTextBox;
+        private System.Windows.Forms.Button scriptLocationButton;
+        private System.Windows.Forms.Label scriptLocationLabel;
+        private System.Windows.Forms.OpenFileDialog scriptLocationFileDialog;
     }
 
 

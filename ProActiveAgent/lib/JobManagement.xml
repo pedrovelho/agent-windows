@@ -4,6 +4,215 @@
         "JobManagement"
     </assembly>
     <members>
+        <member name="P:JobManagement.JobIOCounters.OtherTransferCount">
+            <summary>
+The number of bytes transferred during operations other than read and write operations. 
+</summary>
+        </member>
+        <member name="P:JobManagement.JobIOCounters.WriteTransferCount">
+            <summary>
+The number of bytes written.
+</summary>
+        </member>
+        <member name="P:JobManagement.JobIOCounters.ReadTransferCount">
+            <summary>
+The number of bytes read. 
+</summary>
+        </member>
+        <member name="P:JobManagement.JobIOCounters.OtherOperationCount">
+            <summary>
+The number of I/O operations performed, other than read and write operations.
+</summary>
+        </member>
+        <member name="P:JobManagement.JobIOCounters.WriteOperationCount">
+            <summary>
+The number of write operations performed.
+</summary>
+        </member>
+        <member name="P:JobManagement.JobIOCounters.ReadOperationCount">
+            <summary>
+The number of read operations performed. 
+</summary>
+        </member>
+        <member name="T:JobManagement.JobIOCounters">
+            <summary>
+Contains basic accounting and I/O accounting information for a job object.
+</summary>
+            <remarks>
+Includes information for all processes that have ever been associated with the job, 
+in addition to the information for all processes currently associated with the job. 
+</remarks>
+        </member>
+        <member name="M:JobManagement.JobLimits.ClearAbsoluteTimer">
+            <summary>
+Stop the system timer and clear its values
+</summary>
+        </member>
+        <member name="M:JobManagement.JobLimits.SetAbsoluteTimer(System.TimeSpan)">
+            <summary>
+Set a system timer, that when it goes off, all the processes in the job are terminated
+</summary>
+            <param name="liveTimeSpan">The relative time to kill all processes</param>
+        </member>
+        <member name="M:JobManagement.JobLimits.SetAbsoluteTimer(System.DateTime)">
+            <summary>
+Set a system timer, that when it goes off, all the processes in the job are terminated
+</summary>
+            <param name="absoluteDateTime">The specific time to kill all processes</param>
+        </member>
+        <member name="P:JobManagement.JobLimits.IsTerminateJobProcessesOnDispose">
+            <summary>
+When disposing the Job Object, this value determined whether to terminated all processes in the job
+</summary>
+        </member>
+        <member name="M:JobManagement.JobLimits.UserHandleGrantAccess(System.IntPtr,System.Boolean)">
+            <summary>
+Grants or denies access to a handle to a User object to a job that has a user-interface restriction. 
+When access is granted, all processes associated with the job can subsequently recognize and use the handle.
+When access is denied, the processes can no longer use the handle
+</summary>
+            <param name="userHandle"> A handle to a User object</param>
+            <param name="bGrant">If this parameter is true, all processes associated with the job can recognize and use the handle.
+If the parameter is false, the processes cannot use the handle. </param>
+        </member>
+        <member name="P:JobManagement.JobLimits.IsAllowOnlyRestrictedTokenProcesses">
+            <summary>
+Prevents any process in the job from using a token that was not created with the CreateRestrictedToken function.
+</summary>
+        </member>
+        <member name="M:JobManagement.JobLimits.RunJobProcessesAs(System.IntPtr)">
+            <summary>
+Forces processes in the job to run under a specific token
+</summary>
+        </member>
+        <member name="P:JobManagement.JobLimits.IsAdminProcessAllow">
+            <summary>
+Prevents any process in the job from using a token that specifies the local administrators group.
+</summary>
+        </member>
+        <member name="M:JobManagement.JobLimits.FilterSecurityTokenAndPriviliges(System.Collections.Generic.List`1{JobManagement.Security.SidAndAttributes},System.Collections.Generic.List`1{JobManagement.Security.LuidAndAttributes},System.Collections.Generic.List`1{JobManagement.Security.SidAndAttributes})">
+            <summary>
+Applies a filter to the token when a process impersonates a client
+</summary>
+        </member>
+        <member name="P:JobManagement.JobLimits.CanWriteClipboard">
+            <summary>
+Prevents processes associated with the job from writing data to the clipboard.
+</summary>
+        </member>
+        <member name="P:JobManagement.JobLimits.CanChangeUISystemParameters">
+            <summary>
+Prevents processes associated with the job from changing system parameters by using the SystemParametersInfo function
+</summary>
+        </member>
+        <member name="P:JobManagement.JobLimits.CanReadClipboard">
+            <summary>
+Prevents processes associated with the job from reading data from the clipboard.
+</summary>
+        </member>
+        <member name="P:JobManagement.JobLimits.CanUseOutOfJobUserHandles">
+            <summary>
+Prevents processes associated with the job from using USER handles owned by processes not associated with the same job.
+</summary>
+        </member>
+        <member name="P:JobManagement.JobLimits.CanAccessAtomTable">
+            <summary>
+Prevents processes associated with the job from accessing global atoms. When this flag is used, each job has its own atom table
+</summary>
+        </member>
+        <member name="P:JobManagement.JobLimits.CanCallExitWindows">
+            <summary>
+Prevents processes associated with the job from calling the ExitWindows or ExitWindowsEx function.
+</summary>
+        </member>
+        <member name="P:JobManagement.JobLimits.IsLimitDisplaySettings">
+            <summary>
+Prevents processes associated with the job from calling the ChangeDisplaySettings function.
+</summary>
+        </member>
+        <member name="P:JobManagement.JobLimits.IsDesktopCreationAndSwitchingEnabled">
+            <summary>
+Prevents processes associated with the job from creating desktops and switching desktops using the CreateDesktop and SwitchDesktop functions
+</summary>
+        </member>
+        <member name="P:JobManagement.JobLimits.JobMemoryLimit">
+            <summary>
+specifies the limit for the virtual memory that can be committed for the job
+</summary>
+        </member>
+        <member name="P:JobManagement.JobLimits.ProcessMemoryLimit">
+            <summary>
+specifies the limit for the virtual memory that can be committed by a process
+</summary>
+        </member>
+        <member name="P:JobManagement.JobLimits.IsDieOnUnhandledException">
+            <summary>
+Forces a call to the SetErrorMode function with the SEM_NOGPFAULTERRORBOX flag for each process associated with the job. 
+</summary>
+        </member>
+        <member name="P:JobManagement.JobLimits.IsChildProcessBreakAway">
+            <summary>
+Allows any process associated with the job to create child processes that are not associated with the job.
+</summary>
+        </member>
+        <member name="P:JobManagement.JobLimits.CanChildProcessBreakAway">
+            <summary>
+Allow child process to use the CREATE_BREAKAWAY_FROM_JOB 
+</summary>
+        </member>
+        <member name="P:JobManagement.JobLimits.SchedulingClass">
+            <summary>
+The Scheduling Class is a number from 0 to 9  
+</summary>
+        </member>
+        <member name="P:JobManagement.JobLimits.PriorityClass">
+            <summary>
+The process priority class
+</summary>
+        </member>
+        <member name="P:JobManagement.JobLimits.Affinity">
+            <summary>
+The processesor affinity
+</summary>
+        </member>
+        <member name="P:JobManagement.JobLimits.ActiveProcessLimit">
+            <summary>
+The maximum number of active processes
+</summary>
+        </member>
+        <member name="P:JobManagement.JobLimits.MaximumWorkingSetSize">
+            <summary>
+The maximum size of a working-set
+</summary>
+        </member>
+        <member name="P:JobManagement.JobLimits.MinimumWorkingSetSize">
+            <summary>
+The minimum size of a working-set
+</summary>
+        </member>
+        <member name="P:JobManagement.JobLimits.PerJobUserTimeLimit">
+            <summary>
+The time limit for a job to run under
+</summary>
+        </member>
+        <member name="P:JobManagement.JobLimits.PerProcessUserTimeLimit">
+            <summary>
+The time limit for a process to run under
+</summary>
+        </member>
+        <member name="T:JobManagement.JobLimits">
+            <summary>
+JobLimits is a sealed class that wraps the Win32 Job Object Limits    
+which define the limits for the job and its processes. The limits are 
+the boundaries for the processes running under the job.
+Joblimits expands the Win32 limits with Absolute timer limit.
+</summary>
+            <remarks> You can limit processes in the Job in many areas, such as: 
+time limit (CPU time and absolute time), Memory limits, force priority &amp; scheduling class, set the process working set,
+and force several security related limits. 
+Security limits are deprecated on Windows Vista &amp; Server 2008. 
+We will try to find a solution on per process basis for those platforms</remarks>
+        </member>
         <member name="P:JobManagement.JobObject.IsOpenedAsWin32SharedObject">
             <summary>
 Determines whether the Job was opened and not created
@@ -546,176 +755,6 @@ Most of the time it is the related process id</param>
 The base class for all Job Object related event args
 </summary>
         </member>
-        <member name="M:JobManagement.JobLimits.ClearAbsoluteTimer">
-            <summary>
-Stop the system timer and clear its values
-</summary>
-        </member>
-        <member name="M:JobManagement.JobLimits.SetAbsoluteTimer(System.TimeSpan)">
-            <summary>
-Set a system timer, that when it goes off, all the processes in the job are terminated
-</summary>
-            <param name="liveTimeSpan">The relative time to kill all processes</param>
-        </member>
-        <member name="M:JobManagement.JobLimits.SetAbsoluteTimer(System.DateTime)">
-            <summary>
-Set a system timer, that when it goes off, all the processes in the job are terminated
-</summary>
-            <param name="absoluteDateTime">The specific time to kill all processes</param>
-        </member>
-        <member name="P:JobManagement.JobLimits.IsTerminateJobProcessesOnDispose">
-            <summary>
-When disposing the Job Object, this value determined whether to terminated all processes in the job
-</summary>
-        </member>
-        <member name="M:JobManagement.JobLimits.UserHandleGrantAccess(System.IntPtr,System.Boolean)">
-            <summary>
-Grants or denies access to a handle to a User object to a job that has a user-interface restriction. 
-When access is granted, all processes associated with the job can subsequently recognize and use the handle.
-When access is denied, the processes can no longer use the handle
-</summary>
-            <param name="userHandle"> A handle to a User object</param>
-            <param name="bGrant">If this parameter is true, all processes associated with the job can recognize and use the handle.
-If the parameter is false, the processes cannot use the handle. </param>
-        </member>
-        <member name="P:JobManagement.JobLimits.IsAllowOnlyRestrictedTokenProcesses">
-            <summary>
-Prevents any process in the job from using a token that was not created with the CreateRestrictedToken function.
-</summary>
-        </member>
-        <member name="M:JobManagement.JobLimits.RunJobProcessesAs(System.IntPtr)">
-            <summary>
-Forces processes in the job to run under a specific token
-</summary>
-        </member>
-        <member name="P:JobManagement.JobLimits.IsAdminProcessAllow">
-            <summary>
-Prevents any process in the job from using a token that specifies the local administrators group.
-</summary>
-        </member>
-        <member name="M:JobManagement.JobLimits.FilterSecurityTokenAndPriviliges(System.Collections.Generic.List`1{JobManagement.Security.SidAndAttributes},System.Collections.Generic.List`1{JobManagement.Security.LuidAndAttributes},System.Collections.Generic.List`1{JobManagement.Security.SidAndAttributes})">
-            <summary>
-Applies a filter to the token when a process impersonates a client
-</summary>
-        </member>
-        <member name="P:JobManagement.JobLimits.CanWriteClipboard">
-            <summary>
-Prevents processes associated with the job from writing data to the clipboard.
-</summary>
-        </member>
-        <member name="P:JobManagement.JobLimits.CanChangeUISystemParameters">
-            <summary>
-Prevents processes associated with the job from changing system parameters by using the SystemParametersInfo function
-</summary>
-        </member>
-        <member name="P:JobManagement.JobLimits.CanReadClipboard">
-            <summary>
-Prevents processes associated with the job from reading data from the clipboard.
-</summary>
-        </member>
-        <member name="P:JobManagement.JobLimits.CanUseOutOfJobUserHandles">
-            <summary>
-Prevents processes associated with the job from using USER handles owned by processes not associated with the same job.
-</summary>
-        </member>
-        <member name="P:JobManagement.JobLimits.CanAccessAtomTable">
-            <summary>
-Prevents processes associated with the job from accessing global atoms. When this flag is used, each job has its own atom table
-</summary>
-        </member>
-        <member name="P:JobManagement.JobLimits.CanCallExitWindows">
-            <summary>
-Prevents processes associated with the job from calling the ExitWindows or ExitWindowsEx function.
-</summary>
-        </member>
-        <member name="P:JobManagement.JobLimits.IsLimitDisplaySettings">
-            <summary>
-Prevents processes associated with the job from calling the ChangeDisplaySettings function.
-</summary>
-        </member>
-        <member name="P:JobManagement.JobLimits.IsDesktopCreationAndSwitchingEnabled">
-            <summary>
-Prevents processes associated with the job from creating desktops and switching desktops using the CreateDesktop and SwitchDesktop functions
-</summary>
-        </member>
-        <member name="P:JobManagement.JobLimits.JobMemoryLimit">
-            <summary>
-specifies the limit for the virtual memory that can be committed for the job
-</summary>
-        </member>
-        <member name="P:JobManagement.JobLimits.ProcessMemoryLimit">
-            <summary>
-specifies the limit for the virtual memory that can be committed by a process
-</summary>
-        </member>
-        <member name="P:JobManagement.JobLimits.IsDieOnUnhandledException">
-            <summary>
-Forces a call to the SetErrorMode function with the SEM_NOGPFAULTERRORBOX flag for each process associated with the job. 
-</summary>
-        </member>
-        <member name="P:JobManagement.JobLimits.IsChildProcessBreakAway">
-            <summary>
-Allows any process associated with the job to create child processes that are not associated with the job.
-</summary>
-        </member>
-        <member name="P:JobManagement.JobLimits.CanChildProcessBreakAway">
-            <summary>
-Allow child process to use the CREATE_BREAKAWAY_FROM_JOB 
-</summary>
-        </member>
-        <member name="P:JobManagement.JobLimits.SchedulingClass">
-            <summary>
-The Scheduling Class is a number from 0 to 9  
-</summary>
-        </member>
-        <member name="P:JobManagement.JobLimits.PriorityClass">
-            <summary>
-The process priority class
-</summary>
-        </member>
-        <member name="P:JobManagement.JobLimits.Affinity">
-            <summary>
-The processesor affinity
-</summary>
-        </member>
-        <member name="P:JobManagement.JobLimits.ActiveProcessLimit">
-            <summary>
-The maximum number of active processes
-</summary>
-        </member>
-        <member name="P:JobManagement.JobLimits.MaximumWorkingSetSize">
-            <summary>
-The maximum size of a working-set
-</summary>
-        </member>
-        <member name="P:JobManagement.JobLimits.MinimumWorkingSetSize">
-            <summary>
-The minimum size of a working-set
-</summary>
-        </member>
-        <member name="P:JobManagement.JobLimits.PerJobUserTimeLimit">
-            <summary>
-The time limit for a job to run under
-</summary>
-        </member>
-        <member name="P:JobManagement.JobLimits.PerProcessUserTimeLimit">
-            <summary>
-The time limit for a process to run under
-</summary>
-        </member>
-        <member name="T:JobManagement.JobLimits">
-            <summary>
-JobLimits is a sealed class that wraps the Win32 Job Object Limits    
-which define the limits for the job and its processes. The limits are 
-the boundaries for the processes running under the job.
-Joblimits expands the Win32 limits with Absolute timer limit.
-</summary>
-            <remarks> You can limit processes in the Job in many areas, such as: 
-time limit (CPU time and absolute time), Memory limits, force priority &amp; scheduling class, set the process working set,
-and force several security related limits. 
-Security limits are deprecated on Windows Vista &amp; Server 2008. 
-We will try to find a solution on per process basis for those platforms</remarks>
-        </member>
         <member name="P:JobManagement.JobException.Win32ErrorMessage">
             <summary>
 The win32 error message describing the cause of the current exception.
@@ -794,45 +833,6 @@ This exception class is used to inform the caller of most of the Job Object wrap
             <remarks> 
 If the error occurred by Win32 the Win32 GetLastError() code can be found in <see cref="P:JobManagement.JobException.Win32LastError" /> 
 and the text FormatMessage message can be found in <see cref="P:JobManagement.JobException.Win32ErrorMessage" /></remarks>
-        </member>
-        <member name="P:JobManagement.JobIOCounters.OtherTransferCount">
-            <summary>
-The number of bytes transferred during operations other than read and write operations. 
-</summary>
-        </member>
-        <member name="P:JobManagement.JobIOCounters.WriteTransferCount">
-            <summary>
-The number of bytes written.
-</summary>
-        </member>
-        <member name="P:JobManagement.JobIOCounters.ReadTransferCount">
-            <summary>
-The number of bytes read. 
-</summary>
-        </member>
-        <member name="P:JobManagement.JobIOCounters.OtherOperationCount">
-            <summary>
-The number of I/O operations performed, other than read and write operations.
-</summary>
-        </member>
-        <member name="P:JobManagement.JobIOCounters.WriteOperationCount">
-            <summary>
-The number of write operations performed.
-</summary>
-        </member>
-        <member name="P:JobManagement.JobIOCounters.ReadOperationCount">
-            <summary>
-The number of read operations performed. 
-</summary>
-        </member>
-        <member name="T:JobManagement.JobIOCounters">
-            <summary>
-Contains basic accounting and I/O accounting information for a job object.
-</summary>
-            <remarks>
-Includes information for all processes that have ever been associated with the job, 
-in addition to the information for all processes currently associated with the job. 
-</remarks>
         </member>
     </members>
 </doc>

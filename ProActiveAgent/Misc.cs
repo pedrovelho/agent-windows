@@ -219,7 +219,7 @@ namespace ProActiveAgent
                 // Start the process
                 if (!p.Start())
                 {
-                    throw new ApplicationException("Could not start the process " + info.FileName);
+                    throw new ApplicationException("Unable to start the process " + info.FileName);
                 }
 
                 StreamReader myStreamReader = p.StandardOutput;
@@ -236,7 +236,7 @@ namespace ProActiveAgent
             }
             catch (Exception e)
             {
-                throw new ApplicationException("Could not list java network interfaces ", e);
+                throw new ApplicationException("Unable to list java network interfaces ", e);
             }
         }
     }
@@ -275,7 +275,7 @@ namespace ProActiveAgent
                 // Start the process
                 if (!p.Start())
                 {
-                    throw new ApplicationException("Could not run the script " + scriptFilename);
+                    throw new ApplicationException("Unable to run the script " + scriptFilename);
                 }
 
                 // Use a stream writer to synchronously write the sort input.
@@ -303,7 +303,7 @@ namespace ProActiveAgent
             }
             catch (Exception e)
             {
-                throw new ApplicationException("Could not echo the variable " + variableToEcho, e);
+                throw new ApplicationException("Unable to echo the variable " + variableToEcho, e);
             }
             finally
             {
@@ -319,6 +319,44 @@ namespace ProActiveAgent
             }
             // Add the text to the collected output
             initializerOutput.Append(outLine.Data);
+        }
+    }
+
+    /// <summary>
+    /// A static class that spawns a process in order to execute a specified script.</summary>
+    public static class ScriptExecutor
+    {
+        public static string executeScript(string scriptAbsolutePath, string scriptArguments)
+        {            
+            ProcessStartInfo info = new ProcessStartInfo();
+            // Prepare to create a process that will run the specified script
+            info.FileName = scriptAbsolutePath;
+            info.Arguments = scriptArguments;
+            info.UseShellExecute = false;
+            info.CreateNoWindow = true;
+            info.RedirectStandardOutput = true;
+
+            // Create new process 
+            Process p = new Process();
+            p.StartInfo = info;
+
+            try
+            {
+                // Start the process
+                if (!p.Start())
+                {
+                    throw new ApplicationException("Unable to start the process " + info.FileName);
+                }
+
+                StreamReader myStreamReader = p.StandardOutput;
+                string output = myStreamReader.ReadToEnd();
+                p.Close();
+                return output;
+            }
+            catch (Exception e)
+            {
+                throw new ApplicationException("Unable to execute the script " + scriptAbsolutePath, e);
+            }
         }
     }
 }

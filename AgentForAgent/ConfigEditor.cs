@@ -46,6 +46,9 @@ namespace AgentForAgent
                 jvmDirectory.Text = conf.agentConfig.javaHome;
             }
 
+            // Load the On Runtime Exit script absolute path
+            this.scriptLocationTextBox.Text = conf.agentConfig.onRuntimeExitScript;
+
             ///////////////////////////////////////////////////
             // Load memory management from the configuration //
             ///////////////////////////////////////////////////
@@ -275,6 +278,7 @@ namespace AgentForAgent
             string[] values = new string[this.jvmParametersListBox.Items.Count];
             this.jvmParametersListBox.Items.CopyTo(values, 0);
             this.configuration.agentConfig.jvmParameters = values;
+            this.configuration.agentConfig.onRuntimeExitScript = this.scriptLocationTextBox.Text;
             // Save memory management configuration
             this.configuration.agentConfig.enableMemoryManagement = this.enableMemoryManagementCheckBox.Checked;
             this.configuration.agentConfig.javaMemory = System.Decimal.ToUInt32(this.javaMemoryNumericUpDown.Value);
@@ -370,17 +374,20 @@ namespace AgentForAgent
         private void proactiveLocationButton_Click(object sender, EventArgs e)
         {
             proActiveLocationBrowser.SelectedPath = proactiveLocation.Text;
-            proActiveLocationBrowser.ShowDialog();
-            proactiveLocation.Text = proActiveLocationBrowser.SelectedPath;
-            // Once the proactive location is specified check if classpath can be read
-            try
+            DialogResult result = proActiveLocationBrowser.ShowDialog();
+            if (result == DialogResult.OK)
             {
-                ProActiveAgent.Utils.readClasspath(this.configuration.agentConfig);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Invalid ProActive location : " + ex.ToString(), "Invalid ProActive location", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
+                proactiveLocation.Text = proActiveLocationBrowser.SelectedPath;
+                // Once the proactive location is specified check if classpath can be read
+                try
+                {
+                    ProActiveAgent.Utils.readClasspath(this.configuration.agentConfig);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Invalid ProActive location : " + ex.ToString(), "Invalid ProActive location", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
             }
         }
 
@@ -1030,6 +1037,26 @@ namespace AgentForAgent
         private void initialValueNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             this.saveConfig.Enabled = true;
+        }
+
+        /*************************************************/
+        /** ON RUNTIME EXIT SCRIPT GUI HANDLING METHODS **/
+        /*************************************************/
+
+        private void scriptLocationButton_Click(object sender, EventArgs e)
+        {            
+            DialogResult result = this.scriptLocationFileDialog.ShowDialog();            
+            if (result == DialogResult.OK) // test result
+            {
+                string selectedPath = this.scriptLocationFileDialog.FileName;
+                this.scriptLocationTextBox.Text = selectedPath;            
+            }
+        }
+
+        private void scriptLocationTextBox_TextChanged(object sender, EventArgs e)
+        {
+            configuration.agentConfig.javaHome = jvmDirectory.Text;
+            saveConfig.Enabled = true;
         }
     }
 }

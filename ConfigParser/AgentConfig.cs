@@ -30,6 +30,8 @@ namespace ConfigParser
 
         private int myProActiveRmiPortInitialValue;
 
+        private string myOnRuntimeExitScript;
+
         // Not serialized used only during runtime
         private string myClasspath;
 
@@ -153,6 +155,20 @@ namespace ConfigParser
             }
         }
 
+        [XmlElement("onRuntimeExitScript")]
+        public string onRuntimeExitScript
+        {
+            get
+            {
+                return this.myOnRuntimeExitScript;
+            }
+
+            set
+            {
+                this.myOnRuntimeExitScript = value;
+            }
+        }
+
         [XmlIgnore]
         public string classpath
         {
@@ -164,6 +180,10 @@ namespace ConfigParser
             {
                 return this.myClasspath;
             }
+        }
+
+        public static void Main(string[] args)
+        {
         }
     }
 }

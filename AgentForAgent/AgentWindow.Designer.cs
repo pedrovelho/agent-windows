@@ -230,7 +230,7 @@
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(114, 13);
             this.label3.TabIndex = 6;
-            this.label3.Text = "ProActiveAgent v1.0.0";
+            this.label3.Text = "ProActiveAgent v1.0.1";
             // 
             // label4
             // 
