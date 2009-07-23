@@ -1,18 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-<!-- ACTIONS -->
+  <!-- ACTIONS -->
   <xs:element name="Actions" nillable="true" type="Actions" />
   <xs:complexType name="Actions">
     <xs:sequence>
       <xs:element minOccurs="0" maxOccurs="unbounded" name="action" type="Action" />
     </xs:sequence>
   </xs:complexType>
-  
   <xs:element name="Action" nillable="true" type="Action" />
   <xs:complexType name="Action">
-    <xs:attribute name="priority" type="xs:string" />
-    <xs:attribute name="initialRestartDelay" type="xs:int" />
-	<xs:attribute name="user" type="xs:string" />
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="initialRestartDelay" type="xs:int" />
+      <xs:element minOccurs="1" maxOccurs="1" name="javaStarterClass" type="xs:string" />
+      <xs:element minOccurs="1" maxOccurs="1" name="isEnabled" type="xs:boolean" />      
+    </xs:sequence>
   </xs:complexType>
   <xs:complexType name="AdvertAction">
     <xs:complexContent mixed="false">
@@ -26,26 +27,32 @@
   <xs:complexType name="RMAction">
     <xs:complexContent mixed="false">
       <xs:extension base="Action">
-		<!--NODE-->
         <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="username" type="xs:string" />
+          <xs:element minOccurs="1" maxOccurs="1" name="password" type="xs:string" />
+          <xs:element minOccurs="1" maxOccurs="1" name="url" type="xs:string" />
           <xs:element minOccurs="1" maxOccurs="1" name="nodeName" type="xs:string" />
         </xs:sequence>
-        <xs:attribute name="url" type="xs:string" />		
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="P2PAction">
+  <xs:complexType name="CustomAction">
     <xs:complexContent mixed="false">
       <xs:extension base="Action">
         <xs:sequence>
-          <xs:element minOccurs="0" maxOccurs="unbounded" name="contact" type="xs:string" />
+          <xs:element minOccurs="1" maxOccurs="1" name="args">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" name="arg" type="xs:string" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
         </xs:sequence>
-        <xs:attribute name="protocol" type="xs:string" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  
-<!-- EVENTS -->  
+
+  <!-- EVENTS -->
   <xs:element name="Events" nillable="true" type="Events" />
   <xs:complexType name="Events">
     <xs:sequence>
@@ -65,6 +72,8 @@
           <xs:element minOccurs="1" maxOccurs="1" name="durationHours" type="xs:int" />
           <xs:element minOccurs="1" maxOccurs="1" name="durationMinutes" type="xs:int" />
           <xs:element minOccurs="1" maxOccurs="1" name="durationSeconds" type="xs:int" />
+          <xs:element minOccurs="1" maxOccurs="1" name="processPriority" type="xs:string" />
+          <xs:element minOccurs="1" maxOccurs="1" name="maxCpuUsage" type="xs:unsignedInt" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -74,8 +83,20 @@
     <xs:sequence>
       <xs:element minOccurs="1" maxOccurs="1" name="proactiveLocation" type="xs:string" />
       <xs:element minOccurs="1" maxOccurs="1" name="java_home" type="xs:string" />
-      <xs:element minOccurs="1" maxOccurs="1" name="jvm_params" type="xs:string" />
-      <xs:element minOccurs="1" maxOccurs="1" name="process_memory_limit" type="xs:unsignedInt" />
+      <xs:element minOccurs="1" maxOccurs="1" name="jvm_parameters">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="jvm_parameter" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="enable_memory_management" type="xs:boolean" />
+      <xs:element minOccurs="1" maxOccurs="1" name="java_memory" type="xs:unsignedInt" />
+      <xs:element minOccurs="1" maxOccurs="1" name="native_memory" type="xs:unsignedInt" />
+      <xs:element minOccurs="1" maxOccurs="1" name="nb_processes" type="xs:unsignedInt" />
+      <xs:element minOccurs="1" maxOccurs="1" name="use_all_cpus" type="xs:boolean" />
+      <xs:element minOccurs="1" maxOccurs="1" name="proActiveRmiPortInitialValue" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="onRuntimeExitScript" type="xs:string" />      
     </xs:sequence>
   </xs:complexType>
   <xs:element name="ConfigurationParser" nillable="true" type="ConfigurationParser" />
@@ -105,7 +126,7 @@
   </xs:complexType>
   <xs:element name="Test" nillable="true" type="Test" />
   <xs:complexType name="Test" />
-  <xs:element name="P2PAction" nillable="true" type="P2PAction" />
+  <xs:element name="CustomAction" nillable="true" type="CustomAction" />  
   <xs:element name="CalendarEvent" nillable="true" type="CalendarEvent" />
   <xs:element name="AdvertAction" nillable="true" type="AdvertAction" />
 </xs:schema>
