@@ -181,7 +181,17 @@ namespace ProActiveAgent
 
                 // Use process info to specify all options               
                 // Application filename is java executable with full path
-                info.FileName = this.commonStartInfo.configuration.agentConfig.javaHome + "\\bin\\java.exe";
+
+                // Check for java home 
+                string javaHome = this.commonStartInfo.configuration.agentConfig.javaHome;
+                if (javaHome == null || javaHome.Equals("")) {
+                    javaHome = System.Environment.GetEnvironmentVariable("JAVA_HOME");
+                    if (javaHome == null || javaHome.Equals(""))
+                    {
+                        throw new ApplicationException("Cannot locate java. Please specify the java location in the configuration or set JAVA_HOME environement variable.");
+                    }
+                }
+                info.FileName = javaHome + "\\bin\\java.exe";
                 // Application arguments will be 
                 info.Arguments = jvmParametersBuilder.ToString() + " " + this.commonStartInfo.cmd + " " + argumentsBuilder.ToString();
                 // Set the classpath 

@@ -150,33 +150,31 @@ namespace ProActiveAgent
             info.EnvironmentVariables["PA_SCHEDULER"] = config.proactiveLocation;
             info.EnvironmentVariables["PROACTIVE"] = config.proactiveLocation;
 
-            //// 1) Use the java location if it's specified in the configuration
-            //// 2) If not specified use JAVA_HOME variable
-            //// 3) If JAVA_HOME is not defined or empty throw exception
+            // 1) Use the java location if it's specified in the configuration
+            // 2) If not specified use JAVA_HOME variable
+            // 3) If JAVA_HOME is not defined or empty throw exception
 
-            //if (config.javaHome == null || config.javaHome.Equals(""))
-            //{
-            //    string envJavaHome = System.Environment.GetEnvironmentVariable("JAVA_HOME");
+            if (config.javaHome == null || config.javaHome.Equals(""))
+            {
+                string envJavaHome = System.Environment.GetEnvironmentVariable("JAVA_HOME");
 
-            //    if (envJavaHome == null || envJavaHome.Equals(""))
-            //    {
-            //        throw new ApplicationException("Unable to build java command, please specify the java location in the configuration file or set JAVA_HOME environement variable.");
-            //    }
-            //    else
-            //    {
-            //        // Get the value of the JAVA_CMD variable defined by the script
-            //        config.fullJavaCommand = VariableEchoer.echoVariable(initScript, "JAVA_CMD", info);
-            //    }
-            //}
-            //else
-            //{
-            //    // Use configuration specific java location
-            //    info.EnvironmentVariables["JAVA_HOME"] = config.javaHome;
-            //    // Get the value of the JAVA_CMD variable defined by the script
-            //    config.fullJavaCommand = VariableEchoer.echoVariable(initScript, "JAVA_CMD", info);
-            //}
-            // Fill classpath in the configuration
-            config.classpath = VariableEchoer.echoVariable(initScript, Constants.CLASSPATH_VAR_NAME, info);
+                if (envJavaHome == null || envJavaHome.Equals(""))
+                {
+                    throw new ApplicationException("Unable to read the classpath, please specify the java location in the configuration or set JAVA_HOME environement variable.");
+                }
+                else
+                {
+                    // Fill classpath in the configuration using the JAVA_HOME variable defined in the parent environement
+                    config.classpath = VariableEchoer.echoVariable(initScript, Constants.CLASSPATH_VAR_NAME, info);
+                }
+            }
+            else
+            {
+                // Use configuration specific java location
+                info.EnvironmentVariables["JAVA_HOME"] = config.javaHome;
+                // Fill classpath in the configuration
+                config.classpath = VariableEchoer.echoVariable(initScript, Constants.CLASSPATH_VAR_NAME, info);
+            }
         }
 
         /// <summary>        
