@@ -125,17 +125,30 @@ namespace ProActiveAgent
                 throw new ApplicationException("Unable to read the classpath, the ProActive location is unknown!");
             }
 
-            // Check if the location contains \bin\windows\init.bat
-            // in order to get the java command
-            string initScript = config.proactiveLocation + @"\bin\windows\init.bat";
-            // Second check if the init.bat script exists
+            string binDirectory = config.proactiveLocation + @"\bin";
+
+            // First check if the dir 'bin' exists
+            if (!System.IO.Directory.Exists(binDirectory))
+            {
+                // If the 'bin' directory does not exists throw an exception
+                throw new ApplicationException("Unable to read the classpath, invalid ProActive location! " + binDirectory);
+            } 
+
+            string initScript = binDirectory + @"\init.bat";
+            // Check if the 'bin\init.bat' script exists
             if (!System.IO.File.Exists(initScript))
             {
-                throw new ApplicationException("Unable to read the classpath, cannot find the initialization script " + initScript);
-            }
+                // If the 'init.bat' script does not exists in the 'bin' directory check in 'bin\windows' directory
+                initScript = binDirectory + @"\windows\init.bat";
+                if (!System.IO.File.Exists(initScript))
+                {
+                    throw new ApplicationException("Unable to read the classpath, cannot find the initialization script " + initScript);
+                }
+            }                           
 
             ProcessStartInfo info = new ProcessStartInfo();
             info.EnvironmentVariables["PA_SCHEDULER"] = config.proactiveLocation;
+            info.EnvironmentVariables["PROACTIVE"] = config.proactiveLocation;
 
             //// 1) Use the java location if it's specified in the configuration
             //// 2) If not specified use JAVA_HOME variable
@@ -147,7 +160,7 @@ namespace ProActiveAgent
 
             //    if (envJavaHome == null || envJavaHome.Equals(""))
             //    {
-            //        throw new ApplicationException("Unable to build java command, please specify the java location in the configuration file or set an environement JAVA_HOME variable.");
+            //        throw new ApplicationException("Unable to build java command, please specify the java location in the configuration file or set JAVA_HOME environement variable.");
             //    }
             //    else
             //    {
