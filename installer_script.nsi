@@ -167,18 +167,29 @@ FunctionEnd
 Section "ProActive Agent"
 
         ;-----------------------------------------------------------------------------------
+        ; Check user admin rights 
+        ;-----------------------------------------------------------------------------------
+        System::Call "kernel32::GetModuleHandle(t 'shell32.dll') i .s"
+        System::Call "kernel32::GetProcAddress(i s, i 680) i .r0"
+        System::Call "::$0() i .r0"
+        DetailPrint "is admin? $0"
+        StrCmp $0 '0' 0 +3
+          MessageBox MB_OK "Adminstrator rights are required to install the ProActive Agent."
+            Abort
+
+        ;-----------------------------------------------------------------------------------
         ; On x64 we have to explicitely set the registery view
         ;-----------------------------------------------------------------------------------
         ${If} ${RunningX64}
           SetRegView 64
         ${EndIf}
-
+        
         ;-----------------------------------------------------------------------------------
         ; Check if User Account Protection is Activated (Windows Vista)
         ;-----------------------------------------------------------------------------------
         ReadRegDWORD $1 HKLM Software\Microsoft\Windows\CurrentVersion\Policies\System EnableLUA
         StrCmp $1 '1' 0 +3
-          MessageBox MB_OK "It appears that the User Account Control (UAC) feature is enabled. The installation cannot continue. Please disable the UAC feature and restart the installation."
+          MessageBox MB_OK "It appears that the User Account Control (UAC) feature is enabled. The installation cannot continue. Please disable the UAC feature and restart the installation. To disable the UAC feature: \n 1) Launch MSCONFIG by from the Run menu. \n 2) Click on the Tools tab. Scroll down till you find 'Disable UAC' and reboot."
             Abort
 
         ; Check if .NET framework is installed >= 2.0
