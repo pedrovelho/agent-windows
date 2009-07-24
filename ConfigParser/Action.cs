@@ -64,7 +64,7 @@ namespace ConfigParser
         }
 
         // Sub classes must override this class
-        public virtual string[] getArgs(int processRank) { return new string[0]; }        
+        public virtual string[] getArgs() { return new string[0]; }        
 
         // Default jvm parameters needed for this type of action
         public static void addDefaultJvmParameters(List<string> jvmParameters, string proactiveLocation)

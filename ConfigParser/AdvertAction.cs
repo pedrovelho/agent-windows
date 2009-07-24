@@ -42,9 +42,9 @@ namespace ConfigParser
             }
         }
 
-        public override string[] getArgs(int processRank)
+        public override string[] getArgs()
         {
-            return new string[] { this.myNodeName+processRank };
+            return new string[] { this.myNodeName};
         }
     }
 }

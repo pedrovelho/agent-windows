@@ -171,7 +171,7 @@ namespace ProActiveAgent
 
                 // Merge all arguments
                 StringBuilder argumentsBuilder = new StringBuilder();
-                foreach (string arg in this.commonStartInfo.selectedAction.getArgs(this.rank))
+                foreach (string arg in this.commonStartInfo.selectedAction.getArgs())
                 {
                     argumentsBuilder.Append(" " + arg);
                 }
@@ -188,7 +188,7 @@ namespace ProActiveAgent
                     javaHome = System.Environment.GetEnvironmentVariable("JAVA_HOME");
                     if (javaHome == null || javaHome.Equals(""))
                     {
-                        throw new ApplicationException("Cannot locate java. Please specify the java location in the configuration or set JAVA_HOME environement variable.");
+                        throw new ApplicationException("Cannot locate the java home. Please specify the java directory in the configuration or set JAVA_HOME environement variable.");
                     }
                 }
                 info.FileName = javaHome + "\\bin\\java.exe";

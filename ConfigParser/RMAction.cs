@@ -91,9 +91,9 @@ namespace ConfigParser
             }
         }
 
-        public override string[] getArgs(int processRank)
+        public override string[] getArgs()
         {
-            return new string[] { this.myUsername, this.myPassword, this.myRmUrl, this.myNodeName+processRank };
+            return new string[] { this.myUsername, this.myPassword, this.myRmUrl, this.myNodeName };
         }
 
         // Default jvm parameters needed for this type of action
