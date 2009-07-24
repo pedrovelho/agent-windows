@@ -33,7 +33,7 @@ namespace AgentForAgent
             this.hook = hook;
 
             // Load the proactive location from the configuration into the gui
-            this.proactiveLocation.Text = conf.agentConfig.proactiveLocation;
+            this.proactiveDirectory.Text = conf.agentConfig.proactiveLocation;
 
             if (conf.agentConfig.javaHome.Equals(""))
             {
@@ -373,11 +373,11 @@ namespace AgentForAgent
         //--Show dialog box to select proactive path
         private void proactiveLocationButton_Click(object sender, EventArgs e)
         {
-            proActiveLocationBrowser.SelectedPath = proactiveLocation.Text;
+            proActiveLocationBrowser.SelectedPath = proactiveDirectory.Text;
             DialogResult result = proActiveLocationBrowser.ShowDialog();
             if (result == DialogResult.OK)
             {
-                proactiveLocation.Text = proActiveLocationBrowser.SelectedPath;
+                proactiveDirectory.Text = proActiveLocationBrowser.SelectedPath;
                 // Once the proactive location is specified check if classpath can be read
                 try
                 {
@@ -401,7 +401,7 @@ namespace AgentForAgent
         //--Update config if it change
         private void proactiveLocation_TextChanged(object sender, EventArgs e)
         {
-            configuration.agentConfig.proactiveLocation = proactiveLocation.Text;
+            configuration.agentConfig.proactiveLocation = proactiveDirectory.Text;
             saveConfig.Enabled = true;
         }
 

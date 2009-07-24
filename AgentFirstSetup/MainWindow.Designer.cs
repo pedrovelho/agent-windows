@@ -36,7 +36,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.jvmDirectory = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
             this.proActiveLocationBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.jvmLocationBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -51,6 +50,7 @@
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.continueButton = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.panelAccount.SuspendLayout();
@@ -59,25 +59,25 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(4, 14);
+            this.label1.Location = new System.Drawing.Point(6, 15);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(100, 13);
+            this.label1.Size = new System.Drawing.Size(65, 13);
             this.label1.TabIndex = 4;
-            this.label1.Text = "ProActive Location:";
+            this.label1.Text = "ProActive or";
             // 
             // proactiveLocation
             // 
-            this.proactiveLocation.Location = new System.Drawing.Point(110, 12);
+            this.proactiveLocation.Location = new System.Drawing.Point(169, 25);
             this.proactiveLocation.Name = "proactiveLocation";
-            this.proactiveLocation.Size = new System.Drawing.Size(368, 20);
+            this.proactiveLocation.Size = new System.Drawing.Size(309, 20);
             this.proactiveLocation.TabIndex = 5;
             this.proactiveLocation.TextChanged += new System.EventHandler(this.proactiveLocation_TextChanged);
             // 
             // proactiveLocationButton
             // 
-            this.proactiveLocationButton.Location = new System.Drawing.Point(484, 10);
+            this.proactiveLocationButton.Location = new System.Drawing.Point(484, 23);
             this.proactiveLocationButton.Name = "proactiveLocationButton";
-            this.proactiveLocationButton.Size = new System.Drawing.Size(75, 23);
+            this.proactiveLocationButton.Size = new System.Drawing.Size(84, 23);
             this.proactiveLocationButton.TabIndex = 8;
             this.proactiveLocationButton.Text = "Browse...";
             this.proactiveLocationButton.UseVisualStyleBackColor = true;
@@ -86,7 +86,7 @@
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(110, 64);
+            this.checkBox1.Location = new System.Drawing.Point(89, 91);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(169, 17);
             this.checkBox1.TabIndex = 13;
@@ -96,9 +96,9 @@
             // 
             // jvmLocationButton
             // 
-            this.jvmLocationButton.Location = new System.Drawing.Point(484, 36);
+            this.jvmLocationButton.Location = new System.Drawing.Point(484, 63);
             this.jvmLocationButton.Name = "jvmLocationButton";
-            this.jvmLocationButton.Size = new System.Drawing.Size(75, 23);
+            this.jvmLocationButton.Size = new System.Drawing.Size(84, 23);
             this.jvmLocationButton.TabIndex = 12;
             this.jvmLocationButton.Text = "Browse...";
             this.jvmLocationButton.UseVisualStyleBackColor = true;
@@ -107,7 +107,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(4, 41);
+            this.label2.Location = new System.Drawing.Point(6, 68);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(76, 13);
             this.label2.TabIndex = 11;
@@ -115,30 +115,20 @@
             // 
             // jvmDirectory
             // 
-            this.jvmDirectory.Location = new System.Drawing.Point(110, 38);
+            this.jvmDirectory.Location = new System.Drawing.Point(88, 65);
             this.jvmDirectory.Name = "jvmDirectory";
-            this.jvmDirectory.Size = new System.Drawing.Size(368, 20);
+            this.jvmDirectory.Size = new System.Drawing.Size(390, 20);
             this.jvmDirectory.TabIndex = 10;
             this.jvmDirectory.TextChanged += new System.EventHandler(this.jvmDirectory_TextChanged);
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(9, 9);
+            this.label3.Location = new System.Drawing.Point(203, 9);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(379, 13);
+            this.label3.Size = new System.Drawing.Size(376, 13);
             this.label3.TabIndex = 14;
-            this.label3.Text = "Please specify the following settings in order to be able to use ProActive Agent:" +
-                "";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 91);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(359, 13);
-            this.label4.TabIndex = 15;
-            this.label4.Text = "NOTE: You can change these settings later using AgentControl application";
+            this.label3.Text = "Note that these settings can be changed through the ProActive Agent Control.";
             // 
             // proActiveLocationBrowser
             // 
@@ -158,9 +148,9 @@
             this.groupBox1.Controls.Add(this.proactiveLocationButton);
             this.groupBox1.Controls.Add(this.proactiveLocation);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(12, 25);
+            this.groupBox1.Location = new System.Drawing.Point(3, 25);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(568, 114);
+            this.groupBox1.Size = new System.Drawing.Size(576, 114);
             this.groupBox1.TabIndex = 18;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Settings";
@@ -170,9 +160,9 @@
             this.groupBox2.Controls.Add(this.panelAccount);
             this.groupBox2.Controls.Add(this.radioButton2);
             this.groupBox2.Controls.Add(this.radioButton1);
-            this.groupBox2.Location = new System.Drawing.Point(12, 145);
+            this.groupBox2.Location = new System.Drawing.Point(3, 145);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(567, 123);
+            this.groupBox2.Size = new System.Drawing.Size(576, 123);
             this.groupBox2.TabIndex = 19;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Service Account";
@@ -276,6 +266,15 @@
             this.continueButton.UseVisualStyleBackColor = true;
             this.continueButton.Click += new System.EventHandler(this.continueButton_Click);
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 28);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(157, 13);
+            this.label4.TabIndex = 14;
+            this.label4.Text = "ProActive Scheduling Directory:";
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -310,7 +309,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox jvmDirectory;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
         private System.Windows.Forms.FolderBrowserDialog proActiveLocationBrowser;
         private System.Windows.Forms.FolderBrowserDialog jvmLocationBrowser;
         private System.Windows.Forms.GroupBox groupBox1;
@@ -325,6 +323,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Panel panelAccount;
         private System.Windows.Forms.Button continueButton;
+        private System.Windows.Forms.Label label4;
 
     }
 }
