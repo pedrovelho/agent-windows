@@ -11,7 +11,20 @@
     <use_all_cpus>false</use_all_cpus>
     <proActiveRmiPortInitialValue>1099</proActiveRmiPortInitialValue>
   </internalConfig>
-  <events />
+  <events>
+    <event xsi:type="CalendarEvent">
+      <startDay>monday</startDay>
+      <startHour>0</startHour>
+      <startMinute>0</startMinute>
+      <startSecond>0</startSecond>
+      <durationDays>6</durationDays>
+      <durationHours>23</durationHours>
+      <durationMinutes>59</durationMinutes>
+      <durationSeconds>59</durationSeconds>
+      <processPriority>Normal</processPriority>
+      <maxCpuUsage>100</maxCpuUsage>
+    </event>
+  </events>
   <actions>
     <action xsi:type="AdvertAction">
       <initialRestartDelay>0</initialRestartDelay>
