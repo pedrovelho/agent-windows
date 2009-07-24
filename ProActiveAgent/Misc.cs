@@ -106,7 +106,10 @@ namespace ProActiveAgent
             //    result = System.Decimal.Ceiling(System.Decimal.Parse(s) / 1024); // convert to Mbytes
             //}
             // This seems more appropriate            
-            result = System.Decimal.Ceiling(new Microsoft.VisualBasic.Devices.ComputerInfo().AvailablePhysicalMemory / (1024 * 1024)); // from bytes to mbytes
+            // result = System.Decimal.Ceiling(new Microsoft.VisualBasic.Devices.ComputerInfo().AvailablePhysicalMemory / (1024 * 1024)); // from bytes to mbytes
+            // Another method
+            PerformanceCounter ramCounter = new PerformanceCounter("Memory", "Available MBytes");            
+            result = Convert.ToDecimal(ramCounter.NextValue());
             return result;
         }
 
