@@ -29,8 +29,13 @@ namespace ProActiveAgent
         private static readonly object interExecutorLock = new object();
 
         /// <summary>
-        /// The current ProActive Rmi Port that will be initialized by the first executor, then it cycles incrementally until max value.</summary>
-        private static int currentProActiveRmiPort;
+        /// The next usable ProActive Port that will be initialized by the first executor, then it cycles incrementally 
+        /// depnding on the port availability until max value.</summary>
+        private static int nextUsableProActivePort;
+
+        /// <summary>
+        /// The current ProActive port used by this executor</summary>
+        private int currentProActivePort;
 
         /// <summary>
         /// The unique rank of this executor</summary>
@@ -74,12 +79,14 @@ namespace ProActiveAgent
         public ProActiveRuntimeExecutor(CommonStartInfo commonStartInfo, int rank)
         {
             this.rank = rank;
-            // The first executor initializes the current value of the ProActive Rmi Port
             if (this.rank == 0)
             {
-                // Get the initial ProActive Rmi Port specified by the configuration
-                currentProActiveRmiPort = commonStartInfo.configuration.agentConfig.proActiveRmiPortInitialValue;
+                // Init the next usable ProActive Port specified by the configuration
+                nextUsableProActivePort = commonStartInfo.configuration.agentConfig.proActiveRmiPortInitialValue;
             }
+            // Init the current and increment the next usable port
+            this.currentProActivePort = nextUsableProActivePort++;
+            
             this.LOGGER = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType + "" + this.rank);
             // The logger needs to be customized programmatically to log stout/stderr into a separate file
             this.processLogger = LogManager.GetLogger("Executor" + this.rank + "ProcessLogger");
@@ -126,34 +133,27 @@ namespace ProActiveAgent
             // In rare cases an external process can take the port between the test of its availablity and its occupation by the ProActive Runtime process
             // in that case the runtime will not start.
 
-            // Lock all executors in this section
-            lock (interExecutorLock)
+            // Test the current ProActive port in order to avoid incrementing without reason
+            if (!Utils.isTcpPortAvailable(this.currentProActivePort))
             {
-                // If the maximum is reached then re-cycle to the initial value
-                if (currentProActiveRmiPort >= Constants.MAX_PROACTIVE_RMI_PORT)
-                {
-                    currentProActiveRmiPort = this.commonStartInfo.configuration.agentConfig.proActiveRmiPortInitialValue;
+                // Lock all executors in this section                
+                lock (interExecutorLock)
+                {                    
+                    this.currentProActivePort = nextUsableProActivePort;                    
+                    // Check the port availability and if it's not availbale increment and retry until max value
+                    while (!Utils.isTcpPortAvailable(this.currentProActivePort))
+                    {
+                        // Check max value to avoid cycling infinitely if the whole intervall is occupied
+                        if (++this.currentProActivePort >= Constants.MAX_PROACTIVE_RMI_PORT)
+                        {
+                            // If the maximum is reached then exit from this method
+                            LOGGER.Error("Could not start the ProActive Runtime process, unable to find an available ProActive Rmi Port");
+                            return false;
+                        }
+                    }
+                    // Set the next usable ProActive port to the next value of the current ProActive port
+                    nextUsableProActivePort = this.currentProActivePort + 1;
                 }
-            }
-            int proActiveRmiPort = currentProActiveRmiPort;
-
-
-            // Check the port availability and if it's not available increment and retry until max value
-            while (!Utils.isTcpPortAvailable(proActiveRmiPort))
-            {
-                // This avoids cycling infinitely if the whole intervall is occupied
-                if (++proActiveRmiPort >= Constants.MAX_PROACTIVE_RMI_PORT)
-                {
-                    // If the maximum is reached then exit from this method
-                    LOGGER.Error("Could not start the ProActive Runtime process, unable to find an available ProActive Rmi Port");
-                    return false;
-                }
-            }
-
-            // Lock all executors here
-            lock (interExecutorLock)
-            {
-                currentProActiveRmiPort = proActiveRmiPort + 1;
             }
 
             ProcessStartInfo info = new ProcessStartInfo();
@@ -167,7 +167,7 @@ namespace ProActiveAgent
                 }
                 jvmParametersBuilder.Append(" ");
                 // Add the property to force the ProActive Runtime to use the port
-                jvmParametersBuilder.Append(Constants.PROACTIVE_RMI_PORT_JAVA_PROPERTY + "=" + proActiveRmiPort);
+                jvmParametersBuilder.Append(Constants.PROACTIVE_RMI_PORT_JAVA_PROPERTY + "=" + this.currentProActivePort);
 
                 // Merge all arguments
                 StringBuilder argumentsBuilder = new StringBuilder();

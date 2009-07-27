@@ -178,7 +178,8 @@ namespace ProActiveAgent
         }
 
         /// <summary>        
-        /// This method checks if a tcp port is available.
+        /// This method checks if a tcp port is available. 
+        /// !! DOES NOT CHECK FOR MAX VALUE !!
         /// </summary>
         /// <param name="config">The user defined configuration.</param>
         public static bool isTcpPortAvailable(int port)

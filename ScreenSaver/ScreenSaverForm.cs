@@ -105,9 +105,9 @@ namespace ScreenSaver
             // pictureBox
             // 
             this.pictureBox.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox.Image")));
-            this.pictureBox.Location = new System.Drawing.Point(46, 86);
+            this.pictureBox.Location = new System.Drawing.Point(27, 95);
             this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(370, 100);
+            this.pictureBox.Size = new System.Drawing.Size(479, 119);
             this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.pictureBox.TabIndex = 0;
             this.pictureBox.TabStop = false;
@@ -116,7 +116,7 @@ namespace ScreenSaver
             // 
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
             this.BackColor = System.Drawing.Color.Black;
-            this.ClientSize = new System.Drawing.Size(461, 275);
+            this.ClientSize = new System.Drawing.Size(532, 309);
             this.Controls.Add(this.pictureBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "ScreenSaverForm";
