@@ -263,7 +263,7 @@ Section "ProActive Agent"
         File "utils\PAAgent-config-planning-night-we.xml"
         File "utils\icon.ico"
         File "utils\ListNetworkInterfaces.class"
-        File "documentation.pdf"
+        File "ProActive Agent Documentation.pdf"
 
         ExecWait "$INSTDIR\AgentFirstSetup.exe -i $\"$INSTDIR$\""
 SectionEnd
@@ -298,7 +298,7 @@ Section "Start Menu Shortcuts"
         CreateDirectory "$SMPROGRAMS\ProActiveAgent"
         CreateShortCut  "$SMPROGRAMS\ProActiveAgent\ProActive Agent Control.lnk" "$INSTDIR\AgentForAgent.exe" "" "$INSTDIR\icon.ico" 0
         CreateShortCut  "$SMPROGRAMS\ProActiveAgent\Uninstall ProActive Agent.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
-        CreateShortCut  "$SMPROGRAMS\ProActiveAgent\ProActive Agent Documentation.lnk" "$INSTDIR\documentation.pdf" "" "$INSTDIR\documentation.pdf" 0
+        CreateShortCut  "$SMPROGRAMS\ProActiveAgent\ProActive Agent Documentation.lnk" "$INSTDIR\ProActive Agent Documentation.pdf" "" "$INSTDIR\ProActive Agent Documentation.pdf" 0
         SetShellVarContext current ; reset to current user
 
         ;; Ask user if he wants to run Agent GUI
