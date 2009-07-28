@@ -5,6 +5,7 @@ using System.Xml;
 using System.Diagnostics;
 using ProActiveAgent;
 using Microsoft.Win32;
+using System.Security.Principal;
 
 namespace AgentForAgent
 {
@@ -16,6 +17,15 @@ namespace AgentForAgent
         [STAThread]
         static void Main()
         {
+            // Check if the current user have admin rights   
+            WindowsPrincipal principal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
+            if (!principal.IsInRole(WindowsBuiltInRole.Administrator))
+            {
+                // report error and exit                     
+                MessageBox.Show("Adminstrator rights are required to run the ProActive Agent Control.", "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             // Check if this application is already running
             Process[] alreadyRunningProcesses = Process.GetProcessesByName("AgentForAgent");
             if (alreadyRunningProcesses != null && alreadyRunningProcesses.Length > 1)
