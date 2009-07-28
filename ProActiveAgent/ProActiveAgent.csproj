@@ -144,7 +144,6 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram1.cd" />
     <None Include="ListNetworkInterfaces.class">
     </None>
     <None Include="log4net.config">

@@ -152,15 +152,15 @@ namespace AgentForAgent
             this.showButton = new System.Windows.Forms.Button();
             this.createEventButton = new System.Windows.Forms.Button();
             this.deleteEventButton = new System.Windows.Forms.Button();
-            this.eventsList = new AgentForAgent.RefreshingListBox();
             this.saveConfig = new System.Windows.Forms.Button();
             this.closeConfig = new System.Windows.Forms.Button();
             this.proActiveLocationBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.jvmLocationBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.saveConfigAs = new System.Windows.Forms.Button();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.connectionTabToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.scriptLocationFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.eventsList = new AgentForAgent.RefreshingListBox();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.generalTabPage.SuspendLayout();
@@ -216,7 +216,7 @@ namespace AgentForAgent
             this.groupBox1.Controls.Add(this.proactiveDirectory);
             this.groupBox1.Location = new System.Drawing.Point(3, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(603, 175);
+            this.groupBox1.Size = new System.Drawing.Size(665, 175);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "ProActive Configuration";
@@ -226,14 +226,16 @@ namespace AgentForAgent
             this.jvmParametersListBox.FormattingEnabled = true;
             this.jvmParametersListBox.Location = new System.Drawing.Point(112, 95);
             this.jvmParametersListBox.Name = "jvmParametersListBox";
-            this.jvmParametersListBox.Size = new System.Drawing.Size(404, 69);
+            this.jvmParametersListBox.Size = new System.Drawing.Size(466, 69);
             this.jvmParametersListBox.TabIndex = 12;
+            this.toolTip.SetToolTip(this.jvmParametersListBox, "If the parameter contains ${rank} it will be dynamically replaced by the Runtime " +
+                    "rank.");
             this.jvmParametersListBox.DoubleClick += new System.EventHandler(this.jvmParametersListBox_DoubleClick);
             this.jvmParametersListBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.jvmParametersListBox_KeyPress);
             // 
             // removeJvmParameterButton
             // 
-            this.removeJvmParameterButton.Location = new System.Drawing.Point(522, 124);
+            this.removeJvmParameterButton.Location = new System.Drawing.Point(584, 124);
             this.removeJvmParameterButton.Name = "removeJvmParameterButton";
             this.removeJvmParameterButton.Size = new System.Drawing.Size(75, 23);
             this.removeJvmParameterButton.TabIndex = 11;
@@ -243,7 +245,7 @@ namespace AgentForAgent
             // 
             // addJvmParameterButton
             // 
-            this.addJvmParameterButton.Location = new System.Drawing.Point(522, 95);
+            this.addJvmParameterButton.Location = new System.Drawing.Point(584, 95);
             this.addJvmParameterButton.Name = "addJvmParameterButton";
             this.addJvmParameterButton.Size = new System.Drawing.Size(75, 23);
             this.addJvmParameterButton.TabIndex = 10;
@@ -264,7 +266,7 @@ namespace AgentForAgent
             // 
             // jvmLocationButton
             // 
-            this.jvmLocationButton.Location = new System.Drawing.Point(522, 43);
+            this.jvmLocationButton.Location = new System.Drawing.Point(584, 42);
             this.jvmLocationButton.Name = "jvmLocationButton";
             this.jvmLocationButton.Size = new System.Drawing.Size(75, 23);
             this.jvmLocationButton.TabIndex = 8;
@@ -274,7 +276,7 @@ namespace AgentForAgent
             // 
             // proactiveLocationButton
             // 
-            this.proactiveLocationButton.Location = new System.Drawing.Point(522, 14);
+            this.proactiveLocationButton.Location = new System.Drawing.Point(584, 14);
             this.proactiveLocationButton.Name = "proactiveLocationButton";
             this.proactiveLocationButton.Size = new System.Drawing.Size(75, 23);
             this.proactiveLocationButton.TabIndex = 7;
@@ -285,7 +287,7 @@ namespace AgentForAgent
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 100);
+            this.label3.Location = new System.Drawing.Point(7, 100);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(87, 13);
             this.label3.TabIndex = 5;
@@ -313,7 +315,7 @@ namespace AgentForAgent
             // 
             this.jvmDirectory.Location = new System.Drawing.Point(112, 44);
             this.jvmDirectory.Name = "jvmDirectory";
-            this.jvmDirectory.Size = new System.Drawing.Size(404, 20);
+            this.jvmDirectory.Size = new System.Drawing.Size(466, 20);
             this.jvmDirectory.TabIndex = 1;
             this.jvmDirectory.TextChanged += new System.EventHandler(this.jvmDirectory_TextChanged);
             // 
@@ -321,7 +323,7 @@ namespace AgentForAgent
             // 
             this.proactiveDirectory.Location = new System.Drawing.Point(112, 16);
             this.proactiveDirectory.Name = "proactiveDirectory";
-            this.proactiveDirectory.Size = new System.Drawing.Size(404, 20);
+            this.proactiveDirectory.Size = new System.Drawing.Size(466, 20);
             this.proactiveDirectory.TabIndex = 0;
             this.proactiveDirectory.TextChanged += new System.EventHandler(this.proactiveLocation_TextChanged);
             // 
@@ -666,8 +668,8 @@ namespace AgentForAgent
             this.initialValueNumericUpDown.Name = "initialValueNumericUpDown";
             this.initialValueNumericUpDown.Size = new System.Drawing.Size(57, 20);
             this.initialValueNumericUpDown.TabIndex = 0;
-            this.connectionTabToolTip.SetToolTip(this.initialValueNumericUpDown, "Defines the value of the \"-Dproactive.rmi.port\" property. This value will always " +
-                    "be increased by 1 or more if there is more than one runtime.");
+            this.toolTip.SetToolTip(this.initialValueNumericUpDown, "Defines the value of the \"-Dproactive.rmi.port\" property. This value will always " +
+                    "be increased by 1 or more if there is more than one Runtime.");
             this.initialValueNumericUpDown.Value = new decimal(new int[] {
             1099,
             0,
@@ -1438,15 +1440,6 @@ namespace AgentForAgent
             this.deleteEventButton.UseVisualStyleBackColor = true;
             this.deleteEventButton.Click += new System.EventHandler(this.deleteEventButton_Click);
             // 
-            // eventsList
-            // 
-            this.eventsList.FormattingEnabled = true;
-            this.eventsList.Location = new System.Drawing.Point(6, 19);
-            this.eventsList.Name = "eventsList";
-            this.eventsList.Size = new System.Drawing.Size(235, 303);
-            this.eventsList.TabIndex = 0;
-            this.eventsList.SelectedIndexChanged += new System.EventHandler(this.eventsList_SelectedIndexChanged);
-            // 
             // saveConfig
             // 
             this.saveConfig.Enabled = false;
@@ -1490,6 +1483,15 @@ namespace AgentForAgent
             // 
             this.scriptLocationFileDialog.DefaultExt = "bat";
             this.scriptLocationFileDialog.Filter = "Scripts .bat/.cmd|*.bat;*.cmd|Executables .exe|*.exe";
+            // 
+            // eventsList
+            // 
+            this.eventsList.FormattingEnabled = true;
+            this.eventsList.Location = new System.Drawing.Point(6, 19);
+            this.eventsList.Name = "eventsList";
+            this.eventsList.Size = new System.Drawing.Size(235, 303);
+            this.eventsList.TabIndex = 0;
+            this.eventsList.SelectedIndexChanged += new System.EventHandler(this.eventsList_SelectedIndexChanged);
             // 
             // ConfigurationEditor
             // 
@@ -1684,12 +1686,12 @@ namespace AgentForAgent
         private System.Windows.Forms.GroupBox proActiveRmiPortGroupBox;
         private System.Windows.Forms.NumericUpDown initialValueNumericUpDown;
         private System.Windows.Forms.Label rmiTcpPortInitialValue;
-        private System.Windows.Forms.ToolTip connectionTabToolTip;
         private System.Windows.Forms.GroupBox onRuntimeExitGroupBox;
         private System.Windows.Forms.TextBox scriptLocationTextBox;
         private System.Windows.Forms.Button scriptLocationButton;
         private System.Windows.Forms.Label scriptLocationLabel;
         private System.Windows.Forms.OpenFileDialog scriptLocationFileDialog;
+        private System.Windows.Forms.ToolTip toolTip;
     }
 
 

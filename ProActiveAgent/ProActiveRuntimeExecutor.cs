@@ -158,16 +158,16 @@ namespace ProActiveAgent
 
             ProcessStartInfo info = new ProcessStartInfo();
             try
-            {
-                // Merge all jvm parameters
+            {                
                 StringBuilder jvmParametersBuilder = new StringBuilder();
-                foreach (string parameter in this.commonStartInfo.jvmParameters)
-                {
-                    jvmParametersBuilder.Append(" " + parameter);
-                }
-                jvmParametersBuilder.Append(" ");
                 // Add the property to force the ProActive Runtime to use the port
                 jvmParametersBuilder.Append(Constants.PROACTIVE_RMI_PORT_JAVA_PROPERTY + "=" + this.currentProActivePort);
+                // Merge all jvm parameters (user-specified)
+                foreach (string parameter in this.commonStartInfo.jvmParameters)
+                {                    
+                    // Replace all occurences of "${rank}" by the rank of this ProActive Executor
+                    jvmParametersBuilder.Append(" " + parameter.Replace("${rank}",""+this.rank));
+                }                
 
                 // Merge all arguments
                 StringBuilder argumentsBuilder = new StringBuilder();
@@ -218,8 +218,8 @@ namespace ProActiveAgent
                 }
 
                 LOGGER.Info("Started ProActive Runtime process [pid:" + this.proActiveRuntimeProcess.Id + "]" + System.Environment.NewLine +
-                            "CLASSPATH=" + info.EnvironmentVariables[Constants.CLASSPATH_VAR_NAME] + System.Environment.NewLine +
-                            "Command-line: " + info.FileName + " " + info.Arguments);
+                            " CLASSPATH=" + info.EnvironmentVariables[Constants.CLASSPATH_VAR_NAME] + System.Environment.NewLine +
+                            " Command-line: " + info.FileName + " " + info.Arguments);
             }
             catch (Exception ex)
             {

@@ -394,8 +394,12 @@ namespace AgentForAgent
         //--Show dialog box to select jvm path
         private void jvmLocationButton_Click(object sender, EventArgs e)
         {
-            jvmLocationBrowser.ShowDialog();
-            jvmDirectory.Text = jvmLocationBrowser.SelectedPath;            
+            jvmLocationBrowser.SelectedPath = jvmDirectory.Text;
+            DialogResult result = jvmLocationBrowser.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                jvmDirectory.Text = jvmLocationBrowser.SelectedPath;
+            }                    
         }
 
         //--Update config if it change
