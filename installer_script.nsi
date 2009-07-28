@@ -284,12 +284,12 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Section "Desktop shortcuts"
-        SetShellVarContext all ; All users
-        IfFileExists $INSTDIR\AgentForAgent.exe 0 +2
-          CreateShortCut "$DESKTOP\ProActive Agent Control.lnk" "$INSTDIR\AgentForAgent.exe" "" "$INSTDIR\icon.ico" 0
-        SetShellVarContext current ; Current User
-SectionEnd
+; Section "Desktop shortcuts"
+;         SetShellVarContext all ; All users
+;         IfFileExists $INSTDIR\AgentForAgent.exe 0 +2
+;           CreateShortCut "$DESKTOP\ProActive Agent Control.lnk" "$INSTDIR\AgentForAgent.exe" "" "$INSTDIR\icon.ico" 0
+;         SetShellVarContext current ; Current User
+; SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -337,7 +337,7 @@ Section "Uninstall"
 	DeleteRegKey HKLM SOFTWARE\ProActiveAgent
 	
 	SetShellVarContext all ; All users
-	Delete "$DESKTOP\ProActive Agent Control.lnk"
+	;Delete "$DESKTOP\ProActive Agent Control.lnk"
 	
 	RMDir /r "$SMPROGRAMS\ProActiveAgent"
 	SetShellVarContext current ; reset to current user
