@@ -82,7 +82,7 @@ namespace ProActiveAgent
             if (this.rank == 0)
             {
                 // Init the next usable ProActive Port specified by the configuration
-                nextUsableProActivePort = commonStartInfo.configuration.agentConfig.proActiveRmiPortInitialValue;
+                nextUsableProActivePort = commonStartInfo.configuration.agentConfig.proActiveCommunicationPortInitialValue;
             }
             // Init the current and increment the next usable port
             this.currentProActivePort = nextUsableProActivePort++;
@@ -160,8 +160,31 @@ namespace ProActiveAgent
             try
             {                
                 StringBuilder jvmParametersBuilder = new StringBuilder();
-                // Add the property to force the ProActive Runtime to use the port
-                jvmParametersBuilder.Append(Constants.PROACTIVE_RMI_PORT_JAVA_PROPERTY + "=" + this.currentProActivePort);
+
+                // Add the ProActive Communication Protocol related parameters (can be overriden by user-specified jvm params)
+                if (this.commonStartInfo.configuration.agentConfig.proActiveCommunicationProtocol != ConfigParser.ProActiveCommunicationProtocol.undefined)
+                {
+                    jvmParametersBuilder.Append(Constants.PROACTIVE_COMMUNICATION_PROTOCOL_JAVA_PROPERTY);
+                    jvmParametersBuilder.Append("=");
+                    switch (this.commonStartInfo.configuration.agentConfig.proActiveCommunicationProtocol)
+                    {
+                        case ConfigParser.ProActiveCommunicationProtocol.rmi:
+                            jvmParametersBuilder.Append(ConfigParser.ProActiveCommunicationProtocol.rmi);
+                            jvmParametersBuilder.Append(" ");
+                            jvmParametersBuilder.Append(Constants.PROACTIVE_RMI_PORT_JAVA_PROPERTY);
+                            break;
+                        case ConfigParser.ProActiveCommunicationProtocol.http:
+                            jvmParametersBuilder.Append(ConfigParser.ProActiveCommunicationProtocol.http);
+                            jvmParametersBuilder.Append(" ");
+                            jvmParametersBuilder.Append(Constants.PROACTIVE_HTTP_PORT_JAVA_PROPERTY);
+                            break;
+                        default:
+                            break;
+                    }
+                    jvmParametersBuilder.Append("=");
+                    jvmParametersBuilder.Append(this.currentProActivePort);
+                }
+                
                 // Merge all jvm parameters (user-specified)
                 foreach (string parameter in this.commonStartInfo.jvmParameters)
                 {                    

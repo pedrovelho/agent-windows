@@ -58,8 +58,17 @@ namespace ProActiveAgent
         /// The name of the classpath variable.</summary>
         public const string CLASSPATH_VAR_NAME = "CLASSPATH";
         /// <summary>
+        /// The name of the classpath variable.</summary>
+        public const string JAVA_HOME_VAR_NAME = "JAVA_HOME";
+        /// <summary>
+        /// The name of the ProActive Communication Protocol java property.</summary>
+        public const string PROACTIVE_COMMUNICATION_PROTOCOL_JAVA_PROPERTY = "-Dproactive.communication.protocol";
+        /// <summary>
         /// The name of the ProActive Rmi Port java property.</summary>
         public const string PROACTIVE_RMI_PORT_JAVA_PROPERTY = "-Dproactive.rmi.port";
+        /// <summary>
+        /// The name of the ProActive Http Port java property.</summary>
+        public const string PROACTIVE_HTTP_PORT_JAVA_PROPERTY = "-Dproactive.http.port";
         /// <summary>
         /// The maximum value allowed for the proactive rmi port.</summary>
         public const int MAX_PROACTIVE_RMI_PORT = 65534;
@@ -89,7 +98,7 @@ namespace ProActiveAgent
     /// <summary>
     /// A static class that contains several utilitary methods</summary>
     public static class Utils
-    {
+    {        
         /// <summary>
         /// Returns a decimal value of the available physical memory in mbytes of this computer.
         /// </summary> 

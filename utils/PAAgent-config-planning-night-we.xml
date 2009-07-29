@@ -9,7 +9,8 @@
     <native_memory>0</native_memory>
     <nb_processes>1</nb_processes>
     <use_all_cpus>false</use_all_cpus>
-    <proActiveRmiPortInitialValue>1099</proActiveRmiPortInitialValue>
+    <protocol>rmi</protocol>
+    <port_initial_value>1099</port_initial_value>
     <onRuntimeExitScript />
   </internalConfig>
   <events>

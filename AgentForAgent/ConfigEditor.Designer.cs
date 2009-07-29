@@ -80,9 +80,11 @@ namespace AgentForAgent
             this.nativeMemoryNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.nativeMemoryLabel = new System.Windows.Forms.Label();
             this.connectionTabPage = new System.Windows.Forms.TabPage();
-            this.proActiveRmiPortGroupBox = new System.Windows.Forms.GroupBox();
-            this.rmiTcpPortInitialValue = new System.Windows.Forms.Label();
-            this.initialValueNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.proActiveCommunicationProtocolGroupBox = new System.Windows.Forms.GroupBox();
+            this.protocolComboBox = new System.Windows.Forms.ComboBox();
+            this.protocolLabel = new System.Windows.Forms.Label();
+            this.portInitialValue = new System.Windows.Forms.Label();
+            this.portInitialValueNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.enabledConnectionGroupBox = new System.Windows.Forms.GroupBox();
             this.resourceManagerRegistrationRadioButton = new System.Windows.Forms.RadioButton();
             this.rmiRegistrationRadioButton = new System.Windows.Forms.RadioButton();
@@ -172,8 +174,8 @@ namespace AgentForAgent
             ((System.ComponentModel.ISupportInitialize)(this.javaMemoryNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nativeMemoryNumericUpDown)).BeginInit();
             this.connectionTabPage.SuspendLayout();
-            this.proActiveRmiPortGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.initialValueNumericUpDown)).BeginInit();
+            this.proActiveCommunicationProtocolGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.portInitialValueNumericUpDown)).BeginInit();
             this.enabledConnectionGroupBox.SuspendLayout();
             this.connectionTypeTabControl.SuspendLayout();
             this.rmiRegistrationTabPage.SuspendLayout();
@@ -332,7 +334,7 @@ namespace AgentForAgent
             this.tabControl1.Controls.Add(this.generalTabPage);
             this.tabControl1.Controls.Add(this.connectionTabPage);
             this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Location = new System.Drawing.Point(12, 12);
+            this.tabControl1.Location = new System.Drawing.Point(10, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(682, 400);
@@ -622,7 +624,7 @@ namespace AgentForAgent
             // 
             // connectionTabPage
             // 
-            this.connectionTabPage.Controls.Add(this.proActiveRmiPortGroupBox);
+            this.connectionTabPage.Controls.Add(this.proActiveCommunicationProtocolGroupBox);
             this.connectionTabPage.Controls.Add(this.enabledConnectionGroupBox);
             this.connectionTabPage.Controls.Add(this.connectionTypeTabControl);
             this.connectionTabPage.Location = new System.Drawing.Point(4, 22);
@@ -632,50 +634,75 @@ namespace AgentForAgent
             this.connectionTabPage.Text = "Connection";
             this.connectionTabPage.UseVisualStyleBackColor = true;
             // 
-            // proActiveRmiPortGroupBox
+            // proActiveCommunicationProtocolGroupBox
             // 
-            this.proActiveRmiPortGroupBox.Controls.Add(this.rmiTcpPortInitialValue);
-            this.proActiveRmiPortGroupBox.Controls.Add(this.initialValueNumericUpDown);
-            this.proActiveRmiPortGroupBox.Location = new System.Drawing.Point(534, 6);
-            this.proActiveRmiPortGroupBox.Name = "proActiveRmiPortGroupBox";
-            this.proActiveRmiPortGroupBox.Size = new System.Drawing.Size(137, 45);
-            this.proActiveRmiPortGroupBox.TabIndex = 5;
-            this.proActiveRmiPortGroupBox.TabStop = false;
-            this.proActiveRmiPortGroupBox.Text = "ProActive RMI Port";
+            this.proActiveCommunicationProtocolGroupBox.Controls.Add(this.protocolComboBox);
+            this.proActiveCommunicationProtocolGroupBox.Controls.Add(this.protocolLabel);
+            this.proActiveCommunicationProtocolGroupBox.Controls.Add(this.portInitialValue);
+            this.proActiveCommunicationProtocolGroupBox.Controls.Add(this.portInitialValueNumericUpDown);
+            this.proActiveCommunicationProtocolGroupBox.Location = new System.Drawing.Point(366, 6);
+            this.proActiveCommunicationProtocolGroupBox.Name = "proActiveCommunicationProtocolGroupBox";
+            this.proActiveCommunicationProtocolGroupBox.Size = new System.Drawing.Size(305, 45);
+            this.proActiveCommunicationProtocolGroupBox.TabIndex = 5;
+            this.proActiveCommunicationProtocolGroupBox.TabStop = false;
+            this.proActiveCommunicationProtocolGroupBox.Text = "ProActive Communication Protocol";
             // 
-            // rmiTcpPortInitialValue
+            // protocolComboBox
             // 
-            this.rmiTcpPortInitialValue.AutoSize = true;
-            this.rmiTcpPortInitialValue.Location = new System.Drawing.Point(4, 21);
-            this.rmiTcpPortInitialValue.Name = "rmiTcpPortInitialValue";
-            this.rmiTcpPortInitialValue.Size = new System.Drawing.Size(64, 13);
-            this.rmiTcpPortInitialValue.TabIndex = 1;
-            this.rmiTcpPortInitialValue.Text = "Initial Value:";
+            this.protocolComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.protocolComboBox.FormattingEnabled = true;
+            this.protocolComboBox.Items.AddRange(new object[] {
+            "undefined",
+            "rmi",
+            "http"});
+            this.protocolComboBox.Location = new System.Drawing.Point(61, 18);
+            this.protocolComboBox.Name = "protocolComboBox";
+            this.protocolComboBox.Size = new System.Drawing.Size(74, 21);
+            this.protocolComboBox.TabIndex = 3;
+            this.protocolComboBox.SelectedIndexChanged += new System.EventHandler(this.protocolComboBox_SelectedIndexChanged);
             // 
-            // initialValueNumericUpDown
+            // protocolLabel
             // 
-            this.initialValueNumericUpDown.Location = new System.Drawing.Point(74, 19);
-            this.initialValueNumericUpDown.Maximum = new decimal(new int[] {
+            this.protocolLabel.AutoSize = true;
+            this.protocolLabel.Location = new System.Drawing.Point(6, 21);
+            this.protocolLabel.Name = "protocolLabel";
+            this.protocolLabel.Size = new System.Drawing.Size(49, 13);
+            this.protocolLabel.TabIndex = 2;
+            this.protocolLabel.Text = "Protocol:";
+            // 
+            // portInitialValue
+            // 
+            this.portInitialValue.AutoSize = true;
+            this.portInitialValue.Location = new System.Drawing.Point(150, 21);
+            this.portInitialValue.Name = "portInitialValue";
+            this.portInitialValue.Size = new System.Drawing.Size(86, 13);
+            this.portInitialValue.TabIndex = 1;
+            this.portInitialValue.Text = "Port Initial Value:";
+            // 
+            // portInitialValueNumericUpDown
+            // 
+            this.portInitialValueNumericUpDown.Location = new System.Drawing.Point(242, 19);
+            this.portInitialValueNumericUpDown.Maximum = new decimal(new int[] {
             65534,
             0,
             0,
             0});
-            this.initialValueNumericUpDown.Minimum = new decimal(new int[] {
+            this.portInitialValueNumericUpDown.Minimum = new decimal(new int[] {
             1099,
             0,
             0,
             0});
-            this.initialValueNumericUpDown.Name = "initialValueNumericUpDown";
-            this.initialValueNumericUpDown.Size = new System.Drawing.Size(57, 20);
-            this.initialValueNumericUpDown.TabIndex = 0;
-            this.toolTip.SetToolTip(this.initialValueNumericUpDown, "Defines the value of the \"-Dproactive.rmi.port\" property. This value will always " +
+            this.portInitialValueNumericUpDown.Name = "portInitialValueNumericUpDown";
+            this.portInitialValueNumericUpDown.Size = new System.Drawing.Size(57, 20);
+            this.portInitialValueNumericUpDown.TabIndex = 0;
+            this.toolTip.SetToolTip(this.portInitialValueNumericUpDown, "Defines the value of the \"-Dproactive.rmi.port\" property. This value will always " +
                     "be increased by 1 or more if there is more than one Runtime.");
-            this.initialValueNumericUpDown.Value = new decimal(new int[] {
+            this.portInitialValueNumericUpDown.Value = new decimal(new int[] {
             1099,
             0,
             0,
             0});
-            this.initialValueNumericUpDown.ValueChanged += new System.EventHandler(this.initialValueNumericUpDown_ValueChanged);
+            this.portInitialValueNumericUpDown.ValueChanged += new System.EventHandler(this.initialValueNumericUpDown_ValueChanged);
             // 
             // enabledConnectionGroupBox
             // 
@@ -1527,9 +1554,9 @@ namespace AgentForAgent
             ((System.ComponentModel.ISupportInitialize)(this.javaMemoryNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nativeMemoryNumericUpDown)).EndInit();
             this.connectionTabPage.ResumeLayout(false);
-            this.proActiveRmiPortGroupBox.ResumeLayout(false);
-            this.proActiveRmiPortGroupBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.initialValueNumericUpDown)).EndInit();
+            this.proActiveCommunicationProtocolGroupBox.ResumeLayout(false);
+            this.proActiveCommunicationProtocolGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.portInitialValueNumericUpDown)).EndInit();
             this.enabledConnectionGroupBox.ResumeLayout(false);
             this.enabledConnectionGroupBox.PerformLayout();
             this.connectionTypeTabControl.ResumeLayout(false);
@@ -1683,15 +1710,17 @@ namespace AgentForAgent
         private System.Windows.Forms.NumericUpDown nbRuntimesNumericUpDown;
         private System.Windows.Forms.Label nbRuntimesLabel;
         private System.Windows.Forms.CheckBox useAllAvailableCPUsCheckBox;
-        private System.Windows.Forms.GroupBox proActiveRmiPortGroupBox;
-        private System.Windows.Forms.NumericUpDown initialValueNumericUpDown;
-        private System.Windows.Forms.Label rmiTcpPortInitialValue;
+        private System.Windows.Forms.GroupBox proActiveCommunicationProtocolGroupBox;
+        private System.Windows.Forms.NumericUpDown portInitialValueNumericUpDown;
+        private System.Windows.Forms.Label portInitialValue;
         private System.Windows.Forms.GroupBox onRuntimeExitGroupBox;
         private System.Windows.Forms.TextBox scriptLocationTextBox;
         private System.Windows.Forms.Button scriptLocationButton;
         private System.Windows.Forms.Label scriptLocationLabel;
         private System.Windows.Forms.OpenFileDialog scriptLocationFileDialog;
         private System.Windows.Forms.ToolTip toolTip;
+        private System.Windows.Forms.Label protocolLabel;
+        private System.Windows.Forms.ComboBox protocolComboBox;
     }
 
 

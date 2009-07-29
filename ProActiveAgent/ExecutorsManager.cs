@@ -42,7 +42,7 @@ namespace ProActiveAgent
             this.proActiveRuntimeExecutors = new List<ProActiveRuntimeExecutor>(nbProcesses);
 
             // Get the initial value for the ProActive Rmi Port specified in the configuration
-            int lastProActiveRmiPort = configuration.agentConfig.proActiveRmiPortInitialValue;
+            int lastProActiveRmiPort = configuration.agentConfig.proActiveCommunicationPortInitialValue;
 
             // Create as many executors as specified in the configuration
             for (int rank = 0; rank < nbProcesses; rank++)

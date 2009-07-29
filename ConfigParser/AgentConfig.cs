@@ -1,5 +1,5 @@
-﻿using System.Xml.Serialization;
-using System;
+﻿using System;
+using System.Xml.Serialization;
 
 /**
  * The configuration of runner script for launching services provided by ProActive
@@ -10,6 +10,16 @@ using System;
 
 namespace ConfigParser
 {
+    /// <summary>
+    /// Enumeration type of ProActive Agent running type.
+    /// </summary>
+    public enum ProActiveCommunicationProtocol
+    {
+        undefined = 0,
+        rmi = 1,
+        http = 2
+    }
+
     public class AgentConfig
     {
         private string myProActiveLocation;
@@ -28,7 +38,9 @@ namespace ConfigParser
 
         private bool myUseAllCPUs;
 
-        private int myProActiveRmiPortInitialValue;
+        private ProActiveCommunicationProtocol myProActiveCommunicationProtocol;
+
+        private int myProActiveCommunicationPortInitialValue;
 
         private string myOnRuntimeExitScript;
 
@@ -141,17 +153,31 @@ namespace ConfigParser
             }
         }
 
-        [XmlElement("proActiveRmiPortInitialValue")]
-        public int proActiveRmiPortInitialValue
+        [XmlElement("protocol")]
+        public ProActiveCommunicationProtocol proActiveCommunicationProtocol
         {
             get
             {
-                return this.myProActiveRmiPortInitialValue;
+                return this.myProActiveCommunicationProtocol;
             }
 
             set
             {
-                this.myProActiveRmiPortInitialValue = value;
+                this.myProActiveCommunicationProtocol = value;
+            }
+        }
+
+        [XmlElement("port_initial_value")]
+        public int proActiveCommunicationPortInitialValue
+        {
+            get
+            {
+                return this.myProActiveCommunicationPortInitialValue;
+            }
+
+            set
+            {
+                this.myProActiveCommunicationPortInitialValue = value;
             }
         }
 

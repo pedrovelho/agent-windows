@@ -91,9 +91,9 @@ namespace AgentForAgent
             this.processPriorityComboBox.SelectedIndex = 0;
             this.maxCpuUsageNumericUpDown.Value = this.maxCpuUsageNumericUpDown.Maximum;
 
-
-            // Init default values for ProActive Rmi Port
-            this.initialValueNumericUpDown.Value = conf.agentConfig.proActiveRmiPortInitialValue;
+            // Init default values for ProActive Communication Protocol and Port
+            this.protocolComboBox.SelectedItem = Enum.GetName(typeof(ProActiveCommunicationProtocol), conf.agentConfig.proActiveCommunicationProtocol);
+            this.portInitialValueNumericUpDown.Value = conf.agentConfig.proActiveCommunicationPortInitialValue;
 
             /////////////////////////////////////////////
             // Load the actions from the configuration //
@@ -288,8 +288,9 @@ namespace AgentForAgent
             this.configuration.agentConfig.useAllCPUs = this.useAllAvailableCPUsCheckBox.Checked;
             //--Events list                        
             this.internalCopyEventsList();
-            // Save ProActive Rmi Port initial value
-            this.configuration.agentConfig.proActiveRmiPortInitialValue = System.Decimal.ToInt32(this.initialValueNumericUpDown.Value);
+            // Save ProActive Communication Protocol and Port initial value
+            this.configuration.agentConfig.proActiveCommunicationProtocol = (ProActiveCommunicationProtocol)Enum.Parse(typeof(ProActiveCommunicationProtocol), (string)this.protocolComboBox.SelectedItem);            
+            this.configuration.agentConfig.proActiveCommunicationPortInitialValue = System.Decimal.ToInt32(this.portInitialValueNumericUpDown.Value);
             // Save all defined actions                        
             if (this.configuration.actions == null || this.configuration.actions.Length < 3)
             {
@@ -746,6 +747,16 @@ namespace AgentForAgent
         /** CONNECTION TYPE GUI HANDLING METHODS **/
         /******************************************/
 
+        private void protocolComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {               
+            this.saveConfig.Enabled = true;
+        }
+
+        private void initialValueNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            this.saveConfig.Enabled = true;
+        }
+
         /****************************************************************/
         /** ADVERT ACTION TYPE - rmi registration gui handling methods **/
         /****************************************************************/
@@ -1035,11 +1046,6 @@ namespace AgentForAgent
         private void useAllAvailableCPUsCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             this.nbRuntimesNumericUpDown.Enabled = !this.useAllAvailableCPUsCheckBox.Checked;
-            this.saveConfig.Enabled = true;
-        }
-
-        private void initialValueNumericUpDown_ValueChanged(object sender, EventArgs e)
-        {
             this.saveConfig.Enabled = true;
         }
 
