@@ -90,6 +90,7 @@
       <password />
       <url />
       <nodeName />
+      <nodeSourceName />
     </action>
     <action xsi:type="CustomAction">
       <initialRestartDelay>0</initialRestartDelay>

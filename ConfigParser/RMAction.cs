@@ -30,6 +30,7 @@ namespace ConfigParser
         private string myPassword;
         private string myRmUrl;
         private string myNodeName;
+        private string myNodeSourceName;
 
         public RMAction() {
             base.javaStarterClass = DEFAULT_JAVA_STARTER_CLASS;
@@ -37,6 +38,7 @@ namespace ConfigParser
             this.myPassword = "";
             this.myRmUrl = "";
             this.myNodeName = "";
+            this.myNodeSourceName = "";
         }
 
         [XmlElement("username", IsNullable = false)]
@@ -91,9 +93,22 @@ namespace ConfigParser
             }
         }
 
+        [XmlElement("nodeSourceName", IsNullable = false)]
+        public string nodeSourceName
+        {
+            get
+            {
+                return this.myNodeSourceName;
+            }
+            set
+            {
+                this.myNodeSourceName = value;
+            }
+        }
+
         public override string[] getArgs()
         {
-            return new string[] { this.myUsername, this.myPassword, this.myRmUrl, this.myNodeName };
+            return new string[] { this.myUsername, this.myPassword, this.myRmUrl, this.myNodeName, this.myNodeSourceName };
         }
 
         // Default jvm parameters needed for this type of action

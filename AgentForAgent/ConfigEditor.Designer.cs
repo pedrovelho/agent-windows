@@ -107,10 +107,10 @@ namespace AgentForAgent
             this.rmPasswordLabel = new System.Windows.Forms.Label();
             this.rmUsernameTextBox = new System.Windows.Forms.TextBox();
             this.rmUsernameLabel = new System.Windows.Forms.Label();
-            this.rmNodeName = new System.Windows.Forms.TextBox();
-            this.label16 = new System.Windows.Forms.Label();
+            this.nodeNameTextBox = new System.Windows.Forms.TextBox();
+            this.nodeNameLabel = new System.Windows.Forms.Label();
             this.rmUrl = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
+            this.resourceManagerUrlLabel = new System.Windows.Forms.Label();
             this.customTabPage = new System.Windows.Forms.TabPage();
             this.customAdditionalConfigurationGroupBox = new System.Windows.Forms.GroupBox();
             this.customJavaActionClassTextBox = new System.Windows.Forms.TextBox();
@@ -162,6 +162,9 @@ namespace AgentForAgent
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.scriptLocationFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.authenticationGroupBox = new System.Windows.Forms.GroupBox();
+            this.nodeSourceNameTextBox = new System.Windows.Forms.TextBox();
+            this.nodeSourceNameLabel = new System.Windows.Forms.Label();
             this.eventsList = new AgentForAgent.RefreshingListBox();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -201,6 +204,7 @@ namespace AgentForAgent
             ((System.ComponentModel.ISupportInitialize)(this.minutesDuration)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.hoursDuration)).BeginInit();
             this.groupBox2.SuspendLayout();
+            this.authenticationGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -815,7 +819,7 @@ namespace AgentForAgent
             this.rmiActionGroup.Controls.Add(this.rmiNodeEnabled);
             this.rmiActionGroup.Location = new System.Drawing.Point(6, 6);
             this.rmiActionGroup.Name = "rmiActionGroup";
-            this.rmiActionGroup.Size = new System.Drawing.Size(436, 53);
+            this.rmiActionGroup.Size = new System.Drawing.Size(473, 53);
             this.rmiActionGroup.TabIndex = 1;
             this.rmiActionGroup.TabStop = false;
             this.rmiActionGroup.Text = "RMI Registration";
@@ -825,7 +829,7 @@ namespace AgentForAgent
             this.rmiNodeName.Enabled = false;
             this.rmiNodeName.Location = new System.Drawing.Point(96, 19);
             this.rmiNodeName.Name = "rmiNodeName";
-            this.rmiNodeName.Size = new System.Drawing.Size(333, 20);
+            this.rmiNodeName.Size = new System.Drawing.Size(371, 20);
             this.rmiNodeName.TabIndex = 1;
             this.rmiNodeName.TextChanged += new System.EventHandler(this.rmiNodeName_TextChanged);
             // 
@@ -881,18 +885,16 @@ namespace AgentForAgent
             // 
             // rmActionGroup
             // 
-            this.rmActionGroup.Controls.Add(this.rmAnonymousCheckBox);
-            this.rmActionGroup.Controls.Add(this.rmPasswordTextBox);
-            this.rmActionGroup.Controls.Add(this.rmPasswordLabel);
-            this.rmActionGroup.Controls.Add(this.rmUsernameTextBox);
-            this.rmActionGroup.Controls.Add(this.rmUsernameLabel);
-            this.rmActionGroup.Controls.Add(this.rmNodeName);
-            this.rmActionGroup.Controls.Add(this.label16);
+            this.rmActionGroup.Controls.Add(this.nodeSourceNameLabel);
+            this.rmActionGroup.Controls.Add(this.nodeSourceNameTextBox);
+            this.rmActionGroup.Controls.Add(this.authenticationGroupBox);
+            this.rmActionGroup.Controls.Add(this.nodeNameTextBox);
+            this.rmActionGroup.Controls.Add(this.nodeNameLabel);
             this.rmActionGroup.Controls.Add(this.rmUrl);
-            this.rmActionGroup.Controls.Add(this.label4);
+            this.rmActionGroup.Controls.Add(this.resourceManagerUrlLabel);
             this.rmActionGroup.Location = new System.Drawing.Point(6, 6);
             this.rmActionGroup.Name = "rmActionGroup";
-            this.rmActionGroup.Size = new System.Drawing.Size(436, 154);
+            this.rmActionGroup.Size = new System.Drawing.Size(473, 201);
             this.rmActionGroup.TabIndex = 3;
             this.rmActionGroup.TabStop = false;
             this.rmActionGroup.Text = "Resource Manager Registration";
@@ -900,7 +902,7 @@ namespace AgentForAgent
             // rmAnonymousCheckBox
             // 
             this.rmAnonymousCheckBox.AutoSize = true;
-            this.rmAnonymousCheckBox.Location = new System.Drawing.Point(138, 104);
+            this.rmAnonymousCheckBox.Location = new System.Drawing.Point(6, 19);
             this.rmAnonymousCheckBox.Name = "rmAnonymousCheckBox";
             this.rmAnonymousCheckBox.Size = new System.Drawing.Size(81, 17);
             this.rmAnonymousCheckBox.TabIndex = 8;
@@ -910,17 +912,17 @@ namespace AgentForAgent
             // 
             // rmPasswordTextBox
             // 
-            this.rmPasswordTextBox.Location = new System.Drawing.Point(311, 128);
+            this.rmPasswordTextBox.Location = new System.Drawing.Point(167, 43);
             this.rmPasswordTextBox.Name = "rmPasswordTextBox";
             this.rmPasswordTextBox.PasswordChar = '*';
-            this.rmPasswordTextBox.Size = new System.Drawing.Size(119, 20);
+            this.rmPasswordTextBox.Size = new System.Drawing.Size(156, 20);
             this.rmPasswordTextBox.TabIndex = 7;
             this.rmPasswordTextBox.TextChanged += new System.EventHandler(this.rmPasswordTextBox_TextChanged);
             // 
             // rmPasswordLabel
             // 
             this.rmPasswordLabel.AutoSize = true;
-            this.rmPasswordLabel.Location = new System.Drawing.Point(249, 131);
+            this.rmPasswordLabel.Location = new System.Drawing.Point(105, 46);
             this.rmPasswordLabel.Name = "rmPasswordLabel";
             this.rmPasswordLabel.Size = new System.Drawing.Size(56, 13);
             this.rmPasswordLabel.TabIndex = 6;
@@ -928,54 +930,54 @@ namespace AgentForAgent
             // 
             // rmUsernameTextBox
             // 
-            this.rmUsernameTextBox.Location = new System.Drawing.Point(311, 102);
+            this.rmUsernameTextBox.Location = new System.Drawing.Point(167, 17);
             this.rmUsernameTextBox.Name = "rmUsernameTextBox";
-            this.rmUsernameTextBox.Size = new System.Drawing.Size(119, 20);
+            this.rmUsernameTextBox.Size = new System.Drawing.Size(156, 20);
             this.rmUsernameTextBox.TabIndex = 5;
             this.rmUsernameTextBox.TextChanged += new System.EventHandler(this.rmUsernameTextBox_TextChanged);
             // 
             // rmUsernameLabel
             // 
             this.rmUsernameLabel.AutoSize = true;
-            this.rmUsernameLabel.Location = new System.Drawing.Point(247, 105);
+            this.rmUsernameLabel.Location = new System.Drawing.Point(103, 20);
             this.rmUsernameLabel.Name = "rmUsernameLabel";
             this.rmUsernameLabel.Size = new System.Drawing.Size(58, 13);
             this.rmUsernameLabel.TabIndex = 4;
             this.rmUsernameLabel.Text = "Username:";
             // 
-            // rmNodeName
+            // nodeNameTextBox
             // 
-            this.rmNodeName.Location = new System.Drawing.Point(138, 45);
-            this.rmNodeName.Name = "rmNodeName";
-            this.rmNodeName.Size = new System.Drawing.Size(292, 20);
-            this.rmNodeName.TabIndex = 3;
-            this.rmNodeName.TextChanged += new System.EventHandler(this.rmNodeName_TextChanged);
+            this.nodeNameTextBox.Location = new System.Drawing.Point(138, 45);
+            this.nodeNameTextBox.Name = "nodeNameTextBox";
+            this.nodeNameTextBox.Size = new System.Drawing.Size(329, 20);
+            this.nodeNameTextBox.TabIndex = 3;
+            this.nodeNameTextBox.TextChanged += new System.EventHandler(this.rmNodeName_TextChanged);
             // 
-            // label16
+            // nodeNameLabel
             // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(65, 48);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(67, 13);
-            this.label16.TabIndex = 2;
-            this.label16.Text = "Node Name:";
+            this.nodeNameLabel.AutoSize = true;
+            this.nodeNameLabel.Location = new System.Drawing.Point(65, 48);
+            this.nodeNameLabel.Name = "nodeNameLabel";
+            this.nodeNameLabel.Size = new System.Drawing.Size(67, 13);
+            this.nodeNameLabel.TabIndex = 2;
+            this.nodeNameLabel.Text = "Node Name:";
             // 
             // rmUrl
             // 
             this.rmUrl.Location = new System.Drawing.Point(138, 19);
             this.rmUrl.Name = "rmUrl";
-            this.rmUrl.Size = new System.Drawing.Size(292, 20);
+            this.rmUrl.Size = new System.Drawing.Size(329, 20);
             this.rmUrl.TabIndex = 1;
             this.rmUrl.TextChanged += new System.EventHandler(this.rmUrl_TextChanged);
             // 
-            // label4
+            // resourceManagerUrlLabel
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 22);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(126, 13);
-            this.label4.TabIndex = 0;
-            this.label4.Text = "Resource Manager URL:";
+            this.resourceManagerUrlLabel.AutoSize = true;
+            this.resourceManagerUrlLabel.Location = new System.Drawing.Point(6, 22);
+            this.resourceManagerUrlLabel.Name = "resourceManagerUrlLabel";
+            this.resourceManagerUrlLabel.Size = new System.Drawing.Size(126, 13);
+            this.resourceManagerUrlLabel.TabIndex = 0;
+            this.resourceManagerUrlLabel.Text = "Resource Manager URL:";
             // 
             // customTabPage
             // 
@@ -1027,7 +1029,7 @@ namespace AgentForAgent
             this.customActionGroup.Controls.Add(this.label14);
             this.customActionGroup.Location = new System.Drawing.Point(6, 6);
             this.customActionGroup.Name = "customActionGroup";
-            this.customActionGroup.Size = new System.Drawing.Size(436, 181);
+            this.customActionGroup.Size = new System.Drawing.Size(473, 151);
             this.customActionGroup.TabIndex = 3;
             this.customActionGroup.TabStop = false;
             this.customActionGroup.Text = "Custom";
@@ -1035,7 +1037,7 @@ namespace AgentForAgent
             // customSaveArgumentButton
             // 
             this.customSaveArgumentButton.Enabled = false;
-            this.customSaveArgumentButton.Location = new System.Drawing.Point(350, 93);
+            this.customSaveArgumentButton.Location = new System.Drawing.Point(392, 93);
             this.customSaveArgumentButton.Name = "customSaveArgumentButton";
             this.customSaveArgumentButton.Size = new System.Drawing.Size(75, 23);
             this.customSaveArgumentButton.TabIndex = 6;
@@ -1047,7 +1049,7 @@ namespace AgentForAgent
             // 
             this.customArgumentTextBox.Location = new System.Drawing.Point(69, 122);
             this.customArgumentTextBox.Name = "customArgumentTextBox";
-            this.customArgumentTextBox.Size = new System.Drawing.Size(356, 20);
+            this.customArgumentTextBox.Size = new System.Drawing.Size(398, 20);
             this.customArgumentTextBox.TabIndex = 5;
             // 
             // label15
@@ -1061,7 +1063,7 @@ namespace AgentForAgent
             // 
             // customDeleteButton
             // 
-            this.customDeleteButton.Location = new System.Drawing.Point(350, 63);
+            this.customDeleteButton.Location = new System.Drawing.Point(392, 63);
             this.customDeleteButton.Name = "customDeleteButton";
             this.customDeleteButton.Size = new System.Drawing.Size(75, 23);
             this.customDeleteButton.TabIndex = 3;
@@ -1071,7 +1073,7 @@ namespace AgentForAgent
             // 
             // customAddButton
             // 
-            this.customAddButton.Location = new System.Drawing.Point(350, 34);
+            this.customAddButton.Location = new System.Drawing.Point(392, 34);
             this.customAddButton.Name = "customAddButton";
             this.customAddButton.Size = new System.Drawing.Size(75, 23);
             this.customAddButton.TabIndex = 2;
@@ -1084,7 +1086,7 @@ namespace AgentForAgent
             this.customArgumentsListBox.FormattingEnabled = true;
             this.customArgumentsListBox.Location = new System.Drawing.Point(9, 34);
             this.customArgumentsListBox.Name = "customArgumentsListBox";
-            this.customArgumentsListBox.Size = new System.Drawing.Size(335, 82);
+            this.customArgumentsListBox.Size = new System.Drawing.Size(377, 82);
             this.customArgumentsListBox.TabIndex = 1;
             this.customArgumentsListBox.SelectedIndexChanged += new System.EventHandler(this.customArgumentsListBox_SelectedIndexChanged);
             // 
@@ -1511,6 +1513,37 @@ namespace AgentForAgent
             this.scriptLocationFileDialog.DefaultExt = "bat";
             this.scriptLocationFileDialog.Filter = "Scripts .bat/.cmd|*.bat;*.cmd|Executables .exe|*.exe";
             // 
+            // authenticationGroupBox
+            // 
+            this.authenticationGroupBox.Controls.Add(this.rmAnonymousCheckBox);
+            this.authenticationGroupBox.Controls.Add(this.rmUsernameLabel);
+            this.authenticationGroupBox.Controls.Add(this.rmPasswordLabel);
+            this.authenticationGroupBox.Controls.Add(this.rmPasswordTextBox);
+            this.authenticationGroupBox.Controls.Add(this.rmUsernameTextBox);
+            this.authenticationGroupBox.Location = new System.Drawing.Point(138, 122);
+            this.authenticationGroupBox.Name = "authenticationGroupBox";
+            this.authenticationGroupBox.Size = new System.Drawing.Size(329, 73);
+            this.authenticationGroupBox.TabIndex = 9;
+            this.authenticationGroupBox.TabStop = false;
+            this.authenticationGroupBox.Text = "Authentication";
+            // 
+            // nodeSourceNameTextBox
+            // 
+            this.nodeSourceNameTextBox.Location = new System.Drawing.Point(138, 72);
+            this.nodeSourceNameTextBox.Name = "nodeSourceNameTextBox";
+            this.nodeSourceNameTextBox.Size = new System.Drawing.Size(329, 20);
+            this.nodeSourceNameTextBox.TabIndex = 10;
+            this.nodeSourceNameTextBox.TextChanged += new System.EventHandler(this.nodeSourceNameTextBox_TextChanged);
+            // 
+            // nodeSourceNameLabel
+            // 
+            this.nodeSourceNameLabel.AutoSize = true;
+            this.nodeSourceNameLabel.Location = new System.Drawing.Point(28, 75);
+            this.nodeSourceNameLabel.Name = "nodeSourceNameLabel";
+            this.nodeSourceNameLabel.Size = new System.Drawing.Size(104, 13);
+            this.nodeSourceNameLabel.TabIndex = 11;
+            this.nodeSourceNameLabel.Text = "Node Source Name:";
+            // 
             // eventsList
             // 
             this.eventsList.FormattingEnabled = true;
@@ -1593,6 +1626,8 @@ namespace AgentForAgent
             ((System.ComponentModel.ISupportInitialize)(this.minutesDuration)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.hoursDuration)).EndInit();
             this.groupBox2.ResumeLayout(false);
+            this.authenticationGroupBox.ResumeLayout(false);
+            this.authenticationGroupBox.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1679,9 +1714,9 @@ namespace AgentForAgent
         private System.Windows.Forms.CheckBox rmiNodeEnabled;
         private System.Windows.Forms.GroupBox rmActionGroup;
         private System.Windows.Forms.TextBox rmUrl;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox rmNodeName;
-        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Label resourceManagerUrlLabel;
+        private System.Windows.Forms.TextBox nodeNameTextBox;
+        private System.Windows.Forms.Label nodeNameLabel;
         private System.Windows.Forms.GroupBox rmiRegistrationAdditionalConfigurationGroupBox;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.TextBox rmiRegistrationJavaActionClassTextBox;
@@ -1721,6 +1756,9 @@ namespace AgentForAgent
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.Label protocolLabel;
         private System.Windows.Forms.ComboBox protocolComboBox;
+        private System.Windows.Forms.GroupBox authenticationGroupBox;
+        private System.Windows.Forms.Label nodeSourceNameLabel;
+        private System.Windows.Forms.TextBox nodeSourceNameTextBox;
     }
 
 
