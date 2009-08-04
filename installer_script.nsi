@@ -6,7 +6,7 @@
 CRCCheck on
 
 Name "ProActive Agent"
-OutFile PAAgent_Setup.exe
+OutFile ProActiveAgent-setup-v1.0.1rc.exe
 
 LicenseText "This program is Licensed under the GNU General Public License (GPL)."
 LicenseData "LICENSE.txt"
@@ -189,7 +189,7 @@ Section "ProActive Agent"
         ;-----------------------------------------------------------------------------------
         ReadRegDWORD $1 HKLM Software\Microsoft\Windows\CurrentVersion\Policies\System EnableLUA
         StrCmp $1 '1' 0 +3
-          MessageBox MB_OK "It appears that the User Account Control (UAC) feature is enabled. The installation cannot continue. Please disable the UAC feature and restart the installation. To disable the UAC feature: \n 1) Launch MSCONFIG by from the Run menu. \n 2) Click on the Tools tab. Scroll down till you find 'Disable UAC' and reboot."
+          MessageBox MB_OK "It appears that the User Account Control (UAC) feature is enabled. The installation cannot continue. Please disable the UAC feature and restart the installation. To disable the UAC feature: Go to the User Accounts part in the Control Panel and click on the 'Turn User Account Control on or off' Next, uncheck the 'Use User Account' check box to disable and reboot."
             Abort
 
         ; Check if .NET framework is installed >= 2.0

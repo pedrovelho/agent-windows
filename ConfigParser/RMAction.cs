@@ -93,22 +93,9 @@ namespace ConfigParser
             }
         }
 
-        [XmlElement("nodeSourceName", IsNullable = false)]
-        public string nodeSourceName
-        {
-            get
-            {
-                return this.myNodeSourceName;
-            }
-            set
-            {
-                this.myNodeSourceName = value;
-            }
-        }
-
         public override string[] getArgs()
         {
-            return new string[] { this.myUsername, this.myPassword, this.myRmUrl, this.myNodeName, this.myNodeSourceName };
+            return new string[] { this.myUsername, this.myPassword, this.myRmUrl, this.myNodeName };
         }
 
         // Default jvm parameters needed for this type of action

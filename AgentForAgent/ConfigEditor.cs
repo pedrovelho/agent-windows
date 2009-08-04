@@ -138,8 +138,7 @@ namespace AgentForAgent
                     }
                     RMAction rmAction = (RMAction)action;
                     this.rmUrl.Text = rmAction.url;
-                    this.nodeNameTextBox.Text = rmAction.nodeName;
-                    this.nodeSourceNameTextBox.Text = rmAction.nodeSourceName;
+                    this.nodeNameTextBox.Text = rmAction.nodeName;                    
 
                     if (rmAction.username.Equals(RMAction.ANONYMOUS_USERNAME) && rmAction.username.Equals(RMAction.ANONYMOUS_PASSWORD))
                     {
@@ -306,8 +305,7 @@ namespace AgentForAgent
             // Save resource manager registration action definition
             RMAction rmAction = new RMAction();
             rmAction.url = rmUrl.Text;
-            rmAction.nodeName = nodeNameTextBox.Text;
-            rmAction.nodeSourceName = nodeSourceNameTextBox.Text;
+            rmAction.nodeName = nodeNameTextBox.Text;            
             rmAction.username = this.rmUsernameTextBox.Text;
             rmAction.password = this.rmPasswordTextBox.Text;
             rmAction.javaStarterClass = this.resourceManagerRegistrationJavaActionClassTextBox.Text;
@@ -805,11 +803,6 @@ namespace AgentForAgent
         }
 
         private void rmNodeName_TextChanged(object sender, EventArgs e)
-        {
-            this.saveConfig.Enabled = true;
-        }
-
-        private void nodeSourceNameTextBox_TextChanged(object sender, EventArgs e)
         {
             this.saveConfig.Enabled = true;
         }
