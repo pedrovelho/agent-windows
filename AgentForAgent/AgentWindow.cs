@@ -323,14 +323,8 @@ namespace AgentForAgent
                 window.ShowDialog();
             }
             catch (Exception ex)
-            {
-                //MessageBox.Show("The configuration file is broken.", "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            {                
                 DialogResult res = MessageBox.Show("The configuration file is broken. " + ex.ToString(), "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //TODO : proposer de créer un fichier âr default
-                /*if (res == DialogResult.Yes)
-                {
-
-                }*/
             }
         }
 

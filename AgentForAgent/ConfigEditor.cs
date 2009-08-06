@@ -237,12 +237,12 @@ namespace AgentForAgent
             // If the save button is enabled
             if (this.saveConfig.Enabled)
             {
-                // Ask the user to be sure to exit without saving the configuration
-                DialogResult res = MessageBox.Show("Are you sure you want to exit without saving ?", "Exit Configuration Editor", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-                if (res == DialogResult.No)
+                // Ask the user to save before exit
+                DialogResult res = MessageBox.Show("Save before exit ?", "Exit Configuration Editor", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                if (res == DialogResult.Yes)
                 {
-                    e.Cancel = true;
-                    return;
+                    // Save the configuration
+                    this.internalSave(this.configurationLocation);
                 }
             }            
         }
