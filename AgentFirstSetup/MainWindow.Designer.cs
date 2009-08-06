@@ -39,6 +39,7 @@
             this.proActiveLocationBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.jvmLocationBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.panelAccount = new System.Windows.Forms.Panel();
             this.label5 = new System.Windows.Forms.Label();
@@ -50,7 +51,6 @@
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.continueButton = new System.Windows.Forms.Button();
-            this.label4 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.panelAccount.SuspendLayout();
@@ -124,11 +124,11 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(203, 9);
+            this.label3.Location = new System.Drawing.Point(219, 9);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(376, 13);
+            this.label3.Size = new System.Drawing.Size(360, 13);
             this.label3.TabIndex = 14;
-            this.label3.Text = "Note that these settings can be changed through the ProActive Agent Control.";
+            this.label3.Text = "Note that these settings can be changed from the ProActive Agent Control.";
             // 
             // proActiveLocationBrowser
             // 
@@ -154,6 +154,15 @@
             this.groupBox1.TabIndex = 18;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Settings";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 28);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(157, 13);
+            this.label4.TabIndex = 14;
+            this.label4.Text = "ProActive Scheduling Directory:";
             // 
             // groupBox2
             // 
@@ -265,15 +274,6 @@
             this.continueButton.Text = "Continue";
             this.continueButton.UseVisualStyleBackColor = true;
             this.continueButton.Click += new System.EventHandler(this.continueButton_Click);
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 28);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(157, 13);
-            this.label4.TabIndex = 14;
-            this.label4.Text = "ProActive Scheduling Directory:";
             // 
             // MainWindow
             // 

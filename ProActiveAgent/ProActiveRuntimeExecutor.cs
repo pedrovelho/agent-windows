@@ -162,11 +162,11 @@ namespace ProActiveAgent
                 StringBuilder jvmParametersBuilder = new StringBuilder();
 
                 // Add the ProActive Communication Protocol related parameters (can be overriden by user-specified jvm params)
-                if (this.commonStartInfo.configuration.agentConfig.proActiveCommunicationProtocol != ConfigParser.ProActiveCommunicationProtocol.undefined)
+                if (this.commonStartInfo.configuration.agentConfig.runtimeIncomingProtocol != ConfigParser.ProActiveCommunicationProtocol.undefined)
                 {
                     jvmParametersBuilder.Append(Constants.PROACTIVE_COMMUNICATION_PROTOCOL_JAVA_PROPERTY);
                     jvmParametersBuilder.Append("=");
-                    switch (this.commonStartInfo.configuration.agentConfig.proActiveCommunicationProtocol)
+                    switch (this.commonStartInfo.configuration.agentConfig.runtimeIncomingProtocol)
                     {
                         case ConfigParser.ProActiveCommunicationProtocol.rmi:
                             jvmParametersBuilder.Append(ConfigParser.ProActiveCommunicationProtocol.rmi);

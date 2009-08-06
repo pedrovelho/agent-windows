@@ -42,6 +42,7 @@ namespace AgentFirstSetup
 
             this.agentDir = (string)confKey.GetValue(Constants.PROACTIVE_AGENT_INSTALL_LOCATION_REG_VALUE_NAME);
             this.configLocation = (string)confKey.GetValue(Constants.PROACTIVE_AGENT_CONFIG_LOCATION_REG_VALUE_NAME);
+            confKey.Close();
 
             if (this.agentDir == null || this.configLocation == null)
             {
@@ -135,6 +136,23 @@ namespace AgentFirstSetup
                     return;
                 }
 
+                // Write the service user into the registry
+                try
+                {
+                    // Open the registry key
+                    RegistryKey confKey = Registry.LocalMachine.OpenSubKey(Constants.PROACTIVE_AGENT_REG_SUBKEY, true);
+                    if (confKey != null)
+                    {
+                        confKey.SetValue(Constants.PROACTIVE_AGENT_SERVICE_USER_REG_VALUE_NAME, accountUser);
+                        confKey.Close();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Unable to write the service user into the registry due to " + ex.ToString());
+                }
+
+                // Check if the user as admin
                 if (!checkUser(accountDomain, accountUser, accountPassword))
                 {
                     // No need to print any message, the checkUser function already does it !
@@ -147,9 +165,9 @@ namespace AgentFirstSetup
                 // Save the config
                 ConfigurationParser.saveXml(this.configLocation, this.conf);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                MessageBox.Show("Could not save the configuration.");
+                MessageBox.Show("Could not save the configuration due to " + ex.ToString());
             }
 
             try
@@ -157,9 +175,9 @@ namespace AgentFirstSetup
                 // Install new version
                 SrvInstaller.Install(path + "\\" + Constants.PROACTIVE_AGENT_EXECUTABLE_NAME, Constants.PROACTIVE_AGENT_SERVICE_NAME, Constants.PROACTIVE_AGENT_SERVICE_NAME, accountDomain, accountUser, accountPassword);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                MessageBox.Show("Could not install the " + Constants.PROACTIVE_AGENT_SERVICE_NAME + " service.");
+                MessageBox.Show("Could not install the " + Constants.PROACTIVE_AGENT_SERVICE_NAME + " service due to " + ex.ToString());
             }
             Close();
         }
@@ -189,16 +207,13 @@ namespace AgentFirstSetup
             {
                 MessageBox.Show("Wrong User/Password", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
-            }
-            //renvoi identité ASP_NET <--- ???????????
-            WindowsIdentity ident_here1 = WindowsIdentity.GetCurrent();
+            }                        
             WindowsIdentity SystemMonitorUser = new WindowsIdentity(UserToken);
 
-            //Changement d'utilisateur ici
+            // Change the user here
             WindowsImpersonationContext ImpersonatedUser = SystemMonitorUser.Impersonate();
 
-            //ridentité nouvel User
-            WindowsIdentity ident_here2 = WindowsIdentity.GetCurrent();
+            // Get new identity
             WindowsIdentity identity = new WindowsIdentity(UserToken);
             WindowsPrincipal principal = new WindowsPrincipal(identity);
             ImpersonatedUser.Undo();

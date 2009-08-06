@@ -17,6 +17,11 @@ LicenseData "LICENSE.txt"
 ;-----------------------------------------------------------------------------------
 InstallDir $PROGRAMFILES\ProActiveAgent
 
+;-----------------------------------------------------------------------------------
+; A variable to contain the ProActive Agent service user
+;-----------------------------------------------------------------------------------
+var ServiceUser
+
 ComponentText "This will install ProActive Agent on your computer. Select which optional components you want installed."
 
 DirText "Choose a directory to install in to:"
@@ -172,7 +177,7 @@ Section "ProActive Agent"
         System::Call "kernel32::GetModuleHandle(t 'shell32.dll') i .s"
         System::Call "kernel32::GetProcAddress(i s, i 680) i .r0"
         System::Call "::$0() i .r0"
-        DetailPrint "is admin? $0"
+        DetailPrint "Check: Current user is admin? $0"
         StrCmp $0 '0' 0 +3
           MessageBox MB_OK "Adminstrator rights are required to install the ProActive Agent."
             Abort
@@ -192,13 +197,17 @@ Section "ProActive Agent"
           MessageBox MB_OK "It appears that the User Account Control (UAC) feature is enabled. The installation cannot continue. Please disable the UAC feature and restart the installation. To disable the UAC feature: Go to the User Accounts part in the Control Panel and click on the 'Turn User Account Control on or off' Next, uncheck the 'Use User Account' check box to disable and reboot."
             Abort
 
+        ;-----------------------------------------------------------------------------------
         ; Check if .NET framework is installed >= 2.0
-        DetailPrint ".NET Framework version check"
+        ;-----------------------------------------------------------------------------------
+        DetailPrint "Check: .NET Framework version >= 2.0"
         Call SetupDotNetSectionIfNeeded
-        
+
+        ;-----------------------------------------------------------------------------------
         ; Check if VC++ redist 2008 is installed
+        ;-----------------------------------------------------------------------------------
         ReadRegDWORD $0 HKLM Software\Microsoft\DevDiv\VC\Servicing\9.0\RED\1033 Install
-        DetailPrint "VC++ 9.0 Redistributable Package status: $0"
+        DetailPrint "Check: VC++ 9.0 Redistributable Package installed? $0"
         ; If the redistributable package is not installed run the installer
         StrCmp $0 '1' continueInstall 0
           MessageBox MB_OK 'You must install the Visual C++ 2008 Redistributable Package to use ProActive Agent.$\nPress OK to begin installation.'
@@ -241,10 +250,14 @@ Section "ProActive Agent"
 
         SetOutPath $INSTDIR
 
+        ;-----------------------------------------------------------------------------------
         ; Write uninstaller utility
+        ;-----------------------------------------------------------------------------------
         WriteUninstaller uninstall.exe
 
+        ;-----------------------------------------------------------------------------------
         ; Write files
+        ;-----------------------------------------------------------------------------------
         File "LICENSE.txt"
         File "bin\Release\ConfigParser.exe"
         File "bin\Release\ProActiveAgent.exe"
@@ -264,8 +277,76 @@ Section "ProActive Agent"
         File "utils\icon.ico"
         File "utils\ListNetworkInterfaces.class"
         File "ProActive Agent Documentation.pdf"
-
+        
+        ;-----------------------------------------------------------------------------------
+        ; Run the internal service installer
+        ;-----------------------------------------------------------------------------------
         ExecWait "$INSTDIR\AgentFirstSetup.exe -i $\"$INSTDIR$\""
+        
+        ;-----------------------------------------------------------------------------------
+        ; Read the service user from the registry. If there is no service user specified
+        ; then we assume that the service user is LocalSystem so no need to check the rights.
+        ;-----------------------------------------------------------------------------------
+        ReadRegDWORD $ServiceUser HKLM SOFTWARE\ProActiveAgent ServiceUser
+        StrCmp $ServiceUser '' noServiceUserLabel
+          Goto doneLabel
+        noServiceUserLabel:
+          DetailPrint "No service user was specified, assuming service user is LocalSystem"
+          Goto endLabel
+        doneLabel:
+        
+        ;-----------------------------------------------------------------------------------
+        ; The following code will enumerate the rights that a given user has.
+        ; See http://nsis.sourceforge.net/Enumerate_User_Privileges for more details
+        ;-----------------------------------------------------------------------------------
+        !define POLICY_LOOKUP_NAMES 0x00000800
+        !define strLSA_OBJECT_ATTRIBUTES '(i,i,w,i,i,i)i'
+        !define strLSA_UNICODE_STRING '(&i2,&i2,w)i'
+
+        System::Call '*${strLSA_OBJECT_ATTRIBUTES}(24,n,n,0,n,n).r0'
+        System::Call 'advapi32::LsaOpenPolicy(w n, i r0, i ${POLICY_LOOKUP_NAMES}, *i .R0) i.R8'
+        StrCpy $2 $ServiceUser
+        StrCpy $3 ${NSIS_MAX_STRLEN}
+        System::Call '*(&w${NSIS_MAX_STRLEN})i.R1'
+        System::Call 'Advapi32::LookupAccountNameW(w n, w r2, i R1, *i r3, w .R8, *i r3, *i .r4) i .R8'
+
+        ;-----------------------------------------------------------------------------------
+        ; Enumerate the rights
+        ; R2 is the pointer to an array of LSA_UNICODE_STRING structures
+        ; R3 is a variable that receives the number of privileges in the R2 array
+        ;-----------------------------------------------------------------------------------
+        System::Call 'advapi32::LsaEnumerateAccountRights(i R0, i R1, *i .R2, *i .R3)i.R8'
+        System::Call 'advapi32::LsaNtStatusToWinError(i R8) i.R9'
+
+        ; Define the name of the service logon right
+        !define strSLR 'SeServiceLogonRight'
+
+        # Get the rights out to $4
+        StrCpy $9 0
+        loop:
+         StrCmp $9 $R3 stop
+         System::Call '*$R2${strLSA_UNICODE_STRING}(.r2,.r3,.r4)'
+         StrCmp $4 ${strSLR} stop
+         IntOp $R2 $R2 + 8
+         IntOp $9 $9 + 1
+        stop:
+        
+        ;-----------------------------------------------------------------------------------
+        ; If the right was not found print a warning message that explains how to add
+        ; the service logon right.
+        ;-----------------------------------------------------------------------------------
+        StrCmp $4 ${strSLR} slrFoundLabel
+          DetailPrint 'User $ServiceUser does not have the service logon right!'
+          MessageBox MB_OK "The user $ServiceUser does not have the log on service right assignement. In the 'Administrative Tools' of the 'Control Panel' open the 'Local Security Policy'. In 'Security Settings', select 'Local Policies' then select 'User Rights Assignments'. Finally, in the list of policies open the properties of 'Log on as a service' policy and add the user $ServiceUser."
+        slrFoundLabel:
+
+        System::Free $0
+        System::Free $R1
+        System::Call 'advapi32::LsaFreeMemory(i R2) i .R8'
+        System::Call 'advapi32::LsaClose(i R0) i .R8'
+        
+        endLabel:
+        
 SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

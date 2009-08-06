@@ -95,8 +95,8 @@
       <xs:element minOccurs="1" maxOccurs="1" name="native_memory" type="xs:unsignedInt" />
       <xs:element minOccurs="1" maxOccurs="1" name="nb_processes" type="xs:unsignedInt" />
       <xs:element minOccurs="1" maxOccurs="1" name="use_all_cpus" type="xs:boolean" />
-	  <xs:element minOccurs="1" maxOccurs="1" name="protocol" type="xs:string" />
-      <xs:element minOccurs="1" maxOccurs="1" name="port_initial_value" type="xs:int" />
+	  <xs:element minOccurs="0" maxOccurs="1" name="protocol" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="port_initial_value" type="xs:int" />
       <xs:element minOccurs="0" maxOccurs="1" name="onRuntimeExitScript" type="xs:string" />      
     </xs:sequence>
   </xs:complexType>

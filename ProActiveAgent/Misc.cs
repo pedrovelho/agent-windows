@@ -43,6 +43,9 @@ namespace ProActiveAgent
         /// The name of the reg value used for config location.</summary>
         public const string PROACTIVE_AGENT_IS_RUNNING_EXECUTOR_REG_VALUE_NAME = "IsRunning";
         /// <summary>
+        /// The name of the reg value used for the service user.</summary>
+        public const string PROACTIVE_AGENT_SERVICE_USER_REG_VALUE_NAME = "ServiceUser";
+        /// <summary>
         /// The windows registry subkey used for storing executors status.</summary>
         public const string PROACTIVE_AGENT_EXECUTORS_REG_SUBKEY = "Software\\ProActiveAgent\\Executors";
         /// <summary>

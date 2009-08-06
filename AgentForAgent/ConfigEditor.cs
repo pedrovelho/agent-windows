@@ -92,7 +92,7 @@ namespace AgentForAgent
             this.maxCpuUsageNumericUpDown.Value = this.maxCpuUsageNumericUpDown.Maximum;
 
             // Init default values for ProActive Communication Protocol and Port
-            this.protocolComboBox.SelectedItem = Enum.GetName(typeof(ProActiveCommunicationProtocol), conf.agentConfig.proActiveCommunicationProtocol);
+            this.protocolComboBox.SelectedItem = Enum.GetName(typeof(ProActiveCommunicationProtocol), conf.agentConfig.runtimeIncomingProtocol);
             this.portInitialValueNumericUpDown.Value = conf.agentConfig.proActiveCommunicationPortInitialValue;
 
             /////////////////////////////////////////////
@@ -107,8 +107,8 @@ namespace AgentForAgent
                 {
                     if (action.isEnabled)
                     {
-                        this.rmiRegistrationRadioButton.Select();
-                        this.connectionTypeTabControl.SelectedTab = this.rmiRegistrationTabPage;
+                        this.localRegistrationRadioButton.Select();
+                        this.connectionTypeTabControl.SelectedTab = this.localRegistrationTabPage;
                     }
                     if (action.javaStarterClass == null || action.javaStarterClass.Equals(""))
                     {
@@ -119,8 +119,8 @@ namespace AgentForAgent
                         this.rmiRegistrationJavaActionClassTextBox.Text = action.javaStarterClass;
                     }
                     AdvertAction advertAction = (AdvertAction)action;
-                    this.rmiNodeEnabled.Checked = advertAction.nodeName != null && !advertAction.nodeName.Equals("");
-                    this.rmiNodeName.Text = advertAction.nodeName;
+                    this.localRegistrationNodeEnabled.Checked = advertAction.nodeName != null && !advertAction.nodeName.Equals("");
+                    this.localRegistrationNodeName.Text = advertAction.nodeName;
                 }
                 else if (action.GetType() == typeof(RMAction))
                 {
@@ -289,7 +289,7 @@ namespace AgentForAgent
             //--Events list                        
             this.internalCopyEventsList();
             // Save ProActive Communication Protocol and Port initial value
-            this.configuration.agentConfig.proActiveCommunicationProtocol = (ProActiveCommunicationProtocol)Enum.Parse(typeof(ProActiveCommunicationProtocol), (string)this.protocolComboBox.SelectedItem);            
+            this.configuration.agentConfig.runtimeIncomingProtocol = (ProActiveCommunicationProtocol)Enum.Parse(typeof(ProActiveCommunicationProtocol), (string)this.protocolComboBox.SelectedItem);            
             this.configuration.agentConfig.proActiveCommunicationPortInitialValue = System.Decimal.ToInt32(this.portInitialValueNumericUpDown.Value);
             // Save all defined actions                        
             if (this.configuration.actions == null || this.configuration.actions.Length < 3)
@@ -298,9 +298,9 @@ namespace AgentForAgent
             }
             // Save rmi registration action definition
             AdvertAction advertAction = new AdvertAction();
-            advertAction.nodeName = rmiNodeEnabled.Checked ? rmiNodeName.Text : "";
+            advertAction.nodeName = localRegistrationNodeEnabled.Checked ? localRegistrationNodeName.Text : "";
             advertAction.javaStarterClass = this.rmiRegistrationJavaActionClassTextBox.Text;
-            advertAction.isEnabled = this.rmiRegistrationRadioButton.Checked;            
+            advertAction.isEnabled = this.localRegistrationRadioButton.Checked;            
             this.configuration.actions[0] = advertAction;
             // Save resource manager registration action definition
             RMAction rmAction = new RMAction();
@@ -763,7 +763,7 @@ namespace AgentForAgent
 
         private void rmiRegistrationRadioButton_CheckedChanged(object sender, EventArgs e)
         {
-            this.connectionTypeTabControl.SelectedTab = this.rmiRegistrationTabPage;
+            this.connectionTypeTabControl.SelectedTab = this.localRegistrationTabPage;
             this.saveConfig.Enabled = true;
         }
 
@@ -775,14 +775,14 @@ namespace AgentForAgent
         //--Checkbox (Define a nodeName for RMI registration)
         private void rmiNodeEnabled_CheckedChanged(object sender, EventArgs e)
         {
-            if (rmiNodeEnabled.Checked)
-                this.rmiNodeName.Enabled = true;
+            if (localRegistrationNodeEnabled.Checked)
+                this.localRegistrationNodeName.Enabled = true;
             else
             {
                 // Empty TextBox
-                this.rmiNodeName.Text = "";
+                this.localRegistrationNodeName.Text = "";
                 // Disable node name TextBox
-                this.rmiNodeName.Enabled = false;
+                this.localRegistrationNodeName.Enabled = false;
             }
             this.saveConfig.Enabled = true;
         }

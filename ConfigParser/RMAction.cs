@@ -14,7 +14,8 @@ namespace ConfigParser
 {
     public class RMAction : Action
     {
-        /** The string description of this action **/
+        /// <summary>
+        /// The string description of this action.</summary>        
         public const string DESCRIPTION = "Resource Manager Registration";
         /// <summary>
         /// The java class that corresponds to this action.</summary>
@@ -29,16 +30,14 @@ namespace ConfigParser
         private string myUsername;
         private string myPassword;
         private string myRmUrl;
-        private string myNodeName;
-        private string myNodeSourceName;
+        private string myNodeName;        
 
         public RMAction() {
             base.javaStarterClass = DEFAULT_JAVA_STARTER_CLASS;
             this.myUsername = "";
             this.myPassword = "";
             this.myRmUrl = "";
-            this.myNodeName = "";
-            this.myNodeSourceName = "";
+            this.myNodeName = "";            
         }
 
         [XmlElement("username", IsNullable = false)]

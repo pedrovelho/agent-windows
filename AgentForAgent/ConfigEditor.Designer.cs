@@ -80,23 +80,23 @@ namespace AgentForAgent
             this.nativeMemoryNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.nativeMemoryLabel = new System.Windows.Forms.Label();
             this.connectionTabPage = new System.Windows.Forms.TabPage();
-            this.proActiveCommunicationProtocolGroupBox = new System.Windows.Forms.GroupBox();
+            this.runtimeIncomingProtocolGroupBox = new System.Windows.Forms.GroupBox();
             this.protocolComboBox = new System.Windows.Forms.ComboBox();
             this.protocolLabel = new System.Windows.Forms.Label();
             this.portInitialValue = new System.Windows.Forms.Label();
             this.portInitialValueNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.enabledConnectionGroupBox = new System.Windows.Forms.GroupBox();
             this.resourceManagerRegistrationRadioButton = new System.Windows.Forms.RadioButton();
-            this.rmiRegistrationRadioButton = new System.Windows.Forms.RadioButton();
+            this.localRegistrationRadioButton = new System.Windows.Forms.RadioButton();
             this.customRadioButton = new System.Windows.Forms.RadioButton();
             this.connectionTypeTabControl = new System.Windows.Forms.TabControl();
-            this.rmiRegistrationTabPage = new System.Windows.Forms.TabPage();
+            this.localRegistrationTabPage = new System.Windows.Forms.TabPage();
             this.rmiRegistrationAdditionalConfigurationGroupBox = new System.Windows.Forms.GroupBox();
             this.rmiRegistrationJavaActionClassTextBox = new System.Windows.Forms.TextBox();
             this.label13 = new System.Windows.Forms.Label();
-            this.rmiActionGroup = new System.Windows.Forms.GroupBox();
-            this.rmiNodeName = new System.Windows.Forms.TextBox();
-            this.rmiNodeEnabled = new System.Windows.Forms.CheckBox();
+            this.localRegistrationGroupBox = new System.Windows.Forms.GroupBox();
+            this.localRegistrationNodeName = new System.Windows.Forms.TextBox();
+            this.localRegistrationNodeEnabled = new System.Windows.Forms.CheckBox();
             this.resourceManagerRegistrationTabPage = new System.Windows.Forms.TabPage();
             this.resourceManagerRegistrationAdditionalConfigurationGroupBox = new System.Windows.Forms.GroupBox();
             this.resourceManagerRegistrationJavaActionClassTextBox = new System.Windows.Forms.TextBox();
@@ -175,13 +175,13 @@ namespace AgentForAgent
             ((System.ComponentModel.ISupportInitialize)(this.javaMemoryNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nativeMemoryNumericUpDown)).BeginInit();
             this.connectionTabPage.SuspendLayout();
-            this.proActiveCommunicationProtocolGroupBox.SuspendLayout();
+            this.runtimeIncomingProtocolGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.portInitialValueNumericUpDown)).BeginInit();
             this.enabledConnectionGroupBox.SuspendLayout();
             this.connectionTypeTabControl.SuspendLayout();
-            this.rmiRegistrationTabPage.SuspendLayout();
+            this.localRegistrationTabPage.SuspendLayout();
             this.rmiRegistrationAdditionalConfigurationGroupBox.SuspendLayout();
-            this.rmiActionGroup.SuspendLayout();
+            this.localRegistrationGroupBox.SuspendLayout();
             this.resourceManagerRegistrationTabPage.SuspendLayout();
             this.resourceManagerRegistrationAdditionalConfigurationGroupBox.SuspendLayout();
             this.rmActionGroup.SuspendLayout();
@@ -626,7 +626,7 @@ namespace AgentForAgent
             // 
             // connectionTabPage
             // 
-            this.connectionTabPage.Controls.Add(this.proActiveCommunicationProtocolGroupBox);
+            this.connectionTabPage.Controls.Add(this.runtimeIncomingProtocolGroupBox);
             this.connectionTabPage.Controls.Add(this.enabledConnectionGroupBox);
             this.connectionTabPage.Controls.Add(this.connectionTypeTabControl);
             this.connectionTabPage.Location = new System.Drawing.Point(4, 22);
@@ -636,18 +636,18 @@ namespace AgentForAgent
             this.connectionTabPage.Text = "Connection";
             this.connectionTabPage.UseVisualStyleBackColor = true;
             // 
-            // proActiveCommunicationProtocolGroupBox
+            // runtimeIncomingProtocolGroupBox
             // 
-            this.proActiveCommunicationProtocolGroupBox.Controls.Add(this.protocolComboBox);
-            this.proActiveCommunicationProtocolGroupBox.Controls.Add(this.protocolLabel);
-            this.proActiveCommunicationProtocolGroupBox.Controls.Add(this.portInitialValue);
-            this.proActiveCommunicationProtocolGroupBox.Controls.Add(this.portInitialValueNumericUpDown);
-            this.proActiveCommunicationProtocolGroupBox.Location = new System.Drawing.Point(366, 6);
-            this.proActiveCommunicationProtocolGroupBox.Name = "proActiveCommunicationProtocolGroupBox";
-            this.proActiveCommunicationProtocolGroupBox.Size = new System.Drawing.Size(305, 45);
-            this.proActiveCommunicationProtocolGroupBox.TabIndex = 5;
-            this.proActiveCommunicationProtocolGroupBox.TabStop = false;
-            this.proActiveCommunicationProtocolGroupBox.Text = "ProActive Communication Protocol";
+            this.runtimeIncomingProtocolGroupBox.Controls.Add(this.protocolComboBox);
+            this.runtimeIncomingProtocolGroupBox.Controls.Add(this.protocolLabel);
+            this.runtimeIncomingProtocolGroupBox.Controls.Add(this.portInitialValue);
+            this.runtimeIncomingProtocolGroupBox.Controls.Add(this.portInitialValueNumericUpDown);
+            this.runtimeIncomingProtocolGroupBox.Location = new System.Drawing.Point(366, 6);
+            this.runtimeIncomingProtocolGroupBox.Name = "runtimeIncomingProtocolGroupBox";
+            this.runtimeIncomingProtocolGroupBox.Size = new System.Drawing.Size(305, 45);
+            this.runtimeIncomingProtocolGroupBox.TabIndex = 5;
+            this.runtimeIncomingProtocolGroupBox.TabStop = false;
+            this.runtimeIncomingProtocolGroupBox.Text = "Runtime Incoming Protocol";
             // 
             // protocolComboBox
             // 
@@ -697,8 +697,8 @@ namespace AgentForAgent
             this.portInitialValueNumericUpDown.Name = "portInitialValueNumericUpDown";
             this.portInitialValueNumericUpDown.Size = new System.Drawing.Size(57, 20);
             this.portInitialValueNumericUpDown.TabIndex = 0;
-            this.toolTip.SetToolTip(this.portInitialValueNumericUpDown, "Defines the value of the \"-Dproactive.rmi.port\" property. This value will always " +
-                    "be increased by 1 or more if there is more than one Runtime.");
+            this.toolTip.SetToolTip(this.portInitialValueNumericUpDown, "Defines the value of the \"-Dproactive.SELECTED_PROTOCOL.port\" property. This valu" +
+                    "e will always be increased by 1 or more if there is more than one Runtime.");
             this.portInitialValueNumericUpDown.Value = new decimal(new int[] {
             1099,
             0,
@@ -709,7 +709,7 @@ namespace AgentForAgent
             // enabledConnectionGroupBox
             // 
             this.enabledConnectionGroupBox.Controls.Add(this.resourceManagerRegistrationRadioButton);
-            this.enabledConnectionGroupBox.Controls.Add(this.rmiRegistrationRadioButton);
+            this.enabledConnectionGroupBox.Controls.Add(this.localRegistrationRadioButton);
             this.enabledConnectionGroupBox.Controls.Add(this.customRadioButton);
             this.enabledConnectionGroupBox.Location = new System.Drawing.Point(3, 6);
             this.enabledConnectionGroupBox.Name = "enabledConnectionGroupBox";
@@ -721,7 +721,7 @@ namespace AgentForAgent
             // resourceManagerRegistrationRadioButton
             // 
             this.resourceManagerRegistrationRadioButton.AutoSize = true;
-            this.resourceManagerRegistrationRadioButton.Location = new System.Drawing.Point(116, 19);
+            this.resourceManagerRegistrationRadioButton.Location = new System.Drawing.Point(119, 19);
             this.resourceManagerRegistrationRadioButton.Name = "resourceManagerRegistrationRadioButton";
             this.resourceManagerRegistrationRadioButton.Size = new System.Drawing.Size(175, 17);
             this.resourceManagerRegistrationRadioButton.TabIndex = 2;
@@ -730,17 +730,17 @@ namespace AgentForAgent
             this.resourceManagerRegistrationRadioButton.UseVisualStyleBackColor = true;
             this.resourceManagerRegistrationRadioButton.CheckedChanged += new System.EventHandler(this.resourceManagerRegistrationRadioButton_CheckedChanged);
             // 
-            // rmiRegistrationRadioButton
+            // localRegistrationRadioButton
             // 
-            this.rmiRegistrationRadioButton.AutoSize = true;
-            this.rmiRegistrationRadioButton.Location = new System.Drawing.Point(6, 19);
-            this.rmiRegistrationRadioButton.Name = "rmiRegistrationRadioButton";
-            this.rmiRegistrationRadioButton.Size = new System.Drawing.Size(104, 17);
-            this.rmiRegistrationRadioButton.TabIndex = 1;
-            this.rmiRegistrationRadioButton.TabStop = true;
-            this.rmiRegistrationRadioButton.Text = "RMI Registration";
-            this.rmiRegistrationRadioButton.UseVisualStyleBackColor = true;
-            this.rmiRegistrationRadioButton.CheckedChanged += new System.EventHandler(this.rmiRegistrationRadioButton_CheckedChanged);
+            this.localRegistrationRadioButton.AutoSize = true;
+            this.localRegistrationRadioButton.Location = new System.Drawing.Point(6, 19);
+            this.localRegistrationRadioButton.Name = "localRegistrationRadioButton";
+            this.localRegistrationRadioButton.Size = new System.Drawing.Size(110, 17);
+            this.localRegistrationRadioButton.TabIndex = 1;
+            this.localRegistrationRadioButton.TabStop = true;
+            this.localRegistrationRadioButton.Text = "Local Registration";
+            this.localRegistrationRadioButton.UseVisualStyleBackColor = true;
+            this.localRegistrationRadioButton.CheckedChanged += new System.EventHandler(this.rmiRegistrationRadioButton_CheckedChanged);
             // 
             // customRadioButton
             // 
@@ -757,7 +757,7 @@ namespace AgentForAgent
             // connectionTypeTabControl
             // 
             this.connectionTypeTabControl.Alignment = System.Windows.Forms.TabAlignment.Left;
-            this.connectionTypeTabControl.Controls.Add(this.rmiRegistrationTabPage);
+            this.connectionTypeTabControl.Controls.Add(this.localRegistrationTabPage);
             this.connectionTypeTabControl.Controls.Add(this.resourceManagerRegistrationTabPage);
             this.connectionTypeTabControl.Controls.Add(this.customTabPage);
             this.connectionTypeTabControl.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
@@ -772,17 +772,17 @@ namespace AgentForAgent
             this.connectionTypeTabControl.TabIndex = 0;
             this.connectionTypeTabControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.actionTypeTabControl_DrawItem);
             // 
-            // rmiRegistrationTabPage
+            // localRegistrationTabPage
             // 
-            this.rmiRegistrationTabPage.Controls.Add(this.rmiRegistrationAdditionalConfigurationGroupBox);
-            this.rmiRegistrationTabPage.Controls.Add(this.rmiActionGroup);
-            this.rmiRegistrationTabPage.Location = new System.Drawing.Point(179, 4);
-            this.rmiRegistrationTabPage.Name = "rmiRegistrationTabPage";
-            this.rmiRegistrationTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.rmiRegistrationTabPage.Size = new System.Drawing.Size(485, 306);
-            this.rmiRegistrationTabPage.TabIndex = 0;
-            this.rmiRegistrationTabPage.Text = "RMI Registration";
-            this.rmiRegistrationTabPage.UseVisualStyleBackColor = true;
+            this.localRegistrationTabPage.Controls.Add(this.rmiRegistrationAdditionalConfigurationGroupBox);
+            this.localRegistrationTabPage.Controls.Add(this.localRegistrationGroupBox);
+            this.localRegistrationTabPage.Location = new System.Drawing.Point(179, 4);
+            this.localRegistrationTabPage.Name = "localRegistrationTabPage";
+            this.localRegistrationTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.localRegistrationTabPage.Size = new System.Drawing.Size(485, 306);
+            this.localRegistrationTabPage.TabIndex = 0;
+            this.localRegistrationTabPage.Text = "Local Registration";
+            this.localRegistrationTabPage.UseVisualStyleBackColor = true;
             // 
             // rmiRegistrationAdditionalConfigurationGroupBox
             // 
@@ -811,36 +811,36 @@ namespace AgentForAgent
             this.label13.TabIndex = 0;
             this.label13.Text = "Java Starter Class:";
             // 
-            // rmiActionGroup
+            // localRegistrationGroupBox
             // 
-            this.rmiActionGroup.Controls.Add(this.rmiNodeName);
-            this.rmiActionGroup.Controls.Add(this.rmiNodeEnabled);
-            this.rmiActionGroup.Location = new System.Drawing.Point(6, 6);
-            this.rmiActionGroup.Name = "rmiActionGroup";
-            this.rmiActionGroup.Size = new System.Drawing.Size(473, 53);
-            this.rmiActionGroup.TabIndex = 1;
-            this.rmiActionGroup.TabStop = false;
-            this.rmiActionGroup.Text = "RMI Registration";
+            this.localRegistrationGroupBox.Controls.Add(this.localRegistrationNodeName);
+            this.localRegistrationGroupBox.Controls.Add(this.localRegistrationNodeEnabled);
+            this.localRegistrationGroupBox.Location = new System.Drawing.Point(6, 6);
+            this.localRegistrationGroupBox.Name = "localRegistrationGroupBox";
+            this.localRegistrationGroupBox.Size = new System.Drawing.Size(473, 53);
+            this.localRegistrationGroupBox.TabIndex = 1;
+            this.localRegistrationGroupBox.TabStop = false;
+            this.localRegistrationGroupBox.Text = "Local Registration";
             // 
-            // rmiNodeName
+            // localRegistrationNodeName
             // 
-            this.rmiNodeName.Enabled = false;
-            this.rmiNodeName.Location = new System.Drawing.Point(96, 19);
-            this.rmiNodeName.Name = "rmiNodeName";
-            this.rmiNodeName.Size = new System.Drawing.Size(371, 20);
-            this.rmiNodeName.TabIndex = 1;
-            this.rmiNodeName.TextChanged += new System.EventHandler(this.rmiNodeName_TextChanged);
+            this.localRegistrationNodeName.Enabled = false;
+            this.localRegistrationNodeName.Location = new System.Drawing.Point(96, 19);
+            this.localRegistrationNodeName.Name = "localRegistrationNodeName";
+            this.localRegistrationNodeName.Size = new System.Drawing.Size(371, 20);
+            this.localRegistrationNodeName.TabIndex = 1;
+            this.localRegistrationNodeName.TextChanged += new System.EventHandler(this.rmiNodeName_TextChanged);
             // 
-            // rmiNodeEnabled
+            // localRegistrationNodeEnabled
             // 
-            this.rmiNodeEnabled.AutoSize = true;
-            this.rmiNodeEnabled.Location = new System.Drawing.Point(9, 21);
-            this.rmiNodeEnabled.Name = "rmiNodeEnabled";
-            this.rmiNodeEnabled.Size = new System.Drawing.Size(84, 17);
-            this.rmiNodeEnabled.TabIndex = 0;
-            this.rmiNodeEnabled.Text = "Node name:";
-            this.rmiNodeEnabled.UseVisualStyleBackColor = true;
-            this.rmiNodeEnabled.CheckedChanged += new System.EventHandler(this.rmiNodeEnabled_CheckedChanged);
+            this.localRegistrationNodeEnabled.AutoSize = true;
+            this.localRegistrationNodeEnabled.Location = new System.Drawing.Point(9, 21);
+            this.localRegistrationNodeEnabled.Name = "localRegistrationNodeEnabled";
+            this.localRegistrationNodeEnabled.Size = new System.Drawing.Size(84, 17);
+            this.localRegistrationNodeEnabled.TabIndex = 0;
+            this.localRegistrationNodeEnabled.Text = "Node name:";
+            this.localRegistrationNodeEnabled.UseVisualStyleBackColor = true;
+            this.localRegistrationNodeEnabled.CheckedChanged += new System.EventHandler(this.rmiNodeEnabled_CheckedChanged);
             // 
             // resourceManagerRegistrationTabPage
             // 
@@ -978,6 +978,7 @@ namespace AgentForAgent
             this.rmUrl.Name = "rmUrl";
             this.rmUrl.Size = new System.Drawing.Size(329, 20);
             this.rmUrl.TabIndex = 1;
+            this.toolTip.SetToolTip(this.rmUrl, "Example: PROTOCOL://HOSTNAME_OR_IP_ADDRESS:PORT");
             this.rmUrl.TextChanged += new System.EventHandler(this.rmUrl_TextChanged);
             // 
             // resourceManagerUrlLabel
@@ -1566,17 +1567,17 @@ namespace AgentForAgent
             ((System.ComponentModel.ISupportInitialize)(this.javaMemoryNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nativeMemoryNumericUpDown)).EndInit();
             this.connectionTabPage.ResumeLayout(false);
-            this.proActiveCommunicationProtocolGroupBox.ResumeLayout(false);
-            this.proActiveCommunicationProtocolGroupBox.PerformLayout();
+            this.runtimeIncomingProtocolGroupBox.ResumeLayout(false);
+            this.runtimeIncomingProtocolGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.portInitialValueNumericUpDown)).EndInit();
             this.enabledConnectionGroupBox.ResumeLayout(false);
             this.enabledConnectionGroupBox.PerformLayout();
             this.connectionTypeTabControl.ResumeLayout(false);
-            this.rmiRegistrationTabPage.ResumeLayout(false);
+            this.localRegistrationTabPage.ResumeLayout(false);
             this.rmiRegistrationAdditionalConfigurationGroupBox.ResumeLayout(false);
             this.rmiRegistrationAdditionalConfigurationGroupBox.PerformLayout();
-            this.rmiActionGroup.ResumeLayout(false);
-            this.rmiActionGroup.PerformLayout();
+            this.localRegistrationGroupBox.ResumeLayout(false);
+            this.localRegistrationGroupBox.PerformLayout();
             this.resourceManagerRegistrationTabPage.ResumeLayout(false);
             this.resourceManagerRegistrationAdditionalConfigurationGroupBox.ResumeLayout(false);
             this.resourceManagerRegistrationAdditionalConfigurationGroupBox.PerformLayout();
@@ -1673,10 +1674,10 @@ namespace AgentForAgent
         private System.Windows.Forms.ComboBox processPriorityComboBox;
         private System.Windows.Forms.CheckBox enableMemoryManagementCheckBox;
         private System.Windows.Forms.TabPage connectionTabPage;
-        private System.Windows.Forms.TabPage rmiRegistrationTabPage;
+        private System.Windows.Forms.TabPage localRegistrationTabPage;
         private System.Windows.Forms.TabPage resourceManagerRegistrationTabPage;
         private System.Windows.Forms.TabPage customTabPage;
-        private System.Windows.Forms.RadioButton rmiRegistrationRadioButton;
+        private System.Windows.Forms.RadioButton localRegistrationRadioButton;
         private System.Windows.Forms.RadioButton customRadioButton;
         private System.Windows.Forms.RadioButton resourceManagerRegistrationRadioButton;
         private System.Windows.Forms.TabControl connectionTypeTabControl;
@@ -1688,9 +1689,9 @@ namespace AgentForAgent
         private System.Windows.Forms.Button customAddButton;
         private System.Windows.Forms.ListBox customArgumentsListBox;
         private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.GroupBox rmiActionGroup;
-        private System.Windows.Forms.TextBox rmiNodeName;
-        private System.Windows.Forms.CheckBox rmiNodeEnabled;
+        private System.Windows.Forms.GroupBox localRegistrationGroupBox;
+        private System.Windows.Forms.TextBox localRegistrationNodeName;
+        private System.Windows.Forms.CheckBox localRegistrationNodeEnabled;
         private System.Windows.Forms.GroupBox rmActionGroup;
         private System.Windows.Forms.TextBox rmUrl;
         private System.Windows.Forms.Label resourceManagerUrlLabel;
@@ -1724,7 +1725,7 @@ namespace AgentForAgent
         private System.Windows.Forms.NumericUpDown nbRuntimesNumericUpDown;
         private System.Windows.Forms.Label nbRuntimesLabel;
         private System.Windows.Forms.CheckBox useAllAvailableCPUsCheckBox;
-        private System.Windows.Forms.GroupBox proActiveCommunicationProtocolGroupBox;
+        private System.Windows.Forms.GroupBox runtimeIncomingProtocolGroupBox;
         private System.Windows.Forms.NumericUpDown portInitialValueNumericUpDown;
         private System.Windows.Forms.Label portInitialValue;
         private System.Windows.Forms.GroupBox onRuntimeExitGroupBox;

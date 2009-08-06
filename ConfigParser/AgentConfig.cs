@@ -38,7 +38,7 @@ namespace ConfigParser
 
         private bool myUseAllCPUs;
 
-        private ProActiveCommunicationProtocol myProActiveCommunicationProtocol;
+        private ProActiveCommunicationProtocol myRuntimeIncomingProtocol;
 
         private int myProActiveCommunicationPortInitialValue;
 
@@ -154,16 +154,16 @@ namespace ConfigParser
         }
 
         [XmlElement("protocol")]
-        public ProActiveCommunicationProtocol proActiveCommunicationProtocol
+        public ProActiveCommunicationProtocol runtimeIncomingProtocol
         {
             get
             {
-                return this.myProActiveCommunicationProtocol;
+                return this.myRuntimeIncomingProtocol;
             }
 
             set
             {
-                this.myProActiveCommunicationProtocol = value;
+                this.myRuntimeIncomingProtocol = value;
             }
         }
 
