@@ -3,16 +3,17 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using ConfigParser;
+using ProActiveAgent;
 
 namespace AgentForAgent
 {
     public partial class ConfigurationEditor : Form
-    {
-        private const uint MINIMAL_REQUIRED_MEMORY = 96; // 64 for initial heap size + 32 jvm internals
-        private Configuration configuration;
+    {        
+        private readonly Configuration configuration;
         private string configurationLocation;
-        private string agentLocation;
-        private ConfigurationDialog hook;
+        private readonly string agentLocation;
+        private readonly ConfigurationDialog hook;
+
         private Chart chart;                
 
         // Internal data used for jvm parameters list customization
@@ -62,7 +63,7 @@ namespace AgentForAgent
             // Load memory limit values from the configuration
             this.javaMemoryNumericUpDown.Value = conf.agentConfig.javaMemory;
             this.nativeMemoryNumericUpDown.Value = conf.agentConfig.nativeMemory;
-            this.totalProcessMemoryValue.Text = "" + (MINIMAL_REQUIRED_MEMORY + conf.agentConfig.javaMemory + conf.agentConfig.nativeMemory);
+            this.totalProcessMemoryValue.Text = "" + (Constants.MINIMAL_REQUIRED_MEMORY + conf.agentConfig.javaMemory + conf.agentConfig.nativeMemory);
 
             ///////////////////////////////////////
             // Load Multi-Runtime related config //
@@ -178,7 +179,7 @@ namespace AgentForAgent
 
             //--Chart
             chart = new Chart();
-            iniConfiguration = new IniFile("configuration.ini");
+            iniConfiguration = new IniFile(this.agentLocation+"\\configuration.ini");
 
             this.saveConfig.Enabled = false;
         }
@@ -331,7 +332,7 @@ namespace AgentForAgent
 
             if (this.iniConfiguration.GetValue("params", "saveWarning") != "0")
             {
-                DialogResult res = MessageBox.Show("Service must be restarted to apply changes.\nDisplay again this message ?", "Restart service", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                DialogResult res = MessageBox.Show("The ProActive Agent must be restarted to apply changes.\nDisplay this message again?", "Restart the ProActive Agent", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
                 if (res == DialogResult.No)
                 {
                     this.iniConfiguration.SetValue("params", "saveWarning", "0");
@@ -999,13 +1000,13 @@ namespace AgentForAgent
 
         private void javaMemoryNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            this.totalProcessMemoryValue.Text = "" + (MINIMAL_REQUIRED_MEMORY + this.javaMemoryNumericUpDown.Value + this.nativeMemoryNumericUpDown.Value);
+            this.totalProcessMemoryValue.Text = "" + (Constants.MINIMAL_REQUIRED_MEMORY + this.javaMemoryNumericUpDown.Value + this.nativeMemoryNumericUpDown.Value);
             saveConfig.Enabled = true;
         }
 
         private void nativeMemoryNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            this.totalProcessMemoryValue.Text = "" + (MINIMAL_REQUIRED_MEMORY + this.javaMemoryNumericUpDown.Value + this.nativeMemoryNumericUpDown.Value);
+            this.totalProcessMemoryValue.Text = "" + (Constants.MINIMAL_REQUIRED_MEMORY + this.javaMemoryNumericUpDown.Value + this.nativeMemoryNumericUpDown.Value);
             saveConfig.Enabled = true;
         }
 
