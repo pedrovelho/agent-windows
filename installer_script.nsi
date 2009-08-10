@@ -238,11 +238,6 @@ Section "ProActive Agent"
         WriteRegStr HKLM SOFTWARE\ProActiveAgent "AgentLocation" "$INSTDIR"
 
         ;-----------------------------------------------------------------------------------
-        ; The agent requires the following reg sub-key to know its default configuration
-        ;-----------------------------------------------------------------------------------
-        WriteRegStr HKLM SOFTWARE\ProActiveAgent "ConfigLocation" "$INSTDIR\PAAgent-config.xml"
-
-        ;-----------------------------------------------------------------------------------
         ; Write the uninstall keys for Windows
         ;-----------------------------------------------------------------------------------
         WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ProActiveAgent" "DisplayName" "ProActive Agent (remove only)"
@@ -271,12 +266,19 @@ Section "ProActive Agent"
         ${Else}
           File "ProActiveAgent\lib\x86\JobManagement.dll"
         ${EndIf}
+        SetOutPath $INSTDIR\config
         File "utils\PAAgent-config.xml"
         File "utils\PAAgent-config-planning-day-only.xml"
         File "utils\PAAgent-config-planning-night-we.xml"
+        SetOutPath $INSTDIR
         File "utils\icon.ico"
         File "utils\ListNetworkInterfaces.class"
         File "ProActive Agent Documentation.pdf"
+        
+        ;-----------------------------------------------------------------------------------
+        ; The agent requires the following reg sub-key to know its default configuration
+        ;-----------------------------------------------------------------------------------
+        WriteRegStr HKLM SOFTWARE\ProActiveAgent "ConfigLocation" "$INSTDIR\config\PAAgent-config.xml"
         
         ;-----------------------------------------------------------------------------------
         ; Run the internal service installer
@@ -337,7 +339,7 @@ Section "ProActive Agent"
         ;-----------------------------------------------------------------------------------
         StrCmp $4 ${strSLR} slrFoundLabel
           DetailPrint 'User $ServiceUser does not have the service logon right!'
-          MessageBox MB_OK "The user $ServiceUser does not have the log on service right assignement. In the 'Administrative Tools' of the 'Control Panel' open the 'Local Security Policy'. In 'Security Settings', select 'Local Policies' then select 'User Rights Assignments'. Finally, in the list of policies open the properties of 'Log on as a service' policy and add the user $ServiceUser."
+          MessageBox MB_OK "The user $ServiceUser does not have the log on service right assignment. In the 'Administrative Tools' of the 'Control Panel' open the 'Local Security Policy'. In 'Security Settings', select 'Local Policies' then select 'User Rights Assignments'. Finally, in the list of policies open the properties of 'Log on as a service' policy and add the user $ServiceUser."
         slrFoundLabel:
 
         System::Free $0
@@ -395,10 +397,26 @@ SectionEnd
 UninstallText "This will uninstall ProActive Agent. Hit next to continue."
 
 Section "Uninstall"
-
+        ;-----------------------------------------------------------------------------------
+        ; For all users
+       	;-----------------------------------------------------------------------------------
+	SetShellVarContext all
+      	  
 	MessageBox MB_OKCANCEL "This will delete $INSTDIR and all subdirectories and files?" IDOK DoUninstall
-	
 	Abort "Quiting the uninstall process"
+	DoUnInstall:
+	
+        ;-----------------------------------------------------------------------------------
+        ; Ask the user if he wants to keep the configuration files
+       	;-----------------------------------------------------------------------------------
+        MessageBox MB_YESNO "Delete configuration files from $INSTDIR\config ?" /SD IDYES IDNO keepConfigLabel
+     	  SetOutPath $INSTDIR\config
+          Delete "PAAgent-config.xml"
+          Delete "PAAgent-config-planning-day-only.xml"
+          Delete "PAAgent-config-planning-night-we.xml"
+      	  SetOutPath $INSTDIR
+      	  RMDir /r "$INSTDIR\config"
+        keepConfigLabel:
 	
 	;-----------------------------------------------------------------------------------
         ; On x64 we have to explicitely set the registery view
@@ -406,28 +424,43 @@ Section "Uninstall"
         ${If} ${RunningX64}
           SetRegView 64
         ${EndIf}
-	
-	DoUnInstall:
+        
 	SetOutPath $INSTDIR
+	;-----------------------------------------------------------------------------------
+        ; Call AgentFirstSetup to unistall the service
+        ;-----------------------------------------------------------------------------------
 	ExecWait "$INSTDIR\AgentFirstSetup.exe -u"
 	
-	; Delete from uninstall
+	; Delete regkey from uninstall
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ProActiveAgent"
 	; Delete entry from auto start
         DeleteRegValue HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "ProActiveAgent"
 	DeleteRegKey HKLM SOFTWARE\ProActiveAgent
 	
-	SetShellVarContext all ; All users
-	;Delete "$DESKTOP\ProActive Agent Control.lnk"
-	
+	;-----------------------------------------------------------------------------------
+	; Remove the screen saver
+	;-----------------------------------------------------------------------------------
+       	Delete $SYSDIR\ProActiveSSaver.scr
+        
+       	;-----------------------------------------------------------------------------------
+	; Remove all known files except config directory from $INSTDIR
+	;-----------------------------------------------------------------------------------
+        Delete "ConfigParser.exe"
+        Delete "AgentForAgent.exe"
+        Delete "ProActiveAgent.exe"
+        Delete "AgentFirstSetup.exe"
+        Delete "config.xsd"
+        Delete "log4net.dll"
+        Delete "log4net.config"
+        Delete "InJobProcessCreator.exe"
+        Delete "JobManagement.dll"
+        Delete "icon.ico"
+        Delete "ListNetworkInterfaces.class"
+        Delete "ProActive Agent Documentation.pdf"
+        Delete "LICENSE.txt"
+        Delete "uninstall.exe"
+
 	RMDir /r "$SMPROGRAMS\ProActiveAgent"
 	SetShellVarContext current ; reset to current user
 	
-	Delete "$INSTDIR\AgentForAgent.exe"
-	Delete "$INSTDIR\ConfigParser.exe"
-        Delete "$INSTDIR\ProActiveAgent.exe"
-       	RMDir /r $INSTDIR
-	
-	Delete $SYSDIR\ProActiveSSaver.scr
-
 SectionEnd
