@@ -265,6 +265,7 @@ namespace AgentForAgent
             this.checkBox1.Size = new System.Drawing.Size(169, 17);
             this.checkBox1.TabIndex = 9;
             this.checkBox1.Text = "Use system-wide JVM location";
+            this.toolTip.SetToolTip(this.checkBox1, "Uses JVM location specified by the JAVA_HOME environment variable.");
             this.checkBox1.UseVisualStyleBackColor = true;
             this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
@@ -321,6 +322,7 @@ namespace AgentForAgent
             this.jvmDirectory.Name = "jvmDirectory";
             this.jvmDirectory.Size = new System.Drawing.Size(466, 20);
             this.jvmDirectory.TabIndex = 1;
+            this.toolTip.SetToolTip(this.jvmDirectory, "Location of the JVM directory.");
             this.jvmDirectory.TextChanged += new System.EventHandler(this.jvmDirectory_TextChanged);
             // 
             // proactiveDirectory
@@ -329,6 +331,7 @@ namespace AgentForAgent
             this.proactiveDirectory.Name = "proactiveDirectory";
             this.proactiveDirectory.Size = new System.Drawing.Size(466, 20);
             this.proactiveDirectory.TabIndex = 0;
+            this.toolTip.SetToolTip(this.proactiveDirectory, "Location of the ProActive or Scheduling directory.");
             this.proactiveDirectory.TextChanged += new System.EventHandler(this.proactiveLocation_TextChanged);
             // 
             // tabControl1
@@ -395,6 +398,7 @@ namespace AgentForAgent
             this.scriptLocationTextBox.Name = "scriptLocationTextBox";
             this.scriptLocationTextBox.Size = new System.Drawing.Size(186, 20);
             this.scriptLocationTextBox.TabIndex = 0;
+            this.toolTip.SetToolTip(this.scriptLocationTextBox, "Location of the script executed after a Runtime terminates.");
             this.scriptLocationTextBox.TextChanged += new System.EventHandler(this.scriptLocationTextBox_TextChanged);
             // 
             // multiRuntimeGroupBox
@@ -420,6 +424,8 @@ namespace AgentForAgent
             this.useAllAvailableCPUsCheckBox.Size = new System.Drawing.Size(133, 17);
             this.useAllAvailableCPUsCheckBox.TabIndex = 4;
             this.useAllAvailableCPUsCheckBox.Text = "Use all available CPUs";
+            this.toolTip.SetToolTip(this.useAllAvailableCPUsCheckBox, "Will spawn as many Runtimes as available CPUs. The number of CPUs is detected dyn" +
+                    "amically.");
             this.useAllAvailableCPUsCheckBox.UseVisualStyleBackColor = true;
             this.useAllAvailableCPUsCheckBox.CheckedChanged += new System.EventHandler(this.useAllAvailableCPUsCheckBox_CheckedChanged);
             // 
@@ -466,6 +472,7 @@ namespace AgentForAgent
             this.nbRuntimesNumericUpDown.Name = "nbRuntimesNumericUpDown";
             this.nbRuntimesNumericUpDown.Size = new System.Drawing.Size(48, 20);
             this.nbRuntimesNumericUpDown.TabIndex = 0;
+            this.toolTip.SetToolTip(this.nbRuntimesNumericUpDown, "Specifies the number of Runtimes to spawn.");
             this.nbRuntimesNumericUpDown.Value = new decimal(new int[] {
             1,
             0,
@@ -493,6 +500,7 @@ namespace AgentForAgent
             this.useNetworkInterfaceButton.Size = new System.Drawing.Size(75, 23);
             this.useNetworkInterfaceButton.TabIndex = 3;
             this.useNetworkInterfaceButton.Text = "Use";
+            this.toolTip.SetToolTip(this.useNetworkInterfaceButton, "Uses the selected network interface.");
             this.useNetworkInterfaceButton.UseVisualStyleBackColor = true;
             this.useNetworkInterfaceButton.Click += new System.EventHandler(this.useNetworkInterfaceButton_Click);
             // 
@@ -504,6 +512,7 @@ namespace AgentForAgent
             this.networkInterfacesListBox.Name = "networkInterfacesListBox";
             this.networkInterfacesListBox.Size = new System.Drawing.Size(262, 121);
             this.networkInterfacesListBox.TabIndex = 2;
+            this.toolTip.SetToolTip(this.networkInterfacesListBox, "The list of available network interfaces.");
             // 
             // refreshNetworkInterfacesButton
             // 
@@ -523,6 +532,7 @@ namespace AgentForAgent
             this.enableMemoryManagementCheckBox.Size = new System.Drawing.Size(164, 17);
             this.enableMemoryManagementCheckBox.TabIndex = 2;
             this.enableMemoryManagementCheckBox.Text = "Enable Memory Management";
+            this.toolTip.SetToolTip(this.enableMemoryManagementCheckBox, "Enables the memory management. For advanced users only.");
             this.enableMemoryManagementCheckBox.UseVisualStyleBackColor = true;
             this.enableMemoryManagementCheckBox.CheckedChanged += new System.EventHandler(this.enableMemoryManagementCheckBox_CheckedChanged);
             // 
@@ -661,6 +671,7 @@ namespace AgentForAgent
             this.protocolComboBox.Name = "protocolComboBox";
             this.protocolComboBox.Size = new System.Drawing.Size(74, 21);
             this.protocolComboBox.TabIndex = 3;
+            this.toolTip.SetToolTip(this.protocolComboBox, "Defines the protocol to be used by the Runtime.");
             this.protocolComboBox.SelectedIndexChanged += new System.EventHandler(this.protocolComboBox_SelectedIndexChanged);
             // 
             // protocolLabel
@@ -727,6 +738,8 @@ namespace AgentForAgent
             this.resourceManagerRegistrationRadioButton.TabIndex = 2;
             this.resourceManagerRegistrationRadioButton.TabStop = true;
             this.resourceManagerRegistrationRadioButton.Text = "Resource Manager Registration";
+            this.toolTip.SetToolTip(this.resourceManagerRegistrationRadioButton, "Enables the Resource Manager Registration. The Runtime will try to registrate to " +
+                    "the specified Resource Manager.");
             this.resourceManagerRegistrationRadioButton.UseVisualStyleBackColor = true;
             this.resourceManagerRegistrationRadioButton.CheckedChanged += new System.EventHandler(this.resourceManagerRegistrationRadioButton_CheckedChanged);
             // 
@@ -739,6 +752,7 @@ namespace AgentForAgent
             this.localRegistrationRadioButton.TabIndex = 1;
             this.localRegistrationRadioButton.TabStop = true;
             this.localRegistrationRadioButton.Text = "Local Registration";
+            this.toolTip.SetToolTip(this.localRegistrationRadioButton, "Enables the Local Registration.The runtime will be registred locally.");
             this.localRegistrationRadioButton.UseVisualStyleBackColor = true;
             this.localRegistrationRadioButton.CheckedChanged += new System.EventHandler(this.rmiRegistrationRadioButton_CheckedChanged);
             // 
@@ -751,6 +765,7 @@ namespace AgentForAgent
             this.customRadioButton.TabIndex = 3;
             this.customRadioButton.TabStop = true;
             this.customRadioButton.Text = "Custom";
+            this.toolTip.SetToolTip(this.customRadioButton, "Enables a user defined connection. See the \"Custom\" tab below.");
             this.customRadioButton.UseVisualStyleBackColor = true;
             this.customRadioButton.CheckedChanged += new System.EventHandler(this.customRadioButton_CheckedChanged);
             // 
@@ -801,6 +816,7 @@ namespace AgentForAgent
             this.rmiRegistrationJavaActionClassTextBox.Name = "rmiRegistrationJavaActionClassTextBox";
             this.rmiRegistrationJavaActionClassTextBox.Size = new System.Drawing.Size(361, 20);
             this.rmiRegistrationJavaActionClassTextBox.TabIndex = 1;
+            this.toolTip.SetToolTip(this.rmiRegistrationJavaActionClassTextBox, "Defines the Java class to run.");
             // 
             // label13
             // 
@@ -829,6 +845,8 @@ namespace AgentForAgent
             this.localRegistrationNodeName.Name = "localRegistrationNodeName";
             this.localRegistrationNodeName.Size = new System.Drawing.Size(371, 20);
             this.localRegistrationNodeName.TabIndex = 1;
+            this.toolTip.SetToolTip(this.localRegistrationNodeName, "Defines the name of the node. The node will be registered under url like URL://IP" +
+                    "_OR_HOSTNAME:PORT/NODE_NAME");
             this.localRegistrationNodeName.TextChanged += new System.EventHandler(this.rmiNodeName_TextChanged);
             // 
             // localRegistrationNodeEnabled
@@ -839,6 +857,7 @@ namespace AgentForAgent
             this.localRegistrationNodeEnabled.Size = new System.Drawing.Size(84, 17);
             this.localRegistrationNodeEnabled.TabIndex = 0;
             this.localRegistrationNodeEnabled.Text = "Node name:";
+            this.toolTip.SetToolTip(this.localRegistrationNodeEnabled, "Allows the user to specify a custom node name.");
             this.localRegistrationNodeEnabled.UseVisualStyleBackColor = true;
             this.localRegistrationNodeEnabled.CheckedChanged += new System.EventHandler(this.rmiNodeEnabled_CheckedChanged);
             // 
@@ -871,6 +890,7 @@ namespace AgentForAgent
             this.resourceManagerRegistrationJavaActionClassTextBox.Name = "resourceManagerRegistrationJavaActionClassTextBox";
             this.resourceManagerRegistrationJavaActionClassTextBox.Size = new System.Drawing.Size(361, 20);
             this.resourceManagerRegistrationJavaActionClassTextBox.TabIndex = 1;
+            this.toolTip.SetToolTip(this.resourceManagerRegistrationJavaActionClassTextBox, "Defines the Java class to run.");
             // 
             // label18
             // 
@@ -917,6 +937,8 @@ namespace AgentForAgent
             this.rmAnonymousCheckBox.Size = new System.Drawing.Size(81, 17);
             this.rmAnonymousCheckBox.TabIndex = 8;
             this.rmAnonymousCheckBox.Text = "Anonymous";
+            this.toolTip.SetToolTip(this.rmAnonymousCheckBox, "This will enable the anonymous authentication using \"Anonymous\" for both Username" +
+                    " and Password fields.");
             this.rmAnonymousCheckBox.UseVisualStyleBackColor = true;
             this.rmAnonymousCheckBox.CheckedChanged += new System.EventHandler(this.rmAnonymousCheckBox_CheckedChanged);
             // 
@@ -961,6 +983,7 @@ namespace AgentForAgent
             this.nodeNameTextBox.Name = "nodeNameTextBox";
             this.nodeNameTextBox.Size = new System.Drawing.Size(329, 20);
             this.nodeNameTextBox.TabIndex = 3;
+            this.toolTip.SetToolTip(this.nodeNameTextBox, "The name of the node without whitespaces.");
             this.nodeNameTextBox.TextChanged += new System.EventHandler(this.rmNodeName_TextChanged);
             // 
             // nodeNameLabel
@@ -1019,6 +1042,7 @@ namespace AgentForAgent
             this.customJavaActionClassTextBox.Name = "customJavaActionClassTextBox";
             this.customJavaActionClassTextBox.Size = new System.Drawing.Size(361, 20);
             this.customJavaActionClassTextBox.TabIndex = 1;
+            this.toolTip.SetToolTip(this.customJavaActionClassTextBox, "Defines the Java class to run.");
             // 
             // label19
             // 
@@ -1053,6 +1077,7 @@ namespace AgentForAgent
             this.customSaveArgumentButton.Size = new System.Drawing.Size(75, 23);
             this.customSaveArgumentButton.TabIndex = 6;
             this.customSaveArgumentButton.Text = "Save Arg";
+            this.toolTip.SetToolTip(this.customSaveArgumentButton, "Saves a modified argument.");
             this.customSaveArgumentButton.UseVisualStyleBackColor = true;
             this.customSaveArgumentButton.Click += new System.EventHandler(this.customSaveArgumentButton_Click);
             // 
@@ -1062,6 +1087,7 @@ namespace AgentForAgent
             this.customArgumentTextBox.Name = "customArgumentTextBox";
             this.customArgumentTextBox.Size = new System.Drawing.Size(398, 20);
             this.customArgumentTextBox.TabIndex = 5;
+            this.toolTip.SetToolTip(this.customArgumentTextBox, "Enter an argument without whitespaces.");
             // 
             // label15
             // 
@@ -1079,6 +1105,7 @@ namespace AgentForAgent
             this.customDeleteButton.Size = new System.Drawing.Size(75, 23);
             this.customDeleteButton.TabIndex = 3;
             this.customDeleteButton.Text = "Delete";
+            this.toolTip.SetToolTip(this.customDeleteButton, "Deletes a selected argument in the \"Arguments\" list.");
             this.customDeleteButton.UseVisualStyleBackColor = true;
             this.customDeleteButton.Click += new System.EventHandler(this.customDeleteArgumentButton_Click);
             // 
@@ -1089,6 +1116,7 @@ namespace AgentForAgent
             this.customAddButton.Size = new System.Drawing.Size(75, 23);
             this.customAddButton.TabIndex = 2;
             this.customAddButton.Text = "Add";
+            this.toolTip.SetToolTip(this.customAddButton, "Adds the argument defined in the \"Argument\" field.");
             this.customAddButton.UseVisualStyleBackColor = true;
             this.customAddButton.Click += new System.EventHandler(this.customAddHostButton_Click);
             // 
@@ -1099,6 +1127,7 @@ namespace AgentForAgent
             this.customArgumentsListBox.Name = "customArgumentsListBox";
             this.customArgumentsListBox.Size = new System.Drawing.Size(377, 82);
             this.customArgumentsListBox.TabIndex = 1;
+            this.toolTip.SetToolTip(this.customArgumentsListBox, "A list of arguments that will be passed as parameters of the Java Starter Class.");
             this.customArgumentsListBox.SelectedIndexChanged += new System.EventHandler(this.customArgumentsListBox_SelectedIndexChanged);
             // 
             // label14
@@ -1131,6 +1160,8 @@ namespace AgentForAgent
             this.alwaysAvailableCheckBox.Size = new System.Drawing.Size(180, 17);
             this.alwaysAvailableCheckBox.TabIndex = 18;
             this.alwaysAvailableCheckBox.Text = "Always available (Normal Priority)";
+            this.toolTip.SetToolTip(this.alwaysAvailableCheckBox, "No weekly planning, the ProActive Agent will be always available. with no CPU lim" +
+                    "itation and a Normal priority. ");
             this.alwaysAvailableCheckBox.UseVisualStyleBackColor = true;
             this.alwaysAvailableCheckBox.CheckStateChanged += new System.EventHandler(this.alwaysAvailableCheckBox_CheckStateChanged);
             // 
@@ -1181,6 +1212,8 @@ namespace AgentForAgent
             this.maxCpuUsageNumericUpDown.Name = "maxCpuUsageNumericUpDown";
             this.maxCpuUsageNumericUpDown.Size = new System.Drawing.Size(49, 20);
             this.maxCpuUsageNumericUpDown.TabIndex = 3;
+            this.toolTip.SetToolTip(this.maxCpuUsageNumericUpDown, "Specifies the maximum allowed CPU usage of the Runtime process and its children p" +
+                    "rocesses during this plan.");
             this.maxCpuUsageNumericUpDown.Value = new decimal(new int[] {
             1,
             0,
@@ -1220,6 +1253,8 @@ namespace AgentForAgent
             this.processPriorityComboBox.Name = "processPriorityComboBox";
             this.processPriorityComboBox.Size = new System.Drawing.Size(102, 21);
             this.processPriorityComboBox.TabIndex = 0;
+            this.toolTip.SetToolTip(this.processPriorityComboBox, "Specifies the priority of the Runtime process and its children processes during t" +
+                    "his plan.");
             this.processPriorityComboBox.SelectedIndexChanged += new System.EventHandler(this.processPriorityComboBox_SelectedIndexChanged);
             // 
             // startTimeGroupBox
@@ -1268,6 +1303,7 @@ namespace AgentForAgent
             this.secondStart.Name = "secondStart";
             this.secondStart.Size = new System.Drawing.Size(36, 20);
             this.secondStart.TabIndex = 13;
+            this.toolTip.SetToolTip(this.secondStart, "Specifies the start second.");
             this.secondStart.ValueChanged += new System.EventHandler(this.startSecondChanged);
             // 
             // label5
@@ -1295,6 +1331,7 @@ namespace AgentForAgent
             this.weekdayStart.Name = "weekdayStart";
             this.weekdayStart.Size = new System.Drawing.Size(65, 21);
             this.weekdayStart.TabIndex = 10;
+            this.toolTip.SetToolTip(this.weekdayStart, "Specifies the start day of the week.");
             this.weekdayStart.SelectedIndexChanged += new System.EventHandler(this.weekdayStart_SelectedIndexChanged);
             // 
             // label6
@@ -1317,6 +1354,7 @@ namespace AgentForAgent
             this.hourStart.Name = "hourStart";
             this.hourStart.Size = new System.Drawing.Size(36, 20);
             this.hourStart.TabIndex = 11;
+            this.toolTip.SetToolTip(this.hourStart, "Specifies the start hour.");
             this.hourStart.ValueChanged += new System.EventHandler(this.startHourChanged);
             // 
             // minuteStart
@@ -1330,6 +1368,7 @@ namespace AgentForAgent
             this.minuteStart.Name = "minuteStart";
             this.minuteStart.Size = new System.Drawing.Size(36, 20);
             this.minuteStart.TabIndex = 12;
+            this.toolTip.SetToolTip(this.minuteStart, "Specifies the start minute.");
             this.minuteStart.ValueChanged += new System.EventHandler(this.startMinuteChanged);
             // 
             // durationGroupBox
@@ -1369,6 +1408,7 @@ namespace AgentForAgent
             this.secondsDuration.Name = "secondsDuration";
             this.secondsDuration.Size = new System.Drawing.Size(36, 20);
             this.secondsDuration.TabIndex = 17;
+            this.toolTip.SetToolTip(this.secondsDuration, "The number of duration seconds.");
             this.secondsDuration.ValueChanged += new System.EventHandler(this.durationSecondChanged);
             // 
             // dayDuration
@@ -1382,6 +1422,7 @@ namespace AgentForAgent
             this.dayDuration.Name = "dayDuration";
             this.dayDuration.Size = new System.Drawing.Size(36, 20);
             this.dayDuration.TabIndex = 14;
+            this.toolTip.SetToolTip(this.dayDuration, "The number of duration days.");
             this.dayDuration.ValueChanged += new System.EventHandler(this.durationDayChanged);
             // 
             // label12
@@ -1413,6 +1454,7 @@ namespace AgentForAgent
             this.minutesDuration.Name = "minutesDuration";
             this.minutesDuration.Size = new System.Drawing.Size(36, 20);
             this.minutesDuration.TabIndex = 16;
+            this.toolTip.SetToolTip(this.minutesDuration, "The number of duration minutes.");
             this.minutesDuration.ValueChanged += new System.EventHandler(this.durationMinuteChanged);
             // 
             // hoursDuration
@@ -1426,6 +1468,7 @@ namespace AgentForAgent
             this.hoursDuration.Name = "hoursDuration";
             this.hoursDuration.Size = new System.Drawing.Size(36, 20);
             this.hoursDuration.TabIndex = 15;
+            this.toolTip.SetToolTip(this.hoursDuration, "The number of duration hours.");
             this.hoursDuration.ValueChanged += new System.EventHandler(this.durationHourChanged);
             // 
             // label11
@@ -1457,6 +1500,7 @@ namespace AgentForAgent
             this.showButton.Size = new System.Drawing.Size(70, 23);
             this.showButton.TabIndex = 6;
             this.showButton.Text = "Show";
+            this.toolTip.SetToolTip(this.showButton, "Shows a chart that represents the weekly planning.");
             this.showButton.UseVisualStyleBackColor = true;
             this.showButton.Click += new System.EventHandler(this.showButton_Click);
             // 
@@ -1467,6 +1511,7 @@ namespace AgentForAgent
             this.createEventButton.Size = new System.Drawing.Size(87, 23);
             this.createEventButton.TabIndex = 3;
             this.createEventButton.Text = "Create plan";
+            this.toolTip.SetToolTip(this.createEventButton, "Creates a new plan.");
             this.createEventButton.UseVisualStyleBackColor = true;
             this.createEventButton.Click += new System.EventHandler(this.createEventButton_Click);
             // 
@@ -1477,6 +1522,7 @@ namespace AgentForAgent
             this.deleteEventButton.Size = new System.Drawing.Size(66, 23);
             this.deleteEventButton.TabIndex = 1;
             this.deleteEventButton.Text = "Delete";
+            this.toolTip.SetToolTip(this.deleteEventButton, "Deletes a selected plan.");
             this.deleteEventButton.UseVisualStyleBackColor = true;
             this.deleteEventButton.Click += new System.EventHandler(this.deleteEventButton_Click);
             // 
@@ -1488,6 +1534,7 @@ namespace AgentForAgent
             this.saveConfig.Size = new System.Drawing.Size(75, 23);
             this.saveConfig.TabIndex = 20;
             this.saveConfig.Text = "Save";
+            this.toolTip.SetToolTip(this.saveConfig, "Saves modifications.");
             this.saveConfig.UseVisualStyleBackColor = true;
             this.saveConfig.Click += new System.EventHandler(this.saveConfig_Click);
             // 
@@ -1498,6 +1545,7 @@ namespace AgentForAgent
             this.closeConfig.Size = new System.Drawing.Size(75, 23);
             this.closeConfig.TabIndex = 21;
             this.closeConfig.Text = "Close";
+            this.toolTip.SetToolTip(this.closeConfig, "Closes this window.");
             this.closeConfig.UseVisualStyleBackColor = true;
             this.closeConfig.Click += new System.EventHandler(this.closeConfig_Click);
             // 
@@ -1516,6 +1564,7 @@ namespace AgentForAgent
             this.saveConfigAs.Size = new System.Drawing.Size(75, 23);
             this.saveConfigAs.TabIndex = 19;
             this.saveConfigAs.Text = "Save as ...";
+            this.toolTip.SetToolTip(this.saveConfigAs, "Saves the current configuration under a user specified filename.");
             this.saveConfigAs.UseVisualStyleBackColor = true;
             this.saveConfigAs.Click += new System.EventHandler(this.saveConfigAs_Click);
             // 
@@ -1531,6 +1580,7 @@ namespace AgentForAgent
             this.eventsList.Name = "eventsList";
             this.eventsList.Size = new System.Drawing.Size(235, 303);
             this.eventsList.TabIndex = 0;
+            this.toolTip.SetToolTip(this.eventsList, "The list of weekly plans.");
             this.eventsList.SelectedIndexChanged += new System.EventHandler(this.eventsList_SelectedIndexChanged);
             // 
             // ConfigurationEditor
