@@ -61,7 +61,23 @@ namespace AgentFirstSetup
             }
 
             InitializeComponent();
-            jvmDirectory.Text = Environment.GetEnvironmentVariable("JAVA_HOME");
+
+            // If ProActive or Scheduling location is specified in the configuration load it
+            if (this.conf.agentConfig.proactiveLocation != null && !this.conf.agentConfig.proactiveLocation.Equals("") )
+            {
+                this.proactiveLocation.Text = this.conf.agentConfig.proactiveLocation;
+            }
+
+            // Same for java location
+            if (this.conf.agentConfig.javaHome != null && !this.conf.agentConfig.javaHome.Equals(""))
+            {
+                this.jvmDirectory.Text = this.conf.agentConfig.javaHome;
+            }
+            else
+            {
+                // Load one from JAVA_HOME env variable
+                jvmDirectory.Text = Environment.GetEnvironmentVariable("JAVA_HOME");
+            }            
 
         }
 

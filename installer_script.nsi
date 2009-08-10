@@ -257,6 +257,9 @@ Section "ProActive Agent"
         File "bin\Release\ConfigParser.exe"
         File "bin\Release\ProActiveAgent.exe"
         File "bin\Release\AgentFirstSetup.exe"
+        File "utils\icon.ico"
+        File "utils\ListNetworkInterfaces.class"
+        File "ProActive Agent Documentation.pdf"
         File "ConfigParser\config.xsd"
         File "ProActiveAgent\lib\log4net.dll"
         File "ProActiveAgent\log4net.config"
@@ -266,14 +269,20 @@ Section "ProActive Agent"
         ${Else}
           File "ProActiveAgent\lib\x86\JobManagement.dll"
         ${EndIf}
+        
+        IfFileExists $INSTDIR\config\PAAgent-config.xml 0 defaultFileNotExistLabel
+        
+        MessageBox MB_YESNO "Use existing configuration file $INSTDIR\config\PAAgent-config.xml ?" /SD IDYES IDNO defaultFileNotExistLabel
+        Goto continueInstallLabel
+        
+        defaultFileNotExistLabel:
         SetOutPath $INSTDIR\config
         File "utils\PAAgent-config.xml"
+        
+        continueInstallLabel:
+        SetOutPath $INSTDIR\config
         File "utils\PAAgent-config-planning-day-only.xml"
         File "utils\PAAgent-config-planning-night-we.xml"
-        SetOutPath $INSTDIR
-        File "utils\icon.ico"
-        File "utils\ListNetworkInterfaces.class"
-        File "ProActive Agent Documentation.pdf"
         
         ;-----------------------------------------------------------------------------------
         ; The agent requires the following reg sub-key to know its default configuration
@@ -458,6 +467,7 @@ Section "Uninstall"
         Delete "ListNetworkInterfaces.class"
         Delete "ProActive Agent Documentation.pdf"
         Delete "LICENSE.txt"
+        Delete "configuration.ini"
         Delete "uninstall.exe"
 
 	RMDir /r "$SMPROGRAMS\ProActiveAgent"
