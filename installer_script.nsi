@@ -469,6 +469,7 @@ Section "Uninstall"
         Delete "LICENSE.txt"
         Delete "configuration.ini"
         Delete "uninstall.exe"
+        Delete "ProActiveAgent-log.txt"
 
 	RMDir /r "$SMPROGRAMS\ProActiveAgent"
 	SetShellVarContext current ; reset to current user
