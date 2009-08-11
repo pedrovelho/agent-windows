@@ -33,7 +33,7 @@ namespace AgentFirstSetup
                 }
                 else
                 {
-                    // Uninstall precedent versions
+                    // Uninstall precedent versions of the service
                     internalUninstall();
 
                     Application.EnableVisualStyles();
@@ -65,23 +65,29 @@ namespace AgentFirstSetup
             {
                 // Nothing to do ...
             }
-            // Before uninstallation of the service kill AgentForAgent.exe if it's running            
+            // Before uninstallation of the service kill AgentForAgent.exe or ConfigParser.exe if it's running            
             System.Diagnostics.Process[] processes = System.Diagnostics.Process.GetProcesses();
             foreach (System.Diagnostics.Process process in processes)
             {
                 try
                 {
-                    if (process.ProcessName.Equals("AgentForAgent.exe"))
+                    if (process.ProcessName.Equals("AgentForAgent.exe") || process.ProcessName.Equals("ConfigParser.exe"))
                     {
-                        process.Kill();
+                        process.CloseMainWindow();                        
+                        process.Close();                        
                         if (!process.HasExited)
                         {
                             process.WaitForExit();
-                        }
+                        }                        
                     }
                 }
                 catch (Exception)
                 {
+                    try
+                    {
+                        process.Kill();
+                    }
+                    catch (Exception) { }
                     // Do nothing ... 
                 }
             }

@@ -6,7 +6,7 @@
 CRCCheck on
 
 Name "ProActive Agent"
-OutFile ProActiveAgent-setup-v1.0.1rc2.exe
+OutFile ProActiveAgent-setup-v1.1rc7.exe
 
 LicenseText "This program is Licensed under the GNU General Public License (GPL)."
 LicenseData "LICENSE.txt"
@@ -108,6 +108,9 @@ Page instfiles
 !define MakeGroupReadOnly '!insertmacro GroupRO'
  
 
+############################################################################################
+# Function for dot net setup handling
+############################################################################################
 Function SetupDotNetSectionIfNeeded
  
   StrCpy $0 "0"
@@ -166,7 +169,30 @@ Function SetupDotNetSectionIfNeeded
   yesDotNet:
  
 FunctionEnd
-; ---------------------------------------------------------------------------------
+
+############################################################################################
+# On init unistall the previous version
+############################################################################################
+Function .onInit
+
+        ;-----------------------------------------------------------------------------------
+        ; Check if a previous version of the unistaller is available
+       	;-----------------------------------------------------------------------------------
+        IfFileExists $INSTDIR\uninstall.exe 0 endLabel
+        
+        ;-----------------------------------------------------------------------------------
+        ; Ask the user if he wants to uninstall previous version
+       	;-----------------------------------------------------------------------------------
+        MessageBox MB_YESNO "The previous version of the ProActive Windows Agent must be uninstalled. Run the uninstaller ?" /SD IDYES IDNO abortLabel
+        Exec $INSTDIR\uninstall.exe
+        Goto endLabel
+        
+        abortLabel:
+        Abort
+        
+        endLabel:
+
+FunctionEnd
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Section "ProActive Agent"
@@ -243,6 +269,9 @@ Section "ProActive Agent"
         WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ProActiveAgent" "DisplayName" "ProActive Agent (remove only)"
         WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ProActiveAgent" "UninstallString" '"$INSTDIR\Uninstall.exe"'
 
+       	;-----------------------------------------------------------------------------------
+        ; Set current dir to installation directory
+        ;-----------------------------------------------------------------------------------
         SetOutPath $INSTDIR
 
         ;-----------------------------------------------------------------------------------
@@ -254,7 +283,7 @@ Section "ProActive Agent"
         ; Write files
         ;-----------------------------------------------------------------------------------
         File "LICENSE.txt"
-        File "bin\Release\ConfigParser.exe"
+        File "bin\Release\ConfigParser.dll"
         File "bin\Release\ProActiveAgent.exe"
         File "bin\Release\AgentFirstSetup.exe"
         File "utils\icon.ico"
@@ -269,21 +298,21 @@ Section "ProActive Agent"
         ${Else}
           File "ProActiveAgent\lib\x86\JobManagement.dll"
         ${EndIf}
-        
+
         IfFileExists $INSTDIR\config\PAAgent-config.xml 0 defaultFileNotExistLabel
-        
+
         MessageBox MB_YESNO "Use existing configuration file $INSTDIR\config\PAAgent-config.xml ?" /SD IDYES IDNO defaultFileNotExistLabel
         Goto continueInstallLabel
-        
+
         defaultFileNotExistLabel:
         SetOutPath $INSTDIR\config
         File "utils\PAAgent-config.xml"
-        
+
         continueInstallLabel:
         SetOutPath $INSTDIR\config
         File "utils\PAAgent-config-planning-day-only.xml"
         File "utils\PAAgent-config-planning-night-we.xml"
-        
+
         ;-----------------------------------------------------------------------------------
         ; The agent requires the following reg sub-key to know its default configuration
         ;-----------------------------------------------------------------------------------
@@ -293,7 +322,7 @@ Section "ProActive Agent"
         ; Run the internal service installer
         ;-----------------------------------------------------------------------------------
         ExecWait "$INSTDIR\AgentFirstSetup.exe -i $\"$INSTDIR$\""
-        
+
         ;-----------------------------------------------------------------------------------
         ; Read the service user from the registry. If there is no service user specified
         ; then we assume that the service user is LocalSystem so no need to check the rights.
@@ -454,8 +483,7 @@ Section "Uninstall"
        	;-----------------------------------------------------------------------------------
 	; Remove all known files except config directory from $INSTDIR
 	;-----------------------------------------------------------------------------------
-        Delete "ConfigParser.exe"
-        Delete "AgentForAgent.exe"
+        Delete "ConfigParser.dll"
         Delete "ProActiveAgent.exe"
         Delete "AgentFirstSetup.exe"
         Delete "config.xsd"
@@ -470,6 +498,7 @@ Section "Uninstall"
         Delete "configuration.ini"
         Delete "uninstall.exe"
         Delete "ProActiveAgent-log.txt"
+        Delete "AgentForAgent.exe"
 
 	RMDir /r "$SMPROGRAMS\ProActiveAgent"
 	SetShellVarContext current ; reset to current user
