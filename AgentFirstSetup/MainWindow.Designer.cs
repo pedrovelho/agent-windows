@@ -86,11 +86,11 @@
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(89, 91);
+            this.checkBox1.Location = new System.Drawing.Point(76, 91);
             this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(169, 17);
+            this.checkBox1.Size = new System.Drawing.Size(162, 17);
             this.checkBox1.TabIndex = 13;
-            this.checkBox1.Text = "Use system-wide JVM location";
+            this.checkBox1.Text = "Use system-wide Java Home";
             this.checkBox1.UseVisualStyleBackColor = true;
             this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
@@ -109,15 +109,15 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(6, 68);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(76, 13);
+            this.label2.Size = new System.Drawing.Size(64, 13);
             this.label2.TabIndex = 11;
-            this.label2.Text = "JVM Directory:";
+            this.label2.Text = "Java Home:";
             // 
             // jvmDirectory
             // 
-            this.jvmDirectory.Location = new System.Drawing.Point(88, 65);
+            this.jvmDirectory.Location = new System.Drawing.Point(76, 65);
             this.jvmDirectory.Name = "jvmDirectory";
-            this.jvmDirectory.Size = new System.Drawing.Size(390, 20);
+            this.jvmDirectory.Size = new System.Drawing.Size(402, 20);
             this.jvmDirectory.TabIndex = 10;
             this.jvmDirectory.TextChanged += new System.EventHandler(this.jvmDirectory_TextChanged);
             // 

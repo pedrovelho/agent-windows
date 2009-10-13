@@ -20,50 +20,19 @@ namespace ConfigParser
         /// <summary>
         /// The java class that corresponds to this action.</summary>
         public const string DEFAULT_JAVA_STARTER_CLASS = "org.ow2.proactive.resourcemanager.utils.PAAgentServiceRMStarter";
-        /// <summary>
-        /// The username used in case of anonymous authetication.</summary>
-        public const string ANONYMOUS_USERNAME = "anonymous";
-        /// <summary>
-        /// The password used in case of anonymous authetication.</summary>
-        public const string ANONYMOUS_PASSWORD = "anonymous";
-
-        private string myUsername;
-        private string myPassword;
         private string myRmUrl;
-        private string myNodeName;        
+        private string myNodeName;
+        private string myNodeSourceName;
+        private string myCredentialLocation;
+        private bool myUseDefaultCredential;
 
         public RMAction() {
             base.javaStarterClass = DEFAULT_JAVA_STARTER_CLASS;
-            this.myUsername = "";
-            this.myPassword = "";
             this.myRmUrl = "";
-            this.myNodeName = "";            
-        }
-
-        [XmlElement("username", IsNullable = false)]
-        public string username
-        {
-            get
-            {
-                return this.myUsername;
-            }
-            set
-            {
-                this.myUsername = value;
-            }
-        }
-
-        [XmlElement("password", IsNullable = false)]
-        public string password
-        {
-            get
-            {
-                return this.myPassword;
-            }
-            set
-            {
-                this.myPassword = value;
-            }
+            this.myNodeName = "";
+            this.myNodeSourceName = "";
+            this.myCredentialLocation = "";
+            this.myUseDefaultCredential = true;
         }
 
         [XmlElement("url", IsNullable = false)]
@@ -92,16 +61,84 @@ namespace ConfigParser
             }
         }
 
+        [XmlElement("nodeSourceName", IsNullable = false)]
+        public string nodeSourceName
+        {
+            get
+            {
+                return this.myNodeSourceName;
+            }
+            set
+            {
+                this.myNodeSourceName = value;
+            }
+        }
+
+        [XmlElement("credentialLocation", IsNullable = false)]
+        public string credentialLocation
+        {
+            get
+            {
+                return this.myCredentialLocation;
+            }
+            set
+            {
+                this.myCredentialLocation = value;
+            }
+        }
+
+        [XmlElement("useDefaultCredential", IsNullable = false)]
+        public bool useDefaultCredential
+        {
+            get
+            {
+                return this.myUseDefaultCredential;
+            }
+            set
+            {
+                this.myUseDefaultCredential = value;
+            }
+        }
+
         public override string[] getArgs()
         {
-            return new string[] { this.myUsername, this.myPassword, this.myRmUrl, this.myNodeName };
+            string urlOpt = "-r " + this.myRmUrl;
+            string nodeNameOpt;
+            if (this.myNodeName == null || this.myNodeName.Equals("")) {
+                nodeNameOpt = "";
+            } else {
+                nodeNameOpt = "-n " + this.myNodeName;
+            }
+            string nodeSourceNameOpt;
+            if (this.myNodeSourceName == null || this.myNodeSourceName.Equals("")){
+                nodeSourceNameOpt = "";    
+            } else {
+                nodeSourceNameOpt = "-s " + this.myNodeSourceName;
+            }
+            if (this.myUseDefaultCredential)
+            {
+                return new string[] { urlOpt, nodeNameOpt, nodeSourceNameOpt };
+            }
+            else
+            {
+                string credentialLocationOpt;
+                if (this.myCredentialLocation == null || this.myNodeSourceName.Equals(""))
+                {
+                    credentialLocationOpt = "";
+                }
+                else
+                {
+                    credentialLocationOpt = "-f " + this.myCredentialLocation;
+                }
+                return new string[] { urlOpt, nodeNameOpt, nodeSourceNameOpt, credentialLocationOpt };   
+            }            
         }
 
         // Default jvm parameters needed for this type of action
         public static new void addDefaultJvmParameters(List<string> jvmParameters, string proactiveLocation) {
             jvmParameters.Add("-Dpa.scheduler.home=\"" + proactiveLocation + "\"");
             jvmParameters.Add("-Dpa.rm.home=\"" + proactiveLocation + "\"");
-            jvmParameters.Add("-Djava.security.policy=\"" + proactiveLocation + "\\config\\scheduler.java.policy\"");
+            jvmParameters.Add("-Djava.security.policy=\"" + proactiveLocation + "\\config\\security.java.policy\"");
             jvmParameters.Add("-Dlog4j.configuration=\"file:///" + proactiveLocation + "\\config\\log4j\\log4j-client\"");
         }
     }

@@ -48,16 +48,12 @@ namespace AgentForAgent
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.jvmLocationButton = new System.Windows.Forms.Button();
             this.proactiveLocationButton = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
             this.jvmDirectory = new System.Windows.Forms.TextBox();
             this.proactiveDirectory = new System.Windows.Forms.TextBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.generalTabPage = new System.Windows.Forms.TabPage();
             this.onRuntimeExitGroupBox = new System.Windows.Forms.GroupBox();
             this.scriptLocationButton = new System.Windows.Forms.Button();
-            this.scriptLocationLabel = new System.Windows.Forms.Label();
             this.scriptLocationTextBox = new System.Windows.Forms.TextBox();
             this.multiRuntimeGroupBox = new System.Windows.Forms.GroupBox();
             this.useAllAvailableCPUsCheckBox = new System.Windows.Forms.CheckBox();
@@ -102,16 +98,18 @@ namespace AgentForAgent
             this.resourceManagerRegistrationJavaActionClassTextBox = new System.Windows.Forms.TextBox();
             this.label18 = new System.Windows.Forms.Label();
             this.rmActionGroup = new System.Windows.Forms.GroupBox();
-            this.authenticationGroupBox = new System.Windows.Forms.GroupBox();
-            this.rmAnonymousCheckBox = new System.Windows.Forms.CheckBox();
-            this.rmUsernameLabel = new System.Windows.Forms.Label();
-            this.rmPasswordLabel = new System.Windows.Forms.Label();
-            this.rmPasswordTextBox = new System.Windows.Forms.TextBox();
-            this.rmUsernameTextBox = new System.Windows.Forms.TextBox();
+            this.nodeSourceNameLabel = new System.Windows.Forms.Label();
+            this.nodeSourceNameTextBox = new System.Windows.Forms.TextBox();
             this.nodeNameTextBox = new System.Windows.Forms.TextBox();
             this.nodeNameLabel = new System.Windows.Forms.Label();
             this.rmUrl = new System.Windows.Forms.TextBox();
             this.resourceManagerUrlLabel = new System.Windows.Forms.Label();
+            this.authenticationCredentialGroupBox = new System.Windows.Forms.GroupBox();
+            this.useDefaultCredentialCheckBox = new System.Windows.Forms.CheckBox();
+            this.credentialBrowseLocationButton = new System.Windows.Forms.Button();
+            this.label16 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.credentialLocationTextBox = new System.Windows.Forms.TextBox();
             this.customTabPage = new System.Windows.Forms.TabPage();
             this.customAdditionalConfigurationGroupBox = new System.Windows.Forms.GroupBox();
             this.customJavaActionClassTextBox = new System.Windows.Forms.TextBox();
@@ -161,8 +159,9 @@ namespace AgentForAgent
             this.jvmLocationBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.saveConfigAs = new System.Windows.Forms.Button();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.scriptLocationFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.scriptLocationOpenDialog = new System.Windows.Forms.OpenFileDialog();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.credentialLocationOpenDialog = new System.Windows.Forms.OpenFileDialog();
             this.eventsList = new AgentForAgent.RefreshingListBox();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -185,7 +184,7 @@ namespace AgentForAgent
             this.resourceManagerRegistrationTabPage.SuspendLayout();
             this.resourceManagerRegistrationAdditionalConfigurationGroupBox.SuspendLayout();
             this.rmActionGroup.SuspendLayout();
-            this.authenticationGroupBox.SuspendLayout();
+            this.authenticationCredentialGroupBox.SuspendLayout();
             this.customTabPage.SuspendLayout();
             this.customAdditionalConfigurationGroupBox.SuspendLayout();
             this.customActionGroup.SuspendLayout();
@@ -213,9 +212,6 @@ namespace AgentForAgent
             this.groupBox1.Controls.Add(this.checkBox1);
             this.groupBox1.Controls.Add(this.jvmLocationButton);
             this.groupBox1.Controls.Add(this.proactiveLocationButton);
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.jvmDirectory);
             this.groupBox1.Controls.Add(this.proactiveDirectory);
             this.groupBox1.Location = new System.Drawing.Point(3, 3);
@@ -228,9 +224,9 @@ namespace AgentForAgent
             // jvmParametersListBox
             // 
             this.jvmParametersListBox.FormattingEnabled = true;
-            this.jvmParametersListBox.Location = new System.Drawing.Point(112, 95);
+            this.jvmParametersListBox.Location = new System.Drawing.Point(145, 95);
             this.jvmParametersListBox.Name = "jvmParametersListBox";
-            this.jvmParametersListBox.Size = new System.Drawing.Size(466, 69);
+            this.jvmParametersListBox.Size = new System.Drawing.Size(514, 69);
             this.jvmParametersListBox.TabIndex = 12;
             this.toolTip.SetToolTip(this.jvmParametersListBox, "If the parameter contains ${rank} it will be dynamically replaced by the Runtime " +
                     "rank.");
@@ -239,99 +235,72 @@ namespace AgentForAgent
             // 
             // removeJvmParameterButton
             // 
-            this.removeJvmParameterButton.Location = new System.Drawing.Point(584, 124);
+            this.removeJvmParameterButton.Location = new System.Drawing.Point(6, 124);
             this.removeJvmParameterButton.Name = "removeJvmParameterButton";
-            this.removeJvmParameterButton.Size = new System.Drawing.Size(75, 23);
+            this.removeJvmParameterButton.Size = new System.Drawing.Size(133, 20);
             this.removeJvmParameterButton.TabIndex = 11;
-            this.removeJvmParameterButton.Text = "Remove";
+            this.removeJvmParameterButton.Text = "Remove JVM Parameter";
             this.removeJvmParameterButton.UseVisualStyleBackColor = true;
             this.removeJvmParameterButton.Click += new System.EventHandler(this.removeJvmParameterButton_Click);
             // 
             // addJvmParameterButton
             // 
-            this.addJvmParameterButton.Location = new System.Drawing.Point(584, 95);
+            this.addJvmParameterButton.Location = new System.Drawing.Point(6, 95);
             this.addJvmParameterButton.Name = "addJvmParameterButton";
-            this.addJvmParameterButton.Size = new System.Drawing.Size(75, 23);
+            this.addJvmParameterButton.Size = new System.Drawing.Size(133, 20);
             this.addJvmParameterButton.TabIndex = 10;
-            this.addJvmParameterButton.Text = "Add";
+            this.addJvmParameterButton.Text = "Add JVM Parameter";
             this.addJvmParameterButton.UseVisualStyleBackColor = true;
             this.addJvmParameterButton.Click += new System.EventHandler(this.addJvmParameterButton_Click);
             // 
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(112, 72);
+            this.checkBox1.Location = new System.Drawing.Point(145, 71);
             this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(169, 17);
+            this.checkBox1.Size = new System.Drawing.Size(162, 17);
             this.checkBox1.TabIndex = 9;
-            this.checkBox1.Text = "Use system-wide JVM location";
+            this.checkBox1.Text = "Use system-wide Java Home";
             this.toolTip.SetToolTip(this.checkBox1, "Uses JVM location specified by the JAVA_HOME environment variable.");
             this.checkBox1.UseVisualStyleBackColor = true;
             this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
             // jvmLocationButton
             // 
-            this.jvmLocationButton.Location = new System.Drawing.Point(584, 42);
+            this.jvmLocationButton.Location = new System.Drawing.Point(6, 45);
             this.jvmLocationButton.Name = "jvmLocationButton";
-            this.jvmLocationButton.Size = new System.Drawing.Size(75, 23);
+            this.jvmLocationButton.Size = new System.Drawing.Size(133, 20);
             this.jvmLocationButton.TabIndex = 8;
-            this.jvmLocationButton.Text = "Browse...";
+            this.jvmLocationButton.Text = "Browse Java Home:";
             this.jvmLocationButton.UseVisualStyleBackColor = true;
             this.jvmLocationButton.Click += new System.EventHandler(this.jvmLocationButton_Click);
             // 
             // proactiveLocationButton
             // 
-            this.proactiveLocationButton.Location = new System.Drawing.Point(584, 14);
+            this.proactiveLocationButton.Location = new System.Drawing.Point(6, 16);
             this.proactiveLocationButton.Name = "proactiveLocationButton";
-            this.proactiveLocationButton.Size = new System.Drawing.Size(75, 23);
+            this.proactiveLocationButton.Size = new System.Drawing.Size(133, 20);
             this.proactiveLocationButton.TabIndex = 7;
-            this.proactiveLocationButton.Text = "Browse...";
+            this.proactiveLocationButton.Text = "Browse ProActive Home:";
             this.proactiveLocationButton.UseVisualStyleBackColor = true;
             this.proactiveLocationButton.Click += new System.EventHandler(this.proactiveLocationButton_Click);
             // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(7, 100);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(87, 13);
-            this.label3.TabIndex = 5;
-            this.label3.Text = "JVM Parameters:";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 47);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(76, 13);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "JVM Directory:";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 19);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(101, 13);
-            this.label1.TabIndex = 3;
-            this.label1.Text = "ProActive Directory:";
-            // 
             // jvmDirectory
             // 
-            this.jvmDirectory.Location = new System.Drawing.Point(112, 44);
+            this.jvmDirectory.Location = new System.Drawing.Point(145, 45);
             this.jvmDirectory.Name = "jvmDirectory";
-            this.jvmDirectory.Size = new System.Drawing.Size(466, 20);
+            this.jvmDirectory.Size = new System.Drawing.Size(514, 20);
             this.jvmDirectory.TabIndex = 1;
-            this.toolTip.SetToolTip(this.jvmDirectory, "Location of the JVM directory.");
+            this.toolTip.SetToolTip(this.jvmDirectory, "Java Home location.");
             this.jvmDirectory.TextChanged += new System.EventHandler(this.jvmDirectory_TextChanged);
             // 
             // proactiveDirectory
             // 
-            this.proactiveDirectory.Location = new System.Drawing.Point(112, 16);
+            this.proactiveDirectory.Location = new System.Drawing.Point(145, 16);
             this.proactiveDirectory.Name = "proactiveDirectory";
-            this.proactiveDirectory.Size = new System.Drawing.Size(466, 20);
+            this.proactiveDirectory.Size = new System.Drawing.Size(514, 20);
             this.proactiveDirectory.TabIndex = 0;
-            this.toolTip.SetToolTip(this.proactiveDirectory, "Location of the ProActive or Scheduling directory.");
+            this.toolTip.SetToolTip(this.proactiveDirectory, "Location of the ProActive or Scheduling home.");
             this.proactiveDirectory.TextChanged += new System.EventHandler(this.proactiveLocation_TextChanged);
             // 
             // tabControl1
@@ -364,39 +333,29 @@ namespace AgentForAgent
             // onRuntimeExitGroupBox
             // 
             this.onRuntimeExitGroupBox.Controls.Add(this.scriptLocationButton);
-            this.onRuntimeExitGroupBox.Controls.Add(this.scriptLocationLabel);
             this.onRuntimeExitGroupBox.Controls.Add(this.scriptLocationTextBox);
-            this.onRuntimeExitGroupBox.Location = new System.Drawing.Point(4, 185);
+            this.onRuntimeExitGroupBox.Location = new System.Drawing.Point(4, 184);
             this.onRuntimeExitGroupBox.Name = "onRuntimeExitGroupBox";
-            this.onRuntimeExitGroupBox.Size = new System.Drawing.Size(384, 43);
+            this.onRuntimeExitGroupBox.Size = new System.Drawing.Size(384, 44);
             this.onRuntimeExitGroupBox.TabIndex = 5;
             this.onRuntimeExitGroupBox.TabStop = false;
             this.onRuntimeExitGroupBox.Text = "On Runtime Exit";
             // 
             // scriptLocationButton
             // 
-            this.scriptLocationButton.Location = new System.Drawing.Point(303, 12);
+            this.scriptLocationButton.Location = new System.Drawing.Point(5, 18);
             this.scriptLocationButton.Name = "scriptLocationButton";
-            this.scriptLocationButton.Size = new System.Drawing.Size(75, 25);
+            this.scriptLocationButton.Size = new System.Drawing.Size(133, 20);
             this.scriptLocationButton.TabIndex = 2;
-            this.scriptLocationButton.Text = "Browse...";
+            this.scriptLocationButton.Text = "Browse Script Location:";
             this.scriptLocationButton.UseVisualStyleBackColor = true;
             this.scriptLocationButton.Click += new System.EventHandler(this.scriptLocationButton_Click);
             // 
-            // scriptLocationLabel
-            // 
-            this.scriptLocationLabel.AutoSize = true;
-            this.scriptLocationLabel.Location = new System.Drawing.Point(6, 17);
-            this.scriptLocationLabel.Name = "scriptLocationLabel";
-            this.scriptLocationLabel.Size = new System.Drawing.Size(81, 13);
-            this.scriptLocationLabel.TabIndex = 1;
-            this.scriptLocationLabel.Text = "Script Location:";
-            // 
             // scriptLocationTextBox
             // 
-            this.scriptLocationTextBox.Location = new System.Drawing.Point(111, 14);
+            this.scriptLocationTextBox.Location = new System.Drawing.Point(144, 18);
             this.scriptLocationTextBox.Name = "scriptLocationTextBox";
-            this.scriptLocationTextBox.Size = new System.Drawing.Size(186, 20);
+            this.scriptLocationTextBox.Size = new System.Drawing.Size(234, 20);
             this.scriptLocationTextBox.TabIndex = 0;
             this.toolTip.SetToolTip(this.scriptLocationTextBox, "Location of the script executed after a Runtime terminates.");
             this.scriptLocationTextBox.TextChanged += new System.EventHandler(this.scriptLocationTextBox_TextChanged);
@@ -432,7 +391,7 @@ namespace AgentForAgent
             // nbRuntimesLabel
             // 
             this.nbRuntimesLabel.AutoSize = true;
-            this.nbRuntimesLabel.Location = new System.Drawing.Point(15, 45);
+            this.nbRuntimesLabel.Location = new System.Drawing.Point(20, 45);
             this.nbRuntimesLabel.Name = "nbRuntimesLabel";
             this.nbRuntimesLabel.Size = new System.Drawing.Size(71, 13);
             this.nbRuntimesLabel.TabIndex = 3;
@@ -495,9 +454,9 @@ namespace AgentForAgent
             // useNetworkInterfaceButton
             // 
             this.useNetworkInterfaceButton.Enabled = false;
-            this.useNetworkInterfaceButton.Location = new System.Drawing.Point(112, 154);
+            this.useNetworkInterfaceButton.Location = new System.Drawing.Point(112, 157);
             this.useNetworkInterfaceButton.Name = "useNetworkInterfaceButton";
-            this.useNetworkInterfaceButton.Size = new System.Drawing.Size(75, 23);
+            this.useNetworkInterfaceButton.Size = new System.Drawing.Size(75, 20);
             this.useNetworkInterfaceButton.TabIndex = 3;
             this.useNetworkInterfaceButton.Text = "Use";
             this.toolTip.SetToolTip(this.useNetworkInterfaceButton, "Uses the selected network interface.");
@@ -510,15 +469,15 @@ namespace AgentForAgent
             this.networkInterfacesListBox.HorizontalScrollbar = true;
             this.networkInterfacesListBox.Location = new System.Drawing.Point(6, 19);
             this.networkInterfacesListBox.Name = "networkInterfacesListBox";
-            this.networkInterfacesListBox.Size = new System.Drawing.Size(262, 121);
+            this.networkInterfacesListBox.Size = new System.Drawing.Size(262, 134);
             this.networkInterfacesListBox.TabIndex = 2;
             this.toolTip.SetToolTip(this.networkInterfacesListBox, "The list of available network interfaces.");
             // 
             // refreshNetworkInterfacesButton
             // 
-            this.refreshNetworkInterfacesButton.Location = new System.Drawing.Point(193, 154);
+            this.refreshNetworkInterfacesButton.Location = new System.Drawing.Point(193, 157);
             this.refreshNetworkInterfacesButton.Name = "refreshNetworkInterfacesButton";
-            this.refreshNetworkInterfacesButton.Size = new System.Drawing.Size(75, 23);
+            this.refreshNetworkInterfacesButton.Size = new System.Drawing.Size(75, 20);
             this.refreshNetworkInterfacesButton.TabIndex = 1;
             this.refreshNetworkInterfacesButton.Text = "Refresh";
             this.refreshNetworkInterfacesButton.UseVisualStyleBackColor = true;
@@ -652,7 +611,7 @@ namespace AgentForAgent
             this.runtimeIncomingProtocolGroupBox.Controls.Add(this.protocolLabel);
             this.runtimeIncomingProtocolGroupBox.Controls.Add(this.portInitialValue);
             this.runtimeIncomingProtocolGroupBox.Controls.Add(this.portInitialValueNumericUpDown);
-            this.runtimeIncomingProtocolGroupBox.Location = new System.Drawing.Point(366, 6);
+            this.runtimeIncomingProtocolGroupBox.Location = new System.Drawing.Point(366, 3);
             this.runtimeIncomingProtocolGroupBox.Name = "runtimeIncomingProtocolGroupBox";
             this.runtimeIncomingProtocolGroupBox.Size = new System.Drawing.Size(305, 45);
             this.runtimeIncomingProtocolGroupBox.TabIndex = 5;
@@ -722,7 +681,7 @@ namespace AgentForAgent
             this.enabledConnectionGroupBox.Controls.Add(this.resourceManagerRegistrationRadioButton);
             this.enabledConnectionGroupBox.Controls.Add(this.localRegistrationRadioButton);
             this.enabledConnectionGroupBox.Controls.Add(this.customRadioButton);
-            this.enabledConnectionGroupBox.Location = new System.Drawing.Point(3, 6);
+            this.enabledConnectionGroupBox.Location = new System.Drawing.Point(3, 3);
             this.enabledConnectionGroupBox.Name = "enabledConnectionGroupBox";
             this.enabledConnectionGroupBox.Size = new System.Drawing.Size(359, 45);
             this.enabledConnectionGroupBox.TabIndex = 4;
@@ -865,6 +824,7 @@ namespace AgentForAgent
             // 
             this.resourceManagerRegistrationTabPage.Controls.Add(this.resourceManagerRegistrationAdditionalConfigurationGroupBox);
             this.resourceManagerRegistrationTabPage.Controls.Add(this.rmActionGroup);
+            this.resourceManagerRegistrationTabPage.Controls.Add(this.authenticationCredentialGroupBox);
             this.resourceManagerRegistrationTabPage.Location = new System.Drawing.Point(179, 4);
             this.resourceManagerRegistrationTabPage.Name = "resourceManagerRegistrationTabPage";
             this.resourceManagerRegistrationTabPage.Padding = new System.Windows.Forms.Padding(3);
@@ -903,79 +863,36 @@ namespace AgentForAgent
             // 
             // rmActionGroup
             // 
-            this.rmActionGroup.Controls.Add(this.authenticationGroupBox);
+            this.rmActionGroup.Controls.Add(this.nodeSourceNameLabel);
+            this.rmActionGroup.Controls.Add(this.nodeSourceNameTextBox);
             this.rmActionGroup.Controls.Add(this.nodeNameTextBox);
             this.rmActionGroup.Controls.Add(this.nodeNameLabel);
             this.rmActionGroup.Controls.Add(this.rmUrl);
             this.rmActionGroup.Controls.Add(this.resourceManagerUrlLabel);
             this.rmActionGroup.Location = new System.Drawing.Point(6, 6);
             this.rmActionGroup.Name = "rmActionGroup";
-            this.rmActionGroup.Size = new System.Drawing.Size(473, 201);
+            this.rmActionGroup.Size = new System.Drawing.Size(473, 100);
             this.rmActionGroup.TabIndex = 3;
             this.rmActionGroup.TabStop = false;
             this.rmActionGroup.Text = "Resource Manager Registration";
             // 
-            // authenticationGroupBox
+            // nodeSourceNameLabel
             // 
-            this.authenticationGroupBox.Controls.Add(this.rmAnonymousCheckBox);
-            this.authenticationGroupBox.Controls.Add(this.rmUsernameLabel);
-            this.authenticationGroupBox.Controls.Add(this.rmPasswordLabel);
-            this.authenticationGroupBox.Controls.Add(this.rmPasswordTextBox);
-            this.authenticationGroupBox.Controls.Add(this.rmUsernameTextBox);
-            this.authenticationGroupBox.Location = new System.Drawing.Point(138, 122);
-            this.authenticationGroupBox.Name = "authenticationGroupBox";
-            this.authenticationGroupBox.Size = new System.Drawing.Size(329, 73);
-            this.authenticationGroupBox.TabIndex = 9;
-            this.authenticationGroupBox.TabStop = false;
-            this.authenticationGroupBox.Text = "Authentication";
+            this.nodeSourceNameLabel.AutoSize = true;
+            this.nodeSourceNameLabel.Location = new System.Drawing.Point(28, 75);
+            this.nodeSourceNameLabel.Name = "nodeSourceNameLabel";
+            this.nodeSourceNameLabel.Size = new System.Drawing.Size(104, 13);
+            this.nodeSourceNameLabel.TabIndex = 11;
+            this.nodeSourceNameLabel.Text = "Node Source Name:";
             // 
-            // rmAnonymousCheckBox
+            // nodeSourceNameTextBox
             // 
-            this.rmAnonymousCheckBox.AutoSize = true;
-            this.rmAnonymousCheckBox.Location = new System.Drawing.Point(6, 19);
-            this.rmAnonymousCheckBox.Name = "rmAnonymousCheckBox";
-            this.rmAnonymousCheckBox.Size = new System.Drawing.Size(81, 17);
-            this.rmAnonymousCheckBox.TabIndex = 8;
-            this.rmAnonymousCheckBox.Text = "Anonymous";
-            this.toolTip.SetToolTip(this.rmAnonymousCheckBox, "This will enable the anonymous authentication using \"Anonymous\" for both Username" +
-                    " and Password fields.");
-            this.rmAnonymousCheckBox.UseVisualStyleBackColor = true;
-            this.rmAnonymousCheckBox.CheckedChanged += new System.EventHandler(this.rmAnonymousCheckBox_CheckedChanged);
-            // 
-            // rmUsernameLabel
-            // 
-            this.rmUsernameLabel.AutoSize = true;
-            this.rmUsernameLabel.Location = new System.Drawing.Point(103, 20);
-            this.rmUsernameLabel.Name = "rmUsernameLabel";
-            this.rmUsernameLabel.Size = new System.Drawing.Size(58, 13);
-            this.rmUsernameLabel.TabIndex = 4;
-            this.rmUsernameLabel.Text = "Username:";
-            // 
-            // rmPasswordLabel
-            // 
-            this.rmPasswordLabel.AutoSize = true;
-            this.rmPasswordLabel.Location = new System.Drawing.Point(105, 46);
-            this.rmPasswordLabel.Name = "rmPasswordLabel";
-            this.rmPasswordLabel.Size = new System.Drawing.Size(56, 13);
-            this.rmPasswordLabel.TabIndex = 6;
-            this.rmPasswordLabel.Text = "Password:";
-            // 
-            // rmPasswordTextBox
-            // 
-            this.rmPasswordTextBox.Location = new System.Drawing.Point(167, 43);
-            this.rmPasswordTextBox.Name = "rmPasswordTextBox";
-            this.rmPasswordTextBox.PasswordChar = '*';
-            this.rmPasswordTextBox.Size = new System.Drawing.Size(156, 20);
-            this.rmPasswordTextBox.TabIndex = 7;
-            this.rmPasswordTextBox.TextChanged += new System.EventHandler(this.rmPasswordTextBox_TextChanged);
-            // 
-            // rmUsernameTextBox
-            // 
-            this.rmUsernameTextBox.Location = new System.Drawing.Point(167, 17);
-            this.rmUsernameTextBox.Name = "rmUsernameTextBox";
-            this.rmUsernameTextBox.Size = new System.Drawing.Size(156, 20);
-            this.rmUsernameTextBox.TabIndex = 5;
-            this.rmUsernameTextBox.TextChanged += new System.EventHandler(this.rmUsernameTextBox_TextChanged);
+            this.nodeSourceNameTextBox.Location = new System.Drawing.Point(138, 72);
+            this.nodeSourceNameTextBox.Name = "nodeSourceNameTextBox";
+            this.nodeSourceNameTextBox.Size = new System.Drawing.Size(329, 20);
+            this.nodeSourceNameTextBox.TabIndex = 10;
+            this.toolTip.SetToolTip(this.nodeSourceNameTextBox, "The name of the node source without whitespaces.");
+            this.nodeSourceNameTextBox.TextChanged += new System.EventHandler(this.nodeSourceNameTextBox_TextChanged);
             // 
             // nodeNameTextBox
             // 
@@ -1012,6 +929,66 @@ namespace AgentForAgent
             this.resourceManagerUrlLabel.Size = new System.Drawing.Size(126, 13);
             this.resourceManagerUrlLabel.TabIndex = 0;
             this.resourceManagerUrlLabel.Text = "Resource Manager URL:";
+            // 
+            // authenticationCredentialGroupBox
+            // 
+            this.authenticationCredentialGroupBox.Controls.Add(this.useDefaultCredentialCheckBox);
+            this.authenticationCredentialGroupBox.Controls.Add(this.credentialBrowseLocationButton);
+            this.authenticationCredentialGroupBox.Controls.Add(this.label16);
+            this.authenticationCredentialGroupBox.Controls.Add(this.label4);
+            this.authenticationCredentialGroupBox.Controls.Add(this.credentialLocationTextBox);
+            this.authenticationCredentialGroupBox.Location = new System.Drawing.Point(6, 112);
+            this.authenticationCredentialGroupBox.Name = "authenticationCredentialGroupBox";
+            this.authenticationCredentialGroupBox.Size = new System.Drawing.Size(473, 71);
+            this.authenticationCredentialGroupBox.TabIndex = 9;
+            this.authenticationCredentialGroupBox.TabStop = false;
+            this.authenticationCredentialGroupBox.Text = "Authentication Credential";
+            // 
+            // useDefaultCredentialCheckBox
+            // 
+            this.useDefaultCredentialCheckBox.AutoSize = true;
+            this.useDefaultCredentialCheckBox.Location = new System.Drawing.Point(6, 48);
+            this.useDefaultCredentialCheckBox.Name = "useDefaultCredentialCheckBox";
+            this.useDefaultCredentialCheckBox.Size = new System.Drawing.Size(132, 17);
+            this.useDefaultCredentialCheckBox.TabIndex = 7;
+            this.useDefaultCredentialCheckBox.Text = "Use Default Credential";
+            this.useDefaultCredentialCheckBox.UseVisualStyleBackColor = true;
+            this.useDefaultCredentialCheckBox.CheckedChanged += new System.EventHandler(this.useDefaultCredentialCheckBox_CheckedChanged);
+            // 
+            // credentialBrowseLocationButton
+            // 
+            this.credentialBrowseLocationButton.Location = new System.Drawing.Point(6, 20);
+            this.credentialBrowseLocationButton.Name = "credentialBrowseLocationButton";
+            this.credentialBrowseLocationButton.Size = new System.Drawing.Size(126, 20);
+            this.credentialBrowseLocationButton.TabIndex = 4;
+            this.credentialBrowseLocationButton.Text = "Browse Location:";
+            this.credentialBrowseLocationButton.UseVisualStyleBackColor = true;
+            this.credentialBrowseLocationButton.Click += new System.EventHandler(this.credentialBrowseLocationButton_Click);
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(65, 26);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(0, 13);
+            this.label16.TabIndex = 2;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(7, 26);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(0, 13);
+            this.label4.TabIndex = 1;
+            // 
+            // credentialLocationTextBox
+            // 
+            this.credentialLocationTextBox.Location = new System.Drawing.Point(138, 20);
+            this.credentialLocationTextBox.Name = "credentialLocationTextBox";
+            this.credentialLocationTextBox.Size = new System.Drawing.Size(329, 20);
+            this.credentialLocationTextBox.TabIndex = 0;
+            this.toolTip.SetToolTip(this.credentialLocationTextBox, "Location of the file that contains the credential.");
+            this.credentialLocationTextBox.TextChanged += new System.EventHandler(this.credentialLocationTextBox_TextChanged);
             // 
             // customTabPage
             // 
@@ -1171,7 +1148,7 @@ namespace AgentForAgent
             this.eventEditorGroup.Controls.Add(this.startTimeGroupBox);
             this.eventEditorGroup.Controls.Add(this.durationGroupBox);
             this.eventEditorGroup.Enabled = false;
-            this.eventEditorGroup.Location = new System.Drawing.Point(259, 6);
+            this.eventEditorGroup.Location = new System.Drawing.Point(259, 3);
             this.eventEditorGroup.Name = "eventEditorGroup";
             this.eventEditorGroup.Size = new System.Drawing.Size(409, 192);
             this.eventEditorGroup.TabIndex = 1;
@@ -1486,7 +1463,7 @@ namespace AgentForAgent
             this.groupBox2.Controls.Add(this.createEventButton);
             this.groupBox2.Controls.Add(this.deleteEventButton);
             this.groupBox2.Controls.Add(this.eventsList);
-            this.groupBox2.Location = new System.Drawing.Point(6, 6);
+            this.groupBox2.Location = new System.Drawing.Point(3, 3);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(247, 362);
             this.groupBox2.TabIndex = 0;
@@ -1568,10 +1545,14 @@ namespace AgentForAgent
             this.saveConfigAs.UseVisualStyleBackColor = true;
             this.saveConfigAs.Click += new System.EventHandler(this.saveConfigAs_Click);
             // 
-            // scriptLocationFileDialog
+            // scriptLocationOpenDialog
             // 
-            this.scriptLocationFileDialog.DefaultExt = "bat";
-            this.scriptLocationFileDialog.Filter = "Scripts .bat/.cmd|*.bat;*.cmd|Executables .exe|*.exe";
+            this.scriptLocationOpenDialog.DefaultExt = "bat";
+            this.scriptLocationOpenDialog.Filter = "Scripts .bat/.cmd|*.bat;*.cmd|Executables .exe|*.exe";
+            // 
+            // credentialLocationOpenDialog
+            // 
+            this.credentialLocationOpenDialog.FileName = "openFileDialog1";
             // 
             // eventsList
             // 
@@ -1633,8 +1614,8 @@ namespace AgentForAgent
             this.resourceManagerRegistrationAdditionalConfigurationGroupBox.PerformLayout();
             this.rmActionGroup.ResumeLayout(false);
             this.rmActionGroup.PerformLayout();
-            this.authenticationGroupBox.ResumeLayout(false);
-            this.authenticationGroupBox.PerformLayout();
+            this.authenticationCredentialGroupBox.ResumeLayout(false);
+            this.authenticationCredentialGroupBox.PerformLayout();
             this.customTabPage.ResumeLayout(false);
             this.customAdditionalConfigurationGroupBox.ResumeLayout(false);
             this.customAdditionalConfigurationGroupBox.PerformLayout();
@@ -1665,9 +1646,6 @@ namespace AgentForAgent
         #endregion
 
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox jvmDirectory;
         private System.Windows.Forms.TextBox proactiveDirectory;
         private System.Windows.Forms.CheckBox checkBox1;
@@ -1760,11 +1738,6 @@ namespace AgentForAgent
         private System.Windows.Forms.Label maxCpuUsageLabel;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.NumericUpDown maxCpuUsageNumericUpDown;
-        private System.Windows.Forms.Label rmUsernameLabel;
-        private System.Windows.Forms.Label rmPasswordLabel;
-        private System.Windows.Forms.TextBox rmUsernameTextBox;
-        private System.Windows.Forms.TextBox rmPasswordTextBox;
-        private System.Windows.Forms.CheckBox rmAnonymousCheckBox;
         private System.Windows.Forms.GroupBox networkInterfaceListGroupBox;
         private System.Windows.Forms.Button refreshNetworkInterfacesButton;
         private System.Windows.Forms.ListBox networkInterfacesListBox;
@@ -1781,12 +1754,19 @@ namespace AgentForAgent
         private System.Windows.Forms.GroupBox onRuntimeExitGroupBox;
         private System.Windows.Forms.TextBox scriptLocationTextBox;
         private System.Windows.Forms.Button scriptLocationButton;
-        private System.Windows.Forms.Label scriptLocationLabel;
-        private System.Windows.Forms.OpenFileDialog scriptLocationFileDialog;
+        private System.Windows.Forms.OpenFileDialog scriptLocationOpenDialog;
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.Label protocolLabel;
         private System.Windows.Forms.ComboBox protocolComboBox;
-        private System.Windows.Forms.GroupBox authenticationGroupBox;
+        private System.Windows.Forms.GroupBox authenticationCredentialGroupBox;
+        private System.Windows.Forms.TextBox nodeSourceNameTextBox;
+        private System.Windows.Forms.Label nodeSourceNameLabel;
+        private System.Windows.Forms.TextBox credentialLocationTextBox;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Button credentialBrowseLocationButton;
+        private System.Windows.Forms.CheckBox useDefaultCredentialCheckBox;
+        private System.Windows.Forms.OpenFileDialog credentialLocationOpenDialog;
     }
 
 

@@ -139,16 +139,17 @@ namespace AgentForAgent
                     }
                     RMAction rmAction = (RMAction)action;
                     this.rmUrl.Text = rmAction.url;
-                    this.nodeNameTextBox.Text = rmAction.nodeName;                    
-
-                    if (rmAction.username.Equals(RMAction.ANONYMOUS_USERNAME) && rmAction.username.Equals(RMAction.ANONYMOUS_PASSWORD))
+                    this.nodeNameTextBox.Text = rmAction.nodeName;
+                    this.nodeSourceNameTextBox.Text = rmAction.nodeSourceName;
+                    if (rmAction.useDefaultCredential)
                     {
-                        this.rmAnonymousCheckBox.Checked = true;
+                        this.useDefaultCredentialCheckBox.Checked = true;
                     }
-                    else {
-                        this.rmUsernameTextBox.Text = rmAction.username;
-                        this.rmPasswordTextBox.Text = rmAction.password;
-                    }
+                    else
+                    {
+                        this.useDefaultCredentialCheckBox.Checked = false;
+                        this.credentialLocationTextBox.Text = rmAction.credentialLocation;
+                    }                    
                 }
                 else if (action.GetType() == typeof(CustomAction))
                 {
@@ -306,9 +307,10 @@ namespace AgentForAgent
             // Save resource manager registration action definition
             RMAction rmAction = new RMAction();
             rmAction.url = rmUrl.Text;
-            rmAction.nodeName = nodeNameTextBox.Text;            
-            rmAction.username = this.rmUsernameTextBox.Text;
-            rmAction.password = this.rmPasswordTextBox.Text;
+            rmAction.nodeName = nodeNameTextBox.Text;
+            rmAction.nodeSourceName = nodeSourceNameTextBox.Text;
+            rmAction.credentialLocation = credentialLocationTextBox.Text;
+            rmAction.useDefaultCredential = useDefaultCredentialCheckBox.Checked;
             rmAction.javaStarterClass = this.resourceManagerRegistrationJavaActionClassTextBox.Text;
             rmAction.isEnabled = this.resourceManagerRegistrationRadioButton.Checked;
             this.configuration.actions[1] = rmAction;
@@ -808,30 +810,12 @@ namespace AgentForAgent
             this.saveConfig.Enabled = true;
         }
 
-        private void rmAnonymousCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (this.rmAnonymousCheckBox.Checked)
-            {
-                // Fill the text boxes with predef values
-                this.rmUsernameTextBox.Text = RMAction.ANONYMOUS_USERNAME;
-                this.rmPasswordTextBox.Text = RMAction.ANONYMOUS_PASSWORD;
-                this.rmUsernameTextBox.Enabled = this.rmPasswordTextBox.Enabled = false;
-            }
-            else {
-                // Fill the text boxes with predef values
-                this.rmUsernameTextBox.Text = "";
-                this.rmPasswordTextBox.Text = "";
-                this.rmUsernameTextBox.Enabled = this.rmPasswordTextBox.Enabled = true;
-            }                        
-            this.saveConfig.Enabled = true;
-        }
-
-        private void rmUsernameTextBox_TextChanged(object sender, EventArgs e)
+        private void nodeSourceNameTextBox_TextChanged(object sender, EventArgs e)
         {
             this.saveConfig.Enabled = true;
         }
 
-        private void rmPasswordTextBox_TextChanged(object sender, EventArgs e)
+        private void credentialLocationTextBox_TextChanged(object sender, EventArgs e)
         {
             this.saveConfig.Enabled = true;
         }
@@ -1056,10 +1040,10 @@ namespace AgentForAgent
 
         private void scriptLocationButton_Click(object sender, EventArgs e)
         {            
-            DialogResult result = this.scriptLocationFileDialog.ShowDialog();            
+            DialogResult result = this.scriptLocationOpenDialog.ShowDialog();            
             if (result == DialogResult.OK) // test result
             {
-                string selectedPath = this.scriptLocationFileDialog.FileName;
+                string selectedPath = this.scriptLocationOpenDialog.FileName;
                 this.scriptLocationTextBox.Text = selectedPath;            
             }
         }
@@ -1070,6 +1054,29 @@ namespace AgentForAgent
             saveConfig.Enabled = true;
         }
 
+        private void useDefaultCredentialCheckBox_CheckedChanged(object sender, EventArgs e)
+        {            
+            if (useDefaultCredentialCheckBox.Checked)
+            {
+                credentialLocationTextBox.Enabled = false;
+                credentialBrowseLocationButton.Enabled = false;
+            }
+            else
+            {
+                credentialLocationTextBox.Enabled = true;
+                credentialBrowseLocationButton.Enabled = true;
+            }
+            saveConfig.Enabled = true;
+        }
 
+        private void credentialBrowseLocationButton_Click(object sender, EventArgs e)
+        {                        
+            DialogResult result = credentialLocationOpenDialog.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                credentialLocationTextBox.Text = credentialLocationOpenDialog.FileName;
+                saveConfig.Enabled = true;
+            }
+        }
     }
 }
