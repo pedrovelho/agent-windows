@@ -1,4 +1,35 @@
-﻿using System;
+﻿/*
+* ################################################################
+*
+* ProActive: The Java(TM) library for Parallel, Distributed,
+*            Concurrent computing with Security and Mobility
+*
+* Copyright (C) 1997-2009 INRIA/University of Nice-Sophia Antipolis
+* Contact: proactive@ow2.org
+*
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either version
+* 2 of the License, or any later version.
+*
+* This library is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+* General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this library; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+* USA
+*
+*  Initial developer(s):               The ProActive Team
+*                        http://proactive.inria.fr/team_members.htm
+*  Contributor(s): ActiveEon Team - http://www.activeeon.com
+*
+* ################################################################
+* $$ACTIVEEON_CONTRIBUTOR$$
+*/
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
@@ -8,13 +39,13 @@ using ProActiveAgent;
 namespace AgentForAgent
 {
     public partial class ConfigurationEditor : Form
-    {        
+    {
         private readonly Configuration configuration;
         private string configurationLocation;
         private readonly string agentLocation;
         private readonly ConfigurationDialog hook;
 
-        private Chart chart;                
+        private Chart chart;
 
         // Internal data used for jvm parameters list customization
         private const int DELTA = 5;
@@ -26,7 +57,7 @@ namespace AgentForAgent
         public ConfigurationEditor(Configuration conf, string confLocation, string agentLocation, ConfigurationDialog hook)
         {
             // First initialize all widgets (gui-generated)
-            InitializeComponent();            
+            InitializeComponent();
 
             this.configuration = conf;
             this.configurationLocation = confLocation;
@@ -80,11 +111,11 @@ namespace AgentForAgent
             foreach (Event ev in this.configuration.events)
             {
                 CalendarEvent cEv = (CalendarEvent)ev;
-                this.eventsList.Items.Add(cEv);  
+                this.eventsList.Items.Add(cEv);
                 if (cEv.isAlwaysAvailable())
                 {
-                    this.alwaysAvailableCheckBox.Checked = true;                    
-                }                              
+                    this.alwaysAvailableCheckBox.Checked = true;
+                }
             }
 
             // Init default values for list boxes
@@ -125,7 +156,8 @@ namespace AgentForAgent
                 }
                 else if (action.GetType() == typeof(RMAction))
                 {
-                    if (action.isEnabled){
+                    if (action.isEnabled)
+                    {
                         this.resourceManagerRegistrationRadioButton.Select();
                         this.connectionTypeTabControl.SelectedTab = this.resourceManagerRegistrationTabPage;
                     }
@@ -149,7 +181,7 @@ namespace AgentForAgent
                     {
                         this.useDefaultCredentialCheckBox.Checked = false;
                         this.credentialLocationTextBox.Text = rmAction.credentialLocation;
-                    }                    
+                    }
                 }
                 else if (action.GetType() == typeof(CustomAction))
                 {
@@ -180,7 +212,7 @@ namespace AgentForAgent
 
             //--Chart
             chart = new Chart();
-            iniConfiguration = new IniFile(this.agentLocation+"\\configuration.ini");
+            iniConfiguration = new IniFile(this.agentLocation + "\\configuration.ini");
 
             this.saveConfig.Enabled = false;
         }
@@ -230,7 +262,7 @@ namespace AgentForAgent
         * ************************************************************/
         //--Click to "Cancel" button
         private void closeConfig_Click(object sender, EventArgs e)
-        {            
+        {
             Close();
         }
 
@@ -246,7 +278,7 @@ namespace AgentForAgent
                     // Save the configuration
                     this.internalSave(this.configurationLocation);
                 }
-            }            
+            }
         }
 
         //--Save current config
@@ -275,7 +307,7 @@ namespace AgentForAgent
         }
 
         private void internalSave(string internalLocation)
-        {            
+        {
             // Copy all jvm parameters from listbox into the cofiguration
             string[] values = new string[this.jvmParametersListBox.Items.Count];
             this.jvmParametersListBox.Items.CopyTo(values, 0);
@@ -284,14 +316,14 @@ namespace AgentForAgent
             // Save memory management configuration
             this.configuration.agentConfig.enableMemoryManagement = this.enableMemoryManagementCheckBox.Checked;
             this.configuration.agentConfig.javaMemory = System.Decimal.ToUInt32(this.javaMemoryNumericUpDown.Value);
-            this.configuration.agentConfig.nativeMemory = System.Decimal.ToUInt32(this.nativeMemoryNumericUpDown.Value);            
+            this.configuration.agentConfig.nativeMemory = System.Decimal.ToUInt32(this.nativeMemoryNumericUpDown.Value);
             // Save multi process related config
             this.configuration.agentConfig.nbProcesses = Convert.ToInt32(this.nbRuntimesNumericUpDown.Value);
             this.configuration.agentConfig.useAllCPUs = this.useAllAvailableCPUsCheckBox.Checked;
             //--Events list                        
             this.internalCopyEventsList();
             // Save ProActive Communication Protocol and Port initial value
-            this.configuration.agentConfig.runtimeIncomingProtocol = (ProActiveCommunicationProtocol)Enum.Parse(typeof(ProActiveCommunicationProtocol), (string)this.protocolComboBox.SelectedItem);            
+            this.configuration.agentConfig.runtimeIncomingProtocol = (ProActiveCommunicationProtocol)Enum.Parse(typeof(ProActiveCommunicationProtocol), (string)this.protocolComboBox.SelectedItem);
             this.configuration.agentConfig.proActiveCommunicationPortInitialValue = System.Decimal.ToInt32(this.portInitialValueNumericUpDown.Value);
             // Save all defined actions                        
             if (this.configuration.actions == null || this.configuration.actions.Length < 3)
@@ -302,7 +334,7 @@ namespace AgentForAgent
             AdvertAction advertAction = new AdvertAction();
             advertAction.nodeName = localRegistrationNodeEnabled.Checked ? localRegistrationNodeName.Text : "";
             advertAction.javaStarterClass = this.rmiRegistrationJavaActionClassTextBox.Text;
-            advertAction.isEnabled = this.localRegistrationRadioButton.Checked;            
+            advertAction.isEnabled = this.localRegistrationRadioButton.Checked;
             this.configuration.actions[0] = advertAction;
             // Save resource manager registration action definition
             RMAction rmAction = new RMAction();
@@ -318,10 +350,10 @@ namespace AgentForAgent
             CustomAction customAction = new CustomAction();
             string[] arguments = new string[this.customArgumentsListBox.Items.Count];
             customArgumentsListBox.Items.CopyTo(arguments, 0);
-            customAction.args = arguments;           
+            customAction.args = arguments;
             customAction.javaStarterClass = this.customJavaActionClassTextBox.Text;
             customAction.isEnabled = this.customRadioButton.Checked;
-            this.configuration.actions[2] = customAction;                 
+            this.configuration.actions[2] = customAction;
             // Save the configuration into a file
             try
             {
@@ -343,7 +375,8 @@ namespace AgentForAgent
             }
         }
 
-        private void internalCopyEventsList() {
+        private void internalCopyEventsList()
+        {
             this.configuration.events.Clear();
             foreach (object item in this.eventsList.Items)
             {
@@ -403,7 +436,7 @@ namespace AgentForAgent
             if (result == DialogResult.OK)
             {
                 jvmDirectory.Text = jvmLocationBrowser.SelectedPath;
-            }                    
+            }
         }
 
         //--Update config if it change
@@ -422,7 +455,7 @@ namespace AgentForAgent
 
         //--List Available network interfaces to get java style names
         private void listNetworkInterfacesButton_Click(object sender, EventArgs e)
-        {            
+        {
             try
             {
                 if (this.jvmDirectory.Text == null || this.jvmDirectory.Text.Equals(""))
@@ -434,7 +467,8 @@ namespace AgentForAgent
                 this.networkInterfacesListBox.Items.AddRange(values);
                 this.useNetworkInterfaceButton.Enabled = values.Length > 0;
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 MessageBox.Show(ex.ToString(), "Problem", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
@@ -449,27 +483,32 @@ namespace AgentForAgent
             {
                 return;
             }
-            else { 
+            else
+            {
                 // Extract the interface name from the selected string
                 string str = (string)this.networkInterfacesListBox.Items[selectedIndex];
                 // The java interface name should be the word before the first white space
-                string[] splittedStr = str.Split(new char[]{' '});
+                string[] splittedStr = str.Split(new char[] { ' ' });
                 string paramNetworkInterface = "-Dproactive.net.interface=" + splittedStr[0];
 
                 // Search in the JVM parameters the -Dproactive.net.interface string
                 int indexOfJvmParameter = -1;
-                for (int i=0; i < this.jvmParametersListBox.Items.Count ; i++) {
+                for (int i = 0; i < this.jvmParametersListBox.Items.Count; i++)
+                {
                     string s = (string)this.jvmParametersListBox.Items[i];
                     if (s.StartsWith("-Dproactive.net.interface="))
-                    {                        
+                    {
                         indexOfJvmParameter = i;
                         break;
                     }
                 }
-                if(indexOfJvmParameter == -1) {
+                if (indexOfJvmParameter == -1)
+                {
                     // No parameter was found so add a new one
                     this.jvmParametersListBox.Items.Add(paramNetworkInterface);
-                } else {
+                }
+                else
+                {
                     this.jvmParametersListBox.Items[indexOfJvmParameter] = paramNetworkInterface;
                 }
 
@@ -484,9 +523,9 @@ namespace AgentForAgent
 
         //--Fill the fields with the values of the selected event
         private void eventsList_SelectedIndexChanged(object sender, EventArgs e)
-        {            
+        {
             CalendarEvent cEv = (CalendarEvent)this.eventsList.SelectedItem;
-            if (cEv == null) {return;}
+            if (cEv == null) { return; }
             this.weekdayStart.SelectedIndex = cEv.resolveDay();
             this.hourStart.Value = cEv.startHour;
             this.minuteStart.Value = cEv.startMinute;
@@ -504,7 +543,7 @@ namespace AgentForAgent
         //--Add event
         private void createEventButton_Click(object sender, EventArgs e)
         {
-            CalendarEvent calEvent = new CalendarEvent();            
+            CalendarEvent calEvent = new CalendarEvent();
             int indexToSelect = this.eventsList.Items.Add(calEvent);
             // Select the created item
             this.eventsList.SelectedIndex = indexToSelect;
@@ -516,9 +555,9 @@ namespace AgentForAgent
         {
             int selectedIndex = this.eventsList.SelectedIndex;
             if (selectedIndex != -1)
-            {                
+            {
                 this.eventsList.Items.RemoveAt(selectedIndex--);
-                
+
                 // After deletion automatically select precedent if there is one
                 if (selectedIndex > -1)
                 {
@@ -547,7 +586,8 @@ namespace AgentForAgent
         {
             // Save the configuration
             System.Collections.Generic.List<Event> copyList = new System.Collections.Generic.List<Event>(this.eventsList.Items.Count);
-            foreach(Event ev in this.eventsList.Items){
+            foreach (Event ev in this.eventsList.Items)
+            {
                 copyList.Add(ev);
             }
             chart.loadEvents(copyList);
@@ -556,11 +596,11 @@ namespace AgentForAgent
 
         //--Change start day
         private void weekdayStart_SelectedIndexChanged(object sender, EventArgs e)
-        {            
+        {
             if (eventsList.SelectedIndex == -1)
                 return;
             CalendarEvent calEvent = (CalendarEvent)this.eventsList.SelectedItem;
-            calEvent.startDay = (string)weekdayStart.SelectedItem;            
+            calEvent.startDay = (string)weekdayStart.SelectedItem;
             // Refresh widget
             this.eventsList.RefreshItem(eventsList.SelectedIndex);
 
@@ -670,7 +710,7 @@ namespace AgentForAgent
             if (eventsList.SelectedIndex == -1)
                 return;
             CalendarEvent calEvent = (CalendarEvent)this.eventsList.SelectedItem;
-            calEvent.maxCpuUsage = Convert.ToUInt32(this.maxCpuUsageNumericUpDown.Value);            
+            calEvent.maxCpuUsage = Convert.ToUInt32(this.maxCpuUsageNumericUpDown.Value);
             this.saveConfig.Enabled = true;
         }
 
@@ -685,7 +725,7 @@ namespace AgentForAgent
                 bool isExist = false;
                 foreach (Event ev in this.eventsList.Items)
                 {
-                    CalendarEvent cEv = (CalendarEvent)ev;                    
+                    CalendarEvent cEv = (CalendarEvent)ev;
                     if (cEv.isAlwaysAvailable())
                     {
                         isExist = true;
@@ -696,7 +736,7 @@ namespace AgentForAgent
                 if (!isExist)
                 {
                     //--We create the event if it doesnt exist
-                    CalendarEvent cEv = new CalendarEvent();                                        
+                    CalendarEvent cEv = new CalendarEvent();
                     cEv.startHour = 0;
                     cEv.startMinute = 0;
                     cEv.startSecond = 0;
@@ -704,8 +744,8 @@ namespace AgentForAgent
                     cEv.durationDays = 6;
                     cEv.durationHours = 23;
                     cEv.durationMinutes = 59;
-                    cEv.durationSeconds = 59;                    
-                    
+                    cEv.durationSeconds = 59;
+
                     this.eventsList.Items.Add(cEv);
                 }
 
@@ -740,7 +780,7 @@ namespace AgentForAgent
 
                 if (idx == -1)
                     return;
-                eventsList.Items.RemoveAt(idx);                
+                eventsList.Items.RemoveAt(idx);
 
             }
             saveConfig.Enabled = true;
@@ -751,7 +791,7 @@ namespace AgentForAgent
         /******************************************/
 
         private void protocolComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {               
+        {
             this.saveConfig.Enabled = true;
         }
 
@@ -838,7 +878,8 @@ namespace AgentForAgent
             {
                 addedIndex = this.customArgumentsListBox.Items.Add("new Arg");
             }
-            else {
+            else
+            {
                 addedIndex = this.customArgumentsListBox.Items.Add(contactUrl);
             }
             this.customArgumentsListBox.SelectedIndex = addedIndex;
@@ -963,13 +1004,13 @@ namespace AgentForAgent
 
         private void jvmParametersListBox_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (e.KeyChar == 13 ) // Enter key
+            if (e.KeyChar == 13) // Enter key
             {
-                if (this.jvmParametersListBox.SelectedIndex > -1) 
+                if (this.jvmParametersListBox.SelectedIndex > -1)
                 {
                     this.CreateEditBox(sender);
-                }                
-            }            
+                }
+            }
         }
 
         /********************************************/
@@ -996,7 +1037,7 @@ namespace AgentForAgent
 
         private void actionTypeTabControl_DrawItem(object sender, DrawItemEventArgs e)
         {
-            Graphics g = e.Graphics;           
+            Graphics g = e.Graphics;
             // Get the item from the collection.
             TabPage _TabPage = this.connectionTypeTabControl.TabPages[e.Index];
 
@@ -1009,7 +1050,7 @@ namespace AgentForAgent
             {
                 // Draw a different background color, and don't paint a focus rectangle.                
                 g.FillRectangle(Brushes.Gray, e.Bounds);
-            }                                
+            }
 
             // Draw string. Center the text.
             StringFormat _StringFlags = new StringFormat();
@@ -1039,12 +1080,12 @@ namespace AgentForAgent
         /*************************************************/
 
         private void scriptLocationButton_Click(object sender, EventArgs e)
-        {            
-            DialogResult result = this.scriptLocationOpenDialog.ShowDialog();            
+        {
+            DialogResult result = this.scriptLocationOpenDialog.ShowDialog();
             if (result == DialogResult.OK) // test result
             {
                 string selectedPath = this.scriptLocationOpenDialog.FileName;
-                this.scriptLocationTextBox.Text = selectedPath;            
+                this.scriptLocationTextBox.Text = selectedPath;
             }
         }
 
@@ -1055,7 +1096,7 @@ namespace AgentForAgent
         }
 
         private void useDefaultCredentialCheckBox_CheckedChanged(object sender, EventArgs e)
-        {            
+        {
             if (useDefaultCredentialCheckBox.Checked)
             {
                 credentialLocationTextBox.Enabled = false;
@@ -1070,7 +1111,7 @@ namespace AgentForAgent
         }
 
         private void credentialBrowseLocationButton_Click(object sender, EventArgs e)
-        {                        
+        {
             DialogResult result = credentialLocationOpenDialog.ShowDialog();
             if (result == DialogResult.OK)
             {

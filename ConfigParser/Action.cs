@@ -1,4 +1,35 @@
-﻿using System;
+﻿/*
+* ################################################################
+*
+* ProActive: The Java(TM) library for Parallel, Distributed,
+*            Concurrent computing with Security and Mobility
+*
+* Copyright (C) 1997-2009 INRIA/University of Nice-Sophia Antipolis
+* Contact: proactive@ow2.org
+*
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either version
+* 2 of the License, or any later version.
+*
+* This library is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+* General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this library; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+* USA
+*
+*  Initial developer(s):               The ProActive Team
+*                        http://proactive.inria.fr/team_members.htm
+*  Contributor(s): ActiveEon Team - http://www.activeeon.com
+*
+* ################################################################
+* $$ACTIVEEON_CONTRIBUTOR$$
+*/
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml.Serialization;
@@ -12,14 +43,14 @@ using System.Xml.Serialization;
 namespace ConfigParser
 {
     [XmlInclude(typeof(AdvertAction)),
-    XmlInclude(typeof(RMAction)),    
+    XmlInclude(typeof(RMAction)),
     XmlInclude(typeof(CustomAction))
     ]
     public class Action
-    {        
-        private int myInitialRestartDelay;        
+    {
+        private int myInitialRestartDelay;
         private string myJavaStarterClass;
-        private bool myIsEnabled;        
+        private bool myIsEnabled;
 
         [XmlElement("initialRestartDelay")]
         public int initialRestartDelay
@@ -64,7 +95,7 @@ namespace ConfigParser
         }
 
         // Sub classes must override this class
-        public virtual string[] getArgs() { return new string[0]; }        
+        public virtual string[] getArgs() { return new string[0]; }
 
         // Default jvm parameters needed for this type of action
         public static void addDefaultJvmParameters(List<string> jvmParameters, string proactiveLocation)

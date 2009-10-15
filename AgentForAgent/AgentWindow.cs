@@ -1,4 +1,35 @@
-﻿using System;
+﻿/*
+* ################################################################
+*
+* ProActive: The Java(TM) library for Parallel, Distributed,
+*            Concurrent computing with Security and Mobility
+*
+* Copyright (C) 1997-2009 INRIA/University of Nice-Sophia Antipolis
+* Contact: proactive@ow2.org
+*
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either version
+* 2 of the License, or any later version.
+*
+* This library is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+* General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this library; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+* USA
+*
+*  Initial developer(s):               The ProActive Team
+*                        http://proactive.inria.fr/team_members.htm
+*  Contributor(s): ActiveEon Team - http://www.activeeon.com
+*
+* ################################################################
+* $$ACTIVEEON_CONTRIBUTOR$$
+*/
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.ServiceProcess;
@@ -19,7 +50,7 @@ namespace AgentForAgent
         public const string STOPPED = "Stopped";
         public const string START_PENDING = "Starting";
         public const string RUNNING = "Running";
-        public const string UNKNOWN = "Unknown";                
+        public const string UNKNOWN = "Unknown";
 
         private readonly ServiceController sc;
 
@@ -30,7 +61,7 @@ namespace AgentForAgent
         private ConfigurationEditor window;
 
         public ConfigurationDialog(string agentLocation, string configLocation)
-        {            
+        {
             // First of all, try to connect to the agent service
             try
             {
@@ -38,9 +69,9 @@ namespace AgentForAgent
             }
             catch (Exception e)
             {
-                MessageBox.Show("Could not connect to the service " + Constants.PROACTIVE_AGENT_SERVICE_NAME + ". It appears that the agent might not have been installed properly. "+e.ToString(), "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Could not connect to the service " + Constants.PROACTIVE_AGENT_SERVICE_NAME + ". It appears that the agent might not have been installed properly. " + e.ToString(), "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
-            }            
+            }
 
             // Init all visuals
             InitializeComponent();
@@ -63,7 +94,9 @@ namespace AgentForAgent
                     }
                     confKey.Close();
                 }
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 MessageBox.Show("Cannot create the following subkey " + AGENT_AUTO_RUN_SUBKEY + ". " + e.ToString(), "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -145,7 +178,7 @@ namespace AgentForAgent
                         runningExecutorsCount++;
                     }
                 }
-                this.spawnedRuntimesValue.Text = ""+runningExecutorsCount;
+                this.spawnedRuntimesValue.Text = "" + runningExecutorsCount;
                 confKey.Close();
             }
 
@@ -225,7 +258,8 @@ namespace AgentForAgent
                     sc.Stop();
                 }
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 // Cannot continue show error message box and exit from this method
                 MessageBox.Show("Cannot stop the service. " + ex.ToString(), "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -322,7 +356,7 @@ namespace AgentForAgent
                 window.ShowDialog();
             }
             catch (Exception ex)
-            {                
+            {
                 DialogResult res = MessageBox.Show("The configuration file is broken. " + ex.ToString(), "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -414,13 +448,15 @@ namespace AgentForAgent
             RegistryKey confKey = Registry.LocalMachine.CreateSubKey(AGENT_AUTO_RUN_SUBKEY);
             if (confKey != null)
             {
-                if (((ToolStripMenuItem)sender).CheckState == CheckState.Checked)                
+                if (((ToolStripMenuItem)sender).CheckState == CheckState.Checked)
                 {
                     confKey.SetValue(Constants.PROACTIVE_AGENT_SERVICE_NAME, System.Environment.CommandLine);
-                } else {
+                }
+                else
+                {
                     confKey.DeleteValue(Constants.PROACTIVE_AGENT_SERVICE_NAME);
-                }                
-                
+                }
+
                 confKey.Close();
             }
         }

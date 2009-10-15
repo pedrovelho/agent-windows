@@ -1,4 +1,35 @@
-﻿using System;
+﻿/*
+* ################################################################
+*
+* ProActive: The Java(TM) library for Parallel, Distributed,
+*            Concurrent computing with Security and Mobility
+*
+* Copyright (C) 1997-2009 INRIA/University of Nice-Sophia Antipolis
+* Contact: proactive@ow2.org
+*
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either version
+* 2 of the License, or any later version.
+*
+* This library is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+* General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this library; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+* USA
+*
+*  Initial developer(s):               The ProActive Team
+*                        http://proactive.inria.fr/team_members.htm
+*  Contributor(s): ActiveEon Team - http://www.activeeon.com
+*
+* ################################################################
+* $$ACTIVEEON_CONTRIBUTOR$$
+*/
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using ConfigParser;
@@ -46,7 +77,7 @@ namespace ProActiveAgent
 
             // Create as many executors as specified in the configuration
             for (int rank = 0; rank < nbProcesses; rank++)
-            {                
+            {
 
                 // Create new executor with a unique rank and a valid ProActive Rmi Port
                 ProActiveRuntimeExecutor executor = new ProActiveRuntimeExecutor(commonStartInfo, rank);
@@ -57,7 +88,7 @@ namespace ProActiveAgent
             // delete all sub keys of the executors key
             RegistryKey key = Registry.LocalMachine.OpenSubKey(Constants.PROACTIVE_AGENT_EXECUTORS_REG_SUBKEY, true);
             if (key != null)
-            {                
+            {
                 foreach (string name in key.GetValueNames())
                 {
                     key.DeleteValue(name);
@@ -242,7 +273,7 @@ namespace ProActiveAgent
             {
                 p.dispose();
             }
-            this.proActiveRuntimeExecutors.Clear();          
+            this.proActiveRuntimeExecutors.Clear();
         }
     }
 }

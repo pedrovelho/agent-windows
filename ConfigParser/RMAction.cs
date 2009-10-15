@@ -1,4 +1,35 @@
-﻿using System.Collections.Generic;
+﻿/*
+* ################################################################
+*
+* ProActive: The Java(TM) library for Parallel, Distributed,
+*            Concurrent computing with Security and Mobility
+*
+* Copyright (C) 1997-2009 INRIA/University of Nice-Sophia Antipolis
+* Contact: proactive@ow2.org
+*
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either version
+* 2 of the License, or any later version.
+*
+* This library is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+* General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this library; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+* USA
+*
+*  Initial developer(s):               The ProActive Team
+*                        http://proactive.inria.fr/team_members.htm
+*  Contributor(s): ActiveEon Team - http://www.activeeon.com
+*
+* ################################################################
+* $$ACTIVEEON_CONTRIBUTOR$$
+*/
+using System.Collections.Generic;
 using System.Xml.Serialization;
 
 /**
@@ -26,7 +57,8 @@ namespace ConfigParser
         private string myCredentialLocation;
         private bool myUseDefaultCredential;
 
-        public RMAction() {
+        public RMAction()
+        {
             base.javaStarterClass = DEFAULT_JAVA_STARTER_CLASS;
             this.myRmUrl = "";
             this.myNodeName = "";
@@ -104,15 +136,21 @@ namespace ConfigParser
         {
             string urlOpt = "-r " + this.myRmUrl;
             string nodeNameOpt;
-            if (this.myNodeName == null || this.myNodeName.Equals("")) {
+            if (this.myNodeName == null || this.myNodeName.Equals(""))
+            {
                 nodeNameOpt = "";
-            } else {
+            }
+            else
+            {
                 nodeNameOpt = "-n " + this.myNodeName;
             }
             string nodeSourceNameOpt;
-            if (this.myNodeSourceName == null || this.myNodeSourceName.Equals("")){
-                nodeSourceNameOpt = "";    
-            } else {
+            if (this.myNodeSourceName == null || this.myNodeSourceName.Equals(""))
+            {
+                nodeSourceNameOpt = "";
+            }
+            else
+            {
                 nodeSourceNameOpt = "-s " + this.myNodeSourceName;
             }
             if (this.myUseDefaultCredential)
@@ -130,12 +168,13 @@ namespace ConfigParser
                 {
                     credentialLocationOpt = "-f " + this.myCredentialLocation;
                 }
-                return new string[] { urlOpt, nodeNameOpt, nodeSourceNameOpt, credentialLocationOpt };   
-            }            
+                return new string[] { urlOpt, nodeNameOpt, nodeSourceNameOpt, credentialLocationOpt };
+            }
         }
 
         // Default jvm parameters needed for this type of action
-        public static new void addDefaultJvmParameters(List<string> jvmParameters, string proactiveLocation) {
+        public static new void addDefaultJvmParameters(List<string> jvmParameters, string proactiveLocation)
+        {
             jvmParameters.Add("-Dpa.scheduler.home=\"" + proactiveLocation + "\"");
             jvmParameters.Add("-Dpa.rm.home=\"" + proactiveLocation + "\"");
             jvmParameters.Add("-Djava.security.policy=\"" + proactiveLocation + "\\config\\security.java.policy\"");

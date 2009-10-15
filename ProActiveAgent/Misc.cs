@@ -1,4 +1,35 @@
-﻿using System;
+﻿/*
+* ################################################################
+*
+* ProActive: The Java(TM) library for Parallel, Distributed,
+*            Concurrent computing with Security and Mobility
+*
+* Copyright (C) 1997-2009 INRIA/University of Nice-Sophia Antipolis
+* Contact: proactive@ow2.org
+*
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either version
+* 2 of the License, or any later version.
+*
+* This library is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+* General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this library; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+* USA
+*
+*  Initial developer(s):               The ProActive Team
+*                        http://proactive.inria.fr/team_members.htm
+*  Contributor(s): ActiveEon Team - http://www.activeeon.com
+*
+* ################################################################
+* $$ACTIVEEON_CONTRIBUTOR$$
+*/
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -50,7 +81,7 @@ namespace ProActiveAgent
         public const string PROACTIVE_AGENT_EXECUTORS_REG_SUBKEY = "Software\\ProActiveAgent\\Executors";
         /// <summary>
         /// This timeout can be usefull in case of service re-installation to avoid "1072 - Service marked for deletion problem".</summary>
-        public const int PROACTIVE_AGENT_POST_UNINSTALL_SERVICE_TIMEOUT = 3; 
+        public const int PROACTIVE_AGENT_POST_UNINSTALL_SERVICE_TIMEOUT = 3;
         /// <summary>
         /// A boolean flag to allow memory limitation per job (set of processes).</summary>
         public const bool ALLOW_PROCESS_MEMORY_LIMIT = true;
@@ -104,7 +135,7 @@ namespace ProActiveAgent
     /// <summary>
     /// A static class that contains several utilitary methods</summary>
     public static class Utils
-    {        
+    {
         /// <summary>
         /// Returns a decimal value of the available physical memory in mbytes of this computer.
         /// </summary> 
@@ -123,7 +154,7 @@ namespace ProActiveAgent
             // This seems more appropriate            
             // result = System.Decimal.Ceiling(new Microsoft.VisualBasic.Devices.ComputerInfo().AvailablePhysicalMemory / (1024 * 1024)); // from bytes to mbytes
             // Another method
-            PerformanceCounter ramCounter = new PerformanceCounter("Memory", "Available MBytes");            
+            PerformanceCounter ramCounter = new PerformanceCounter("Memory", "Available MBytes");
             result = Convert.ToDecimal(ramCounter.NextValue());
             return result;
         }
@@ -147,7 +178,7 @@ namespace ProActiveAgent
             {
                 // If the 'bin' directory does not exists throw an exception
                 throw new ApplicationException("Unable to read the classpath, invalid ProActive location! " + binDirectory);
-            } 
+            }
 
             string initScript = binDirectory + @"\init.bat";
             // Check if the 'bin\init.bat' script exists
@@ -159,7 +190,7 @@ namespace ProActiveAgent
                 {
                     throw new ApplicationException("Unable to read the classpath, cannot find the initialization script " + initScript);
                 }
-            }                           
+            }
 
             ProcessStartInfo info = new ProcessStartInfo();
             info.EnvironmentVariables["PA_SCHEDULER"] = config.proactiveLocation;
@@ -198,12 +229,12 @@ namespace ProActiveAgent
         /// </summary>
         /// <param name="config">The user defined configuration.</param>
         public static bool isTcpPortAvailable(int port)
-        {            
+        {
             // Evaluate current system tcp connections. This is the same information provided
             // by the netstat -ano | find "port_num" command line application, just in .Net strongly-typed object
             // form.  We will look through the list, and if our port we would like to use
             // in our TcpClient is occupied, we will return false
-            IPGlobalProperties ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();            
+            IPGlobalProperties ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
             // Search through active tcp listeners            
             foreach (IPEndPoint tcpl in ipGlobalProperties.GetActiveTcpListeners())
             {
@@ -212,22 +243,23 @@ namespace ProActiveAgent
 
                     return false;
                 }
-            }               
+            }
             // Search through active tcp connections
             foreach (TcpConnectionInformation tcpi in ipGlobalProperties.GetActiveTcpConnections())
-            {                
+            {
                 if (tcpi.LocalEndPoint.Port == port)
                 {
-                    
+
                     return false;
                 }
             }
-            
+
             return true;
         }
     }
 
-    public static class JavaNetworkInterfaceLister {
+    public static class JavaNetworkInterfaceLister
+    {
 
         public static string[] listJavaNetworkInterfaces(string javaLocation, string agentLocation)
         {
@@ -242,7 +274,7 @@ namespace ProActiveAgent
 
             // Create new process 
             Process p = new Process();
-            p.StartInfo = info;            
+            p.StartInfo = info;
 
             try
             {
@@ -255,11 +287,12 @@ namespace ProActiveAgent
                 StreamReader myStreamReader = p.StandardOutput;
                 List<string> ar = new List<string>();
                 string line = myStreamReader.ReadLine();
-                while (line != null && !line.Equals("")) {                    
+                while (line != null && !line.Equals(""))
+                {
                     ar.Add(line);
                     // Read the standard output of the spawned process.
                     line = myStreamReader.ReadLine();
-                }                
+                }
                 p.Close();
 
                 return ar.ToArray();
@@ -357,7 +390,7 @@ namespace ProActiveAgent
     public static class ScriptExecutor
     {
         public static string executeScript(string scriptAbsolutePath, string scriptArguments)
-        {            
+        {
             ProcessStartInfo info = new ProcessStartInfo();
             // Prepare to create a process that will run the specified script
             info.FileName = scriptAbsolutePath;

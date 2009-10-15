@@ -1,4 +1,35 @@
-﻿using System;
+﻿/*
+* ################################################################
+*
+* ProActive: The Java(TM) library for Parallel, Distributed,
+*            Concurrent computing with Security and Mobility
+*
+* Copyright (C) 1997-2009 INRIA/University of Nice-Sophia Antipolis
+* Contact: proactive@ow2.org
+*
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either version
+* 2 of the License, or any later version.
+*
+* This library is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+* General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this library; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+* USA
+*
+*  Initial developer(s):               The ProActive Team
+*                        http://proactive.inria.fr/team_members.htm
+*  Contributor(s): ActiveEon Team - http://www.activeeon.com
+*
+* ################################################################
+* $$ACTIVEEON_CONTRIBUTOR$$
+*/
+using System;
 using System.Collections.Generic;
 using System.ServiceProcess;
 using ConfigParser;
@@ -31,7 +62,7 @@ namespace ProActiveAgent
             //  type of event. Set to true if you need it, false otherwise.            
             this.CanPauseAndContinue = true;
             this.CanShutdown = true;
-            this.CanStop = true; 
+            this.CanStop = true;
         }
 
         /// <summary>
@@ -41,7 +72,7 @@ namespace ProActiveAgent
         /// <param name="args"></param>
         protected override void OnStart(string[] args)
         {
-            LOGGER.Info("Starting ProActive Agent service");            
+            LOGGER.Info("Starting ProActive Agent service");
 
             // Try to read install and config locations from registry
             RegistryKey confKey = Registry.LocalMachine.OpenSubKey(Constants.PROACTIVE_AGENT_REG_SUBKEY);
@@ -68,16 +99,16 @@ namespace ProActiveAgent
             // Read classpath
             try
             {
-               Utils.readClasspath(configuration.agentConfig);
+                Utils.readClasspath(configuration.agentConfig);
             }
             catch (Exception ex)
             {
-               LOGGER.Error("An exception occured when reading the classpath", ex);
-               return;
+                LOGGER.Error("An exception occured when reading the classpath", ex);
+                return;
             }
-            
-            this.executorsManager = new ExecutorsManager(configuration);            
-            
+
+            this.executorsManager = new ExecutorsManager(configuration);
+
             base.OnStart(args);
         }
 
@@ -91,8 +122,9 @@ namespace ProActiveAgent
             {
                 LOGGER.Debug("Stopping ProActive Agent service");
             }
-            
-            if(this.executorsManager != null){
+
+            if (this.executorsManager != null)
+            {
                 this.executorsManager.dispose();
             }
 
@@ -145,7 +177,7 @@ namespace ProActiveAgent
         /// </summary>
         /// <param name="command">Arbitrary Integer between 128 & 256</param>
         protected override void OnCustomCommand(int command)
-        {            
+        {
             //  A custom command can be sent to a service by using this method:
             //#  int command = 128; //Some Arbitrary number between 128 & 256
             //#  ServiceController sc = new ServiceController("NameOfService");

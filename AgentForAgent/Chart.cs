@@ -1,4 +1,35 @@
-﻿using System;
+﻿/*
+* ################################################################
+*
+* ProActive: The Java(TM) library for Parallel, Distributed,
+*            Concurrent computing with Security and Mobility
+*
+* Copyright (C) 1997-2009 INRIA/University of Nice-Sophia Antipolis
+* Contact: proactive@ow2.org
+*
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either version
+* 2 of the License, or any later version.
+*
+* This library is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+* General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this library; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+* USA
+*
+*  Initial developer(s):               The ProActive Team
+*                        http://proactive.inria.fr/team_members.htm
+*  Contributor(s): ActiveEon Team - http://www.activeeon.com
+*
+* ################################################################
+* $$ACTIVEEON_CONTRIBUTOR$$
+*/
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -15,14 +46,14 @@ namespace AgentForAgent
         private Pen pen;
         private Brush brush;
         private Graphics G;
-        private ArrayList rects;        
+        private ArrayList rects;
 
         private static int WITH_BAR = 15;
 
         public Chart()
         {
             InitializeComponent();
-            
+
             pen = new Pen(Color.BlueViolet);
             brush = new SolidBrush(Color.BlueViolet);
             rects = new ArrayList();
@@ -38,13 +69,13 @@ namespace AgentForAgent
                 labelHour1 = new Label();
                 labelHour1.Font = font;
                 labelHour1.AutoSize = true;
-                labelHour1.Location = new System.Drawing.Point(15, ((10 * i)+25));
+                labelHour1.Location = new System.Drawing.Point(15, ((10 * i) + 25));
                 labelHour1.Name = i.ToString();
                 labelHour1.Size = new System.Drawing.Size(28, 13);
                 labelHour1.TabIndex = 0;
                 labelHour1.Text = i.ToString();
                 this.Controls.Add(labelHour1);
-            }            
+            }
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -56,7 +87,7 @@ namespace AgentForAgent
                 //--Line
                 G.DrawLine(pen, 40, ((10 * i) + 30), 270, ((10 * i) + 30));
             }
-            
+
             //--Draw timeslots
             foreach (Rectangle rec in rects)
             {
@@ -70,27 +101,27 @@ namespace AgentForAgent
             rects.Clear();
             foreach (Event ev in eventsList)
             {
-                CalendarEvent cEv = (CalendarEvent)ev;                
+                CalendarEvent cEv = (CalendarEvent)ev;
 
                 //--Start
                 int dayTimeslot = 43 + cEv.resolveDay() * 35;
-                int startTimeslot = (30 + (10 * cEv.startHour)) + ((cEv.startMinute * 10)/60);
-                
+                int startTimeslot = (30 + (10 * cEv.startHour)) + ((cEv.startMinute * 10) / 60);
+
 
                 //--Duration
-                int timeRemain = 1440 - (cEv.startHour*60) - cEv.startMinute;
+                int timeRemain = 1440 - (cEv.startHour * 60) - cEv.startMinute;
                 //--On compare le nb de min qu'il reste avec le nb de minute d'une journée
-                int duration = (cEv.durationDays*1440) + (cEv.durationHours*60) + cEv.durationMinutes;
+                int duration = (cEv.durationDays * 1440) + (cEv.durationHours * 60) + cEv.durationMinutes;
                 int heightBar = 0;
 
                 if (duration <= timeRemain)
                 {
                     //--No overruning
-                    heightBar = duration*10/60;
+                    heightBar = duration * 10 / 60;
                 }
                 else
                 {
-                    heightBar = timeRemain*10/60;
+                    heightBar = timeRemain * 10 / 60;
                     //--Overflow
                     duration -= timeRemain;
                     int startDay = cEv.resolveDay();

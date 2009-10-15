@@ -1,3 +1,34 @@
+/*
+* ################################################################
+*
+* ProActive: The Java(TM) library for Parallel, Distributed,
+*            Concurrent computing with Security and Mobility
+*
+* Copyright (C) 1997-2009 INRIA/University of Nice-Sophia Antipolis
+* Contact: proactive@ow2.org
+*
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either version
+* 2 of the License, or any later version.
+*
+* This library is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+* General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this library; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+* USA
+*
+*  Initial developer(s):               The ProActive Team
+*                        http://proactive.inria.fr/team_members.htm
+*  Contributor(s): ActiveEon Team - http://www.activeeon.com
+*
+* ################################################################
+* $$ACTIVEEON_CONTRIBUTOR$$
+*/
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -12,83 +43,83 @@ using ProActiveAgent;
 
 namespace ScreenSaver
 {
-	public class ScreenSaverForm : System.Windows.Forms.Form
-	{
-		private System.ComponentModel.IContainer components;
-		private Point MouseXY;
-		private System.Windows.Forms.Timer timer;           // timer for moving picture
-		private Rectangle VisibleRect;
-		private System.Windows.Forms.PictureBox pictureBox;
+    public class ScreenSaverForm : System.Windows.Forms.Form
+    {
+        private System.ComponentModel.IContainer components;
+        private Point MouseXY;
+        private System.Windows.Forms.Timer timer;           // timer for moving picture
+        private Rectangle VisibleRect;
+        private System.Windows.Forms.PictureBox pictureBox;
         private Random rand;
 
         private readonly ScreenSaver.ServiceCommunicator exec = new ScreenSaver.ServiceCommunicator();
 
-		public ScreenSaverForm()
-		{
-			InitializeComponent();
-            exec.sendStartAction();            
-		}
+        public ScreenSaverForm()
+        {
+            InitializeComponent();
+            exec.sendStartAction();
+        }
 
-        protected override void Dispose( bool disposing )
-		{
+        protected override void Dispose(bool disposing)
+        {
             exec.sendStopAction(); // we contact system service
- 
-            if( disposing )
-			{
-				if (components != null) 
-				{
-					components.Dispose();
-				}
-			}
-			base.Dispose( disposing );
-		}
+
+            if (disposing)
+            {
+                if (components != null)
+                {
+                    components.Dispose();
+                }
+            }
+            base.Dispose(disposing);
+        }
 
         // screen saver GUI initialization
 
-		private void ScreenSaverForm_Load(object sender, System.EventArgs e)
-		{
-			this.Bounds = Screen.PrimaryScreen.Bounds;
-			VisibleRect = new Rectangle(0, 0, Bounds.Width-pictureBox.Width, Bounds.Height-pictureBox.Height);
-			Cursor.Hide();
-			TopMost = true;
-		}
+        private void ScreenSaverForm_Load(object sender, System.EventArgs e)
+        {
+            this.Bounds = Screen.PrimaryScreen.Bounds;
+            VisibleRect = new Rectangle(0, 0, Bounds.Width - pictureBox.Width, Bounds.Height - pictureBox.Height);
+            Cursor.Hide();
+            TopMost = true;
+        }
 
         // timer event handler --- we are moving the picture
 
-		private void timer_Tick(object sender, System.EventArgs e)
-		{
-			rand = new Random();            
-            pictureBox.Location = new Point(rand.Next(VisibleRect.Width), rand.Next(VisibleRect.Height));            
-		}
+        private void timer_Tick(object sender, System.EventArgs e)
+        {
+            rand = new Random();
+            pictureBox.Location = new Point(rand.Next(VisibleRect.Width), rand.Next(VisibleRect.Height));
+        }
 
         // the screensaver closes on mouse movement or click
 
-		private void OnMouseEvent(object sender, System.Windows.Forms.MouseEventArgs e)
-		{
-			if (!MouseXY.IsEmpty)
-			{
-				if (MouseXY != new Point(e.X, e.Y))
-					Close();
-				if (e.Clicks > 0)
-					Close();
-			}
-			MouseXY = new Point(e.X, e.Y);
-		}
-		
+        private void OnMouseEvent(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (!MouseXY.IsEmpty)
+            {
+                if (MouseXY != new Point(e.X, e.Y))
+                    Close();
+                if (e.Clicks > 0)
+                    Close();
+            }
+            MouseXY = new Point(e.X, e.Y);
+        }
+
         // and on key pressed
 
-		private void ScreenSaverForm_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
-		{
-			Close();
-		}
+        private void ScreenSaverForm_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            Close();
+        }
 
-		#region Windows Form Designer generated code
-		/// <summary>
-		/// Required method for Designer support - do not modify
-		/// the contents of this method with the code editor.
-		/// </summary>
-		private void InitializeComponent()
-		{
+        #region Windows Form Designer generated code
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ScreenSaverForm));
             this.timer = new System.Windows.Forms.Timer(this.components);
@@ -129,8 +160,8 @@ namespace ScreenSaver
             this.ResumeLayout(false);
             this.PerformLayout();
 
-		}
-		#endregion
+        }
+        #endregion
 
-	}
+    }
 }

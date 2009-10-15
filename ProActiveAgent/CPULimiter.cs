@@ -1,4 +1,35 @@
-﻿using System;
+﻿/*
+* ################################################################
+*
+* ProActive: The Java(TM) library for Parallel, Distributed,
+*            Concurrent computing with Security and Mobility
+*
+* Copyright (C) 1997-2009 INRIA/University of Nice-Sophia Antipolis
+* Contact: proactive@ow2.org
+*
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either version
+* 2 of the License, or any later version.
+*
+* This library is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+* General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this library; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+* USA
+*
+*  Initial developer(s):               The ProActive Team
+*                        http://proactive.inria.fr/team_members.htm
+*  Contributor(s): ActiveEon Team - http://www.activeeon.com
+*
+* ################################################################
+* $$ACTIVEEON_CONTRIBUTOR$$
+*/
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -16,7 +47,7 @@ namespace ProActiveAgent
     /// The cpu usage limit works only on Windows XP, Windows 2003 and Vista.    
     /// </summary>
     class CPULimiter
-    {        
+    {
         // Works on Windows XP, 2003 and Vista only
         [DllImport("ntdll.dll", EntryPoint = "NtResumeProcess", SetLastError = true)]
         private static extern uint NtResumeProcess(IntPtr processHandle);
@@ -130,14 +161,14 @@ namespace ProActiveAgent
                             processWatcher.isSuspended = false;
                         }
                         else
-                        {                            
+                        {
                             // Something bad happended so remove this watcher
                             this.watchList.RemoveAt(i);
                         }
                     }
                     else
-                    {                        
-                        totalCpuUsage += processWatcher.performanceCounter.NextValue();                        
+                    {
+                        totalCpuUsage += processWatcher.performanceCounter.NextValue();
                     }
                 }
             }
@@ -146,7 +177,7 @@ namespace ProActiveAgent
 
             // If max allowed cpu usage has been reached
             if (totalCpuUsage > this.maxCpuUsagePercetage)
-            {                
+            {
                 for (int i = this.watchList.Count; i-- > 0; )
                 {
                     ProcessWatcher processWatcher = this.watchList[i];
@@ -165,10 +196,10 @@ namespace ProActiveAgent
                             uint res = NtSuspendProcess(processWatcher.watchedProcess.Handle);
                             if (res == 0)
                             {
-                                processWatcher.isSuspended = true;                                                                
+                                processWatcher.isSuspended = true;
                             }
                             else
-                            {                                
+                            {
                                 // Something bad happended so remove this watcher                                
                                 this.watchList.RemoveAt(i);
                             }
@@ -181,7 +212,7 @@ namespace ProActiveAgent
                 if (nextInterval < 20)
                 {
                     nextInterval = 20;
-                }                
+                }
             }
 
             // Change the next start            
@@ -203,7 +234,7 @@ namespace ProActiveAgent
                 this._performanceCounter = new PerformanceCounter(
                           "Process",
                           "% Processor Time",
-                          instanceName,true);
+                          instanceName, true);
                 // Init the perf counter 
                 this._performanceCounter.NextValue();
                 this._isSuspended = false;
@@ -235,7 +266,7 @@ namespace ProActiveAgent
 
                     using (PerformanceCounter cnt = new PerformanceCounter("Process",
                          "ID Process", instance, true))
-                    {                        
+                    {
                         if ((int)cnt.RawValue == pid)
                         {
                             return instance;

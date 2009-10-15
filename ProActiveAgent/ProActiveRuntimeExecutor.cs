@@ -1,4 +1,35 @@
-﻿using System;
+﻿/*
+* ################################################################
+*
+* ProActive: The Java(TM) library for Parallel, Distributed,
+*            Concurrent computing with Security and Mobility
+*
+* Copyright (C) 1997-2009 INRIA/University of Nice-Sophia Antipolis
+* Contact: proactive@ow2.org
+*
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either version
+* 2 of the License, or any later version.
+*
+* This library is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+* General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this library; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+* USA
+*
+*  Initial developer(s):               The ProActive Team
+*                        http://proactive.inria.fr/team_members.htm
+*  Contributor(s): ActiveEon Team - http://www.activeeon.com
+*
+* ################################################################
+* $$ACTIVEEON_CONTRIBUTOR$$
+*/
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -86,7 +117,7 @@ namespace ProActiveAgent
             }
             // Init the current and increment the next usable port
             this.currentProActivePort = nextUsableProActivePort++;
-            
+
             this.LOGGER = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType + "" + this.rank);
             // The logger needs to be customized programmatically to log stout/stderr into a separate file
             this.processLogger = LogManager.GetLogger("Executor" + this.rank + "ProcessLogger");
@@ -138,8 +169,8 @@ namespace ProActiveAgent
             {
                 // Lock all executors in this section                
                 lock (interExecutorLock)
-                {                    
-                    this.currentProActivePort = nextUsableProActivePort;                    
+                {
+                    this.currentProActivePort = nextUsableProActivePort;
                     // Check the port availability and if it's not availbale increment and retry until max value
                     while (!Utils.isTcpPortAvailable(this.currentProActivePort))
                     {
@@ -158,7 +189,7 @@ namespace ProActiveAgent
 
             ProcessStartInfo info = new ProcessStartInfo();
             try
-            {                
+            {
                 StringBuilder jvmParametersBuilder = new StringBuilder();
 
                 // Add the ProActive Communication Protocol related parameters (can be overriden by user-specified jvm params)
@@ -184,13 +215,13 @@ namespace ProActiveAgent
                     jvmParametersBuilder.Append("=");
                     jvmParametersBuilder.Append(this.currentProActivePort);
                 }
-                
+
                 // Merge all jvm parameters (user-specified)
                 foreach (string parameter in this.commonStartInfo.jvmParameters)
-                {                    
+                {
                     // Replace all occurences of "${rank}" by the rank of this ProActive Executor
-                    jvmParametersBuilder.Append(" " + parameter.Replace("${rank}",""+this.rank));
-                }                
+                    jvmParametersBuilder.Append(" " + parameter.Replace("${rank}", "" + this.rank));
+                }
 
                 // Merge all arguments
                 StringBuilder argumentsBuilder = new StringBuilder();
@@ -207,7 +238,8 @@ namespace ProActiveAgent
 
                 // Check for java home 
                 string javaHome = this.commonStartInfo.configuration.agentConfig.javaHome;
-                if (javaHome == null || javaHome.Equals("")) {
+                if (javaHome == null || javaHome.Equals(""))
+                {
                     javaHome = System.Environment.GetEnvironmentVariable("JAVA_HOME");
                     if (javaHome == null || javaHome.Equals(""))
                     {
@@ -518,7 +550,8 @@ namespace ProActiveAgent
                 {
                     LOGGER.Debug(scriptOutput);
                 }
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 LOGGER.Error("Unable to execute on runtime exit script!", e);
             }
