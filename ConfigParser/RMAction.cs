@@ -160,7 +160,7 @@ namespace ConfigParser
             else
             {
                 string credentialLocationOpt;
-                if (this.myCredentialLocation == null || this.myNodeSourceName.Equals(""))
+                if (this.myCredentialLocation == null || this.myCredentialLocation.Equals(""))
                 {
                     credentialLocationOpt = "";
                 }
