@@ -94,11 +94,11 @@ namespace ConfigParser
             }
         }
 
-        // Sub classes must override this class
+        // Sub classes must override this method
         public virtual string[] getArgs() { return new string[0]; }
 
-        // Default jvm parameters needed for this type of action
-        public static void addDefaultJvmParameters(List<string> jvmParameters, string proactiveLocation)
+        // Subclasses may override this method for default jvm parameters needed for this type of action
+        public virtual void fillDefaultJvmParameters(List<string> jvmParameters, string proactiveLocation)
         {
             jvmParameters.Add("-Dproactive.home=\"" + proactiveLocation + "\"");
             jvmParameters.Add("-Dproactive.configuration=\"file:" + proactiveLocation + "\\config\\proactive\\ProActiveConfiguration.xml\"");

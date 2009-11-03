@@ -173,8 +173,9 @@ namespace ConfigParser
         }
 
         // Default jvm parameters needed for this type of action
-        public static new void addDefaultJvmParameters(List<string> jvmParameters, string proactiveLocation)
+        public override void fillDefaultJvmParameters(List<string> jvmParameters, string proactiveLocation)
         {
+            base.fillDefaultJvmParameters(jvmParameters,proactiveLocation);
             jvmParameters.Add("-Dpa.scheduler.home=\"" + proactiveLocation + "\"");
             jvmParameters.Add("-Dpa.rm.home=\"" + proactiveLocation + "\"");
             jvmParameters.Add("-Djava.security.policy=\"" + proactiveLocation + "\\config\\security.java.policy\"");

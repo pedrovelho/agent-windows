@@ -78,5 +78,23 @@ namespace ConfigParser
         {
             return new string[] { this.myNodeName };
         }
+
+        // Default jvm parameters needed for this type of action
+        public override void fillDefaultJvmParameters(List<string> jvmParameters, string proactiveLocation)
+        {
+            base.fillDefaultJvmParameters(jvmParameters, proactiveLocation);
+            // Check 2 locations of the security policy file
+            string location = proactiveLocation + "\\config\\security.java.policy";
+            // ProActive Scheduling
+            if (System.IO.File.Exists(location))
+            {
+                jvmParameters.Add("-Djava.security.policy=\"" + location + "\"");
+            }
+            // ProActive Programming
+            else 
+            {               
+                jvmParameters.Add("-Djava.security.policy=\"" + proactiveLocation + "\\examples\\proactive.java.policy\"");
+            }            
+        }
     }
 }

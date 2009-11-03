@@ -93,43 +93,14 @@ namespace ProActiveAgent
             // All jvm parameters
             List<string> jvmParametersList = new List<string>();
 
-            // Add default parameters
-            ConfigParser.Action.addDefaultJvmParameters(jvmParametersList, this._configuration.agentConfig.proactiveLocation);
+            // Add default parameters            
+            this._selectedAction.fillDefaultJvmParameters(jvmParametersList, this.configuration.agentConfig.proactiveLocation);
 
             this._cmd = this._selectedAction.javaStarterClass;
 
-            // user defined jvm parameters will be added after in order to let the user redefine default parameters                        
-            if (this._selectedAction is AdvertAction)
-            {
-                AdvertAction advertAction = (AdvertAction)this._selectedAction;
-                // Add action specific default jvm parameters
-                // ... nothing to add
-                // Add user defined jvm parameters
-                this.addUserDefinedJvmParameters(jvmParametersList);
-                this._jvmParameters = jvmParametersList.ToArray();
-            }
-            else if (this._selectedAction is RMAction)
-            {
-                RMAction rmAction = (RMAction)this._selectedAction;
-                // Add action specific default jvm parameters
-                RMAction.addDefaultJvmParameters(jvmParametersList, this.configuration.agentConfig.proactiveLocation);
-                // Add user defined jvm parameters
-                this.addUserDefinedJvmParameters(jvmParametersList);
-                this._jvmParameters = jvmParametersList.ToArray();
-            }
-            else if (this._selectedAction is CustomAction)
-            {
-                CustomAction customAction = (CustomAction)this._selectedAction;
-                // Add action specific default jvm parameters
-                // ... nothing to add
-                // Add user defined jvm parameters
-                this.addUserDefinedJvmParameters(jvmParametersList);
-                this._jvmParameters = jvmParametersList.ToArray();
-            }
-            else
-            {
-                // Unknown action
-            }
+            // Add user defined jvm parameters
+            this.addUserDefinedJvmParameters(jvmParametersList);
+            this._jvmParameters = jvmParametersList.ToArray();
         }
 
         public Configuration configuration
