@@ -230,17 +230,17 @@
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(105, 13);
             this.label3.TabIndex = 6;
-            this.label3.Text = "ProActiveAgent v2.0";
+            this.label3.Text = "ProActiveAgent v2.1";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
             this.label4.BackColor = System.Drawing.Color.White;
-            this.label4.Location = new System.Drawing.Point(430, 61);
+            this.label4.Location = new System.Drawing.Point(430, 60);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(106, 13);
             this.label4.TabIndex = 6;
-            this.label4.Text = "(C) 2008-2009 INRIA";
+            this.label4.Text = "(C) 2008-2010 INRIA";
             // 
             // timer1
             // 

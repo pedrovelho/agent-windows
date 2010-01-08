@@ -6,7 +6,7 @@
 CRCCheck on
 
 Name "ProActive Agent"
-OutFile ProActiveAgent-setup-v2.0rc5.exe
+OutFile ProActiveAgent-setup-v2.1.exe
 
 LicenseText "This program is Licensed under the GNU General Public License (GPL)."
 LicenseData "LICENSE.txt"

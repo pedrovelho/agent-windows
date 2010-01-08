@@ -166,7 +166,7 @@ namespace ConfigParser
                 }
                 else
                 {
-                    credentialLocationOpt = "-f " + this.myCredentialLocation;
+                    credentialLocationOpt = "-f \"" + this.myCredentialLocation + "\"";
                 }
                 return new string[] { urlOpt, nodeNameOpt, nodeSourceNameOpt, credentialLocationOpt };
             }
