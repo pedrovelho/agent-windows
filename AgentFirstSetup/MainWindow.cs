@@ -300,5 +300,10 @@ namespace AgentFirstSetup
         {
             save();
         }
+
+        private void documentationLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(Constants.DOC_LINK);
+        }
     }
 }

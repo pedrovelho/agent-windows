@@ -109,6 +109,9 @@ namespace ProActiveAgent
         /// <summary>
         /// The maximum value allowed for the proactive rmi port.</summary>
         public const int MAX_PROACTIVE_RMI_PORT = 65534;
+        /// <summary>
+        /// The link to the official documentation.</summary>
+        public const string DOC_LINK = "http://proactive.inria.fr/release-doc/ResourceManager/single_html/ResourceManagerManual.html#ProActiveWindowsAgent_89";
     }
 
     /// <summary>

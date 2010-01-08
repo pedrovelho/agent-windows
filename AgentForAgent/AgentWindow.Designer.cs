@@ -55,11 +55,11 @@
             this.stopServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.startToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeAdministrationPanelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.proActiveInriaLinkLabel = new System.Windows.Forms.LinkLabel();
             this.controlsGroupBox = new System.Windows.Forms.GroupBox();
             this.logsGroupBox = new System.Windows.Forms.GroupBox();
             this.viewLogsWithExplorerButton = new System.Windows.Forms.Button();
+            this.documentationLinkLabel = new System.Windows.Forms.LinkLabel();
             this.groupBox1.SuspendLayout();
             this.infoGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.proActiveLogoPictureBox)).BeginInit();
@@ -226,7 +226,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.BackColor = System.Drawing.Color.White;
-            this.label3.Location = new System.Drawing.Point(430, 35);
+            this.label3.Location = new System.Drawing.Point(430, 29);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(105, 13);
             this.label3.TabIndex = 6;
@@ -236,7 +236,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.BackColor = System.Drawing.Color.White;
-            this.label4.Location = new System.Drawing.Point(430, 60);
+            this.label4.Location = new System.Drawing.Point(430, 71);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(106, 13);
             this.label4.TabIndex = 6;
@@ -302,20 +302,12 @@
             this.closeAdministrationPanelToolStripMenuItem.Text = "Close Administration Panel";
             this.closeAdministrationPanelToolStripMenuItem.Click += new System.EventHandler(this.closeAdministrationPanelToolStripMenuItem_Click_1);
             // 
-            // statusStrip1
-            // 
-            this.statusStrip1.Location = new System.Drawing.Point(0, 289);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(595, 22);
-            this.statusStrip1.TabIndex = 7;
-            this.statusStrip1.Text = "statusStrip1";
-            // 
             // proActiveInriaLinkLabel
             // 
             this.proActiveInriaLinkLabel.AutoSize = true;
             this.proActiveInriaLinkLabel.BackColor = System.Drawing.Color.White;
             this.proActiveInriaLinkLabel.DisabledLinkColor = System.Drawing.Color.White;
-            this.proActiveInriaLinkLabel.Location = new System.Drawing.Point(430, 74);
+            this.proActiveInriaLinkLabel.Location = new System.Drawing.Point(430, 85);
             this.proActiveInriaLinkLabel.Name = "proActiveInriaLinkLabel";
             this.proActiveInriaLinkLabel.Size = new System.Drawing.Size(118, 13);
             this.proActiveInriaLinkLabel.TabIndex = 9;
@@ -355,20 +347,32 @@
             this.viewLogsWithExplorerButton.UseVisualStyleBackColor = true;
             this.viewLogsWithExplorerButton.Click += new System.EventHandler(this.viewLogsWithIExplorerButton_Click);
             // 
+            // documentationLinkLabel
+            // 
+            this.documentationLinkLabel.AutoSize = true;
+            this.documentationLinkLabel.BackColor = System.Drawing.SystemColors.Window;
+            this.documentationLinkLabel.Location = new System.Drawing.Point(430, 42);
+            this.documentationLinkLabel.Name = "documentationLinkLabel";
+            this.documentationLinkLabel.Size = new System.Drawing.Size(114, 13);
+            this.documentationLinkLabel.TabIndex = 12;
+            this.documentationLinkLabel.TabStop = true;
+            this.documentationLinkLabel.Text = "Official Documentation";
+            this.documentationLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.documentationLinkLabel_LinkClicked);
+            // 
             // ConfigurationDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(595, 311);
-            this.Controls.Add(this.proActiveInriaLinkLabel);
-            this.Controls.Add(this.statusStrip1);
+            this.ClientSize = new System.Drawing.Size(595, 295);
+            this.Controls.Add(this.documentationLinkLabel);
             this.Controls.Add(this.controlsGroupBox);
+            this.Controls.Add(this.logsGroupBox);
+            this.Controls.Add(this.proActiveInriaLinkLabel);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.logsGroupBox);
-            this.Controls.Add(this.proActiveLogoPictureBox);
             this.Controls.Add(this.infoGroupBox);
             this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.proActiveLogoPictureBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -418,7 +422,6 @@
         private System.Windows.Forms.ToolStripMenuItem closeAdministrationPanelToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem startServiceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem stopServiceToolStripMenuItem;
-        private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.LinkLabel proActiveInriaLinkLabel;
         private System.Windows.Forms.GroupBox controlsGroupBox;
         private System.Windows.Forms.GroupBox logsGroupBox;
@@ -426,6 +429,7 @@
         private System.Windows.Forms.Button viewLogsWithExplorerButton;
         private System.Windows.Forms.Label agentStatusValue;
         private System.Windows.Forms.Label spawnedRuntimesValue;
+        private System.Windows.Forms.LinkLabel documentationLinkLabel;
         //private System.Windows.Forms.Button allowForbidRT;
     }
 }

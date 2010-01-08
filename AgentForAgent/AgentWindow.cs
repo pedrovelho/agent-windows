@@ -499,5 +499,10 @@ namespace AgentForAgent
             p.StartInfo.Arguments = this.agentLocation + "\\ProActiveAgent-log.txt";
             p.Start();
         }
+
+        private void documentationLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(Constants.DOC_LINK);
+        }
     }
 }

@@ -51,6 +51,7 @@
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.continueButton = new System.Windows.Forms.Button();
+            this.documentationLinkLabel = new System.Windows.Forms.LinkLabel();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.panelAccount.SuspendLayout();
@@ -124,7 +125,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(219, 9);
+            this.label3.Location = new System.Drawing.Point(78, 9);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(360, 13);
             this.label3.TabIndex = 14;
@@ -275,11 +276,23 @@
             this.continueButton.UseVisualStyleBackColor = true;
             this.continueButton.Click += new System.EventHandler(this.continueButton_Click);
             // 
+            // documentationLinkLabel
+            // 
+            this.documentationLinkLabel.AutoSize = true;
+            this.documentationLinkLabel.Location = new System.Drawing.Point(444, 9);
+            this.documentationLinkLabel.Name = "documentationLinkLabel";
+            this.documentationLinkLabel.Size = new System.Drawing.Size(135, 13);
+            this.documentationLinkLabel.TabIndex = 20;
+            this.documentationLinkLabel.TabStop = true;
+            this.documentationLinkLabel.Text = "See official documentation.";
+            this.documentationLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.documentationLinkLabel_LinkClicked);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(583, 306);
+            this.Controls.Add(this.documentationLinkLabel);
             this.Controls.Add(this.continueButton);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -324,6 +337,7 @@
         private System.Windows.Forms.Panel panelAccount;
         private System.Windows.Forms.Button continueButton;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.LinkLabel documentationLinkLabel;
 
     }
 }
