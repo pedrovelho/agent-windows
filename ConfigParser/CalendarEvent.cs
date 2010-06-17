@@ -46,7 +46,8 @@ using System.Diagnostics;
 
 namespace ConfigParser
 {
-    public class CalendarEvent : Event
+    [XmlInclude(typeof(CalendarEvent))]
+    public class CalendarEvent
     {
         // day of week
         private String myStartDay;

@@ -56,11 +56,11 @@ namespace ConfigParser
         private Action[] myActions;
 
         // Collection of events that the system will react on        
-        private List<Event> myEvents;
+        private List<CalendarEvent> myEvents;
 
         // Public constructor
         public Configuration(){
-            this.myEvents = new List<Event>();
+            this.myEvents = new List<CalendarEvent>();
         }
 
         [XmlElement("internalConfig", IsNullable = false)]
@@ -78,8 +78,8 @@ namespace ConfigParser
         }
                 
         [XmlArray("events", IsNullable = false )]
-        [XmlArrayItem("event", typeof(Event), IsNullable = true)]
-        public List<Event> events
+        [XmlArrayItem("event", typeof(CalendarEvent), IsNullable = true)]
+        public List<CalendarEvent> events
         {
             get
             {

@@ -112,7 +112,7 @@ namespace AgentForAgent
             // Load events from the configuration //
             ////////////////////////////////////////            
 
-            foreach (Event ev in this.configuration.events)
+            foreach (CalendarEvent ev in this.configuration.events)
             {
                 CalendarEvent cEv = (CalendarEvent)ev;
                 this.eventsList.Items.Add(cEv);
@@ -589,8 +589,8 @@ namespace AgentForAgent
         private void showButton_Click(object sender, EventArgs e)
         {
             // Save the configuration
-            System.Collections.Generic.List<Event> copyList = new System.Collections.Generic.List<Event>(this.eventsList.Items.Count);
-            foreach (Event ev in this.eventsList.Items)
+            System.Collections.Generic.List<CalendarEvent> copyList = new System.Collections.Generic.List<CalendarEvent>(this.eventsList.Items.Count);
+            foreach (CalendarEvent ev in this.eventsList.Items)
             {
                 copyList.Add(ev);
             }
@@ -727,7 +727,7 @@ namespace AgentForAgent
             {
                 //--Check if the event always exist
                 bool isExist = false;
-                foreach (Event ev in this.eventsList.Items)
+                foreach (CalendarEvent ev in this.eventsList.Items)
                 {
                     CalendarEvent cEv = (CalendarEvent)ev;
                     if (cEv.isAlwaysAvailable())

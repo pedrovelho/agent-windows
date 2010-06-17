@@ -101,10 +101,10 @@ namespace AgentForAgent
             }
         }
 
-        public void loadEvents(List<Event> eventsList)
+        public void loadEvents(List<CalendarEvent> eventsList)
         {
             rects.Clear();
-            foreach (Event ev in eventsList)
+            foreach (CalendarEvent ev in eventsList)
             {
                 CalendarEvent cEv = (CalendarEvent)ev;
 

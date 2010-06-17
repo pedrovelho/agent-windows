@@ -119,7 +119,7 @@ namespace ProActiveAgent
             // Get the current date time
             DateTime currentTime = System.DateTime.Now;
 
-            foreach (Event e in configuration.events)
+            foreach (CalendarEvent e in configuration.events)
             {
                 if (e is CalendarEvent)
                 {

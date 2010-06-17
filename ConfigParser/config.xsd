@@ -57,13 +57,10 @@
   <xs:element name="Events" nillable="true" type="Events" />
   <xs:complexType name="Events">
     <xs:sequence>
-      <xs:element minOccurs="0" maxOccurs="unbounded" name="event" type="Event" />
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="event" type="CalendarEvent" />
     </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="Event" />
-  <xs:complexType name="CalendarEvent">
-    <xs:complexContent mixed="false">
-      <xs:extension base="Event">
+  </xs:complexType>  
+  <xs:complexType name="CalendarEvent">          
         <xs:sequence>
           <xs:element minOccurs="1" maxOccurs="1" name="startDay" type="xs:string" />
           <xs:element minOccurs="1" maxOccurs="1" name="startHour" type="xs:int" />
@@ -75,9 +72,7 @@
           <xs:element minOccurs="1" maxOccurs="1" name="durationSeconds" type="xs:int" />
           <xs:element minOccurs="1" maxOccurs="1" name="processPriority" type="xs:string" />
           <xs:element minOccurs="1" maxOccurs="1" name="maxCpuUsage" type="xs:unsignedInt" />
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
+        </xs:sequence>    
   </xs:complexType>
   <xs:element name="AgentConfig" nillable="true" type="AgentConfig" />
   <xs:complexType name="AgentConfig">
@@ -111,23 +106,7 @@
       <xs:element minOccurs="1" maxOccurs="1" name="actions" type="Actions" />
     </xs:sequence>
   </xs:complexType>
-  <xs:element name="RMAction" nillable="true" type="RMAction" />
-  <xs:element name="Event" nillable="true" type="Event" />
-  <xs:element name="IdlenessEvent" nillable="true" type="IdlenessEvent" />
-  <xs:complexType name="IdlenessEvent">
-    <xs:complexContent mixed="false">
-      <xs:extension base="Event">
-        <xs:sequence>
-          <xs:element minOccurs="1" maxOccurs="1" name="beginSecs" type="xs:int" />
-          <xs:element minOccurs="1" maxOccurs="1" name="endSecs" type="xs:int" />
-          <xs:element minOccurs="1" maxOccurs="1" name="beginThreshold" type="xs:int" />
-          <xs:element minOccurs="1" maxOccurs="1" name="endThreshold" type="xs:int" />
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:element name="Test" nillable="true" type="Test" />
-  <xs:complexType name="Test" />
+  <xs:element name="RMAction" nillable="true" type="RMAction" />  
   <xs:element name="CustomAction" nillable="true" type="CustomAction" />  
   <xs:element name="CalendarEvent" nillable="true" type="CalendarEvent" />
   <xs:element name="AdvertAction" nillable="true" type="AdvertAction" />

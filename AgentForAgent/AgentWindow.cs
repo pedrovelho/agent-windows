@@ -484,12 +484,7 @@ namespace AgentForAgent
         private void configLocation_TextChanged(object sender, EventArgs e)
         {
             UpdateConfigLocation();
-        }
-
-        private void toolStripStatusLabel1_Click(object sender, EventArgs e)
-        {
-            new VersionChecker().ShowDialog();
-        }
+        }        
 
         private void proActiveInriaLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
