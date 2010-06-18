@@ -58,9 +58,7 @@ namespace AgentForAgent
 
         private readonly ServiceController sc;
 
-        private readonly string agentLocation;
-
-        private bool setVisibleCore = false;
+        private readonly string agentLocation;        
 
         private ConfigurationEditor window;
 
@@ -78,8 +76,7 @@ namespace AgentForAgent
             }
 
             // Init all visuals
-            InitializeComponent();
-            this.Hide();
+            InitializeComponent();            
             UpdateStatus();
 
             this.agentLocation = agentLocation;
@@ -317,7 +314,6 @@ namespace AgentForAgent
 
         private void close_Click(object sender, EventArgs e)
         {
-            setVisibleCore = false;
             Hide();
         }
 
@@ -345,8 +341,7 @@ namespace AgentForAgent
         }
 
         private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            setVisibleCore = true;
+        {            
             Show();
             WindowState = FormWindowState.Normal;
         }
@@ -376,8 +371,7 @@ namespace AgentForAgent
             {
                 case CloseReason.ApplicationExitCall:
                     {
-                        //Handle application exit call
-                        setVisibleCore = false;
+                        //Handle application exit call                        
                         Hide();
                         e.Cancel = true;
                         break;
@@ -405,8 +399,7 @@ namespace AgentForAgent
                     }
                 case CloseReason.UserClosing:
                     {
-                        // Handle User close
-                        setVisibleCore = false;
+                        // Handle User close                        
                         Hide();
                         e.Cancel = true;
                         break;
@@ -463,11 +456,6 @@ namespace AgentForAgent
 
                 confKey.Close();
             }
-        }
-
-        protected override void SetVisibleCore(bool value)
-        {
-            base.SetVisibleCore(setVisibleCore);
         }
 
         private void closeAdministrationPanelToolStripMenuItem_Click_1(object sender, EventArgs e)

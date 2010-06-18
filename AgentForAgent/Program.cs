@@ -41,6 +41,8 @@ using System.Diagnostics;
 using ProActiveAgent;
 using Microsoft.Win32;
 using System.Security.Principal;
+using System.Runtime.InteropServices;
+using System.Text;
 
 namespace AgentForAgent
 {
@@ -52,6 +54,11 @@ namespace AgentForAgent
         [STAThread]
         static void Main()
         {
+            if (!ProcessChecker.IsOnlyProcess("ProActive Agent Control"))
+            {
+                return;
+            }
+
             // Check if the current user have admin rights   
             WindowsPrincipal principal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
             if (!principal.IsInRole(WindowsBuiltInRole.Administrator))
@@ -99,13 +106,107 @@ namespace AgentForAgent
                 // -------------------------------------------------
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-                Application.Run(new ConfigurationDialog(agentLocation, configLocation));
+                ConfigurationDialog dialog = new ConfigurationDialog(agentLocation, configLocation);
+                Application.Run(dialog);
+                dialog.Show();
             }
             else
             {
                 // Cannot continue, report error message box and exit                         
                 MessageBox.Show("Can not open the following registry subkey (LocalMachine) " + Constants.PROACTIVE_AGENT_REG_SUBKEY + ". It appears that the agent might not have been installed properly.", "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+    }
+
+    /// <summary>
+    /// Check running processes for an already-running instance. Implements a simple and
+    /// always effective algorithm to find currently running processes with a main window
+    /// matching a given substring and focus it.
+    /// Combines code written by Lion Shi (MS) and Sam Allen.
+    /// </summary>
+    static class ProcessChecker
+    {
+        /// <summary>
+        /// Stores a required string that must be present in the window title for it
+        /// to be detected.
+        /// </summary>
+        static string _requiredString;
+
+        /// <summary>
+        /// Contains signatures for C++ DLLs using interop.
+        /// </summary>
+        internal static class NativeMethods
+        {
+            [DllImport("user32.dll")]
+            public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
+
+            [DllImport("user32.dll")]
+            public static extern bool SetForegroundWindow(IntPtr hWnd);
+
+            [DllImport("user32.dll")]
+            public static extern bool EnumWindows(EnumWindowsProcDel lpEnumFunc,
+                Int32 lParam);
+
+            [DllImport("user32.dll")]
+            public static extern int GetWindowThreadProcessId(IntPtr hWnd,
+                ref Int32 lpdwProcessId);
+
+            [DllImport("user32.dll")]
+            public static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString,
+                Int32 nMaxCount);
+
+            public const int SW_SHOWNORMAL = 1;
+        }
+
+        public delegate bool EnumWindowsProcDel(IntPtr hWnd, Int32 lParam);
+
+        /// <summary>
+        /// Perform finding and showing of running window.
+        /// </summary>
+        /// <returns>Bool, which is important and must be kept to match up
+        /// with system call.</returns>
+        static private bool EnumWindowsProc(IntPtr hWnd, Int32 lParam)
+        {
+            int processId = 0;
+            NativeMethods.GetWindowThreadProcessId(hWnd, ref processId);
+
+            StringBuilder caption = new StringBuilder(1024);
+            NativeMethods.GetWindowText(hWnd, caption, 1024);
+
+            // Use IndexOf to make sure our required string is in the title.
+            if (processId == lParam && (caption.ToString().IndexOf(_requiredString,
+                StringComparison.OrdinalIgnoreCase) != -1))
+            {
+                // Restore the window.
+                NativeMethods.ShowWindowAsync(hWnd, NativeMethods.SW_SHOWNORMAL);
+                NativeMethods.SetForegroundWindow(hWnd);
+            }
+            return true; // Keep this.
+        }
+
+        /// <summary>
+        /// Find out if we need to continue to load the current process. If we
+        /// don't focus the old process that is equivalent to this one.
+        /// </summary>
+        /// <param name="forceTitle">This string must be contained in the window
+        /// to restore. Use a string that contains the most
+        /// unique sequence possible. If the program has windows with the string
+        /// "Journal", pass that word.</param>
+        /// <returns>False if no previous process was activated. True if we did
+        /// focus a previous process and should simply exit the current one.</returns>
+        static public bool IsOnlyProcess(string forceTitle)
+        {
+            _requiredString = forceTitle;
+            foreach (Process proc in Process.GetProcessesByName(Application.ProductName))
+            {
+                if (proc.Id != Process.GetCurrentProcess().Id)
+                {
+                    NativeMethods.EnumWindows(new EnumWindowsProcDel(EnumWindowsProc),
+                        proc.Id);
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }
