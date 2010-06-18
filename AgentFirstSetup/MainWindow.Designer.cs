@@ -60,17 +60,17 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 15);
+            this.label1.Location = new System.Drawing.Point(6, 16);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(65, 13);
+            this.label1.Size = new System.Drawing.Size(129, 13);
             this.label1.TabIndex = 4;
-            this.label1.Text = "ProActive or";
+            this.label1.Text = "ProActive Programming or";
             // 
             // proactiveLocation
             // 
-            this.proactiveLocation.Location = new System.Drawing.Point(169, 25);
+            this.proactiveLocation.Location = new System.Drawing.Point(141, 25);
             this.proactiveLocation.Name = "proactiveLocation";
-            this.proactiveLocation.Size = new System.Drawing.Size(309, 20);
+            this.proactiveLocation.Size = new System.Drawing.Size(337, 20);
             this.proactiveLocation.TabIndex = 5;
             this.proactiveLocation.TextChanged += new System.EventHandler(this.proactiveLocation_TextChanged);
             // 
@@ -159,11 +159,11 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 28);
+            this.label4.Location = new System.Drawing.Point(73, 32);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(157, 13);
+            this.label4.Size = new System.Drawing.Size(60, 13);
             this.label4.TabIndex = 14;
-            this.label4.Text = "ProActive Scheduling Directory:";
+            this.label4.Text = "Scheduling";
             // 
             // groupBox2
             // 
