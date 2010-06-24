@@ -387,11 +387,9 @@ Section "ProActive Agent"
         
         endLabel:
         
-SectionEnd
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Section "ProActive Agent Control"
+        ;-----------------------------------------------------------------------------------
+        ; Copy the GUI
+        ;-----------------------------------------------------------------------------------
         SetOutPath $INSTDIR
         File "bin\Release\AgentForAgent.exe"
 SectionEnd
