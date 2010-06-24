@@ -46,12 +46,6 @@ namespace ProActiveAgent
     {
         private static readonly ILog LOGGER = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         /// <summary>
-        /// The location whre the agent is installed.</summary>
-        private string agentInstallLocation;
-        /// <summary>
-        /// The location of the cofig file.</summary>
-        private string agentConfigLocation;
-        /// <summary>
         /// The executors manager that loads events and keeps start/stop timers.</summary>
         private ExecutorsManager executorsManager;
         /// <summary>
@@ -78,6 +72,11 @@ namespace ProActiveAgent
         {
             LOGGER.Info("Starting ProActive Agent service");
 
+            // The location will be read from the registry
+            string agentInstallLocation;            
+            // The location of the cofig file
+            string agentConfigLocation;
+
             // Try to read install and config locations from registry
             RegistryKey confKey = Registry.LocalMachine.OpenSubKey(Constants.PROACTIVE_AGENT_REG_SUBKEY);
             if (confKey == null)
@@ -87,18 +86,19 @@ namespace ProActiveAgent
                     LOGGER.Warn("ProActive Agent could not read " + Constants.PROACTIVE_AGENT_REG_SUBKEY + " from windows registry");
                 }
                 // If registry key is unknown set default locations
-                this.agentInstallLocation = Constants.PROACTIVE_AGENT_DEFAULT_INSTALL_LOCATION;
-                this.agentConfigLocation = Constants.PROACTIVE_AGENT_DEFAULT_CONFIG_LOCATION;
+                agentInstallLocation = Constants.PROACTIVE_AGENT_DEFAULT_INSTALL_LOCATION;
+                agentConfigLocation = Constants.PROACTIVE_AGENT_DEFAULT_CONFIG_LOCATION;
             }
             else
             {
-                this.agentInstallLocation = (string)confKey.GetValue(Constants.PROACTIVE_AGENT_INSTALL_LOCATION_REG_VALUE_NAME);
-                this.agentConfigLocation = (string)confKey.GetValue(Constants.PROACTIVE_AGENT_CONFIG_LOCATION_REG_VALUE_NAME);
+                agentInstallLocation = (string)confKey.GetValue(Constants.PROACTIVE_AGENT_INSTALL_LOCATION_REG_VALUE_NAME);
+                agentConfigLocation = (string)confKey.GetValue(Constants.PROACTIVE_AGENT_CONFIG_LOCATION_REG_VALUE_NAME);
                 confKey.Close();
             }
 
             // Parse the configuration file once per start
-            Configuration configuration = ConfigurationParser.parseXml(this.agentConfigLocation, this.agentInstallLocation);
+            Configuration configuration = ConfigurationParser.parseXml(agentConfigLocation, agentInstallLocation);
+            configuration.agentInstallLocation = agentInstallLocation;
 
             // Read classpath
             try

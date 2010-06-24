@@ -47,6 +47,7 @@ using log4net.Appender;
 using log4net.Layout;
 using log4net.Repository.Hierarchy;
 using Microsoft.Win32;
+using System.IO;
 
 /**
  * Executor of the ProActive Runtime process. If the executed process exits, the executor handles the restart with a Timer.
@@ -129,7 +130,7 @@ namespace ProActiveAgent
             if (customLogger != null)
             {
                 customLogger.Additivity = false;
-                customLogger.AddAppender(CreateRollingFileAppender("Executor" + this.rank + "RollingFileAppender", "Executor" + this.rank + "Process-log.txt"));
+                customLogger.AddAppender(CreateRollingFileAppender("Executor" + this.rank + "RollingFileAppender", "Executor" + this.rank + "Process-log.txt"));                
             }
             this.commonStartInfo = commonStartInfo;
             // The restart timer is only created it will not start until Timer.Change() method is called
@@ -254,7 +255,7 @@ namespace ProActiveAgent
                 // Application arguments will be 
                 info.Arguments = jvmParametersBuilder.ToString() + " " + this.commonStartInfo.cmd + " " + argumentsBuilder.ToString();
                 // Set the classpath 
-                info.EnvironmentVariables[Constants.CLASSPATH_VAR_NAME] = this.commonStartInfo.configuration.agentConfig.classpath;
+                info.EnvironmentVariables[Constants.CLASSPATH] = this.commonStartInfo.configuration.agentConfig.classpath;
                 // Configure runtime specifics
                 info.UseShellExecute = false; // needed to redirect output
                 info.CreateNoWindow = false;
@@ -277,8 +278,8 @@ namespace ProActiveAgent
                 }
 
                 LOGGER.Info("Started ProActive Runtime process [pid:" + this.proActiveRuntimeProcess.Id + "]" + System.Environment.NewLine +
-                            " CLASSPATH=" + info.EnvironmentVariables[Constants.CLASSPATH_VAR_NAME] + System.Environment.NewLine +
-                            " Command-line: " + info.FileName + " " + info.Arguments);
+                            "  CLASSPATH=" + info.EnvironmentVariables[Constants.CLASSPATH] + System.Environment.NewLine +
+                            "  Command-line: " + info.FileName + " " + info.Arguments);
             }
             catch (Exception ex)
             {
@@ -409,10 +410,19 @@ namespace ProActiveAgent
         /// <param name="e">The arguments of this event</param>
         [MethodImpl(MethodImplOptions.Synchronized)] // to avoid concurrent problems while calling stop method
         private void Events_OnProActiveRuntimeProcessExit(object o, EventArgs e)
-        {
-            LOGGER.Info("The ProActive Runtime process has exited for unknown reason");
-
+        {            
             Thread.Sleep(1000);
+
+            // Log a message to the user with the ProActive Runtime process logs location
+            string logFile = this.commonStartInfo.configuration.agentInstallLocation + "\\Executor" + this.rank + "Process-log.txt";
+            StringBuilder b = new StringBuilder("The ProActive Runtime process has exited [exitCode:");
+            b.Append(this.proActiveRuntimeProcess.ExitCode);
+            b.Append("]\n  Logs: ");
+            b.Append(this.commonStartInfo.configuration.agentInstallLocation);
+            b.Append("\\Executor");
+            b.Append(this.rank);
+            b.Append("Process-log.txt");
+            LOGGER.Info(b.ToString());
 
             int proActiveRuntimeProcessPid = this.proActiveRuntimeProcess.Id;
 
@@ -451,7 +461,7 @@ namespace ProActiveAgent
                     this.restartTimer.Change(this.restartDelayInMs, System.Threading.Timeout.Infinite);
                     if (LOGGER.IsDebugEnabled)
                     {
-                        LOGGER.Debug("The ProActive Runtime process restart delay is " + this.restartDelayInMs + " ms [barrier is " + this.restartBarrierDateTime.ToString() + "]");
+                        LOGGER.Debug("The ProActive Runtime process restart delay is " + this.restartDelayInMs + " ms [barrier:" + this.restartBarrierDateTime.ToString() + "]");
                     }
                 }
                 else

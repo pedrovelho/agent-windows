@@ -43,24 +43,26 @@ using System.Xml.Serialization;
  * Contains information about runner scripts, 
  * events and action to take
  */
-
 namespace ConfigParser
 {
     [XmlRoot("agent")]
     public class Configuration
     {
         // Configuration of runner script for launching ProActive        
-        private AgentConfig myAgentConfig;
-
-        // Actions that will be taken in case of any event triggered
-        private Action[] myActions;
-
-        // Collection of events that the system will react on        
-        private List<CalendarEvent> myEvents;
+        private AgentConfig _agentConfig;        
+        /// <summary>
+        /// Actions that will be taken in case of any event triggered.</summary>
+        private Action[] _actions;        
+        /// <summary>
+        /// Collection of events that the system will react on.</summary>
+        private List<CalendarEvent> _events;
+        /// <summary>
+        /// The location where the agent is installed. This attribute is not serialized !</summary>
+        private string _agentInstallLocation;
 
         // Public constructor
         public Configuration(){
-            this.myEvents = new List<CalendarEvent>();
+            this._events = new List<CalendarEvent>();
         }
 
         [XmlElement("internalConfig", IsNullable = false)]
@@ -68,12 +70,12 @@ namespace ConfigParser
         {
             get
             {
-                return this.myAgentConfig;
+                return this._agentConfig;
             }
 
             set
             {
-                this.myAgentConfig = value;
+                this._agentConfig = value;
             }
         }
                 
@@ -83,12 +85,12 @@ namespace ConfigParser
         {
             get
             {
-                return this.myEvents;
+                return this._events;
             }
 
             set
             {
-                this.myEvents = value;
+                this._events = value;
             }
         }
         
@@ -98,12 +100,25 @@ namespace ConfigParser
         {
             get
             {
-                return this.myActions;
+                return this._actions;
             }
 
             set
             {
-                this.myActions = value;
+                this._actions = value;
+            }
+        }
+
+        public string agentInstallLocation
+        {
+            get
+            {
+                return this._agentInstallLocation;
+            }
+
+            set
+            {
+                this._agentInstallLocation = value;
             }
         }
 

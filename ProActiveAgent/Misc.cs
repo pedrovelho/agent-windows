@@ -97,10 +97,10 @@ namespace ProActiveAgent
         public const string JOB_OBJECT_NAME = "ProActiveAgentJobObject";
         /// <summary>
         /// The name of the classpath variable.</summary>
-        public const string CLASSPATH_VAR_NAME = "CLASSPATH";
+        public const string CLASSPATH = "CLASSPATH";
         /// <summary>
         /// The name of the classpath variable.</summary>
-        public const string JAVA_HOME_VAR_NAME = "JAVA_HOME";
+        public const string JAVA_HOME = "JAVA_HOME";
         /// <summary>
         /// The name of the ProActive Communication Protocol java property.</summary>
         public const string PROACTIVE_COMMUNICATION_PROTOCOL_JAVA_PROPERTY = "-Dproactive.communication.protocol";
@@ -209,7 +209,7 @@ namespace ProActiveAgent
 
             if (config.javaHome == null || config.javaHome.Equals(""))
             {
-                string envJavaHome = System.Environment.GetEnvironmentVariable("JAVA_HOME");
+                string envJavaHome = System.Environment.GetEnvironmentVariable(Constants.JAVA_HOME);
 
                 if (envJavaHome == null || envJavaHome.Equals(""))
                 {
@@ -218,15 +218,15 @@ namespace ProActiveAgent
                 else
                 {
                     // Fill classpath in the configuration using the JAVA_HOME variable defined in the parent environement
-                    config.classpath = VariableEchoer.echoVariable(initScript, Constants.CLASSPATH_VAR_NAME, info);
+                    config.classpath = VariableEchoer.echoVariable(initScript, Constants.CLASSPATH, info);
                 }
             }
             else
             {
                 // Use configuration specific java location
-                info.EnvironmentVariables["JAVA_HOME"] = config.javaHome;
+                info.EnvironmentVariables[Constants.JAVA_HOME] = config.javaHome;
                 // Fill classpath in the configuration
-                config.classpath = VariableEchoer.echoVariable(initScript, Constants.CLASSPATH_VAR_NAME, info);
+                config.classpath = VariableEchoer.echoVariable(initScript, Constants.CLASSPATH, info);
             }
         }
 
