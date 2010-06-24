@@ -460,12 +460,18 @@ namespace AgentForAgent
         //--List Available network interfaces to get java style names
         private void listNetworkInterfacesButton_Click(object sender, EventArgs e)
         {
+            if (this.jvmDirectory.Text == null || this.jvmDirectory.Text.Equals(""))
+            {
+                return;
+            }
+            if (!System.IO.File.Exists(this.jvmDirectory.Text+Constants.BIN_JAVA))
+            {
+                MessageBox.Show("The Java Home location is incorrect.", "Problem", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                jvmLocationButton_Click(null,null);
+                return;
+            }
             try
             {
-                if (this.jvmDirectory.Text == null || this.jvmDirectory.Text.Equals(""))
-                {
-                    return;
-                }
                 string[] values = ProActiveAgent.JavaNetworkInterfaceLister.listJavaNetworkInterfaces(this.jvmDirectory.Text, this.agentLocation);
                 this.networkInterfacesListBox.Items.Clear();
                 this.networkInterfacesListBox.Items.AddRange(values);
@@ -473,7 +479,7 @@ namespace AgentForAgent
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString(), "Problem", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(ex.ToString(), "Problem", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

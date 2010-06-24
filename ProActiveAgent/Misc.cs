@@ -102,6 +102,9 @@ namespace ProActiveAgent
         /// The name of the classpath variable.</summary>
         public const string JAVA_HOME = "JAVA_HOME";
         /// <summary>
+        /// The java.exe location relative to JAVA_HOME.</summary>
+        public const string BIN_JAVA = @"\bin\java.exe";
+        /// <summary>
         /// The name of the ProActive Communication Protocol java property.</summary>
         public const string PROACTIVE_COMMUNICATION_PROTOCOL_JAVA_PROPERTY = "-Dproactive.communication.protocol";
         /// <summary>
@@ -272,7 +275,7 @@ namespace ProActiveAgent
         {
             ProcessStartInfo info = new ProcessStartInfo();
             // Prepare to create a process that will run the java class
-            info.FileName = javaLocation + "\\bin\\java.exe";
+            info.FileName = javaLocation + Constants.BIN_JAVA;
             // Add the agent location as classpath and the name of the java class to execute
             info.Arguments = "-cp \"" + agentLocation + "\" ListNetworkInterfaces";
             info.UseShellExecute = false;
