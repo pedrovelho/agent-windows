@@ -384,17 +384,22 @@ namespace ProActiveAgent
         /// <param name="args">The arguments of this event</param>
         void Events_OnNewProcess(object sender, NewProcessEventArgs args)
         {
+            if (args == null) {
+                return;
+            }
             try
             {
-                Process incriminatedProcess = args.TheProcess;
+                Process incriminatedProcess = args.TheProcess;                
                 if (this.proActiveRuntimeProcess.Id != incriminatedProcess.Id)
                 {
                     // Log info about the incriminated process            
                     LOGGER.Info("A new process " + incriminatedProcess.ProcessName + " [pid:" + incriminatedProcess.Id + "] has been detected");
-                }
-                LOGGER.Info("Adding new process " + incriminatedProcess.ProcessName + " [pid:" + incriminatedProcess.Id + "] to the cpu limiter");
+                }                
                 // add the process to the cpu limiter
-                this.cpuLimiter.addProcessToWatchList(incriminatedProcess);
+                if (this.cpuLimiter.addProcessToWatchList(incriminatedProcess))
+                {
+                    LOGGER.Info("Added new process " + incriminatedProcess.ProcessName + " [pid:" + incriminatedProcess.Id + "] to the cpu limiter");
+                }                
             }
             catch (Exception ex)
             {

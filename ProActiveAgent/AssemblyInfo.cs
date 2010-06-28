@@ -43,9 +43,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("ProActiveAgent")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("ActiveEon")]
+[assembly: AssemblyCompany("INRIA and ActiveEon")]
 [assembly: AssemblyProduct("ProActiveAgent")]
-[assembly: AssemblyCopyright("Copyright © ActiveEon 2008")]
+[assembly: AssemblyCopyright("Copyright © ActiveEon 2010")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

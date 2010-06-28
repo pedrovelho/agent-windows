@@ -104,14 +104,24 @@ namespace ProActiveAgent
         /// Adds a new process to the watch list, added process will limited according to the allowed max cpu usage.
         /// </summary>
         /// <param name="processToWatch">The process to watch</param>
-        public void addProcessToWatchList(Process processToWatch)
+        /// <returns>True if the process was succesfully added</returns>        
+        public bool addProcessToWatchList(Process processToWatch)
         {
+            string perfCounterInstanceName = GetPerformanceCounterInstanceName(processToWatch.Id);
+            // If no performance counter is found for that process maybe the system
+            // is not ready or the process has already exited
+            if (perfCounterInstanceName == null) {
+                return false;
+            }
+            // Create a watcher for this process
+            ProcessWatcher watcher = new ProcessWatcher(processToWatch, perfCounterInstanceName);
             // Stop the timer...
             this.watchingTimer.Enabled = false;
             // Add this watcher to the watch list
-            this.watchList.Add(new ProcessWatcher(processToWatch));
+            this.watchList.Add(watcher);
             // Restart the timer       
             this.watchingTimer.Enabled = true;
+            return true;
         }
 
         /// <summary>
@@ -224,21 +234,44 @@ namespace ProActiveAgent
             this.watchingTimer.Enabled = true;
         }
 
+        private static string GetPerformanceCounterInstanceName(int pid)
+        {
+            PerformanceCounterCategory cat = new PerformanceCounterCategory("Process");
+
+            string[] instances = cat.GetInstanceNames();
+            string name = null;
+            foreach (string i in instances)
+            {
+
+                using (PerformanceCounter cnt = new PerformanceCounter("Process",
+                     "ID Process", i, true))
+                {
+                    if ((int)cnt.RawValue == pid)
+                    {
+                        name = i;
+                        break;
+                    }
+                }
+            }
+            // If the instance name is null that means there no performance counter 
+            // instance name for current process. This is truly strange ...
+            return name;            
+        }
+
         private class ProcessWatcher
         {
             private readonly Process _watchedProcess;
             private readonly PerformanceCounter _performanceCounter;
             private bool _isSuspended;
 
-            public ProcessWatcher(Process processToWatch)
+            public ProcessWatcher(Process processToWatch, string performanceCounterInstanceName)
             {
                 this._watchedProcess = processToWatch;
-                // Build the instance name from the pid to get #nb based instance name
-                string instanceName = GetProcessInstanceName(processToWatch.Id);
+                // Build the instance name from the pid to get #nb based instance name                
                 this._performanceCounter = new PerformanceCounter(
                           "Process",
                           "% Processor Time",
-                          instanceName, true);
+                          performanceCounterInstanceName, true);
                 // Init the perf counter 
                 this._performanceCounter.NextValue();
                 this._isSuspended = false;
@@ -259,28 +292,6 @@ namespace ProActiveAgent
                 get { return this._isSuspended; }
                 set { this._isSuspended = value; }
             }
-
-            private static string GetProcessInstanceName(int pid)
-            {
-                PerformanceCounterCategory cat = new PerformanceCounterCategory("Process");
-
-                string[] instances = cat.GetInstanceNames();
-                foreach (string instance in instances)
-                {
-
-                    using (PerformanceCounter cnt = new PerformanceCounter("Process",
-                         "ID Process", instance, true))
-                    {
-                        if ((int)cnt.RawValue == pid)
-                        {
-                            return instance;
-                        }
-                    }
-                }
-                throw new Exception("Could not find performance counter " +
-                    "instance name for current process. This is truly strange ...");
-            }
-
         }
 
         // For test purpose
