@@ -33,9 +33,7 @@
  * ################################################################
  * $$ACTIVEEON_CONTRIBUTOR$$
  */
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Xml.Serialization;
 
 /**
@@ -88,7 +86,7 @@ namespace ConfigParser
         {
             base.fillDefaultJvmParameters(jvmParameters, proactiveLocation);
             // Check 2 locations of the security policy file
-            string location = proactiveLocation + "\\config\\security.java.policy";
+            string location = proactiveLocation + "\\config\\security.java.policy-client";
             // ProActive Scheduling
             if (System.IO.File.Exists(location))
             {

@@ -238,9 +238,5 @@ namespace ConfigParser
                 return this.myClasspath;
             }
         }
-
-        public static void Main(string[] args)
-        {
-        }
     }
 }

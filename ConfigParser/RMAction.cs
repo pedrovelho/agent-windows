@@ -35,6 +35,7 @@
  */
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using System;
 
 /**
  * Action that registers the desktop machine
@@ -139,39 +140,30 @@ namespace ConfigParser
         public override string[] getArgs()
         {
             string urlOpt = "-r " + this.myRmUrl;
-            string nodeNameOpt;
-            if (this.myNodeName == null || this.myNodeName.Equals(""))
-            {
-                nodeNameOpt = "";
-            }
-            else
+            string nodeNameOpt = "";
+            if (this.myNodeName != null && !this.myNodeName.Equals(""))
             {
                 nodeNameOpt = "-n " + this.myNodeName;
             }
-            string nodeSourceNameOpt;
-            if (this.myNodeSourceName == null || this.myNodeSourceName.Equals(""))
-            {
-                nodeSourceNameOpt = "";
-            }
-            else
+
+            string nodeSourceNameOpt = "";
+            if (this.myNodeSourceName != null && !this.myNodeSourceName.Equals(""))
             {
                 nodeSourceNameOpt = "-s " + this.myNodeSourceName;
             }
+
             if (this.myUseDefaultCredential)
             {
                 return new string[] { urlOpt, nodeNameOpt, nodeSourceNameOpt };
             }
             else
             {
-                string credentialLocationOpt;
-                if (this.myCredentialLocation == null || this.myCredentialLocation.Equals(""))
-                {
-                    credentialLocationOpt = "";
-                }
-                else
+                string credentialLocationOpt = "";
+                if (this.myCredentialLocation != null && !this.myCredentialLocation.Equals(""))
                 {
                     credentialLocationOpt = "-f \"" + this.myCredentialLocation + "\"";
                 }
+
                 return new string[] { urlOpt, nodeNameOpt, nodeSourceNameOpt, credentialLocationOpt };
             }
         }
@@ -182,8 +174,8 @@ namespace ConfigParser
             base.fillDefaultJvmParameters(jvmParameters,proactiveLocation);
             jvmParameters.Add("-Dpa.scheduler.home=\"" + proactiveLocation + "\"");
             jvmParameters.Add("-Dpa.rm.home=\"" + proactiveLocation + "\"");
-            jvmParameters.Add("-Djava.security.policy=\"" + proactiveLocation + "\\config\\security.java.policy\"");
+            jvmParameters.Add("-Djava.security.policy=\"" + proactiveLocation + "\\config\\security.java.policy-client\"");
             jvmParameters.Add("-Dlog4j.configuration=\"file:///" + proactiveLocation + "\\config\\log4j\\log4j-client\"");
-        }
+        }        
     }
 }
