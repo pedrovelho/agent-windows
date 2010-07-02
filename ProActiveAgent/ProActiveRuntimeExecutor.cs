@@ -221,12 +221,25 @@ namespace ProActiveAgent
                     jvmParametersBuilder.Append(this.currentProActivePort);
                 }
 
+                bool containsAgentRankProperty = false;
                 // Merge all jvm parameters (user-specified)
                 foreach (string parameter in this.commonStartInfo.jvmParameters)
                 {
                     // Replace all occurences of "${rank}" by the rank of this ProActive Executor
                     jvmParametersBuilder.Append(" " + parameter.Replace("${rank}", "" + this.rank));
+                    // Check for already specified agent rank property
+                    if (parameter.StartsWith(Constants.PROACTIVE_AGENT_RANK_JAVA_PROPERTY)) {
+                        containsAgentRankProperty = true;
+                    }
                 }
+
+                // Add proactive.agent.rank property                
+                if (!containsAgentRankProperty) {
+                    jvmParametersBuilder.Append(" ");
+                    jvmParametersBuilder.Append(Constants.PROACTIVE_AGENT_RANK_JAVA_PROPERTY);
+                    jvmParametersBuilder.Append("=");
+                    jvmParametersBuilder.Append(this.rank);
+                }                
 
                 // Merge all arguments
                 StringBuilder argumentsBuilder = new StringBuilder();

@@ -114,6 +114,9 @@ namespace ProActiveAgent
         /// The name of the ProActive Http Port java property.</summary>
         public const string PROACTIVE_HTTP_PORT_JAVA_PROPERTY = "-Dproactive.http.port";
         /// <summary>
+        /// The name of the ProActive Agent rank java property.</summary>
+        public const string PROACTIVE_AGENT_RANK_JAVA_PROPERTY = "-Dproactive.agent.rank";
+        /// <summary>
         /// The maximum value allowed for the proactive rmi port.</summary>
         public const int MAX_PROACTIVE_RMI_PORT = 65534;
         /// <summary>
