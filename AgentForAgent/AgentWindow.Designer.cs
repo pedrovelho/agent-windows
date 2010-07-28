@@ -309,10 +309,10 @@
             this.proActiveInriaLinkLabel.DisabledLinkColor = System.Drawing.Color.White;
             this.proActiveInriaLinkLabel.Location = new System.Drawing.Point(430, 85);
             this.proActiveInriaLinkLabel.Name = "proActiveInriaLinkLabel";
-            this.proActiveInriaLinkLabel.Size = new System.Drawing.Size(118, 13);
+            this.proActiveInriaLinkLabel.Size = new System.Drawing.Size(113, 13);
             this.proActiveInriaLinkLabel.TabIndex = 9;
             this.proActiveInriaLinkLabel.TabStop = true;
-            this.proActiveInriaLinkLabel.Text = "http://proactive.inria.fr/";
+            this.proActiveInriaLinkLabel.Text = "http://proactive.inria.fr";
             this.proActiveInriaLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.proActiveInriaLinkLabel_LinkClicked);
             // 
             // controlsGroupBox
@@ -364,13 +364,13 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(595, 295);
-            this.Controls.Add(this.documentationLinkLabel);
             this.Controls.Add(this.controlsGroupBox);
+            this.Controls.Add(this.documentationLinkLabel);
             this.Controls.Add(this.logsGroupBox);
+            this.Controls.Add(this.infoGroupBox);
             this.Controls.Add(this.proActiveInriaLinkLabel);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.infoGroupBox);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.proActiveLogoPictureBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;

@@ -242,11 +242,23 @@ namespace ProActiveAgent
             string name = null;
             foreach (string i in instances)
             {
-
+                // Check if the current instance name correspond to the performance counter 
+                // of the wanted process
                 using (PerformanceCounter cnt = new PerformanceCounter("Process",
                      "ID Process", i, true))
                 {
-                    if ((int)cnt.RawValue == pid)
+                    int rawValue = 0;
+                    try
+                    {
+                        rawValue = (int)cnt.RawValue;
+                    }
+                    catch (InvalidOperationException) 
+                    {
+                        // A problem occured when trying to get read the value of the current 
+                        // performance counter ...
+                        continue;
+                    }
+                    if (rawValue == pid)
                     {
                         name = i;
                         break;

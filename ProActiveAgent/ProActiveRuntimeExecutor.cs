@@ -57,7 +57,7 @@ namespace ProActiveAgent
     public class ProActiveRuntimeExecutor
     {
         private const int INITIAL_RESTART_DELAY_IN_MS = 5000;
-        private const int MAX_RESTART_DELAY_IN_MS = 25000;
+        private const int MAX_RESTART_DELAY_IN_MS = 3 * 60 * 1000;
         private const int RESTART_DELAY_INCREMENT_IN_MS = 5000;
 
         /// <summary>

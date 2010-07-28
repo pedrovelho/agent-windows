@@ -125,7 +125,7 @@ namespace AgentForAgent
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.alwaysAvailableCheckBox = new System.Windows.Forms.CheckBox();
             this.eventEditorGroup = new System.Windows.Forms.GroupBox();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.processManagementGroupBox = new System.Windows.Forms.GroupBox();
             this.label20 = new System.Windows.Forms.Label();
             this.maxCpuUsageNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.maxCpuUsageLabel = new System.Windows.Forms.Label();
@@ -149,11 +149,10 @@ namespace AgentForAgent
             this.minutesDuration = new System.Windows.Forms.NumericUpDown();
             this.hoursDuration = new System.Windows.Forms.NumericUpDown();
             this.label11 = new System.Windows.Forms.Label();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.planningGroupBox = new System.Windows.Forms.GroupBox();
             this.showButton = new System.Windows.Forms.Button();
             this.createEventButton = new System.Windows.Forms.Button();
             this.deleteEventButton = new System.Windows.Forms.Button();
-            this.eventsList = new AgentForAgent.RefreshingListBox();
             this.saveConfig = new System.Windows.Forms.Button();
             this.closeConfig = new System.Windows.Forms.Button();
             this.proActiveLocationBrowser = new System.Windows.Forms.FolderBrowserDialog();
@@ -163,6 +162,7 @@ namespace AgentForAgent
             this.scriptLocationOpenDialog = new System.Windows.Forms.OpenFileDialog();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.credentialLocationOpenDialog = new System.Windows.Forms.OpenFileDialog();
+            this.eventsList = new AgentForAgent.RefreshingListBox();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.generalTabPage.SuspendLayout();
@@ -190,7 +190,7 @@ namespace AgentForAgent
             this.customActionGroup.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.eventEditorGroup.SuspendLayout();
-            this.groupBox4.SuspendLayout();
+            this.processManagementGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.maxCpuUsageNumericUpDown)).BeginInit();
             this.startTimeGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.secondStart)).BeginInit();
@@ -201,7 +201,7 @@ namespace AgentForAgent
             ((System.ComponentModel.ISupportInitialize)(this.dayDuration)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.minutesDuration)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.hoursDuration)).BeginInit();
-            this.groupBox2.SuspendLayout();
+            this.planningGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -1118,9 +1118,10 @@ namespace AgentForAgent
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.processManagementGroupBox);
             this.tabPage2.Controls.Add(this.alwaysAvailableCheckBox);
             this.tabPage2.Controls.Add(this.eventEditorGroup);
-            this.tabPage2.Controls.Add(this.groupBox2);
+            this.tabPage2.Controls.Add(this.planningGroupBox);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
@@ -1132,47 +1133,45 @@ namespace AgentForAgent
             // alwaysAvailableCheckBox
             // 
             this.alwaysAvailableCheckBox.AutoSize = true;
-            this.alwaysAvailableCheckBox.Location = new System.Drawing.Point(488, 351);
+            this.alwaysAvailableCheckBox.Location = new System.Drawing.Point(564, 348);
             this.alwaysAvailableCheckBox.Name = "alwaysAvailableCheckBox";
-            this.alwaysAvailableCheckBox.Size = new System.Drawing.Size(180, 17);
+            this.alwaysAvailableCheckBox.Size = new System.Drawing.Size(104, 17);
             this.alwaysAvailableCheckBox.TabIndex = 18;
-            this.alwaysAvailableCheckBox.Text = "Always available (Normal Priority)";
-            this.toolTip.SetToolTip(this.alwaysAvailableCheckBox, "No weekly planning, the ProActive Agent will be always available. with no CPU lim" +
-                    "itation and a Normal priority. ");
+            this.alwaysAvailableCheckBox.Text = "Always available";
+            this.toolTip.SetToolTip(this.alwaysAvailableCheckBox, "No weekly planning, the ProActive Agent will be always available.");
             this.alwaysAvailableCheckBox.UseVisualStyleBackColor = true;
             this.alwaysAvailableCheckBox.CheckStateChanged += new System.EventHandler(this.alwaysAvailableCheckBox_CheckStateChanged);
             // 
             // eventEditorGroup
             // 
-            this.eventEditorGroup.Controls.Add(this.groupBox4);
             this.eventEditorGroup.Controls.Add(this.startTimeGroupBox);
             this.eventEditorGroup.Controls.Add(this.durationGroupBox);
             this.eventEditorGroup.Enabled = false;
             this.eventEditorGroup.Location = new System.Drawing.Point(259, 3);
             this.eventEditorGroup.Name = "eventEditorGroup";
-            this.eventEditorGroup.Size = new System.Drawing.Size(409, 192);
+            this.eventEditorGroup.Size = new System.Drawing.Size(409, 133);
             this.eventEditorGroup.TabIndex = 1;
             this.eventEditorGroup.TabStop = false;
             this.eventEditorGroup.Text = "Plan Editor";
             // 
-            // groupBox4
+            // processManagementGroupBox
             // 
-            this.groupBox4.Controls.Add(this.label20);
-            this.groupBox4.Controls.Add(this.maxCpuUsageNumericUpDown);
-            this.groupBox4.Controls.Add(this.maxCpuUsageLabel);
-            this.groupBox4.Controls.Add(this.processPriorityLabel);
-            this.groupBox4.Controls.Add(this.processPriorityComboBox);
-            this.groupBox4.Location = new System.Drawing.Point(6, 133);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(397, 51);
-            this.groupBox4.TabIndex = 20;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Process Management";
+            this.processManagementGroupBox.Controls.Add(this.label20);
+            this.processManagementGroupBox.Controls.Add(this.maxCpuUsageNumericUpDown);
+            this.processManagementGroupBox.Controls.Add(this.maxCpuUsageLabel);
+            this.processManagementGroupBox.Controls.Add(this.processPriorityLabel);
+            this.processManagementGroupBox.Controls.Add(this.processPriorityComboBox);
+            this.processManagementGroupBox.Location = new System.Drawing.Point(259, 142);
+            this.processManagementGroupBox.Name = "processManagementGroupBox";
+            this.processManagementGroupBox.Size = new System.Drawing.Size(409, 51);
+            this.processManagementGroupBox.TabIndex = 20;
+            this.processManagementGroupBox.TabStop = false;
+            this.processManagementGroupBox.Text = "Process Management";
             // 
             // label20
             // 
             this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(376, 22);
+            this.label20.Location = new System.Drawing.Point(382, 22);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(15, 13);
             this.label20.TabIndex = 4;
@@ -1180,7 +1179,7 @@ namespace AgentForAgent
             // 
             // maxCpuUsageNumericUpDown
             // 
-            this.maxCpuUsageNumericUpDown.Location = new System.Drawing.Point(321, 20);
+            this.maxCpuUsageNumericUpDown.Location = new System.Drawing.Point(327, 20);
             this.maxCpuUsageNumericUpDown.Minimum = new decimal(new int[] {
             1,
             0,
@@ -1192,7 +1191,7 @@ namespace AgentForAgent
             this.toolTip.SetToolTip(this.maxCpuUsageNumericUpDown, "Specifies the maximum allowed CPU usage of the Runtime process and its children p" +
                     "rocesses during this plan.");
             this.maxCpuUsageNumericUpDown.Value = new decimal(new int[] {
-            1,
+            100,
             0,
             0,
             0});
@@ -1201,7 +1200,7 @@ namespace AgentForAgent
             // maxCpuUsageLabel
             // 
             this.maxCpuUsageLabel.AutoSize = true;
-            this.maxCpuUsageLabel.Location = new System.Drawing.Point(223, 22);
+            this.maxCpuUsageLabel.Location = new System.Drawing.Point(229, 22);
             this.maxCpuUsageLabel.Name = "maxCpuUsageLabel";
             this.maxCpuUsageLabel.Size = new System.Drawing.Size(92, 13);
             this.maxCpuUsageLabel.TabIndex = 2;
@@ -1228,7 +1227,7 @@ namespace AgentForAgent
             "AboveNormal"});
             this.processPriorityComboBox.Location = new System.Drawing.Point(94, 19);
             this.processPriorityComboBox.Name = "processPriorityComboBox";
-            this.processPriorityComboBox.Size = new System.Drawing.Size(102, 21);
+            this.processPriorityComboBox.Size = new System.Drawing.Size(108, 21);
             this.processPriorityComboBox.TabIndex = 0;
             this.toolTip.SetToolTip(this.processPriorityComboBox, "Specifies the priority of the Runtime process and its children processes during t" +
                     "his plan.");
@@ -1457,18 +1456,18 @@ namespace AgentForAgent
             this.label11.TabIndex = 13;
             this.label11.Text = "Minutes:";
             // 
-            // groupBox2
+            // planningGroupBox
             // 
-            this.groupBox2.Controls.Add(this.showButton);
-            this.groupBox2.Controls.Add(this.createEventButton);
-            this.groupBox2.Controls.Add(this.deleteEventButton);
-            this.groupBox2.Controls.Add(this.eventsList);
-            this.groupBox2.Location = new System.Drawing.Point(3, 3);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(247, 362);
-            this.groupBox2.TabIndex = 0;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Weekly Planning";
+            this.planningGroupBox.Controls.Add(this.showButton);
+            this.planningGroupBox.Controls.Add(this.createEventButton);
+            this.planningGroupBox.Controls.Add(this.deleteEventButton);
+            this.planningGroupBox.Controls.Add(this.eventsList);
+            this.planningGroupBox.Location = new System.Drawing.Point(3, 3);
+            this.planningGroupBox.Name = "planningGroupBox";
+            this.planningGroupBox.Size = new System.Drawing.Size(247, 362);
+            this.planningGroupBox.TabIndex = 0;
+            this.planningGroupBox.TabStop = false;
+            this.planningGroupBox.Text = "Weekly Planning";
             // 
             // showButton
             // 
@@ -1502,16 +1501,6 @@ namespace AgentForAgent
             this.toolTip.SetToolTip(this.deleteEventButton, "Deletes a selected plan.");
             this.deleteEventButton.UseVisualStyleBackColor = true;
             this.deleteEventButton.Click += new System.EventHandler(this.deleteEventButton_Click);
-            // 
-            // eventsList
-            // 
-            this.eventsList.FormattingEnabled = true;
-            this.eventsList.Location = new System.Drawing.Point(6, 19);
-            this.eventsList.Name = "eventsList";
-            this.eventsList.Size = new System.Drawing.Size(235, 303);
-            this.eventsList.TabIndex = 0;
-            this.toolTip.SetToolTip(this.eventsList, "The list of weekly plans.");
-            this.eventsList.SelectedIndexChanged += new System.EventHandler(this.eventsList_SelectedIndexChanged);
             // 
             // saveConfig
             // 
@@ -1565,6 +1554,16 @@ namespace AgentForAgent
             this.credentialLocationOpenDialog.DefaultExt = "cred";
             this.credentialLocationOpenDialog.Filter = "Credentials .cred|*.cred";
             // 
+            // eventsList
+            // 
+            this.eventsList.FormattingEnabled = true;
+            this.eventsList.Location = new System.Drawing.Point(6, 19);
+            this.eventsList.Name = "eventsList";
+            this.eventsList.Size = new System.Drawing.Size(235, 303);
+            this.eventsList.TabIndex = 0;
+            this.toolTip.SetToolTip(this.eventsList, "The list of weekly plans.");
+            this.eventsList.SelectedIndexChanged += new System.EventHandler(this.eventsList_SelectedIndexChanged);
+            // 
             // ConfigurationEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1581,8 +1580,8 @@ namespace AgentForAgent
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Configuration Editor";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ConfigEditor_FormClosing);
             this.Load += new System.EventHandler(this.ConfigEditor_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ConfigEditor_FormClosing);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.tabControl1.ResumeLayout(false);
@@ -1625,8 +1624,8 @@ namespace AgentForAgent
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
             this.eventEditorGroup.ResumeLayout(false);
-            this.groupBox4.ResumeLayout(false);
-            this.groupBox4.PerformLayout();
+            this.processManagementGroupBox.ResumeLayout(false);
+            this.processManagementGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.maxCpuUsageNumericUpDown)).EndInit();
             this.startTimeGroupBox.ResumeLayout(false);
             this.startTimeGroupBox.PerformLayout();
@@ -1639,7 +1638,7 @@ namespace AgentForAgent
             ((System.ComponentModel.ISupportInitialize)(this.dayDuration)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.minutesDuration)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.hoursDuration)).EndInit();
-            this.groupBox2.ResumeLayout(false);
+            this.planningGroupBox.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1657,7 +1656,7 @@ namespace AgentForAgent
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.Button saveConfig;
         private System.Windows.Forms.Button closeConfig;
-        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.GroupBox planningGroupBox;
         private RefreshingListBox eventsList;
         private System.Windows.Forms.GroupBox eventEditorGroup;
         private System.Windows.Forms.Label label6;
@@ -1698,7 +1697,7 @@ namespace AgentForAgent
         private System.Windows.Forms.GroupBox durationGroupBox;
         private System.Windows.Forms.GroupBox startTimeGroupBox;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.GroupBox processManagementGroupBox;
         private System.Windows.Forms.Label processPriorityLabel;
         private System.Windows.Forms.ComboBox processPriorityComboBox;
         private System.Windows.Forms.CheckBox enableMemoryManagementCheckBox;

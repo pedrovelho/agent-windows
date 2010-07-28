@@ -112,20 +112,32 @@ namespace AgentForAgent
             // Load events from the configuration //
             ////////////////////////////////////////            
 
-            foreach (CalendarEvent ev in this.configuration.events)
-            {
-                CalendarEvent cEv = (CalendarEvent)ev;
-                this.eventsList.Items.Add(cEv);
-                if (cEv.isAlwaysAvailable())
-                {
-                    this.alwaysAvailableCheckBox.Checked = true;
-                }
-            }
-
             // Init default values for list boxes
             this.weekdayStart.SelectedIndex = 0;
             this.processPriorityComboBox.SelectedIndex = 0;
             this.maxCpuUsageNumericUpDown.Value = this.maxCpuUsageNumericUpDown.Maximum;
+
+            // Load config events in the GUI
+            foreach (CalendarEvent ev in this.configuration.events)
+            {
+                CalendarEvent cEv = (CalendarEvent)ev;
+                int index = this.eventsList.Items.Add(cEv);
+
+                // Check for always available 
+                if (cEv.isAlwaysAvailable())
+                {
+                    this.alwaysAvailableCheckBox.Checked = true;
+                    this.processPriorityComboBox.SelectedItem = Enum.GetName(typeof(ProcessPriorityClass), cEv.processPriority);
+                    this.maxCpuUsageNumericUpDown.Value = cEv.maxCpuUsage;
+                    this.eventsList.SelectedIndex = index;
+
+                    // Disable all other controls
+                    this.eventEditorGroup.Enabled = false;
+                    this.eventsList.Enabled = false;
+                    this.createEventButton.Enabled = false;
+                    this.deleteEventButton.Enabled = false;
+                }
+            }
 
             // Init default values for ProActive Communication Protocol and Port
             this.protocolComboBox.SelectedItem = Enum.GetName(typeof(ProActiveCommunicationProtocol), conf.agentConfig.runtimeIncomingProtocol);
@@ -745,7 +757,8 @@ namespace AgentForAgent
 
                 if (!isExist)
                 {
-                    //--We create the event if it doesnt exist
+                    // The always available event is a full week
+                    // with by default a normal process priority and 100% max CPU usage
                     CalendarEvent cEv = new CalendarEvent();
                     cEv.startHour = 0;
                     cEv.startMinute = 0;
@@ -756,14 +769,18 @@ namespace AgentForAgent
                     cEv.durationMinutes = 59;
                     cEv.durationSeconds = 59;
 
-                    this.eventsList.Items.Add(cEv);
+                    this.processPriorityComboBox.SelectedIndex = 0;
+                    this.maxCpuUsageNumericUpDown.Value = this.maxCpuUsageNumericUpDown.Maximum; 
+
+                    int index = this.eventsList.Items.Add(cEv);
+                    this.eventsList.SelectedIndex = index;
                 }
 
-                // Disable buttons and group boxes                
+                // Disable buttons and group boxes
                 this.eventEditorGroup.Enabled = false;
-                eventsList.Enabled = false;
-                createEventButton.Enabled = false;
-                deleteEventButton.Enabled = false;
+                this.eventsList.Enabled = false;
+                this.createEventButton.Enabled = false;
+                this.deleteEventButton.Enabled = false;
             }
             else
             {
