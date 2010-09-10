@@ -82,14 +82,14 @@
             this.configLocation.Location = new System.Drawing.Point(140, 18);
             this.configLocation.Name = "configLocation";
             this.configLocation.ReadOnly = true;
-            this.configLocation.Size = new System.Drawing.Size(339, 20);
+            this.configLocation.Size = new System.Drawing.Size(350, 20);
             this.configLocation.TabIndex = 1;
             this.configLocation.Text = "C:\\PAAgent-config.xml";
             this.configLocation.TextChanged += new System.EventHandler(this.configLocation_TextChanged);
             // 
             // browse
             // 
-            this.browse.Location = new System.Drawing.Point(487, 16);
+            this.browse.Location = new System.Drawing.Point(496, 16);
             this.browse.Name = "browse";
             this.browse.Size = new System.Drawing.Size(75, 23);
             this.browse.TabIndex = 2;
@@ -104,16 +104,16 @@
             this.groupBox1.Controls.Add(this.textEditConfig);
             this.groupBox1.Controls.Add(this.browse);
             this.groupBox1.Controls.Add(this.configurationFileLocationLabel);
-            this.groupBox1.Location = new System.Drawing.Point(12, 117);
+            this.groupBox1.Location = new System.Drawing.Point(9, 117);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(568, 81);
+            this.groupBox1.Size = new System.Drawing.Size(577, 81);
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Settings";
             // 
             // guiEditButton
             // 
-            this.guiEditButton.Location = new System.Drawing.Point(404, 48);
+            this.guiEditButton.Location = new System.Drawing.Point(415, 48);
             this.guiEditButton.Name = "guiEditButton";
             this.guiEditButton.Size = new System.Drawing.Size(75, 23);
             this.guiEditButton.TabIndex = 3;
@@ -123,7 +123,7 @@
             // 
             // textEditConfig
             // 
-            this.textEditConfig.Location = new System.Drawing.Point(487, 48);
+            this.textEditConfig.Location = new System.Drawing.Point(496, 48);
             this.textEditConfig.Name = "textEditConfig";
             this.textEditConfig.Size = new System.Drawing.Size(75, 23);
             this.textEditConfig.TabIndex = 2;
@@ -137,9 +137,9 @@
             this.infoGroupBox.Controls.Add(this.agentStatusValue);
             this.infoGroupBox.Controls.Add(this.spawnedRuntimesLabel);
             this.infoGroupBox.Controls.Add(this.agentStatusLabel);
-            this.infoGroupBox.Location = new System.Drawing.Point(12, 204);
+            this.infoGroupBox.Location = new System.Drawing.Point(9, 204);
             this.infoGroupBox.Name = "infoGroupBox";
-            this.infoGroupBox.Size = new System.Drawing.Size(186, 81);
+            this.infoGroupBox.Size = new System.Drawing.Size(189, 81);
             this.infoGroupBox.TabIndex = 3;
             this.infoGroupBox.TabStop = false;
             this.infoGroupBox.Text = "Info";
@@ -192,7 +192,7 @@
             // 
             // stopService
             // 
-            this.stopService.Location = new System.Drawing.Point(104, 48);
+            this.stopService.Location = new System.Drawing.Point(110, 48);
             this.stopService.Name = "stopService";
             this.stopService.Size = new System.Drawing.Size(75, 23);
             this.stopService.TabIndex = 2;
@@ -202,7 +202,7 @@
             // 
             // startService
             // 
-            this.startService.Location = new System.Drawing.Point(104, 19);
+            this.startService.Location = new System.Drawing.Point(110, 19);
             this.startService.Name = "startService";
             this.startService.Size = new System.Drawing.Size(75, 23);
             this.startService.TabIndex = 2;
@@ -215,10 +215,10 @@
             this.proActiveLogoPictureBox.BackColor = System.Drawing.Color.White;
             this.proActiveLogoPictureBox.Image = ((System.Drawing.Image)(resources.GetObject("proActiveLogoPictureBox.Image")));
             this.proActiveLogoPictureBox.InitialImage = ((System.Drawing.Image)(resources.GetObject("proActiveLogoPictureBox.InitialImage")));
-            this.proActiveLogoPictureBox.Location = new System.Drawing.Point(12, 12);
+            this.proActiveLogoPictureBox.Location = new System.Drawing.Point(9, 12);
             this.proActiveLogoPictureBox.Margin = new System.Windows.Forms.Padding(0);
             this.proActiveLogoPictureBox.Name = "proActiveLogoPictureBox";
-            this.proActiveLogoPictureBox.Size = new System.Drawing.Size(568, 102);
+            this.proActiveLogoPictureBox.Size = new System.Drawing.Size(577, 102);
             this.proActiveLogoPictureBox.TabIndex = 4;
             this.proActiveLogoPictureBox.TabStop = false;
             // 
@@ -230,7 +230,7 @@
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(105, 13);
             this.label3.TabIndex = 6;
-            this.label3.Text = "ProActiveAgent v2.1";
+            this.label3.Text = "ProActiveAgent v2.2";
             // 
             // label4
             // 
@@ -321,7 +321,7 @@
             this.controlsGroupBox.Controls.Add(this.stopService);
             this.controlsGroupBox.Location = new System.Drawing.Point(395, 204);
             this.controlsGroupBox.Name = "controlsGroupBox";
-            this.controlsGroupBox.Size = new System.Drawing.Size(185, 81);
+            this.controlsGroupBox.Size = new System.Drawing.Size(191, 81);
             this.controlsGroupBox.TabIndex = 10;
             this.controlsGroupBox.TabStop = false;
             this.controlsGroupBox.Text = "Controls";

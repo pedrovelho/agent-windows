@@ -43,10 +43,10 @@ using System.Xml.Serialization;
  * Contains information about runner scripts, 
  * events and action to take
  */
-namespace ConfigParser
+namespace ConfigParserOLD
 {
     [XmlRoot("agent")]
-    public class Configuration
+    public class ConfigurationOLD
     {
         // Configuration of runner script for launching ProActive        
         private AgentConfig _agentConfig;        
@@ -61,7 +61,7 @@ namespace ConfigParser
         private string _agentInstallLocation;
 
         // Public constructor
-        public Configuration(){
+        public ConfigurationOLD(){
             this._events = new List<CalendarEvent>();
         }
 
@@ -122,11 +122,11 @@ namespace ConfigParser
             }
         }
 
-        public ConfigParser.Action getSelectedAction()
+        public Action getSelectedAction()
         {
             // Find enabled action, ONLY ONE ACTION CAN BE ENABLED
-            ConfigParser.Action enabledAction = null;
-            foreach (ConfigParser.Action action in this.actions)
+            Action enabledAction = null;
+            foreach (Action action in this.actions)
             {
                 if (action.isEnabled)
                 {

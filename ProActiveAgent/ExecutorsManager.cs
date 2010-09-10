@@ -48,12 +48,12 @@ using Microsoft.Win32;
 
 namespace ProActiveAgent
 {
-    public class ExecutorsManager
+    sealed class ExecutorsManager
     {
         private static readonly ILog LOGGER = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private const int WEEK_DELAY = 3600 * 24 * 7 * 1000;
-        private const int BARRIER_SAFETY_MARGIN_MS = 15000;
+        private static TimeSpan WEEK_DELAY = new TimeSpan(7,0,0,0);
+        private static int BARRIER_SAFETY_MARGIN_MS = 15000;
         // The barrier a safety margin interval    
         private static TimeSpan SAFETY_MARGIN_TIMESPAN = new TimeSpan(0, 0, 0, 0, BARRIER_SAFETY_MARGIN_MS);
         // start - action timers
@@ -65,19 +65,19 @@ namespace ProActiveAgent
         private readonly List<ProActiveRuntimeExecutor> proActiveRuntimeExecutors;
 
         // The constructor should be called only during starting the service
-        public ExecutorsManager(Configuration configuration)
+        public ExecutorsManager(AgentType configuration)
         {
             // Get the runtime common start info shared between all executors
             CommonStartInfo commonStartInfo = new CommonStartInfo(configuration);
 
             // The configuration specifies the number of executors
-            int nbProcesses = configuration.agentConfig.useAllCPUs ? Environment.ProcessorCount : configuration.agentConfig.nbProcesses;
+            int nbProcesses = configuration.config.nbRuntimes == 0 ? Environment.ProcessorCount : configuration.config.nbRuntimes;
             LOGGER.Info("Creating " + nbProcesses + " executors.");
 
             this.proActiveRuntimeExecutors = new List<ProActiveRuntimeExecutor>(nbProcesses);
 
             // Get the initial value for the ProActive Rmi Port specified in the configuration
-            int lastProActiveRmiPort = configuration.agentConfig.proActiveCommunicationPortInitialValue;
+            int lastProActiveRmiPort = configuration.config.portRange.first;
 
             // Create as many executors as specified in the configuration
             for (int rank = 0; rank < nbProcesses; rank++)
@@ -110,67 +110,91 @@ namespace ProActiveAgent
             // Create the start/stop timers for scheduled events
             this.startTimers = new List<Timer>();
             this.stopTimers = new List<Timer>();
+            
+            // Fix the current time (usefull when there is a lot of events)            
+            DateTime currentFixedTime = DateTime.Now;
+            int currentDayOfWeek = (int)currentFixedTime.DayOfWeek;
 
-            if (LOGGER.IsDebugEnabled)
+            foreach (CalendarEventType cEvent in configuration.events)
             {
-                LOGGER.Debug("Loading events in the Executors Manager.");
-            }
 
-            // Get the current date time
-            DateTime currentTime = System.DateTime.Now;
+                // for each calendar event we calculate remaining time to start and stop service
+                // and according to that register timers                     
 
-            foreach (CalendarEvent e in configuration.events)
-            {
-                if (e is CalendarEvent)
+                // we provide the day of the week to present start time
+                // the algorithm to count next start is as follows:
+                // 1. how many days are to start action
+                // 2. we add this amount to the current date
+                // 3. we create time event that will be the exact start time (taking year, month and
+                //    day from the current date and other fields from configuration
+                // 4. we keep duration of task
+                // 5. we count due time for beginning and stopping the task
+                // 6. if time is negative, we move it into next week (to avoid waiting for past events)
+
+                int eventDayOfWeek = (int)cEvent.start.day;
+                int daysAhead = dayDifference(currentDayOfWeek, eventDayOfWeek);
+
+                DateTime startTime = currentFixedTime.AddDays(daysAhead);
+
+                // Absolute start time
+                DateTime absoluteStartTime = new DateTime(startTime.Year, startTime.Month, startTime.Day,
+                    cEvent.start.hour, cEvent.start.minute, cEvent.start.second);
+
+                // Delay to wait until start
+                TimeSpan delayUntilStart = absoluteStartTime - currentFixedTime;
+
+                // Get the time span duration
+                TimeSpan duration = new TimeSpan(cEvent.duration.days, cEvent.duration.hours, cEvent.duration.minutes,
+                                    cEvent.duration.seconds);
+
+                // Delay to wait until stop
+                TimeSpan delayUntilStop = delayUntilStart.Add(duration);
+
+                // Absolute stop time
+                DateTime absoluteStopTime = absoluteStartTime.Add(duration);
+                
+                // Check if we need to start immidiately
+                bool startNow = (delayUntilStart < TimeSpan.Zero && delayUntilStop > TimeSpan.Zero);
+
+                if (delayUntilStart < TimeSpan.Zero)
                 {
-                    // for each calendar event we calculate remaining time to start and stop service
-                    // and according to that register timers                     
-                    CalendarEvent cEvent = (CalendarEvent)e;
-                    // we provide the day of the week to present start time
-                    // the algorithm to count next start is as follows:
-                    // 1. how many days are to start action
-                    // 2. we add this amount to the current date
-                    // 3. we create time event that will be the exact start time (taking year, month and
-                    //    day from the current date and other fields from configuration
-                    // 4. we keep duration of task
-                    // 5. we count due time for beginning and stopping the task
-                    // 6. if time is negative, we move it into next week (to avoid waiting for past events)
-                    int daysAhead = dayDifference(resolveDayOfWeek(currentTime.DayOfWeek), cEvent.resolveDay());
-                    DateTime startTime = currentTime.AddDays(daysAhead);
-
-                    DateTime accurateStartTime = new DateTime(startTime.Year, startTime.Month, startTime.Day,
-                        cEvent.startHour, cEvent.startMinute, cEvent.startSecond);
-                    TimeSpan duration = new TimeSpan(cEvent.durationDays, cEvent.durationHours, cEvent.durationMinutes,
-                                                        cEvent.durationSeconds);
-                    if (LOGGER.IsDebugEnabled)
-                    {
-                        LOGGER.Debug("Loading CalendardEvent " + accurateStartTime.ToString() + " -> " + accurateStartTime.Add(duration).ToString());
-                    }
-                    // Get the due time for timers
-                    long dueStart = countDelay((accurateStartTime - currentTime));
-                    long dueStop = countDelay((accurateStartTime - currentTime).Add(duration));
-                    // if now we are in the middle of the event just start
-                    bool startNow = (dueStart < 0 && dueStop > 0);
-                    if (dueStart < 0)
-                        dueStart += WEEK_DELAY;
-                    if (dueStop < 0)
-                        dueStop += WEEK_DELAY;
-
-                    StartActionInfo startInfo = new StartActionInfo(commonStartInfo.selectedAction, accurateStartTime.Add(duration), cEvent.processPriority, cEvent.maxCpuUsage);
-
-                    // timer registration
-                    Timer startT = new Timer(new TimerCallback(mySendStartAction), startInfo, dueStart, WEEK_DELAY);
-                    Timer stopT = new Timer(new TimerCallback(mySendStopAction), null, dueStop, WEEK_DELAY);
-
-                    this.startTimers.Add(startT);
-                    this.stopTimers.Add(stopT);
-
-                    if (startNow)
-                    {
-                        this.mySendStartAction(startInfo);
-                    }
+                    delayUntilStart = delayUntilStart.Add(WEEK_DELAY);
                 }
-                // Only a single type of event
+
+                if (delayUntilStop < TimeSpan.Zero)
+                {
+                    delayUntilStop = delayUntilStop.Add(WEEK_DELAY);
+                }
+
+                StartActionInfo startInfo = new StartActionInfo(
+                    commonStartInfo.enabledConnection,
+                    absoluteStopTime,
+                    cEvent.config.processPriority,
+                    cEvent.config.maxCpuUsage);
+
+                if (LOGGER.IsDebugEnabled)
+                {
+                    LOGGER.Debug("Loading weekly event " + absoluteStartTime.DayOfWeek + " - " +
+                        absoluteStartTime.Hour + ":" +
+                        absoluteStartTime.Minute + ":" +
+                        absoluteStartTime.Second + " => " + absoluteStopTime.DayOfWeek + " - " +
+                        absoluteStopTime.Hour + ":" +
+                        absoluteStopTime.Minute + ":" +
+                        absoluteStopTime.Second);
+                }
+
+                // After dueStart milliseconds this timer will invoke only once per week the callback
+                Timer startT = new Timer(new TimerCallback(mySendStartAction), startInfo, delayUntilStart, WEEK_DELAY);
+                this.startTimers.Add(startT);
+
+                // After dueStop milliseconds this timer will invoke only once per week the callback
+                Timer stopT = new Timer(new TimerCallback(mySendStopAction), null, delayUntilStop, WEEK_DELAY);
+                this.stopTimers.Add(stopT);
+
+                if (startNow)
+                {
+                    this.mySendStartAction(startInfo);
+                }
             }
         }
 
@@ -187,7 +211,7 @@ namespace ProActiveAgent
 
             while (stopTime < DateTime.Now)
             {
-                stopTime = stopTime.AddMilliseconds(WEEK_DELAY);
+                stopTime = stopTime.Add(WEEK_DELAY);
             }
 
             foreach (ProActiveRuntimeExecutor p in this.proActiveRuntimeExecutors)
@@ -214,32 +238,6 @@ namespace ProActiveAgent
                 p.restartBarrierDateTime = System.DateTime.Now;
                 p.sendStopAction(ApplicationType.AgentScheduler);
             }
-        }
-
-        // we count a number of milliseconds in a given timespan
-        private long countDelay(TimeSpan timeSpan)
-        {
-            return timeSpan.Days * 86400000L + timeSpan.Hours * 3600000L + timeSpan.Minutes * 60000L + timeSpan.Seconds * 1000L + timeSpan.Milliseconds;
-        }
-
-        // resolving from .NET API enumeration to meaningful numbers
-        private int resolveDayOfWeek(DayOfWeek dow)
-        {
-            if (dow == DayOfWeek.Friday)
-                return 5;
-            if (dow == DayOfWeek.Monday)
-                return 1;
-            if (dow == DayOfWeek.Saturday)
-                return 6;
-            if (dow == DayOfWeek.Sunday)
-                return 0;
-            if (dow == DayOfWeek.Thursday)
-                return 4;
-            if (dow == DayOfWeek.Tuesday)
-                return 2;
-            if (dow == DayOfWeek.Wednesday)
-                return 3;
-            return -1;
         }
 
         // counting day difference

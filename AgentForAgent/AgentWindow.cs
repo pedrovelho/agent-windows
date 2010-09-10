@@ -290,25 +290,21 @@ namespace AgentForAgent
             p.Start();
         }
 
-        private void browse_Click(object sender, EventArgs e)
+        private void browse_Click(object sender, EventArgs args)
         {
             browseConfig.FileName = configLocation.Text;
             browseConfig.Filter = "Xml File|*.xml";
             browseConfig.ShowDialog();
             configLocation.Text = browseConfig.FileName;
-
-            //validate the config file 
+            
+            // Try to validate against current version schema
             try
-            {
-                bool valid = ConfigurationParser.validateXMLFile(configLocation.Text, agentLocation);
-                if (!valid)
-                {
-                    MessageBox.Show("The selected file does not comply with the schema. The Agent will probably not work. You can edit the file in the text editor or the graphical one.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
+            {                
+                ConfigurationParser.validateXMLFile(configLocation.Text, agentLocation);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                MessageBox.Show("The selected file is not a correct xml file. The Agent will probably not work. You can edit the file in the text editor or the graphical one.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("The selected file is not a valid xml file du to " + e.Message + " The Agent will probably not work. You can edit the file in the text editor or the graphical one.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
@@ -350,7 +346,7 @@ namespace AgentForAgent
         {
             try
             {
-                Configuration conf = ConfigurationParser.parseXml(configLocation.Text, agentLocation);
+                AgentType conf = ConfigurationParser.parseXml(configLocation.Text, agentLocation);
                 window = new ConfigurationEditor(conf, configLocation.Text, agentLocation, this);
                 window.ShowDialog();
             }

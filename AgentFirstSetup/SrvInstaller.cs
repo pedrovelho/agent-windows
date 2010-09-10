@@ -43,7 +43,7 @@ namespace AgentFirstSetup
     /// <summary>
     /// Summary description for ServiceInstaller.
     /// </summary>
-    class SrvInstaller
+    sealed class SrvInstaller
     {
 
         #region DLLImport

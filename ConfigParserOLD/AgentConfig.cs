@@ -39,7 +39,7 @@ using System.Xml.Serialization;
 /**
  * Configuration related utilities.
  */
-namespace ConfigParser
+namespace ConfigParserOLD
 {
     /// <summary>
     /// Enumeration type of ProActive Agent running type.

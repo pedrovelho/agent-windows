@@ -101,22 +101,22 @@ namespace AgentForAgent
             }
         }
 
-        public void loadEvents(List<CalendarEvent> eventsList)
+        public void loadEvents(List<CalendarEventType> eventsList)
         {
             rects.Clear();
-            foreach (CalendarEvent ev in eventsList)
+            foreach (CalendarEventType ev in eventsList)
             {
-                CalendarEvent cEv = (CalendarEvent)ev;
+                CalendarEventType cEv = (CalendarEventType)ev;
 
                 //--Start
                 int dayTimeslot = 43 + cEv.resolveDay() * 35;
-                int startTimeslot = (30 + (10 * cEv.startHour)) + ((cEv.startMinute * 10) / 60);
+                int startTimeslot = (30 + (10 * cEv.start.hour)) + ((cEv.start.minute * 10) / 60);
 
 
                 //--Duration
-                int timeRemain = 1440 - (cEv.startHour * 60) - cEv.startMinute;
+                int timeRemain = 1440 - (cEv.start.hour * 60) - cEv.start.minute;
                 //--On compare le nb de min qu'il reste avec le nb de minute d'une journée
-                int duration = (cEv.durationDays * 1440) + (cEv.durationHours * 60) + cEv.durationMinutes;
+                int duration = (cEv.duration.days * 1440) + (cEv.duration.hours * 60) + cEv.duration.minutes;
                 int heightBar = 0;
 
                 if (duration <= timeRemain)

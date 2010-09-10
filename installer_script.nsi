@@ -5,8 +5,8 @@
 
 CRCCheck on
 
-Name "ProActive Agent"
-OutFile ProActiveAgent-setup-v2.1.exe
+Name "ProActive Agent 2.2"
+OutFile ProActiveAgent-setup-v2.2.exe
 
 LicenseText "This program is Licensed under the GNU General Public License (GPL)."
 LicenseData "LICENSE.txt"
@@ -284,12 +284,12 @@ Section "ProActive Agent"
         ;-----------------------------------------------------------------------------------
         File "LICENSE.txt"
         File "bin\Release\ConfigParser.dll"
+        File "bin\Release\ConfigParserOLD.dll"
         File "bin\Release\ProActiveAgent.exe"
         File "bin\Release\AgentFirstSetup.exe"
         File "utils\icon.ico"
         File "utils\ListNetworkInterfaces.class"
         File "ProActive Agent Documentation.pdf"
-        File "ConfigParser\config.xsd"
         File "ProActiveAgent\lib\log4net.dll"
         File "ProActiveAgent\log4net.config"
         File "ProActiveAgent\lib\InJobProcessCreator.exe"
@@ -312,6 +312,10 @@ Section "ProActive Agent"
         SetOutPath $INSTDIR\config
         File "utils\PAAgent-config-planning-day-only.xml"
         File "utils\PAAgent-config-planning-night-we.xml"
+        SetOutPath $INSTDIR\xml
+        File "utils\xml\agent-windows.xsd"
+        File "utils\xml\agent-common.xsd"
+        File "utils\xml\agent-old.xsd"
 
         ;-----------------------------------------------------------------------------------
         ; The agent requires the following reg sub-key to know its default configuration
@@ -421,9 +425,9 @@ Section "Start Menu Shortcuts"
         SetShellVarContext current ; reset to current user
 
         ;; Ask user if he wants to run Agent GUI
-        MessageBox MB_YESNO "Run ProActive Agent Control ?" /SD IDYES IDNO endActiveSync
+        MessageBox MB_YESNO "Run ProActive Agent Control and exit installer?" /SD IDYES IDNO endActiveSync
           Exec "$INSTDIR\AgentForAgent.exe"
-          Goto endActiveSync
+          Quit
          endActiveSync:
 SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -481,10 +485,14 @@ Section "Uninstall"
        	;-----------------------------------------------------------------------------------
 	; Remove all known files except config directory from $INSTDIR
 	;-----------------------------------------------------------------------------------
+        Delete "$INSTDIR\xml\agent-windows.xsd"
+        Delete "$INSTDIR\xml\agent-common.xsd"
+        Delete "$INSTDIR\xml\agent-old.xsd"
+	RMDir /r "$INSTDIR\xml"
         Delete "ConfigParser.dll"
+        Delete "ConfigParserOLD.dll"
         Delete "ProActiveAgent.exe"
         Delete "AgentFirstSetup.exe"
-        Delete "config.xsd"
         Delete "log4net.dll"
         Delete "log4net.config"
         Delete "InJobProcessCreator.exe"

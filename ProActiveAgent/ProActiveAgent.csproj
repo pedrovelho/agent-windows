@@ -8,7 +8,7 @@
     <ProjectGuid>{91B8D1E6-3204-4AC5-91A6-6CB53C0F03F2}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ProActiveAgent</RootNamespace>
+    <RootNamespace>ConfigParser</RootNamespace>
     <AssemblyName>ProActiveAgent</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

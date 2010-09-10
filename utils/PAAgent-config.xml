@@ -1,53 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<agent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <internalConfig>
-    <proactiveLocation />
-    <java_home />
-    <jvm_parameters></jvm_parameters>    
-    <enable_memory_management>false</enable_memory_management>
-    <java_memory>0</java_memory>
-    <native_memory>0</native_memory>
-    <nb_processes>1</nb_processes>
-    <use_all_cpus>false</use_all_cpus>
+<agent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:proactive:agent:0.90:windows">
+  <config>
+    <proactiveHome />
+    <javaHome>C:\Program Files\Java\jdk1.6.0_21</javaHome>
+    <memoryLimit>0</memoryLimit>
+    <nbRuntimes>1</nbRuntimes>
     <protocol>rmi</protocol>
-    <port_initial_value>1099</port_initial_value>
-  </internalConfig>
+    <portRange first="1099" last="1100" />
+    <processPriority>Normal</processPriority>
+    <maxCpuUsage>100</maxCpuUsage>
+  </config>
   <events>
-    <event xsi:type="CalendarEvent">
-      <startDay>monday</startDay>
-      <startHour>0</startHour>
-      <startMinute>0</startMinute>
-      <startSecond>0</startSecond>
-      <durationDays>6</durationDays>
-      <durationHours>23</durationHours>
-      <durationMinutes>59</durationMinutes>
-      <durationSeconds>59</durationSeconds>
-      <processPriority>Normal</processPriority>
-      <maxCpuUsage>100</maxCpuUsage>
+    <event>
+      <start day="Monday" hour="0" minute="0" second="0" />
+      <duration days="6" hours="23" minutes="59" seconds="59" />
+      <config>
+        <memoryLimit>0</memoryLimit>
+        <nbRuntimes>0</nbRuntimes>
+        <portRange first="0" last="0" />
+        <processPriority>Normal</processPriority>
+        <maxCpuUsage>100</maxCpuUsage>
+      </config>
     </event>
   </events>
-  <actions>
-    <action xsi:type="AdvertAction">
-      <initialRestartDelay>0</initialRestartDelay>
+  <connections>
+    <localBind enabled="true">
+      <respawnIncrement>10</respawnIncrement>
       <javaStarterClass>org.objectweb.proactive.core.util.winagent.PAAgentServiceRMIStarter</javaStarterClass>
-      <isEnabled>false</isEnabled>
-      <nodeName />
-    </action>
-    <action xsi:type="RMAction">
-      <initialRestartDelay>0</initialRestartDelay>
+    </localBind>
+    <rmConnection enabled="false">
+      <respawnIncrement>10</respawnIncrement>
       <javaStarterClass>org.ow2.proactive.resourcemanager.utils.PAAgentServiceRMStarter</javaStarterClass>
-      <isEnabled>false</isEnabled>
-      <url />
-      <nodeName />
-      <nodeSourceName />
-      <credentialLocation />
-      <useDefaultCredential>true</useDefaultCredential>
-    </action>
-    <action xsi:type="CustomAction">
-      <initialRestartDelay>0</initialRestartDelay>
+      <url>rmi://localhost:1099</url>
+    </rmConnection>
+    <customConnection enabled="false">
+      <respawnIncrement>10</respawnIncrement>
       <javaStarterClass>user.Starter</javaStarterClass>
-      <isEnabled>false</isEnabled>
-      <args></args>      
-    </action>
-  </actions>  
+    </customConnection>
+  </connections>
 </agent>

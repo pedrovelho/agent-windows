@@ -36,7 +36,6 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using ProActiveAgent;
 
 /** Implementation of screen saver
  * We will try to contact ProActive Agent System Service

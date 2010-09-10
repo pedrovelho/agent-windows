@@ -44,7 +44,7 @@ using System.Diagnostics;
  * Such events last specified amount of time.
  */
 
-namespace ConfigParser
+namespace ConfigParserOLD
 {
     [XmlInclude(typeof(CalendarEvent))]
     public class CalendarEvent

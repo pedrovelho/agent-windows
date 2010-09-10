@@ -40,8 +40,8 @@ using ProActiveAgent;
 
 namespace AgentFirstSetup
 {
-    public static class Program
-    {
+    sealed class Program
+    { 
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -57,12 +57,11 @@ namespace AgentFirstSetup
                 usage += "-h\t prints this help message.";
                 Console.WriteLine(usage);
             }
-
             // Check option
-            // -i for install            
-            if (args[0].Equals("-i"))
+            // -i for install
+            else if (args[0].Equals("-i"))
             {
-                if (args[1] == null || args[1].Length == 0)
+                if (args.Length < 2 || "".Equals(args[1]))
                 {
                     Console.WriteLine("To install the ProActive Agent service please specify the directory that contains " + Constants.PROACTIVE_AGENT_EXECUTABLE_NAME);
                 }
@@ -145,6 +144,6 @@ namespace AgentFirstSetup
                 // If failed use manual method
                 SrvInstaller.UnInstallService(Constants.PROACTIVE_AGENT_SERVICE_NAME);
             }
-        }
-    }
+        }     
+    }         
 }

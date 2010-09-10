@@ -1,10 +1,11 @@
+ProActive Windows Agent 2.2
+
 La solution comporte 5 projets :
 
 Agent FirstSetup
 ======================
 Permert de définir les paramètres à l'installation via la GUI.
 Contient la classe "SvrInstaller" qui se charge d'installer le service
-
 
 
 AgentForAgent

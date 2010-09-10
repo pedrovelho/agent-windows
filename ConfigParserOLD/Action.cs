@@ -44,7 +44,7 @@ using System.Xml.Serialization;
  * 
  */
 
-namespace ConfigParser
+namespace ConfigParserOLD
 {
     [XmlInclude(typeof(AdvertAction)),
     XmlInclude(typeof(RMAction)),

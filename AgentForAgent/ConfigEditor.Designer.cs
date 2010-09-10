@@ -65,16 +65,13 @@ namespace AgentForAgent
             this.useNetworkInterfaceButton = new System.Windows.Forms.Button();
             this.networkInterfacesListBox = new System.Windows.Forms.ListBox();
             this.refreshNetworkInterfacesButton = new System.Windows.Forms.Button();
-            this.enableMemoryManagementCheckBox = new System.Windows.Forms.CheckBox();
-            this.memoryManagementGroupBox = new System.Windows.Forms.GroupBox();
-            this.totalProcessMemoryValue = new System.Windows.Forms.Label();
-            this.totalProcessMemoryLabel = new System.Windows.Forms.Label();
-            this.javaMemoryNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.javaMemoryLabel = new System.Windows.Forms.Label();
+            this.memoryLimitGroupBox = new System.Windows.Forms.GroupBox();
+            this.memoryLimitNotice2Label = new System.Windows.Forms.Label();
+            this.memoryLimitNoticeLabel = new System.Windows.Forms.Label();
+            this.memoryLimitNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.memoryLimitLabel = new System.Windows.Forms.Label();
             this.availablePhysicalMemoryValue = new System.Windows.Forms.Label();
             this.availablePhysicalMemoryLabel = new System.Windows.Forms.Label();
-            this.nativeMemoryNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.nativeMemoryLabel = new System.Windows.Forms.Label();
             this.connectionTabPage = new System.Windows.Forms.TabPage();
             this.runtimeIncomingProtocolGroupBox = new System.Windows.Forms.GroupBox();
             this.protocolComboBox = new System.Windows.Forms.ComboBox();
@@ -91,8 +88,8 @@ namespace AgentForAgent
             this.rmiRegistrationJavaActionClassTextBox = new System.Windows.Forms.TextBox();
             this.label13 = new System.Windows.Forms.Label();
             this.localRegistrationGroupBox = new System.Windows.Forms.GroupBox();
+            this.localbindNodeNameLabel = new System.Windows.Forms.Label();
             this.localRegistrationNodeName = new System.Windows.Forms.TextBox();
-            this.localRegistrationNodeEnabled = new System.Windows.Forms.CheckBox();
             this.resourceManagerRegistrationTabPage = new System.Windows.Forms.TabPage();
             this.resourceManagerRegistrationAdditionalConfigurationGroupBox = new System.Windows.Forms.GroupBox();
             this.resourceManagerRegistrationJavaActionClassTextBox = new System.Windows.Forms.TextBox();
@@ -105,7 +102,6 @@ namespace AgentForAgent
             this.rmUrl = new System.Windows.Forms.TextBox();
             this.resourceManagerUrlLabel = new System.Windows.Forms.Label();
             this.authenticationCredentialGroupBox = new System.Windows.Forms.GroupBox();
-            this.useDefaultCredentialCheckBox = new System.Windows.Forms.CheckBox();
             this.credentialBrowseLocationButton = new System.Windows.Forms.Button();
             this.label16 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -123,14 +119,14 @@ namespace AgentForAgent
             this.customArgumentsListBox = new System.Windows.Forms.ListBox();
             this.label14 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.alwaysAvailableCheckBox = new System.Windows.Forms.CheckBox();
-            this.eventEditorGroup = new System.Windows.Forms.GroupBox();
             this.processManagementGroupBox = new System.Windows.Forms.GroupBox();
             this.label20 = new System.Windows.Forms.Label();
             this.maxCpuUsageNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.maxCpuUsageLabel = new System.Windows.Forms.Label();
             this.processPriorityLabel = new System.Windows.Forms.Label();
             this.processPriorityComboBox = new System.Windows.Forms.ComboBox();
+            this.alwaysAvailableCheckBox = new System.Windows.Forms.CheckBox();
+            this.eventEditorGroup = new System.Windows.Forms.GroupBox();
             this.startTimeGroupBox = new System.Windows.Forms.GroupBox();
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
@@ -153,6 +149,7 @@ namespace AgentForAgent
             this.showButton = new System.Windows.Forms.Button();
             this.createEventButton = new System.Windows.Forms.Button();
             this.deleteEventButton = new System.Windows.Forms.Button();
+            this.eventsList = new AgentForAgent.RefreshingListBox();
             this.saveConfig = new System.Windows.Forms.Button();
             this.closeConfig = new System.Windows.Forms.Button();
             this.proActiveLocationBrowser = new System.Windows.Forms.FolderBrowserDialog();
@@ -162,7 +159,6 @@ namespace AgentForAgent
             this.scriptLocationOpenDialog = new System.Windows.Forms.OpenFileDialog();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.credentialLocationOpenDialog = new System.Windows.Forms.OpenFileDialog();
-            this.eventsList = new AgentForAgent.RefreshingListBox();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.generalTabPage.SuspendLayout();
@@ -170,9 +166,8 @@ namespace AgentForAgent
             this.multiRuntimeGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nbRuntimesNumericUpDown)).BeginInit();
             this.networkInterfaceListGroupBox.SuspendLayout();
-            this.memoryManagementGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.javaMemoryNumericUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nativeMemoryNumericUpDown)).BeginInit();
+            this.memoryLimitGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.memoryLimitNumericUpDown)).BeginInit();
             this.connectionTabPage.SuspendLayout();
             this.runtimeIncomingProtocolGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.portInitialValueNumericUpDown)).BeginInit();
@@ -189,9 +184,9 @@ namespace AgentForAgent
             this.customAdditionalConfigurationGroupBox.SuspendLayout();
             this.customActionGroup.SuspendLayout();
             this.tabPage2.SuspendLayout();
-            this.eventEditorGroup.SuspendLayout();
             this.processManagementGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.maxCpuUsageNumericUpDown)).BeginInit();
+            this.eventEditorGroup.SuspendLayout();
             this.startTimeGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.secondStart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.hourStart)).BeginInit();
@@ -319,8 +314,7 @@ namespace AgentForAgent
             this.generalTabPage.Controls.Add(this.onRuntimeExitGroupBox);
             this.generalTabPage.Controls.Add(this.multiRuntimeGroupBox);
             this.generalTabPage.Controls.Add(this.networkInterfaceListGroupBox);
-            this.generalTabPage.Controls.Add(this.enableMemoryManagementCheckBox);
-            this.generalTabPage.Controls.Add(this.memoryManagementGroupBox);
+            this.generalTabPage.Controls.Add(this.memoryLimitGroupBox);
             this.generalTabPage.Controls.Add(this.groupBox1);
             this.generalTabPage.Location = new System.Drawing.Point(4, 22);
             this.generalTabPage.Name = "generalTabPage";
@@ -336,7 +330,7 @@ namespace AgentForAgent
             this.onRuntimeExitGroupBox.Controls.Add(this.scriptLocationTextBox);
             this.onRuntimeExitGroupBox.Location = new System.Drawing.Point(4, 184);
             this.onRuntimeExitGroupBox.Name = "onRuntimeExitGroupBox";
-            this.onRuntimeExitGroupBox.Size = new System.Drawing.Size(384, 44);
+            this.onRuntimeExitGroupBox.Size = new System.Drawing.Size(384, 49);
             this.onRuntimeExitGroupBox.TabIndex = 5;
             this.onRuntimeExitGroupBox.TabStop = false;
             this.onRuntimeExitGroupBox.Text = "On Runtime Exit";
@@ -423,11 +417,6 @@ namespace AgentForAgent
             0,
             0,
             0});
-            this.nbRuntimesNumericUpDown.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
             this.nbRuntimesNumericUpDown.Name = "nbRuntimesNumericUpDown";
             this.nbRuntimesNumericUpDown.Size = new System.Drawing.Size(48, 20);
             this.nbRuntimesNumericUpDown.TabIndex = 0;
@@ -483,75 +472,63 @@ namespace AgentForAgent
             this.refreshNetworkInterfacesButton.UseVisualStyleBackColor = true;
             this.refreshNetworkInterfacesButton.Click += new System.EventHandler(this.listNetworkInterfacesButton_Click);
             // 
-            // enableMemoryManagementCheckBox
+            // memoryLimitGroupBox
             // 
-            this.enableMemoryManagementCheckBox.AutoSize = true;
-            this.enableMemoryManagementCheckBox.Location = new System.Drawing.Point(3, 234);
-            this.enableMemoryManagementCheckBox.Name = "enableMemoryManagementCheckBox";
-            this.enableMemoryManagementCheckBox.Size = new System.Drawing.Size(164, 17);
-            this.enableMemoryManagementCheckBox.TabIndex = 2;
-            this.enableMemoryManagementCheckBox.Text = "Enable Memory Management";
-            this.toolTip.SetToolTip(this.enableMemoryManagementCheckBox, "Enables the memory management. For advanced users only.");
-            this.enableMemoryManagementCheckBox.UseVisualStyleBackColor = true;
-            this.enableMemoryManagementCheckBox.CheckedChanged += new System.EventHandler(this.enableMemoryManagementCheckBox_CheckedChanged);
+            this.memoryLimitGroupBox.Controls.Add(this.memoryLimitNotice2Label);
+            this.memoryLimitGroupBox.Controls.Add(this.memoryLimitNoticeLabel);
+            this.memoryLimitGroupBox.Controls.Add(this.memoryLimitNumericUpDown);
+            this.memoryLimitGroupBox.Controls.Add(this.memoryLimitLabel);
+            this.memoryLimitGroupBox.Controls.Add(this.availablePhysicalMemoryValue);
+            this.memoryLimitGroupBox.Controls.Add(this.availablePhysicalMemoryLabel);
+            this.memoryLimitGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.memoryLimitGroupBox.Location = new System.Drawing.Point(3, 257);
+            this.memoryLimitGroupBox.Name = "memoryLimitGroupBox";
+            this.memoryLimitGroupBox.Size = new System.Drawing.Size(226, 111);
+            this.memoryLimitGroupBox.TabIndex = 1;
+            this.memoryLimitGroupBox.TabStop = false;
+            this.memoryLimitGroupBox.Text = "Memory Limit (Mbytes)";
             // 
-            // memoryManagementGroupBox
+            // memoryLimitNotice2Label
             // 
-            this.memoryManagementGroupBox.Controls.Add(this.totalProcessMemoryValue);
-            this.memoryManagementGroupBox.Controls.Add(this.totalProcessMemoryLabel);
-            this.memoryManagementGroupBox.Controls.Add(this.javaMemoryNumericUpDown);
-            this.memoryManagementGroupBox.Controls.Add(this.javaMemoryLabel);
-            this.memoryManagementGroupBox.Controls.Add(this.availablePhysicalMemoryValue);
-            this.memoryManagementGroupBox.Controls.Add(this.availablePhysicalMemoryLabel);
-            this.memoryManagementGroupBox.Controls.Add(this.nativeMemoryNumericUpDown);
-            this.memoryManagementGroupBox.Controls.Add(this.nativeMemoryLabel);
-            this.memoryManagementGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.memoryManagementGroupBox.Location = new System.Drawing.Point(3, 257);
-            this.memoryManagementGroupBox.Name = "memoryManagementGroupBox";
-            this.memoryManagementGroupBox.Size = new System.Drawing.Size(226, 111);
-            this.memoryManagementGroupBox.TabIndex = 1;
-            this.memoryManagementGroupBox.TabStop = false;
-            this.memoryManagementGroupBox.Text = "Memory Management (Mbytes)";
+            this.memoryLimitNotice2Label.AutoSize = true;
+            this.memoryLimitNotice2Label.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.memoryLimitNotice2Label.Location = new System.Drawing.Point(44, 85);
+            this.memoryLimitNotice2Label.Name = "memoryLimitNotice2Label";
+            this.memoryLimitNotice2Label.Size = new System.Drawing.Size(170, 13);
+            this.memoryLimitNotice2Label.TabIndex = 7;
+            this.memoryLimitNotice2Label.Text = "is required for a ProActive Runtime";
             // 
-            // totalProcessMemoryValue
+            // memoryLimitNoticeLabel
             // 
-            this.totalProcessMemoryValue.AutoSize = true;
-            this.totalProcessMemoryValue.Location = new System.Drawing.Point(151, 93);
-            this.totalProcessMemoryValue.Name = "totalProcessMemoryValue";
-            this.totalProcessMemoryValue.Size = new System.Drawing.Size(13, 13);
-            this.totalProcessMemoryValue.TabIndex = 8;
-            this.totalProcessMemoryValue.Text = "0";
+            this.memoryLimitNoticeLabel.AutoSize = true;
+            this.memoryLimitNoticeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.memoryLimitNoticeLabel.Location = new System.Drawing.Point(7, 67);
+            this.memoryLimitNoticeLabel.Name = "memoryLimitNoticeLabel";
+            this.memoryLimitNoticeLabel.Size = new System.Drawing.Size(200, 13);
+            this.memoryLimitNoticeLabel.TabIndex = 6;
+            this.memoryLimitNoticeLabel.Text = "Notice: 0 means no memory limit and 128";
             // 
-            // totalProcessMemoryLabel
+            // memoryLimitNumericUpDown
             // 
-            this.totalProcessMemoryLabel.AutoSize = true;
-            this.totalProcessMemoryLabel.Location = new System.Drawing.Point(6, 93);
-            this.totalProcessMemoryLabel.Name = "totalProcessMemoryLabel";
-            this.totalProcessMemoryLabel.Size = new System.Drawing.Size(139, 13);
-            this.totalProcessMemoryLabel.TabIndex = 7;
-            this.totalProcessMemoryLabel.Text = "Total Process Memory Limit:";
-            // 
-            // javaMemoryNumericUpDown
-            // 
-            this.javaMemoryNumericUpDown.Location = new System.Drawing.Point(152, 43);
-            this.javaMemoryNumericUpDown.Maximum = new decimal(new int[] {
+            this.memoryLimitNumericUpDown.Location = new System.Drawing.Point(152, 43);
+            this.memoryLimitNumericUpDown.Maximum = new decimal(new int[] {
             0,
             0,
             0,
             0});
-            this.javaMemoryNumericUpDown.Name = "javaMemoryNumericUpDown";
-            this.javaMemoryNumericUpDown.Size = new System.Drawing.Size(67, 20);
-            this.javaMemoryNumericUpDown.TabIndex = 5;
-            this.javaMemoryNumericUpDown.ValueChanged += new System.EventHandler(this.javaMemoryNumericUpDown_ValueChanged);
+            this.memoryLimitNumericUpDown.Name = "memoryLimitNumericUpDown";
+            this.memoryLimitNumericUpDown.Size = new System.Drawing.Size(67, 20);
+            this.memoryLimitNumericUpDown.TabIndex = 5;
+            this.memoryLimitNumericUpDown.ValueChanged += new System.EventHandler(this.memoryLimitNumericUpDown_ValueChanged);
             // 
-            // javaMemoryLabel
+            // memoryLimitLabel
             // 
-            this.javaMemoryLabel.AutoSize = true;
-            this.javaMemoryLabel.Location = new System.Drawing.Point(23, 45);
-            this.javaMemoryLabel.Name = "javaMemoryLabel";
-            this.javaMemoryLabel.Size = new System.Drawing.Size(122, 13);
-            this.javaMemoryLabel.TabIndex = 4;
-            this.javaMemoryLabel.Text = "Additional Java Memory:";
+            this.memoryLimitLabel.AutoSize = true;
+            this.memoryLimitLabel.Location = new System.Drawing.Point(74, 45);
+            this.memoryLimitLabel.Name = "memoryLimitLabel";
+            this.memoryLimitLabel.Size = new System.Drawing.Size(71, 13);
+            this.memoryLimitLabel.TabIndex = 4;
+            this.memoryLimitLabel.Text = "Memory Limit:";
             // 
             // availablePhysicalMemoryValue
             // 
@@ -570,28 +547,6 @@ namespace AgentForAgent
             this.availablePhysicalMemoryLabel.Size = new System.Drawing.Size(135, 13);
             this.availablePhysicalMemoryLabel.TabIndex = 2;
             this.availablePhysicalMemoryLabel.Text = "Available Physical Memory:";
-            // 
-            // nativeMemoryNumericUpDown
-            // 
-            this.nativeMemoryNumericUpDown.Location = new System.Drawing.Point(152, 67);
-            this.nativeMemoryNumericUpDown.Maximum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.nativeMemoryNumericUpDown.Name = "nativeMemoryNumericUpDown";
-            this.nativeMemoryNumericUpDown.Size = new System.Drawing.Size(67, 20);
-            this.nativeMemoryNumericUpDown.TabIndex = 1;
-            this.nativeMemoryNumericUpDown.ValueChanged += new System.EventHandler(this.nativeMemoryNumericUpDown_ValueChanged);
-            // 
-            // nativeMemoryLabel
-            // 
-            this.nativeMemoryLabel.AutoSize = true;
-            this.nativeMemoryLabel.Location = new System.Drawing.Point(15, 69);
-            this.nativeMemoryLabel.Name = "nativeMemoryLabel";
-            this.nativeMemoryLabel.Size = new System.Drawing.Size(130, 13);
-            this.nativeMemoryLabel.TabIndex = 0;
-            this.nativeMemoryLabel.Text = "Additional Native Memory:";
             // 
             // connectionTabPage
             // 
@@ -625,7 +580,9 @@ namespace AgentForAgent
             this.protocolComboBox.Items.AddRange(new object[] {
             "undefined",
             "rmi",
-            "http"});
+            "http",
+            "pamr",
+            "pnp"});
             this.protocolComboBox.Location = new System.Drawing.Point(61, 18);
             this.protocolComboBox.Name = "protocolComboBox";
             this.protocolComboBox.Size = new System.Drawing.Size(74, 21);
@@ -788,8 +745,8 @@ namespace AgentForAgent
             // 
             // localRegistrationGroupBox
             // 
+            this.localRegistrationGroupBox.Controls.Add(this.localbindNodeNameLabel);
             this.localRegistrationGroupBox.Controls.Add(this.localRegistrationNodeName);
-            this.localRegistrationGroupBox.Controls.Add(this.localRegistrationNodeEnabled);
             this.localRegistrationGroupBox.Location = new System.Drawing.Point(6, 6);
             this.localRegistrationGroupBox.Name = "localRegistrationGroupBox";
             this.localRegistrationGroupBox.Size = new System.Drawing.Size(473, 53);
@@ -797,28 +754,24 @@ namespace AgentForAgent
             this.localRegistrationGroupBox.TabStop = false;
             this.localRegistrationGroupBox.Text = "Local Registration";
             // 
+            // localbindNodeNameLabel
+            // 
+            this.localbindNodeNameLabel.AutoSize = true;
+            this.localbindNodeNameLabel.Location = new System.Drawing.Point(6, 22);
+            this.localbindNodeNameLabel.Name = "localbindNodeNameLabel";
+            this.localbindNodeNameLabel.Size = new System.Drawing.Size(67, 13);
+            this.localbindNodeNameLabel.TabIndex = 2;
+            this.localbindNodeNameLabel.Text = "Node Name:";
+            // 
             // localRegistrationNodeName
             // 
-            this.localRegistrationNodeName.Enabled = false;
-            this.localRegistrationNodeName.Location = new System.Drawing.Point(96, 19);
+            this.localRegistrationNodeName.Location = new System.Drawing.Point(79, 19);
             this.localRegistrationNodeName.Name = "localRegistrationNodeName";
-            this.localRegistrationNodeName.Size = new System.Drawing.Size(371, 20);
+            this.localRegistrationNodeName.Size = new System.Drawing.Size(388, 20);
             this.localRegistrationNodeName.TabIndex = 1;
             this.toolTip.SetToolTip(this.localRegistrationNodeName, "Defines the name of the node. The node will be registered under url like URL://IP" +
                     "_OR_HOSTNAME:PORT/NODE_NAME");
             this.localRegistrationNodeName.TextChanged += new System.EventHandler(this.rmiNodeName_TextChanged);
-            // 
-            // localRegistrationNodeEnabled
-            // 
-            this.localRegistrationNodeEnabled.AutoSize = true;
-            this.localRegistrationNodeEnabled.Location = new System.Drawing.Point(9, 21);
-            this.localRegistrationNodeEnabled.Name = "localRegistrationNodeEnabled";
-            this.localRegistrationNodeEnabled.Size = new System.Drawing.Size(84, 17);
-            this.localRegistrationNodeEnabled.TabIndex = 0;
-            this.localRegistrationNodeEnabled.Text = "Node name:";
-            this.toolTip.SetToolTip(this.localRegistrationNodeEnabled, "Allows the user to specify a custom node name.");
-            this.localRegistrationNodeEnabled.UseVisualStyleBackColor = true;
-            this.localRegistrationNodeEnabled.CheckedChanged += new System.EventHandler(this.rmiNodeEnabled_CheckedChanged);
             // 
             // resourceManagerRegistrationTabPage
             // 
@@ -932,28 +885,16 @@ namespace AgentForAgent
             // 
             // authenticationCredentialGroupBox
             // 
-            this.authenticationCredentialGroupBox.Controls.Add(this.useDefaultCredentialCheckBox);
             this.authenticationCredentialGroupBox.Controls.Add(this.credentialBrowseLocationButton);
             this.authenticationCredentialGroupBox.Controls.Add(this.label16);
             this.authenticationCredentialGroupBox.Controls.Add(this.label4);
             this.authenticationCredentialGroupBox.Controls.Add(this.credentialLocationTextBox);
             this.authenticationCredentialGroupBox.Location = new System.Drawing.Point(6, 112);
             this.authenticationCredentialGroupBox.Name = "authenticationCredentialGroupBox";
-            this.authenticationCredentialGroupBox.Size = new System.Drawing.Size(473, 71);
+            this.authenticationCredentialGroupBox.Size = new System.Drawing.Size(473, 50);
             this.authenticationCredentialGroupBox.TabIndex = 9;
             this.authenticationCredentialGroupBox.TabStop = false;
             this.authenticationCredentialGroupBox.Text = "Authentication Credential";
-            // 
-            // useDefaultCredentialCheckBox
-            // 
-            this.useDefaultCredentialCheckBox.AutoSize = true;
-            this.useDefaultCredentialCheckBox.Location = new System.Drawing.Point(6, 48);
-            this.useDefaultCredentialCheckBox.Name = "useDefaultCredentialCheckBox";
-            this.useDefaultCredentialCheckBox.Size = new System.Drawing.Size(132, 17);
-            this.useDefaultCredentialCheckBox.TabIndex = 7;
-            this.useDefaultCredentialCheckBox.Text = "Use Default Credential";
-            this.useDefaultCredentialCheckBox.UseVisualStyleBackColor = true;
-            this.useDefaultCredentialCheckBox.CheckedChanged += new System.EventHandler(this.useDefaultCredentialCheckBox_CheckedChanged);
             // 
             // credentialBrowseLocationButton
             // 
@@ -1130,30 +1071,6 @@ namespace AgentForAgent
             this.tabPage2.Text = "Planning";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // alwaysAvailableCheckBox
-            // 
-            this.alwaysAvailableCheckBox.AutoSize = true;
-            this.alwaysAvailableCheckBox.Location = new System.Drawing.Point(564, 348);
-            this.alwaysAvailableCheckBox.Name = "alwaysAvailableCheckBox";
-            this.alwaysAvailableCheckBox.Size = new System.Drawing.Size(104, 17);
-            this.alwaysAvailableCheckBox.TabIndex = 18;
-            this.alwaysAvailableCheckBox.Text = "Always available";
-            this.toolTip.SetToolTip(this.alwaysAvailableCheckBox, "No weekly planning, the ProActive Agent will be always available.");
-            this.alwaysAvailableCheckBox.UseVisualStyleBackColor = true;
-            this.alwaysAvailableCheckBox.CheckStateChanged += new System.EventHandler(this.alwaysAvailableCheckBox_CheckStateChanged);
-            // 
-            // eventEditorGroup
-            // 
-            this.eventEditorGroup.Controls.Add(this.startTimeGroupBox);
-            this.eventEditorGroup.Controls.Add(this.durationGroupBox);
-            this.eventEditorGroup.Enabled = false;
-            this.eventEditorGroup.Location = new System.Drawing.Point(259, 3);
-            this.eventEditorGroup.Name = "eventEditorGroup";
-            this.eventEditorGroup.Size = new System.Drawing.Size(409, 133);
-            this.eventEditorGroup.TabIndex = 1;
-            this.eventEditorGroup.TabStop = false;
-            this.eventEditorGroup.Text = "Plan Editor";
-            // 
             // processManagementGroupBox
             // 
             this.processManagementGroupBox.Controls.Add(this.label20);
@@ -1233,6 +1150,30 @@ namespace AgentForAgent
                     "his plan.");
             this.processPriorityComboBox.SelectedIndexChanged += new System.EventHandler(this.processPriorityComboBox_SelectedIndexChanged);
             // 
+            // alwaysAvailableCheckBox
+            // 
+            this.alwaysAvailableCheckBox.AutoSize = true;
+            this.alwaysAvailableCheckBox.Location = new System.Drawing.Point(564, 348);
+            this.alwaysAvailableCheckBox.Name = "alwaysAvailableCheckBox";
+            this.alwaysAvailableCheckBox.Size = new System.Drawing.Size(104, 17);
+            this.alwaysAvailableCheckBox.TabIndex = 18;
+            this.alwaysAvailableCheckBox.Text = "Always available";
+            this.toolTip.SetToolTip(this.alwaysAvailableCheckBox, "No weekly planning, the ProActive Agent will be always available.");
+            this.alwaysAvailableCheckBox.UseVisualStyleBackColor = true;
+            this.alwaysAvailableCheckBox.CheckStateChanged += new System.EventHandler(this.alwaysAvailableCheckBox_CheckStateChanged);
+            // 
+            // eventEditorGroup
+            // 
+            this.eventEditorGroup.Controls.Add(this.startTimeGroupBox);
+            this.eventEditorGroup.Controls.Add(this.durationGroupBox);
+            this.eventEditorGroup.Enabled = false;
+            this.eventEditorGroup.Location = new System.Drawing.Point(259, 3);
+            this.eventEditorGroup.Name = "eventEditorGroup";
+            this.eventEditorGroup.Size = new System.Drawing.Size(409, 133);
+            this.eventEditorGroup.TabIndex = 1;
+            this.eventEditorGroup.TabStop = false;
+            this.eventEditorGroup.Text = "Plan Editor";
+            // 
             // startTimeGroupBox
             // 
             this.startTimeGroupBox.Controls.Add(this.label8);
@@ -1296,13 +1237,13 @@ namespace AgentForAgent
             this.weekdayStart.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.weekdayStart.FormattingEnabled = true;
             this.weekdayStart.Items.AddRange(new object[] {
-            "sunday",
-            "monday",
-            "tuesday",
-            "wednesday",
-            "thursday",
-            "friday",
-            "saturday"});
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"});
             this.weekdayStart.Location = new System.Drawing.Point(45, 18);
             this.weekdayStart.Name = "weekdayStart";
             this.weekdayStart.Size = new System.Drawing.Size(65, 21);
@@ -1502,6 +1443,16 @@ namespace AgentForAgent
             this.deleteEventButton.UseVisualStyleBackColor = true;
             this.deleteEventButton.Click += new System.EventHandler(this.deleteEventButton_Click);
             // 
+            // eventsList
+            // 
+            this.eventsList.FormattingEnabled = true;
+            this.eventsList.Location = new System.Drawing.Point(6, 19);
+            this.eventsList.Name = "eventsList";
+            this.eventsList.Size = new System.Drawing.Size(235, 303);
+            this.eventsList.TabIndex = 0;
+            this.toolTip.SetToolTip(this.eventsList, "The list of weekly plans.");
+            this.eventsList.SelectedIndexChanged += new System.EventHandler(this.eventsList_SelectedIndexChanged);
+            // 
             // saveConfig
             // 
             this.saveConfig.Enabled = false;
@@ -1554,16 +1505,6 @@ namespace AgentForAgent
             this.credentialLocationOpenDialog.DefaultExt = "cred";
             this.credentialLocationOpenDialog.Filter = "Credentials .cred|*.cred";
             // 
-            // eventsList
-            // 
-            this.eventsList.FormattingEnabled = true;
-            this.eventsList.Location = new System.Drawing.Point(6, 19);
-            this.eventsList.Name = "eventsList";
-            this.eventsList.Size = new System.Drawing.Size(235, 303);
-            this.eventsList.TabIndex = 0;
-            this.toolTip.SetToolTip(this.eventsList, "The list of weekly plans.");
-            this.eventsList.SelectedIndexChanged += new System.EventHandler(this.eventsList_SelectedIndexChanged);
-            // 
             // ConfigurationEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1586,17 +1527,15 @@ namespace AgentForAgent
             this.groupBox1.PerformLayout();
             this.tabControl1.ResumeLayout(false);
             this.generalTabPage.ResumeLayout(false);
-            this.generalTabPage.PerformLayout();
             this.onRuntimeExitGroupBox.ResumeLayout(false);
             this.onRuntimeExitGroupBox.PerformLayout();
             this.multiRuntimeGroupBox.ResumeLayout(false);
             this.multiRuntimeGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nbRuntimesNumericUpDown)).EndInit();
             this.networkInterfaceListGroupBox.ResumeLayout(false);
-            this.memoryManagementGroupBox.ResumeLayout(false);
-            this.memoryManagementGroupBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.javaMemoryNumericUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nativeMemoryNumericUpDown)).EndInit();
+            this.memoryLimitGroupBox.ResumeLayout(false);
+            this.memoryLimitGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.memoryLimitNumericUpDown)).EndInit();
             this.connectionTabPage.ResumeLayout(false);
             this.runtimeIncomingProtocolGroupBox.ResumeLayout(false);
             this.runtimeIncomingProtocolGroupBox.PerformLayout();
@@ -1623,10 +1562,10 @@ namespace AgentForAgent
             this.customActionGroup.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
-            this.eventEditorGroup.ResumeLayout(false);
             this.processManagementGroupBox.ResumeLayout(false);
             this.processManagementGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.maxCpuUsageNumericUpDown)).EndInit();
+            this.eventEditorGroup.ResumeLayout(false);
             this.startTimeGroupBox.ResumeLayout(false);
             this.startTimeGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.secondStart)).EndInit();
@@ -1682,25 +1621,20 @@ namespace AgentForAgent
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
         private System.Windows.Forms.Button showButton;
         private System.Windows.Forms.CheckBox alwaysAvailableCheckBox;
-        private System.Windows.Forms.GroupBox memoryManagementGroupBox;
-        private System.Windows.Forms.Label nativeMemoryLabel;
-        private System.Windows.Forms.NumericUpDown nativeMemoryNumericUpDown;
+        private System.Windows.Forms.GroupBox memoryLimitGroupBox;
         private System.Windows.Forms.Label availablePhysicalMemoryLabel;
         private System.Windows.Forms.Label availablePhysicalMemoryValue;
         private System.Windows.Forms.Button removeJvmParameterButton;
         private System.Windows.Forms.Button addJvmParameterButton;
         private System.Windows.Forms.ListBox jvmParametersListBox;
-        private System.Windows.Forms.Label javaMemoryLabel;
-        private System.Windows.Forms.NumericUpDown javaMemoryNumericUpDown;
-        private System.Windows.Forms.Label totalProcessMemoryLabel;
-        private System.Windows.Forms.Label totalProcessMemoryValue;
+        private System.Windows.Forms.Label memoryLimitLabel;
+        private System.Windows.Forms.NumericUpDown memoryLimitNumericUpDown;
         private System.Windows.Forms.GroupBox durationGroupBox;
         private System.Windows.Forms.GroupBox startTimeGroupBox;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.GroupBox processManagementGroupBox;
         private System.Windows.Forms.Label processPriorityLabel;
         private System.Windows.Forms.ComboBox processPriorityComboBox;
-        private System.Windows.Forms.CheckBox enableMemoryManagementCheckBox;
         private System.Windows.Forms.TabPage connectionTabPage;
         private System.Windows.Forms.TabPage localRegistrationTabPage;
         private System.Windows.Forms.TabPage resourceManagerRegistrationTabPage;
@@ -1719,7 +1653,6 @@ namespace AgentForAgent
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.GroupBox localRegistrationGroupBox;
         private System.Windows.Forms.TextBox localRegistrationNodeName;
-        private System.Windows.Forms.CheckBox localRegistrationNodeEnabled;
         private System.Windows.Forms.GroupBox rmActionGroup;
         private System.Windows.Forms.TextBox rmUrl;
         private System.Windows.Forms.Label resourceManagerUrlLabel;
@@ -1765,8 +1698,10 @@ namespace AgentForAgent
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Button credentialBrowseLocationButton;
-        private System.Windows.Forms.CheckBox useDefaultCredentialCheckBox;
         private System.Windows.Forms.OpenFileDialog credentialLocationOpenDialog;
+        private System.Windows.Forms.Label memoryLimitNoticeLabel;
+        private System.Windows.Forms.Label memoryLimitNotice2Label;
+        private System.Windows.Forms.Label localbindNodeNameLabel;
     }
 
 

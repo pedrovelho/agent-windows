@@ -39,12 +39,25 @@ using System.Drawing;
 using System.Windows.Forms;
 using ConfigParser;
 using ProActiveAgent;
+using System.Collections.Generic;
 
 namespace AgentForAgent
 {
+    /// <summary>
+    /// Enumeration type of ProActive Agent running type.
+    /// </summary>
+    public enum ProActiveCommunicationProtocol
+    {
+        undefined = 0,
+        rmi = 1,
+        http = 2,
+        pamr = 3,
+        pnp = 4
+    }
+
     public partial class ConfigurationEditor : Form
     {
-        private readonly Configuration configuration;
+        private readonly AgentType configuration;
         private string configurationLocation;
         private readonly string agentLocation;
         private readonly ConfigurationDialog hook;
@@ -58,7 +71,7 @@ namespace AgentForAgent
 
         private IniFile iniConfiguration;
         //--Constructor
-        public ConfigurationEditor(Configuration conf, string confLocation, string agentLocation, ConfigurationDialog hook)
+        public ConfigurationEditor(AgentType conf, string confLocation, string agentLocation, ConfigurationDialog hook)
         {
             // First initialize all widgets (gui-generated)
             InitializeComponent();
@@ -69,9 +82,9 @@ namespace AgentForAgent
             this.hook = hook;
 
             // Load the proactive location from the configuration into the gui
-            this.proactiveDirectory.Text = conf.agentConfig.proactiveLocation;
+            this.proactiveDirectory.Text = conf.config.proactiveHome;
 
-            if (conf.agentConfig.javaHome.Equals(""))
+            if (conf.config.javaHome.Equals(""))
             {
                 checkBox1.Checked = true;
                 jvmDirectory.Enabled = false;
@@ -79,35 +92,38 @@ namespace AgentForAgent
             }
             else
             {
-                jvmDirectory.Text = conf.agentConfig.javaHome;
+                jvmDirectory.Text = conf.config.javaHome;
             }
 
             // Load the On Runtime Exit script absolute path
-            this.scriptLocationTextBox.Text = conf.agentConfig.onRuntimeExitScript;
+            this.scriptLocationTextBox.Text = conf.config.onRuntimeExitScript;
 
             ///////////////////////////////////////////////////
             // Load memory management from the configuration //
-            ///////////////////////////////////////////////////
-            this.memoryManagementGroupBox.Enabled = this.enableMemoryManagementCheckBox.Checked = conf.agentConfig.enableMemoryManagement;
+            ///////////////////////////////////////////////////            
             // Get total physical memory
-            System.Decimal val = ProActiveAgent.Utils.getAvailablePhysicalMemory();
+            System.Decimal val = Utils.getAvailablePhysicalMemory();
             this.availablePhysicalMemoryValue.Text = val.ToString();
             // Set maximums
-            this.javaMemoryNumericUpDown.Maximum = val;
-            this.nativeMemoryNumericUpDown.Maximum = val;
+            this.memoryLimitNumericUpDown.Maximum = val;     
             // Load memory limit values from the configuration
-            this.javaMemoryNumericUpDown.Value = conf.agentConfig.javaMemory;
-            this.nativeMemoryNumericUpDown.Value = conf.agentConfig.nativeMemory;
-            this.totalProcessMemoryValue.Text = "" + (Constants.MINIMAL_REQUIRED_MEMORY + conf.agentConfig.javaMemory + conf.agentConfig.nativeMemory);
+            this.memoryLimitNumericUpDown.Value = conf.config.memoryLimit;            
 
             ///////////////////////////////////////
             // Load Multi-Runtime related config //
             ///////////////////////////////////////
             this.availableCPUsValue.Text = "" + Environment.ProcessorCount;
-            this.nbRuntimesNumericUpDown.Value = conf.agentConfig.nbProcesses;
-            this.useAllAvailableCPUsCheckBox.Checked = conf.agentConfig.useAllCPUs;
-            this.nbRuntimesNumericUpDown.Enabled = !conf.agentConfig.useAllCPUs;
 
+            if (conf.config.nbRuntimes == 0)
+            {
+                this.useAllAvailableCPUsCheckBox.Checked = true;
+                this.nbRuntimesNumericUpDown.Value = Environment.ProcessorCount;
+            }
+            else
+            {
+                this.nbRuntimesNumericUpDown.Enabled = true;
+            }                        
+            
             ////////////////////////////////////////
             // Load events from the configuration //
             ////////////////////////////////////////            
@@ -118,17 +134,16 @@ namespace AgentForAgent
             this.maxCpuUsageNumericUpDown.Value = this.maxCpuUsageNumericUpDown.Maximum;
 
             // Load config events in the GUI
-            foreach (CalendarEvent ev in this.configuration.events)
-            {
-                CalendarEvent cEv = (CalendarEvent)ev;
+            foreach (CalendarEventType cEv in this.configuration.events)
+            {                
                 int index = this.eventsList.Items.Add(cEv);
 
                 // Check for always available 
                 if (cEv.isAlwaysAvailable())
                 {
                     this.alwaysAvailableCheckBox.Checked = true;
-                    this.processPriorityComboBox.SelectedItem = Enum.GetName(typeof(ProcessPriorityClass), cEv.processPriority);
-                    this.maxCpuUsageNumericUpDown.Value = cEv.maxCpuUsage;
+                    this.processPriorityComboBox.SelectedItem = Enum.GetName(typeof(ProcessPriorityClass), configuration.config.processPriority);
+                    this.maxCpuUsageNumericUpDown.Value = configuration.config.maxCpuUsage;
                     this.eventsList.SelectedIndex = index;
 
                     // Disable all other controls
@@ -140,8 +155,8 @@ namespace AgentForAgent
             }
 
             // Init default values for ProActive Communication Protocol and Port
-            this.protocolComboBox.SelectedItem = Enum.GetName(typeof(ProActiveCommunicationProtocol), conf.agentConfig.runtimeIncomingProtocol);
-            this.portInitialValueNumericUpDown.Value = conf.agentConfig.proActiveCommunicationPortInitialValue;
+            this.protocolComboBox.SelectedItem = Enum.GetName(typeof(ProActiveCommunicationProtocol), Enum.Parse(typeof(ProActiveCommunicationProtocol),conf.config.protocol));
+            this.portInitialValueNumericUpDown.Value = conf.config.portRange.first;
 
             /////////////////////////////////////////////
             // Load the actions from the configuration //
@@ -149,75 +164,66 @@ namespace AgentForAgent
 
             // Iterate through all actions in the configuration then 
             // load them into the gui            
-            foreach (ConfigParser.Action action in this.configuration.actions)
+            foreach (ConnectionType con in this.configuration.connections)
             {
-                if (action.GetType() == typeof(AdvertAction))
+                if (con.GetType() == typeof(LocalBindConnectionType))
                 {
-                    if (action.isEnabled)
+                    if (con.enabled)
                     {
                         this.localRegistrationRadioButton.Select();
                         this.connectionTypeTabControl.SelectedTab = this.localRegistrationTabPage;
                     }
-                    if (action.javaStarterClass == null || action.javaStarterClass.Equals(""))
+                    if (con.javaStarterClass == null || con.javaStarterClass.Equals(""))
                     {
-                        this.rmiRegistrationJavaActionClassTextBox.Text = AdvertAction.DEFAULT_JAVA_STARTER_CLASS;
+                        this.rmiRegistrationJavaActionClassTextBox.Text = LocalBindConnectionType.DEFAULT_JAVA_STARTER_CLASS;
                     }
                     else
                     {
-                        this.rmiRegistrationJavaActionClassTextBox.Text = action.javaStarterClass;
+                        this.rmiRegistrationJavaActionClassTextBox.Text = con.javaStarterClass;
                     }
-                    AdvertAction advertAction = (AdvertAction)action;
-                    this.localRegistrationNodeEnabled.Checked = advertAction.nodeName != null && !advertAction.nodeName.Equals("");
-                    this.localRegistrationNodeName.Text = advertAction.nodeName;
+                    LocalBindConnectionType localbind = (LocalBindConnectionType)con;                    
+                    this.localRegistrationNodeName.Text = localbind.nodename;
                 }
-                else if (action.GetType() == typeof(RMAction))
+                else if (con.GetType() == typeof(ResoureManagerConnectionType))
                 {
-                    if (action.isEnabled)
+                    if (con.enabled)
                     {
                         this.resourceManagerRegistrationRadioButton.Select();
                         this.connectionTypeTabControl.SelectedTab = this.resourceManagerRegistrationTabPage;
                     }
-                    if (action.javaStarterClass == null || action.javaStarterClass.Equals(""))
+                    if (con.javaStarterClass == null || con.javaStarterClass.Equals(""))
                     {
-                        this.resourceManagerRegistrationJavaActionClassTextBox.Text = RMAction.DEFAULT_JAVA_STARTER_CLASS;
+                        this.resourceManagerRegistrationJavaActionClassTextBox.Text = ResoureManagerConnectionType.DEFAULT_JAVA_STARTER_CLASS;
                     }
                     else
                     {
-                        this.resourceManagerRegistrationJavaActionClassTextBox.Text = action.javaStarterClass;
+                        this.resourceManagerRegistrationJavaActionClassTextBox.Text = con.javaStarterClass;
                     }
-                    RMAction rmAction = (RMAction)action;
+                    ResoureManagerConnectionType rmAction = (ResoureManagerConnectionType)con;
                     this.rmUrl.Text = rmAction.url;
-                    this.nodeNameTextBox.Text = rmAction.nodeName;
+                    this.nodeNameTextBox.Text = rmAction.nodename;
                     this.nodeSourceNameTextBox.Text = rmAction.nodeSourceName;
-                    if (rmAction.useDefaultCredential)
-                    {
-                        this.useDefaultCredentialCheckBox.Checked = true;
-                    }
-                    else
-                    {
-                        this.useDefaultCredentialCheckBox.Checked = false;
-                        this.credentialLocationTextBox.Text = rmAction.credentialLocation;
-                    }
+                    this.credentialLocationTextBox.Text = rmAction.credential;
                 }
-                else if (action.GetType() == typeof(CustomAction))
+                else if (con.GetType() == typeof(CustomConnectionType))
                 {
-                    if (action.isEnabled)
+                    if (con.enabled)
                     {
                         this.customRadioButton.Select();
                         this.connectionTypeTabControl.SelectedTab = this.customTabPage;
                     }
-                    if (action.javaStarterClass == null || action.javaStarterClass.Equals(""))
+                    if (con.javaStarterClass == null || con.javaStarterClass.Equals(""))
                     {
-                        this.customJavaActionClassTextBox.Text = CustomAction.DEFAULT_JAVA_STARTER_CLASS;
+                        this.customJavaActionClassTextBox.Text = CustomConnectionType.DEFAULT_JAVA_STARTER_CLASS;
                     }
                     else
                     {
-                        this.customJavaActionClassTextBox.Text = action.javaStarterClass;
+                        this.customJavaActionClassTextBox.Text = con.javaStarterClass;
                     }
-                    CustomAction customAction = (CustomAction)action;
-                    if (customAction.args != null)
+                    CustomConnectionType customConnection = (CustomConnectionType)con;
+                    if (customConnection.args != null)
                     {
-                        this.customArgumentsListBox.Items.AddRange(customAction.args);
+                        this.customArgumentsListBox.Items.AddRange(customConnection.args);
                     }
                 }
                 else
@@ -325,51 +331,82 @@ namespace AgentForAgent
         private void internalSave(string internalLocation)
         {
             // Copy all jvm parameters from listbox into the cofiguration
-            string[] values = new string[this.jvmParametersListBox.Items.Count];
-            this.jvmParametersListBox.Items.CopyTo(values, 0);
-            this.configuration.agentConfig.jvmParameters = values;
-            this.configuration.agentConfig.onRuntimeExitScript = this.scriptLocationTextBox.Text;
+            if (this.jvmParametersListBox.Items.Count != 0)
+            {
+                string[] values = new string[this.jvmParametersListBox.Items.Count];
+                this.jvmParametersListBox.Items.CopyTo(values, 0);
+                this.configuration.config.jvmParameters = values;
+            }
+            if (!"".Equals(this.scriptLocationTextBox.Text))
+            {
+                this.configuration.config.onRuntimeExitScript = this.scriptLocationTextBox.Text;
+            }            
             // Save memory management configuration
-            this.configuration.agentConfig.enableMemoryManagement = this.enableMemoryManagementCheckBox.Checked;
-            this.configuration.agentConfig.javaMemory = System.Decimal.ToUInt32(this.javaMemoryNumericUpDown.Value);
-            this.configuration.agentConfig.nativeMemory = System.Decimal.ToUInt32(this.nativeMemoryNumericUpDown.Value);
+            ushort memoryLimit = Convert.ToUInt16(memoryLimitNumericUpDown.Value);
+            if (memoryLimit > 0) {
+                this.configuration.config.memoryLimit = memoryLimit;
+            }                        
             // Save multi process related config
-            this.configuration.agentConfig.nbProcesses = Convert.ToInt32(this.nbRuntimesNumericUpDown.Value);
-            this.configuration.agentConfig.useAllCPUs = this.useAllAvailableCPUsCheckBox.Checked;
+            if (this.useAllAvailableCPUsCheckBox.Checked) {
+                this.configuration.config.nbRuntimes = 0;
+            } else {
+                this.configuration.config.nbRuntimes = Convert.ToUInt16(this.nbRuntimesNumericUpDown.Value);
+            }            
             //--Events list                        
             this.internalCopyEventsList();
             // Save ProActive Communication Protocol and Port initial value
-            this.configuration.agentConfig.runtimeIncomingProtocol = (ProActiveCommunicationProtocol)Enum.Parse(typeof(ProActiveCommunicationProtocol), (string)this.protocolComboBox.SelectedItem);
-            this.configuration.agentConfig.proActiveCommunicationPortInitialValue = System.Decimal.ToInt32(this.portInitialValueNumericUpDown.Value);
+            this.configuration.config.protocol = (string)this.protocolComboBox.SelectedItem;
+            this.configuration.config.portRange.first = Convert.ToUInt16(this.portInitialValueNumericUpDown.Value);
             // Save all defined actions                        
-            if (this.configuration.actions == null || this.configuration.actions.Length < 3)
+            if (this.configuration.connections == null || this.configuration.connections.Length < 3)
             {
-                this.configuration.actions = new ConfigParser.Action[3];
+                this.configuration.connections = new ConfigParser.ConnectionType[3];
             }
             // Save rmi registration action definition
-            AdvertAction advertAction = new AdvertAction();
-            advertAction.nodeName = localRegistrationNodeEnabled.Checked ? localRegistrationNodeName.Text : "";
-            advertAction.javaStarterClass = this.rmiRegistrationJavaActionClassTextBox.Text;
-            advertAction.isEnabled = this.localRegistrationRadioButton.Checked;
-            this.configuration.actions[0] = advertAction;
+            LocalBindConnectionType localbind = new LocalBindConnectionType();
+            if (!"".Equals(localRegistrationNodeName.Text)){
+                localbind.nodename = localRegistrationNodeName.Text;
+            }
+            localbind.javaStarterClass = this.rmiRegistrationJavaActionClassTextBox.Text;
+            localbind.enabled = this.localRegistrationRadioButton.Checked;            
+            this.configuration.connections[0] = localbind;
+
             // Save resource manager registration action definition
-            RMAction rmAction = new RMAction();
-            rmAction.url = rmUrl.Text;
-            rmAction.nodeName = nodeNameTextBox.Text;
-            rmAction.nodeSourceName = nodeSourceNameTextBox.Text;
-            rmAction.credentialLocation = credentialLocationTextBox.Text;
-            rmAction.useDefaultCredential = useDefaultCredentialCheckBox.Checked;
-            rmAction.javaStarterClass = this.resourceManagerRegistrationJavaActionClassTextBox.Text;
-            rmAction.isEnabled = this.resourceManagerRegistrationRadioButton.Checked;
-            this.configuration.actions[1] = rmAction;
+            ResoureManagerConnectionType rmConnection = new ResoureManagerConnectionType();
+            if ("".Equals(rmUrl.Text)) {
+                rmConnection.url = Constants.DEFAULT_RM_URL;
+            } else {
+                rmConnection.url = rmUrl.Text;
+            }
+            if (!"".Equals(nodeNameTextBox.Text))
+            {
+                rmConnection.nodename = nodeNameTextBox.Text;
+            }
+            if (!"".Equals(nodeSourceNameTextBox.Text))
+            {
+                rmConnection.nodeSourceName = nodeSourceNameTextBox.Text;
+            }
+            if (!"".Equals(credentialLocationTextBox.Text)){ 
+                rmConnection.credential = credentialLocationTextBox.Text;
+            }
+            if (!"".Equals(this.resourceManagerRegistrationJavaActionClassTextBox.Text))
+            {
+                rmConnection.javaStarterClass = this.resourceManagerRegistrationJavaActionClassTextBox.Text;
+            }            
+            rmConnection.enabled = this.resourceManagerRegistrationRadioButton.Checked;
+            this.configuration.connections[1] = rmConnection;
+
             // Save custom action definition
-            CustomAction customAction = new CustomAction();
-            string[] arguments = new string[this.customArgumentsListBox.Items.Count];
-            customArgumentsListBox.Items.CopyTo(arguments, 0);
-            customAction.args = arguments;
+            CustomConnectionType customAction = new CustomConnectionType();
+            if (this.customArgumentsListBox.Items.Count > 0)
+            {
+                string[] arguments = new string[this.customArgumentsListBox.Items.Count];
+                customArgumentsListBox.Items.CopyTo(arguments, 0);
+                customAction.args = arguments;
+            }
             customAction.javaStarterClass = this.customJavaActionClassTextBox.Text;
-            customAction.isEnabled = this.customRadioButton.Checked;
-            this.configuration.actions[2] = customAction;
+            customAction.enabled = this.customRadioButton.Checked;
+            this.configuration.connections[2] = customAction;
             // Save the configuration into a file
             try
             {
@@ -392,15 +429,18 @@ namespace AgentForAgent
         }
 
         private void internalCopyEventsList()
-        {
-            this.configuration.events.Clear();
+        {            
+            List<CalendarEventType> list = new List<CalendarEventType>();
             foreach (object item in this.eventsList.Items)
             {
-                if (((CalendarEvent)item).startDay != null)
+                CalendarEventType evt = (CalendarEventType)item;
+                if (evt.isAlwaysAvailable())
                 {
-                    this.configuration.events.Add((CalendarEvent)item);
+                    evt.config.portRange = null;
                 }
+                list.Add((CalendarEventType)item);
             }
+            this.configuration.events = list.ToArray();
         }
 
         /**************************************************************
@@ -413,7 +453,7 @@ namespace AgentForAgent
             {
                 jvmDirectory.Enabled = false;
                 jvmLocationButton.Enabled = false;
-                configuration.agentConfig.javaHome = "";
+                configuration.config.javaHome = "";
             }
             else
             {
@@ -434,7 +474,7 @@ namespace AgentForAgent
                 // Once the proactive location is specified check if classpath can be read
                 try
                 {
-                    ProActiveAgent.Utils.readClasspath(this.configuration.agentConfig);
+                    Utils.readClasspath(this.configuration.config);
                 }
                 catch (Exception ex)
                 {
@@ -458,14 +498,14 @@ namespace AgentForAgent
         //--Update config if it change
         private void proactiveLocation_TextChanged(object sender, EventArgs e)
         {
-            configuration.agentConfig.proactiveLocation = proactiveDirectory.Text;
+            configuration.config.proactiveHome = proactiveDirectory.Text;
             saveConfig.Enabled = true;
         }
 
         //--Update config if it change
         private void jvmDirectory_TextChanged(object sender, EventArgs e)
         {
-            configuration.agentConfig.javaHome = jvmDirectory.Text;
+            configuration.config.javaHome = jvmDirectory.Text;
             saveConfig.Enabled = true;
         }
 
@@ -484,7 +524,7 @@ namespace AgentForAgent
             }
             try
             {
-                string[] values = ProActiveAgent.JavaNetworkInterfaceLister.listJavaNetworkInterfaces(this.jvmDirectory.Text, this.agentLocation);
+                string[] values = JavaNetworkInterfaceLister.listJavaNetworkInterfaces(this.jvmDirectory.Text, this.agentLocation);
                 this.networkInterfacesListBox.Items.Clear();
                 this.networkInterfacesListBox.Items.AddRange(values);
                 this.useNetworkInterfaceButton.Enabled = values.Length > 0;
@@ -546,18 +586,18 @@ namespace AgentForAgent
         //--Fill the fields with the values of the selected event
         private void eventsList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            CalendarEvent cEv = (CalendarEvent)this.eventsList.SelectedItem;
+            CalendarEventType cEv = (CalendarEventType)this.eventsList.SelectedItem;
             if (cEv == null) { return; }
             this.weekdayStart.SelectedIndex = cEv.resolveDay();
-            this.hourStart.Value = cEv.startHour;
-            this.minuteStart.Value = cEv.startMinute;
-            this.secondStart.Value = cEv.startSecond;
-            this.dayDuration.Value = cEv.durationDays;
-            this.hoursDuration.Value = cEv.durationHours;
-            this.minutesDuration.Value = cEv.durationMinutes;
-            this.secondsDuration.Value = cEv.durationSeconds;
-            this.processPriorityComboBox.SelectedItem = Enum.GetName(typeof(ProcessPriorityClass), cEv.processPriority);
-            this.maxCpuUsageNumericUpDown.Value = cEv.maxCpuUsage;
+            this.hourStart.Value = cEv.start.hour;
+            this.minuteStart.Value = cEv.start.minute;
+            this.secondStart.Value = cEv.start.second;
+            this.dayDuration.Value = cEv.duration.days;
+            this.hoursDuration.Value = cEv.duration.hours;
+            this.minutesDuration.Value = cEv.duration.minutes;
+            this.secondsDuration.Value = cEv.duration.seconds;
+            this.processPriorityComboBox.SelectedItem = Enum.GetName(typeof(ProcessPriorityClass), cEv.config.processPriority);
+            this.maxCpuUsageNumericUpDown.Value = cEv.config.maxCpuUsage;
             this.eventEditorGroup.Enabled = true;
         }
 
@@ -565,7 +605,8 @@ namespace AgentForAgent
         //--Add event
         private void createEventButton_Click(object sender, EventArgs e)
         {
-            CalendarEvent calEvent = new CalendarEvent();
+            CalendarEventType calEvent = new CalendarEventType();
+            calEvent.config = new AgentConfigType();
             int indexToSelect = this.eventsList.Items.Add(calEvent);
             // Select the created item
             this.eventsList.SelectedIndex = indexToSelect;
@@ -607,8 +648,8 @@ namespace AgentForAgent
         private void showButton_Click(object sender, EventArgs e)
         {
             // Save the configuration
-            System.Collections.Generic.List<CalendarEvent> copyList = new System.Collections.Generic.List<CalendarEvent>(this.eventsList.Items.Count);
-            foreach (CalendarEvent ev in this.eventsList.Items)
+            List<CalendarEventType> copyList = new List<CalendarEventType>(this.eventsList.Items.Count);
+            foreach (CalendarEventType ev in this.eventsList.Items)
             {
                 copyList.Add(ev);
             }
@@ -621,8 +662,8 @@ namespace AgentForAgent
         {
             if (eventsList.SelectedIndex == -1)
                 return;
-            CalendarEvent calEvent = (CalendarEvent)this.eventsList.SelectedItem;
-            calEvent.startDay = (string)weekdayStart.SelectedItem;
+            CalendarEventType calEvent = (CalendarEventType)this.eventsList.SelectedItem;
+            calEvent.start.day = (DayOfWeek)Enum.Parse(typeof(DayOfWeek), (string)weekdayStart.SelectedItem);
             // Refresh widget
             this.eventsList.RefreshItem(eventsList.SelectedIndex);
 
@@ -634,8 +675,8 @@ namespace AgentForAgent
         {
             if (eventsList.SelectedIndex == -1)
                 return;
-            CalendarEvent calEvent = (CalendarEvent)this.eventsList.SelectedItem;
-            calEvent.startHour = (int)hourStart.Value;
+            CalendarEventType calEvent = (CalendarEventType)this.eventsList.SelectedItem;
+            calEvent.start.hour = (ushort)hourStart.Value;
             // Refresh widget
             this.eventsList.RefreshItem(eventsList.SelectedIndex);
 
@@ -646,8 +687,8 @@ namespace AgentForAgent
         {
             if (eventsList.SelectedIndex == -1)
                 return;
-            CalendarEvent calEvent = (CalendarEvent)this.eventsList.SelectedItem;
-            calEvent.startMinute = (int)minuteStart.Value;
+            CalendarEventType calEvent = (CalendarEventType)this.eventsList.SelectedItem;
+            calEvent.start.minute = (ushort)minuteStart.Value;
             // Refresh widget
             this.eventsList.RefreshItem(eventsList.SelectedIndex);
 
@@ -658,8 +699,8 @@ namespace AgentForAgent
         {
             if (eventsList.SelectedIndex == -1)
                 return;
-            CalendarEvent calEvent = (CalendarEvent)this.eventsList.SelectedItem;
-            calEvent.startSecond = (int)secondStart.Value;
+            CalendarEventType calEvent = (CalendarEventType)this.eventsList.SelectedItem;
+            calEvent.start.second = (ushort)secondStart.Value;
             // Refresh widget
             this.eventsList.RefreshItem(eventsList.SelectedIndex);
 
@@ -670,8 +711,8 @@ namespace AgentForAgent
         {
             if (eventsList.SelectedIndex == -1)
                 return;
-            CalendarEvent calEvent = (CalendarEvent)this.eventsList.SelectedItem;
-            calEvent.durationDays = (int)dayDuration.Value;
+            CalendarEventType calEvent = (CalendarEventType)this.eventsList.SelectedItem;
+            calEvent.duration.days = (ushort)dayDuration.Value;
             // Refresh widget
             this.eventsList.RefreshItem(eventsList.SelectedIndex);
             this.alwaysAvailableCheckBox.Checked = calEvent.isAlwaysAvailable();
@@ -683,8 +724,8 @@ namespace AgentForAgent
         {
             if (eventsList.SelectedIndex == -1)
                 return;
-            CalendarEvent calEvent = (CalendarEvent)this.eventsList.SelectedItem;
-            calEvent.durationHours = (int)hoursDuration.Value;
+            CalendarEventType calEvent = (CalendarEventType)this.eventsList.SelectedItem;
+            calEvent.duration.hours = (ushort)hoursDuration.Value;
             // Refresh widget
             this.eventsList.RefreshItem(eventsList.SelectedIndex);
             this.alwaysAvailableCheckBox.Checked = calEvent.isAlwaysAvailable();
@@ -696,8 +737,8 @@ namespace AgentForAgent
         {
             if (eventsList.SelectedIndex == -1)
                 return;
-            CalendarEvent calEvent = (CalendarEvent)this.eventsList.SelectedItem;
-            calEvent.durationMinutes = (int)minutesDuration.Value;
+            CalendarEventType calEvent = (CalendarEventType)this.eventsList.SelectedItem;
+            calEvent.duration.minutes = (ushort)minutesDuration.Value;
             // Refresh widget
             this.eventsList.RefreshItem(eventsList.SelectedIndex);
             this.alwaysAvailableCheckBox.Checked = calEvent.isAlwaysAvailable();
@@ -709,8 +750,8 @@ namespace AgentForAgent
         {
             if (eventsList.SelectedIndex == -1)
                 return;
-            CalendarEvent calEvent = (CalendarEvent)this.eventsList.SelectedItem;
-            calEvent.durationSeconds = (int)secondsDuration.Value;
+            CalendarEventType calEvent = (CalendarEventType)this.eventsList.SelectedItem;
+            calEvent.duration.seconds = (ushort)secondsDuration.Value;
             // Refresh widget
             this.eventsList.RefreshItem(eventsList.SelectedIndex);
             this.alwaysAvailableCheckBox.Checked = calEvent.isAlwaysAvailable();
@@ -722,8 +763,8 @@ namespace AgentForAgent
         {
             if (eventsList.SelectedIndex == -1)
                 return;
-            CalendarEvent calEvent = (CalendarEvent)this.eventsList.SelectedItem;
-            calEvent.processPriority = (ProcessPriorityClass)Enum.Parse(typeof(ProcessPriorityClass), (string)this.processPriorityComboBox.SelectedItem);
+            CalendarEventType calEvent = (CalendarEventType)this.eventsList.SelectedItem;
+            calEvent.config.processPriority = (ProcessPriorityClass)Enum.Parse(typeof(ProcessPriorityClass), (string)this.processPriorityComboBox.SelectedItem);
             this.saveConfig.Enabled = true;
         }
 
@@ -731,8 +772,8 @@ namespace AgentForAgent
         {
             if (eventsList.SelectedIndex == -1)
                 return;
-            CalendarEvent calEvent = (CalendarEvent)this.eventsList.SelectedItem;
-            calEvent.maxCpuUsage = Convert.ToUInt32(this.maxCpuUsageNumericUpDown.Value);
+            CalendarEventType calEvent = (CalendarEventType)this.eventsList.SelectedItem;
+            calEvent.config.maxCpuUsage = Convert.ToUInt16(this.maxCpuUsageNumericUpDown.Value);
             this.saveConfig.Enabled = true;
         }
 
@@ -745,10 +786,9 @@ namespace AgentForAgent
             {
                 //--Check if the event always exist
                 bool isExist = false;
-                foreach (CalendarEvent ev in this.eventsList.Items)
+                foreach (CalendarEventType ev in this.eventsList.Items)
                 {
-                    CalendarEvent cEv = (CalendarEvent)ev;
-                    if (cEv.isAlwaysAvailable())
+                    if (ev.isAlwaysAvailable())
                     {
                         isExist = true;
                         break;
@@ -759,15 +799,17 @@ namespace AgentForAgent
                 {
                     // The always available event is a full week
                     // with by default a normal process priority and 100% max CPU usage
-                    CalendarEvent cEv = new CalendarEvent();
-                    cEv.startHour = 0;
-                    cEv.startMinute = 0;
-                    cEv.startSecond = 0;
+                    CalendarEventType cEv = new CalendarEventType();
+                    cEv.config.portRange = null; // not needed
+                    cEv.start.day = DayOfWeek.Sunday;
+                    cEv.start.hour = 0;
+                    cEv.start.minute = 0;
+                    cEv.start.second = 0;
 
-                    cEv.durationDays = 6;
-                    cEv.durationHours = 23;
-                    cEv.durationMinutes = 59;
-                    cEv.durationSeconds = 59;
+                    cEv.duration.days = 6;
+                    cEv.duration.hours = 23;
+                    cEv.duration.minutes = 59;
+                    cEv.duration.seconds = 59;
 
                     this.processPriorityComboBox.SelectedIndex = 0;
                     this.maxCpuUsageNumericUpDown.Value = this.maxCpuUsageNumericUpDown.Maximum; 
@@ -797,7 +839,7 @@ namespace AgentForAgent
                 int idx = -1;
                 for (int i = 0; i < this.eventsList.Items.Count; i++)
                 {
-                    CalendarEvent cEv = (CalendarEvent)this.eventsList.Items[i];
+                    CalendarEventType cEv = (CalendarEventType)this.eventsList.Items[i];
                     if (cEv.isAlwaysAvailable())
                     {
                         idx = i;
@@ -839,21 +881,6 @@ namespace AgentForAgent
 
         private void rmiNodeName_TextChanged(object sender, EventArgs e)
         {
-            this.saveConfig.Enabled = true;
-        }
-
-        //--Checkbox (Define a nodeName for RMI registration)
-        private void rmiNodeEnabled_CheckedChanged(object sender, EventArgs e)
-        {
-            if (localRegistrationNodeEnabled.Checked)
-                this.localRegistrationNodeName.Enabled = true;
-            else
-            {
-                // Empty TextBox
-                this.localRegistrationNodeName.Text = "";
-                // Disable node name TextBox
-                this.localRegistrationNodeName.Enabled = false;
-            }
             this.saveConfig.Enabled = true;
         }
 
@@ -1005,9 +1032,9 @@ namespace AgentForAgent
             //this.editBox.ForeColor = Color.Blue;
             this.editBox.BorderStyle = BorderStyle.FixedSingle;
 
-            if (this.configuration.agentConfig.jvmParameters != null)
+            if (this.configuration.config.jvmParameters != null)
             {
-                this.jvmParametersListBox.Items.AddRange(this.configuration.agentConfig.jvmParameters);
+                this.jvmParametersListBox.Items.AddRange(this.configuration.config.jvmParameters);
             }
         }
 
@@ -1043,24 +1070,6 @@ namespace AgentForAgent
         /********************************************/
         /** MEMORY MANAGEMENT GUI HANDLING METHODS **/
         /********************************************/
-
-        private void enableMemoryManagementCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            this.memoryManagementGroupBox.Enabled = this.enableMemoryManagementCheckBox.Checked;
-            this.saveConfig.Enabled = true;
-        }
-
-        private void javaMemoryNumericUpDown_ValueChanged(object sender, EventArgs e)
-        {
-            this.totalProcessMemoryValue.Text = "" + (Constants.MINIMAL_REQUIRED_MEMORY + this.javaMemoryNumericUpDown.Value + this.nativeMemoryNumericUpDown.Value);
-            saveConfig.Enabled = true;
-        }
-
-        private void nativeMemoryNumericUpDown_ValueChanged(object sender, EventArgs e)
-        {
-            this.totalProcessMemoryValue.Text = "" + (Constants.MINIMAL_REQUIRED_MEMORY + this.javaMemoryNumericUpDown.Value + this.nativeMemoryNumericUpDown.Value);
-            saveConfig.Enabled = true;
-        }
 
         private void actionTypeTabControl_DrawItem(object sender, DrawItemEventArgs e)
         {
@@ -1098,6 +1107,7 @@ namespace AgentForAgent
 
         private void useAllAvailableCPUsCheckBox_CheckedChanged(object sender, EventArgs e)
         {
+            this.nbRuntimesNumericUpDown.Value = 0;
             this.nbRuntimesNumericUpDown.Enabled = !this.useAllAvailableCPUsCheckBox.Checked;
             this.saveConfig.Enabled = true;
         }
@@ -1118,22 +1128,7 @@ namespace AgentForAgent
 
         private void scriptLocationTextBox_TextChanged(object sender, EventArgs e)
         {
-            configuration.agentConfig.javaHome = jvmDirectory.Text;
-            saveConfig.Enabled = true;
-        }
-
-        private void useDefaultCredentialCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (useDefaultCredentialCheckBox.Checked)
-            {
-                credentialLocationTextBox.Enabled = false;
-                credentialBrowseLocationButton.Enabled = false;
-            }
-            else
-            {
-                credentialLocationTextBox.Enabled = true;
-                credentialBrowseLocationButton.Enabled = true;
-            }
+            configuration.config.javaHome = jvmDirectory.Text;
             saveConfig.Enabled = true;
         }
 
@@ -1145,6 +1140,11 @@ namespace AgentForAgent
                 credentialLocationTextBox.Text = credentialLocationOpenDialog.FileName;
                 saveConfig.Enabled = true;
             }
+        }
+
+        private void memoryLimitNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            this.saveConfig.Enabled = true;
         }
     }
 }

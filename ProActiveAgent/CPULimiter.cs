@@ -50,7 +50,7 @@ namespace ProActiveAgent
     /// On Windows XP setting process priority to RealTime makes it invulnerable to cpu usage limit.
     /// The cpu usage limit works only on Windows XP, Windows 2003 and Vista.    
     /// </summary>
-    class CPULimiter
+    sealed class CPULimiter
     {
         // Works on Windows XP, 2003 and Vista only
         [DllImport("ntdll.dll", EntryPoint = "NtResumeProcess", SetLastError = true)]
@@ -110,7 +110,8 @@ namespace ProActiveAgent
             string perfCounterInstanceName = GetPerformanceCounterInstanceName(processToWatch.Id);
             // If no performance counter is found for that process maybe the system
             // is not ready or the process has already exited
-            if (perfCounterInstanceName == null) {
+            if (perfCounterInstanceName == null)
+            {
                 return false;
             }
             // Create a watcher for this process
@@ -252,7 +253,7 @@ namespace ProActiveAgent
                     {
                         rawValue = (int)cnt.RawValue;
                     }
-                    catch (InvalidOperationException) 
+                    catch (InvalidOperationException)
                     {
                         // A problem occured when trying to get read the value of the current 
                         // performance counter ...
@@ -267,7 +268,7 @@ namespace ProActiveAgent
             }
             // If the instance name is null that means there no performance counter 
             // instance name for current process. This is truly strange ...
-            return name;            
+            return name;
         }
 
         private class ProcessWatcher

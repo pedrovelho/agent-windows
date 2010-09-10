@@ -1,7 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+# Visual C# Express 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigParser", "ConfigParser\ConfigParser.csproj", "{7A2374A3-842C-4A95-8DCA-2E5E011835F8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E5705A77-B374-4334-8FD2-86E0153A04F8} = {E5705A77-B374-4334-8FD2-86E0153A04F8}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProActiveAgent", "ProActiveAgent\ProActiveAgent.csproj", "{91B8D1E6-3204-4AC5-91A6-6CB53C0F03F2}"
 EndProject
@@ -13,6 +16,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgentFirstSetup", "AgentFir
 	ProjectSection(ProjectDependencies) = postProject
 		{91B8D1E6-3204-4AC5-91A6-6CB53C0F03F2} = {91B8D1E6-3204-4AC5-91A6-6CB53C0F03F2}
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigParserOLD", "ConfigParserOLD\ConfigParserOLD.csproj", "{E5705A77-B374-4334-8FD2-86E0153A04F8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -62,6 +67,12 @@ Global
 		{AF23E8C6-383B-415B-99B4-DA1479626092}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AF23E8C6-383B-415B-99B4-DA1479626092}.Release|x86.ActiveCfg = Release|x86
 		{AF23E8C6-383B-415B-99B4-DA1479626092}.Release|x86.Build.0 = Release|x86
+		{E5705A77-B374-4334-8FD2-86E0153A04F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5705A77-B374-4334-8FD2-86E0153A04F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5705A77-B374-4334-8FD2-86E0153A04F8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E5705A77-B374-4334-8FD2-86E0153A04F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5705A77-B374-4334-8FD2-86E0153A04F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5705A77-B374-4334-8FD2-86E0153A04F8}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

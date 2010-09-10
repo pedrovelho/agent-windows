@@ -97,13 +97,13 @@ namespace ProActiveAgent
             }
 
             // Parse the configuration file once per start
-            Configuration configuration = ConfigurationParser.parseXml(agentConfigLocation, agentInstallLocation);
+            AgentType configuration = ConfigurationParser.parseXml(agentConfigLocation, agentInstallLocation);
             configuration.agentInstallLocation = agentInstallLocation;
 
             // Read classpath
             try
             {
-                Utils.readClasspath(configuration.agentConfig);
+                Utils.readClasspath(configuration.config);
             }
             catch (Exception ex)
             {

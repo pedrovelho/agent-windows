@@ -26,52 +26,54 @@
  * If needed, contact us to obtain a release under GPL Version 2 
  * or a different license than the GPL.
  *
- *  Initial developer(s):               The ProActive Team
- *                        http://proactive.inria.fr/team_members.htm
- *  Contributor(s): ActiveEon Team - http://www.activeeon.com
+ *  Initial developer(s):               The ActiveEon Team
+ *                        http://www.activeeon.com/
+ *  Contributor(s):
  *
  * ################################################################
- * $$ACTIVEEON_CONTRIBUTOR$$
+ * $$ACTIVEEON_INITIAL_DEV$$
  */
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.ServiceProcess;
-using System.Windows.Forms;
-using ProActiveAgent;
+using System.Xml.Serialization;
 
-/**
- * This class is used to communicate with ProActive Agent system service
- * It is using ServiceController class to achieve this goal
- */
-
-namespace ScreenSaver
+namespace ConfigParserOLD
 {
-    public class ServiceCommunicator
+    public class CustomAction : Action
     {
-        private readonly ServiceController sc = new ServiceController(Constants.PROACTIVE_AGENT_SERVICE_NAME);
+        /** The string description of this action **/
+        public const string DESCRIPTION = "Custom";
+        /// <summary>
+        /// The java class that corresponds to this action.</summary>
+        public const string DEFAULT_JAVA_STARTER_CLASS = "user.Starter";
+        /// <summary>
+        /// The arguments used for this custom conenction.</summary>
+        private string[] myArgs;
 
-        public void sendStartAction()
+        public CustomAction()
         {
-            try
+            base.javaStarterClass = DEFAULT_JAVA_STARTER_CLASS;
+            this.args = new string[0];
+        }
+
+        [XmlArray("args", IsNullable = false)]
+        [XmlArrayItem("arg", IsNullable = true)]
+        public String[] args
+        {
+            get
             {
-                sc.ExecuteCommand((int)PAACommands.ScreenSaverStart);
+                return this.myArgs;
             }
-            catch (InvalidOperationException)
+            set
             {
+                this.myArgs = value;
             }
         }
 
-        public void sendStopAction()
+        public override string[] getArgs()
         {
-            try
-            {
-                sc.ExecuteCommand((int)PAACommands.ScreenSaverStop);
-            }
-            catch (InvalidOperationException)
-            {
-            }
+            return this.myArgs;
         }
-
     }
 }

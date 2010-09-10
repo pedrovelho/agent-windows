@@ -56,7 +56,7 @@ namespace AgentFirstSetup
         const int LOGON32_PROVIDER_WINNT40 = 2;
         const int LOGON32_PROVIDER_WINNT50 = 3;
 
-        private Configuration conf;
+        private AgentType conf;
         private string configLocation;
         private string agentDir;
         private string path;
@@ -98,15 +98,15 @@ namespace AgentFirstSetup
             InitializeComponent();
 
             // If ProActive or Scheduling location is specified in the configuration load it
-            if (this.conf.agentConfig.proactiveLocation != null && !this.conf.agentConfig.proactiveLocation.Equals(""))
+            if (this.conf.config.proactiveHome != null && !this.conf.config.proactiveHome.Equals(""))
             {
-                this.proactiveLocation.Text = this.conf.agentConfig.proactiveLocation;
+                this.proactiveLocation.Text = this.conf.config.proactiveHome;
             }
 
             // Same for java location
-            if (this.conf.agentConfig.javaHome != null && !this.conf.agentConfig.javaHome.Equals(""))
+            if (this.conf.config.javaHome != null && !this.conf.config.javaHome.Equals(""))
             {
-                this.jvmDirectory.Text = this.conf.agentConfig.javaHome;
+                this.jvmDirectory.Text = this.conf.config.javaHome;
             }
             else
             {
@@ -135,7 +135,7 @@ namespace AgentFirstSetup
             {
                 jvmDirectory.Enabled = false;
                 jvmLocationButton.Enabled = false;
-                conf.agentConfig.javaHome = "";
+                conf.config.javaHome = "";
             }
             else
             {
@@ -146,12 +146,12 @@ namespace AgentFirstSetup
 
         private void proactiveLocation_TextChanged(object sender, EventArgs e)
         {
-            conf.agentConfig.proactiveLocation = proactiveLocation.Text;
+            conf.config.proactiveHome = proactiveLocation.Text;
         }
 
         private void jvmDirectory_TextChanged(object sender, EventArgs e)
         {
-            conf.agentConfig.javaHome = jvmDirectory.Text;
+            conf.config.javaHome = jvmDirectory.Text;
         }
 
         private void saveConfig_Click(object sender, EventArgs e)

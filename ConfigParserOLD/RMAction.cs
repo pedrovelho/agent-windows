@@ -46,7 +46,7 @@ using System;
  * for example rmi://cheypa.inria.fr:1099
  */
 
-namespace ConfigParser
+namespace ConfigParserOLD
 {
     public class RMAction : Action
     {

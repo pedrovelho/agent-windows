@@ -35,29 +35,30 @@
  */
 using System;
 using System.Diagnostics;
+using ConfigParser;
 
 namespace ProActiveAgent
 {
-    public class StartActionInfo
+    sealed class StartActionInfo
     {
-        private readonly ConfigParser.Action _action;
+        private readonly ConnectionType _connection;
         private readonly DateTime _stopTime;
         private readonly ProcessPriorityClass _processPriority;
         private readonly uint _maxCpuUsage;
 
-        public StartActionInfo(ConfigParser.Action action, DateTime stopTime, ProcessPriorityClass processPriority, uint maxCpuUsage)
+        public StartActionInfo(ConnectionType connection, DateTime stopTime, ProcessPriorityClass processPriority, uint maxCpuUsage)
         {
-            this._action = action;
+            this._connection = connection;
             this._stopTime = stopTime;
             this._processPriority = processPriority;
             this._maxCpuUsage = maxCpuUsage;
         }
 
-        public ConfigParser.Action action
+        public ConnectionType action
         {
             get
             {
-                return this._action;
+                return this._connection;
             }
         }
 

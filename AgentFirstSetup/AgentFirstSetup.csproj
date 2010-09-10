@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{AF23E8C6-383B-415B-99B4-DA1479626092}</ProjectGuid>
     <OutputType>WinExe</OutputType>
@@ -120,8 +120,13 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="SrvInstaller.cs" />
+    <Compile Include="TestProgram.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ConfigParserOLD\ConfigParserOLD.csproj">
+      <Project>{E5705A77-B374-4334-8FD2-86E0153A04F8}</Project>
+      <Name>ConfigParserOLD</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ConfigParser\ConfigParser.csproj">
       <Project>{7A2374A3-842C-4A95-8DCA-2E5E011835F8}</Project>
       <Name>ConfigParser</Name>

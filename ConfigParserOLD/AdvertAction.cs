@@ -42,7 +42,7 @@ using System.Xml.Serialization;
  * advertised in RMI registry
  */
 
-namespace ConfigParser
+namespace ConfigParserOLD
 {
 
     public class AdvertAction : Action

@@ -121,7 +121,10 @@ namespace ProActiveAgent
         public const int MAX_PROACTIVE_RMI_PORT = 65534;
         /// <summary>
         /// The link to the official documentation.</summary>
-        public const string DOC_LINK = "http://proactive.inria.fr/release-doc/ResourceManager/single_html/ResourceManagerManual.html#ProActiveWindowsAgent_89";
+        public const string DOC_LINK = "http://proactive.inria.fr/release-doc/Resourcing/single_html/ResourceManagerManual.html#ProActiveWindowsAgent_89";
+        /// <summary>
+        /// The default Resource Manager url.</summary>
+        public const string DEFAULT_RM_URL = "rmi://localhost:1099";
     }
 
     /// <summary>
@@ -177,14 +180,14 @@ namespace ProActiveAgent
         /// This method checks if the provided ProActive location contains \bin\windows\init.bat script.        
         /// </summary>
         /// <param name="config">The user defined configuration.</param>
-        public static void readClasspath(ConfigParser.AgentConfig config)
+        public static void readClasspath(ConfigParser.AgentConfigType config)
         {
-            if (config.proactiveLocation == null || config.proactiveLocation.Equals(""))
+            if ("".Equals(config.proactiveHome))
             {
                 throw new ApplicationException("Unable to read the classpath, the ProActive location is unknown!");
             }
 
-            string binDirectory = config.proactiveLocation + @"\bin";
+            string binDirectory = config.proactiveHome + @"\bin";
 
             // First check if the dir 'bin' exists
             if (!System.IO.Directory.Exists(binDirectory))
@@ -206,8 +209,8 @@ namespace ProActiveAgent
             }
 
             ProcessStartInfo info = new ProcessStartInfo();
-            info.EnvironmentVariables["PA_SCHEDULER"] = config.proactiveLocation;
-            info.EnvironmentVariables["PROACTIVE"] = config.proactiveLocation;
+            info.EnvironmentVariables["PA_SCHEDULER"] = config.proactiveHome;
+            info.EnvironmentVariables["PROACTIVE"] = config.proactiveHome;
 
             // 1) Use the java location if it's specified in the configuration
             // 2) If not specified use JAVA_HOME variable

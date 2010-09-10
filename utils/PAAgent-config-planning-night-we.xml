@@ -1,102 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<agent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <internalConfig>
-    <proactiveLocation />
-    <java_home />
-    <jvm_parameters />
-    <enable_memory_management>false</enable_memory_management>
-    <java_memory>0</java_memory>
-    <native_memory>0</native_memory>
-    <nb_processes>1</nb_processes>
-    <use_all_cpus>false</use_all_cpus>
+<agent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:proactive:agent:0.90:windows">
+  <config>
+    <proactiveHome />
+    <javaHome />
+    <jvmParameters />
+    <memoryLimit>0</memoryLimit>
+    <nbRuntimes>1</nbRuntimes>
     <protocol>rmi</protocol>
-    <port_initial_value>1099</port_initial_value>
+    <portRange first="1099" last="1100" />
     <onRuntimeExitScript />
-  </internalConfig>
+    <processPriority>Normal</processPriority>
+    <maxCpuUsage>100</maxCpuUsage>
+  </config>
   <events>
-    <event xsi:type="CalendarEvent">
-      <startDay>monday</startDay>
-      <startHour>8</startHour>
-      <startMinute>0</startMinute>
-      <startSecond>0</startSecond>
-      <durationDays>0</durationDays>
-      <durationHours>11</durationHours>
-      <durationMinutes>0</durationMinutes>
-      <durationSeconds>0</durationSeconds>
-      <processPriority>Normal</processPriority>
-      <maxCpuUsage>100</maxCpuUsage>
+    <event>
+      <start day="Monday" hour="8" minute="0" second="0" />
+      <duration days="0" hours="11" minutes="0" seconds="0" />
+      <config>
+        <memoryLimit>0</memoryLimit>
+        <nbRuntimes>0</nbRuntimes>
+        <portRange first="0" last="0" />
+        <processPriority>Normal</processPriority>
+        <maxCpuUsage>100</maxCpuUsage>
+      </config>
     </event>
-    <event xsi:type="CalendarEvent">
-      <startDay>tuesday</startDay>
-      <startHour>8</startHour>
-      <startMinute>0</startMinute>
-      <startSecond>0</startSecond>
-      <durationDays>0</durationDays>
-      <durationHours>11</durationHours>
-      <durationMinutes>0</durationMinutes>
-      <durationSeconds>0</durationSeconds>
-      <processPriority>Normal</processPriority>
-      <maxCpuUsage>100</maxCpuUsage>
+    <event>
+      <start day="Tuesday" hour="8" minute="0" second="0" />
+      <duration days="0" hours="11" minutes="0" seconds="0" />
+      <config>
+        <memoryLimit>0</memoryLimit>
+        <nbRuntimes>0</nbRuntimes>
+        <portRange first="0" last="0" />
+        <processPriority>Normal</processPriority>
+        <maxCpuUsage>100</maxCpuUsage>
+      </config>
     </event>
-    <event xsi:type="CalendarEvent">
-      <startDay>wednesday</startDay>
-      <startHour>8</startHour>
-      <startMinute>0</startMinute>
-      <startSecond>0</startSecond>
-      <durationDays>0</durationDays>
-      <durationHours>11</durationHours>
-      <durationMinutes>0</durationMinutes>
-      <durationSeconds>0</durationSeconds>
-      <processPriority>Normal</processPriority>
-      <maxCpuUsage>100</maxCpuUsage>
+    <event>
+      <start day="Wednesday" hour="8" minute="0" second="0" />
+      <duration days="0" hours="11" minutes="0" seconds="0" />
+      <config>
+        <memoryLimit>0</memoryLimit>
+        <nbRuntimes>0</nbRuntimes>
+        <portRange first="0" last="0" />
+        <processPriority>Normal</processPriority>
+        <maxCpuUsage>100</maxCpuUsage>
+      </config>
     </event>
-    <event xsi:type="CalendarEvent">
-      <startDay>thursday</startDay>
-      <startHour>8</startHour>
-      <startMinute>0</startMinute>
-      <startSecond>0</startSecond>
-      <durationDays>0</durationDays>
-      <durationHours>11</durationHours>
-      <durationMinutes>0</durationMinutes>
-      <durationSeconds>0</durationSeconds>
-      <processPriority>Normal</processPriority>
-      <maxCpuUsage>100</maxCpuUsage>
+    <event>
+      <start day="Thursday" hour="8" minute="0" second="0" />
+      <duration days="0" hours="11" minutes="0" seconds="0" />
+      <config>
+        <memoryLimit>0</memoryLimit>
+        <nbRuntimes>0</nbRuntimes>
+        <portRange first="0" last="0" />
+        <processPriority>Normal</processPriority>
+        <maxCpuUsage>100</maxCpuUsage>
+      </config>
     </event>
-    <event xsi:type="CalendarEvent">
-      <startDay>friday</startDay>
-      <startHour>8</startHour>
-      <startMinute>0</startMinute>
-      <startSecond>0</startSecond>
-      <durationDays>0</durationDays>
-      <durationHours>11</durationHours>
-      <durationMinutes>0</durationMinutes>
-      <durationSeconds>0</durationSeconds>
-      <processPriority>Normal</processPriority>
-      <maxCpuUsage>100</maxCpuUsage>
+    <event>
+      <start day="Friday" hour="8" minute="0" second="0" />
+      <duration days="0" hours="11" minutes="0" seconds="0" />
+      <config>
+        <memoryLimit>0</memoryLimit>
+        <nbRuntimes>0</nbRuntimes>
+        <portRange first="0" last="0" />
+        <processPriority>Normal</processPriority>
+        <maxCpuUsage>100</maxCpuUsage>
+      </config>
     </event>
   </events>
-  <actions>
-    <action xsi:type="AdvertAction">
-      <initialRestartDelay>0</initialRestartDelay>
+  <connections>
+    <localBind enabled="true">
+      <respawnIncrement>10</respawnIncrement>
       <javaStarterClass>org.objectweb.proactive.core.util.winagent.PAAgentServiceRMIStarter</javaStarterClass>
-      <isEnabled>false</isEnabled>
-      <nodeName />
-    </action>
-    <action xsi:type="RMAction">
-      <initialRestartDelay>0</initialRestartDelay>
+    </localBind>
+    <rmConnection enabled="false">
+      <respawnIncrement>10</respawnIncrement>
       <javaStarterClass>org.ow2.proactive.resourcemanager.utils.PAAgentServiceRMStarter</javaStarterClass>
-      <isEnabled>false</isEnabled>
-      <url />
-      <nodeName />
-      <nodeSourceName />
-      <credentialLocation />
-      <useDefaultCredential>true</useDefaultCredential>
-    </action>
-    <action xsi:type="CustomAction">
-      <initialRestartDelay>0</initialRestartDelay>
+      <url>rmi://localhost:1099</url>
+    </rmConnection>
+    <customConnection enabled="false">
+      <respawnIncrement>10</respawnIncrement>
       <javaStarterClass>user.Starter</javaStarterClass>
-      <isEnabled>false</isEnabled>
-      <args />
-    </action>
-  </actions>
+    </customConnection>
+  </connections>
 </agent>

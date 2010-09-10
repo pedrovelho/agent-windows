@@ -40,40 +40,104 @@ using System.Xml.Serialization;
 using System.Xml;
 using System.Xml.Schema;
 using System.IO;
-
-/**
- * Class which objects are responsible
- * for transformation from XML configuration file
- * into internal object representation of configuration state
- */
+using ConfigParserOLD;
 
 namespace ConfigParser
 {
-    public class ConfigurationParser
+    /// <summary>
+    /// Class which objects are responsible
+    /// for transformation from XML configuration file
+    /// into internal object representation of configuration state.
+    /// </summary>
+    public sealed class ConfigurationParser
     {
-        private static bool valid = true;
-        private static string reason = "";
+        /// <summary>
+        /// The namespace of config files.</summary>
+        public const string CONFIG_NAMESPACE = "urn:proactive:agent:0.90:windows";
 
-        public static void saveXml(String fileName, Configuration configuration)
-        {
-            XmlSerializer serializer = new XmlSerializer(typeof(Configuration));
+        private static string reason;
+
+        public static void saveXml(String fileName, AgentType configuration)
+        {            
+            XmlSerializer serializer = new XmlSerializer(typeof(AgentType));
             TextWriter tw = new StreamWriter(fileName);
             serializer.Serialize(tw, configuration);
             tw.Close();
         }
 
-        // Parse given XML file
-        // Result: Configuration object representing the contents of file
-
-        public static bool validateXMLFile(String filePath, String agentHomePath)
+        /// <summary>
+        /// Throws Application exception if the file is invalid.
+        /// </summary>
+        /// <param name="filePath">The path to the configuration file</param>
+        /// <param name="agentHome">The home dir of the agent</param>
+        public static void validateXMLFile(string filePath, string agentHome)
         {
-            String schemaPath = agentHomePath + "\\config.xsd";
-            valid = true;
-            // Schema validation
+            // First try to validate against current version            
+            try
+            {                
+                XmlSchemaSet schemaSet = new XmlSchemaSet();
+                schemaSet.Add(CONFIG_NAMESPACE, agentHome + "\\xml\\agent-windows.xsd");
+                internalValidate(filePath, agentHome, schemaSet);
+            }
+            catch (Exception e1)
+            {
+                // Try to validate against the older schema version (older than < 2.2)               
+                try
+                {                    
+                    XmlSchemaSet schemaSet = new XmlSchemaSet();
+                    schemaSet.Add(null, agentHome + "\\xml\\agent-old.xsd");
+                    internalValidate(filePath, agentHome, schemaSet);
+                }
+                catch (Exception e2)
+                {
+                    throw new ApplicationException("Invalid configuration file. Against agent-windows.xsd: " + e1 + " Against agent-old.xsd: " + e2.Message);
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Tries to validate against agent-windows.xsd with fallback to agent-old.xsd
+        /// </summary>
+        /// <param name="filePath">The path to the configuration file</param>
+        /// <param name="agentHome">The home dir of the agent</param>
+        /// <returns></returns>
+        public static AgentType parseXml(String filePath, string agentHome)
+        {
+            TextReader tr1 = new StreamReader(filePath);
+            try
+            {
+                // Try to deserialize 
+                XmlSerializer serializer = new XmlSerializer(typeof(AgentType));
+                return (AgentType)serializer.Deserialize(tr1);
+            }
+            catch (Exception)
+            {
+                TextReader tr2 = new StreamReader(filePath);
+                try
+                {
+                    // Try against older version
+                    XmlSerializer serializer = new XmlSerializer(typeof(ConfigurationOLD));
+                    ConfigurationOLD oldConf = (ConfigurationOLD)serializer.Deserialize(tr2);
+                    // Translate
+                    return translateFromOLD(oldConf);
+                }
+                catch (Exception e2)
+                {
+                    throw e2;
+                }
+                finally
+                {
+                    tr2.Close();
+                }
+            }
+            finally
+            {
+                tr1.Close();
+            }
+        }
 
-            XmlSchemaSet schemaSet = new XmlSchemaSet();
-            schemaSet.Add(null, schemaPath);
-
+        private static void internalValidate(string filePath, string agentHome, XmlSchemaSet schemaSet)
+        {
 
             XmlReaderSettings settings = new XmlReaderSettings();
             settings.ValidationType = ValidationType.Schema;
@@ -89,36 +153,129 @@ namespace ConfigParser
             {
                 throw new ApplicationException("Could not read the " + filePath + " config file ", e);
             }
-
-            textReader.Close();
-
-
-            if (!valid)
-                return false;
-
-            return true;
-        }
-
-
-        public static Configuration parseXml(String configFilePath, string proActiveAgentDir)
-        {
-            // String xmlSchemaFilePath = proActiveAgentDir + "\\config.xsd";          
-            if (!validateXMLFile(configFilePath, proActiveAgentDir))
-                throw new ApplicationException("Reason: " + reason);
-            // Deserialization
-
-            XmlSerializer serializer = new XmlSerializer(typeof(Configuration));
-            Configuration res;
-            TextReader tr = new StreamReader(configFilePath);
-            res = (Configuration)serializer.Deserialize(tr);
-            tr.Close();
-            return res;
+            finally
+            {
+                textReader.Close();
+            }
+            try
+            {
+                // If something happened throw an exception
+                if (reason != null)
+                {
+                    throw new ApplicationException("Unable to validate " + filePath + " is invalid: " + reason);
+                }
+            }
+            finally
+            {
+                reason = null;
+            }
         }
 
         private static void ValidationError(object sender, ValidationEventArgs arguments)
         {
-            reason = arguments.Message; // Display error
-            valid = false; //validation failed
+            reason = arguments.Message;
+        }
+
+        private static AgentType translateFromOLD(ConfigurationOLD oldConf)
+        {
+
+            // Translate general configuration                    
+            AgentConfigType config = new AgentConfigType();
+            config.proactiveHome = oldConf.agentConfig.proactiveLocation;
+            config.javaHome = oldConf.agentConfig.javaHome;
+            config.jvmParameters = oldConf.agentConfig.jvmParameters;
+            config.memoryLimit = 0; // Not translated
+            config.nbRuntimes = (ushort)oldConf.agentConfig.nbProcesses;
+            config.protocol = oldConf.agentConfig.runtimeIncomingProtocol.ToString();
+            config.portRange.first = (ushort)oldConf.agentConfig.proActiveCommunicationPortInitialValue;
+            config.portRange.last = (ushort)(config.portRange.first + config.nbRuntimes);
+            config.onRuntimeExitScript = oldConf.agentConfig.onRuntimeExitScript;
+            config.processPriority = System.Diagnostics.ProcessPriorityClass.Normal;
+            config.maxCpuUsage = 100;
+
+            // Translate events
+            CalendarEventType[] events = new CalendarEventType[oldConf.events.Count];
+            for (int i = 0; i < oldConf.events.Count; i++)
+            {
+                CalendarEvent oldEvent = oldConf.events[i];
+                CalendarEventType newEvent = new CalendarEventType();
+
+                string day = oldEvent.startDay;
+                if (day.Equals("monday"))
+                    newEvent.start.day = DayOfWeek.Monday;
+                else if (day.Equals("tuesday"))
+                    newEvent.start.day = DayOfWeek.Tuesday;
+                else if (day.Equals("wednesday"))
+                    newEvent.start.day = DayOfWeek.Wednesday;
+                else if (day.Equals("thursday"))
+                    newEvent.start.day = DayOfWeek.Thursday;
+                else if (day.Equals("friday"))
+                    newEvent.start.day = DayOfWeek.Friday;
+                else if (day.Equals("saturday"))
+                    newEvent.start.day = DayOfWeek.Saturday;
+                else if (day.Equals("sunday"))
+                    newEvent.start.day = DayOfWeek.Sunday;
+
+                newEvent.start.hour = (ushort)oldEvent.startHour;
+                newEvent.start.minute = (ushort)oldEvent.startMinute;
+                newEvent.start.second = (ushort)oldEvent.startSecond;
+
+                newEvent.duration.days = (ushort)oldEvent.durationDays;
+                newEvent.duration.hours = (ushort)oldEvent.durationHours;
+                newEvent.duration.minutes = (ushort)oldEvent.durationMinutes;
+                newEvent.duration.seconds = (ushort)oldEvent.durationSeconds;
+
+                newEvent.config.processPriority = oldEvent.processPriority;
+                newEvent.config.maxCpuUsage = (ushort)oldEvent.maxCpuUsage;
+
+                // Add the new event
+                events[i] = newEvent;
+            }
+
+            // Translate connections
+            ConnectionType[] connections = new ConnectionType[3];
+
+            AdvertAction advertAction = (AdvertAction)oldConf.actions[0];
+            LocalBindConnectionType localBind = new LocalBindConnectionType();
+            if (advertAction != null)
+            {
+                localBind.respawnIncrement = 10; // TODO: See the default value
+                localBind.javaStarterClass = advertAction.javaStarterClass;
+                localBind.nodename = advertAction.nodeName;
+                localBind.enabled = advertAction.isEnabled;
+            }
+            connections[0] = localBind;
+
+            RMAction rmAction = (RMAction)oldConf.actions[1];
+            ResoureManagerConnectionType rmConn = new ResoureManagerConnectionType();
+            if (rmAction != null)
+            {
+                rmConn.respawnIncrement = 10; // TODO: See the default value
+                rmConn.javaStarterClass = rmAction.javaStarterClass;
+                rmConn.nodename = rmAction.nodeName;
+                rmConn.enabled = rmAction.isEnabled; // TODO: See the default value                        
+                rmConn.url = rmAction.url;
+                rmConn.nodeSourceName = rmAction.nodeSourceName;
+                if (!rmAction.useDefaultCredential)
+                {
+                    rmConn.credential = rmAction.credentialLocation;
+                }
+            }
+            connections[1] = rmConn;
+
+            CustomAction customAction = (CustomAction)oldConf.actions[2];
+            CustomConnectionType customCon = new CustomConnectionType();
+            if (customAction != null)
+            {
+                customCon.respawnIncrement = 10; // TODO: See the default value
+                customCon.javaStarterClass = customAction.javaStarterClass;
+                customCon.args = customAction.args;
+                customCon.enabled = customAction.isEnabled;
+            }
+            connections[2] = customCon;
+
+            // Create the new agent conf
+            return new AgentType(config, events, connections);
         }
     }
 }
