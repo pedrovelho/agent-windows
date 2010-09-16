@@ -48,17 +48,14 @@ namespace ProActiveAgent
         private static readonly ILog LOGGER = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
-        /// The configuration used to run the process.</summary>
+        /// The configuration used to run the process</summary>
         private readonly AgentType _configuration;
         /// <summary>
-        /// The selected connection.</summary>
+        /// The selected connection</summary>
         private readonly ConnectionType _enabledConnection;
         /// <summary>
-        /// All jvm parameters (default and user defined).</summary>
+        /// All jvm parameters (default and user defined)</summary>
         private readonly string[] _jvmParameters;
-        /// <summary>
-        /// The starter class name.</summary>
-        private readonly string _cmd;
 
         /// <summary>
         /// The constructor of this class.</summary>
@@ -75,20 +72,34 @@ namespace ProActiveAgent
             else
             {
                 LOGGER.Info("Selected action " + this._enabledConnection.GetType().Name);
-            }
+            }    
 
             // Prepare jvm parameters, cmd and args from the given action type
 
-            // All jvm parameters
+            // The list of jvm parameters
             List<string> jvmParametersList = new List<string>();
 
-            // Add default parameters            
+            // Add default parameters
             this._enabledConnection.fillDefaultJvmParameters(jvmParametersList, this._configuration.config.proactiveHome);
+            
+            // Init -Xms to default value unless it was explicitely specified by the user from the configuration
+            string xms = "-Xms" + Constants.MINIMAL_REQUIRED_MEMORY + "M";
+            if (this._configuration.config.jvmParameters != null)
+            {
+                // Append all params and check for overriden jvm memory parameters
+                foreach (string s in this._configuration.config.jvmParameters)
+                {
+                    // Check if user specifically defined jvm memory params and override them with user values
+                    if (s != null && s.Contains("-Xms"))
+                    {
+                        xms = s;
+                        continue;
+                    }
+                    jvmParametersList.Add(s);
+                }
+            }
+            jvmParametersList.Add(xms);
 
-            this._cmd = this._enabledConnection.javaStarterClass;
-
-            // Add user defined jvm parameters
-            this.addUserDefinedJvmParameters(jvmParametersList);
             this._jvmParameters = jvmParametersList.ToArray();
         }
 
@@ -116,31 +127,12 @@ namespace ProActiveAgent
             }
         }
 
-        public string cmd
+        public string starterClass
         {
             get
             {
-                return this._cmd;
+                return this._enabledConnection.javaStarterClass;
             }
-        }
-
-        private void addUserDefinedJvmParameters(List<string> jvmParameters)
-        {
-            // Add all user defined jvm parameters             
-            // Init -Xms to default value unless it was explicitely specified by the user from the configuration
-            string xms = "-Xms" + Constants.MINIMAL_REQUIRED_MEMORY + "M";            
-            // Append all params and check for overriden jvm memory parameters
-            foreach (string s in this._configuration.config.jvmParameters)
-            {
-                // Check if user specifically defined jvm memory params and override them with user values
-                if (s != null && s.Contains("-Xms"))
-                {
-                    xms = s;
-                    continue;
-                }
-                jvmParameters.Add(s);
-            }
-            jvmParameters.Add(xms);            
         }
     }
 }

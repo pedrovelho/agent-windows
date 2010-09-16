@@ -265,10 +265,9 @@ namespace ProActiveAgent
                         throw new ApplicationException("Cannot locate the java home. Please specify the java directory in the configuration or set JAVA_HOME environement variable.");
                     }
                 }
-                info.FileName = javaHome + "\\bin\\java.exe";
-                // Application arguments will be 
-                info.Arguments = jvmParametersBuilder.ToString() + " " + this.commonStartInfo.cmd + " " + argumentsBuilder.ToString();
-                // Set the classpath 
+                info.FileName = javaHome + "\\bin\\java.exe";                
+                info.Arguments = jvmParametersBuilder.ToString() + " " + this.commonStartInfo.starterClass + " " + argumentsBuilder.ToString();
+                // Set the classpath
                 info.EnvironmentVariables[Constants.CLASSPATH] = this.commonStartInfo.configuration.config.classpath;
                 // Configure runtime specifics
                 info.UseShellExecute = false; // needed to redirect output
