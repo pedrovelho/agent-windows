@@ -37,10 +37,10 @@ ComponentText "This will install ProActive Agent on your computer. Select which 
 
 DirText "Choose a directory to install in to:"
 
-#Page License
-#Page Components
-#Page Directory
-#Page Instfiles
+Page License
+Page Components
+Page Directory
+Page Instfiles
 Page Custom MyCustomPage MyCustomLeave
 
 Function MyCustomPage
@@ -58,7 +58,7 @@ Function MyCustomLeave
   # R1 will store the value of "Install as LocalSystem"
   !insertmacro MUI_INSTALLOPTIONS_READ $R1 ${PAGE_FILE} "Field 6" "State"
   ${If} $R1 == "1"
-        !insertmacro SERVICE "create" ${SERVICE_NAME} "path=C:\vbodnart\SAVE\agent trunk\windows\bin\Release\ProActiveAgent.exe;autostart=1;interact=0;display=${SERVICE_NAME};description=${SERVICE_DESC};"
+        !insertmacro SERVICE "create" ${SERVICE_NAME} "path=$INSTDIR\ProActiveAgent.exe;autostart=1;interact=0;display=${SERVICE_NAME};description=${SERVICE_DESC};" ""
   ${EndIf}
   # R1 will store the value of "Specify an account"
   !insertmacro MUI_INSTALLOPTIONS_READ $R1 ${PAGE_FILE} "Field 7" "State"
@@ -88,9 +88,11 @@ Function MyCustomLeave
             # Treat specific error ... the account does not exist
             ${If} $0 == "ERROR GetAccountSid" 
                DetailPrint "The account $R3 does not exist ... asking user if he wants to create a new account"
-               MessageBox MB_YESNO "The account $R3 does not exist, would you like to create it ?" IDNO noCreateAccount
                # Ask the user if he wants to create a new account
-               UserMgr::CreateAccount $R3 $R$ "The ProActive Agent service may be started under this account."
+               MessageBox MB_YESNO "The account $R3 does not exist, would you like to create it ?" IDYES createAccount
+                Abort
+               createAccount:
+               UserMgr::CreateAccount $R3 $R4 "The ProActive Agent service may be started under this account."
   	       Pop $0
                ${If} $0 == "ERROR 2224" # Means account already exists .. it's strange but yes it is possible !
                   DetailPrint "The account $R3 already exist"
@@ -105,22 +107,23 @@ Function MyCustomLeave
                   MessageBox MB_OK "Unable to add privileges"
                     Abort
         	${EndIf}
-                 noCreateAccount:
             # Unknown error just print and still try to install the user
             ${Else}
                DetailPrint "Unable to check for service logon right due to $0, still trying to install the service"
                MessageBox MB_OK "Unable to check for service logon right due to $0"
             ${EndIf}
             installService:
-            !insertmacro SERVICE "create" ${SERVICE_NAME} "path=C:\vbodnart\SAVE\agent trunk\windows\bin\Release\ProActiveAgent.exe;autostart=1;interact=0;display=${SERVICE_NAME};description=${SERVICE_DESC};user=$R5\$R3;password=$R4;"
+            !insertmacro SERVICE "create" ${SERVICE_NAME} "path=$INSTDIR\ProActiveAgent.exe;autostart=1;interact=0;display=${SERVICE_NAME};description=${SERVICE_DESC};user=$R5\$R3;password=$R4;" ""
             Pop $0
-            DetailPrint "The service was installed under account $R3"
+            # Means the service is not installed !
+            ${If} $0 != "true"
+              DetailPrint "Unable to install as service."
+              MessageBox MB_OK "Unable to install as service. To install manually use sc.exe command"
+           ${EndIf}
           ${EndIf}
         ${EndIf}
   ${EndIf}
 FunctionEnd
-
-
 
 ############################################################################################
 # On init peforms the following checks:
@@ -281,7 +284,7 @@ Section "ProActive Agent"
         #-----------------------------------------------------------------------------------
         # Run the internal service installer
         #-----------------------------------------------------------------------------------
-        ExecWait "$INSTDIR\AgentFirstSetup.exe -i $\"$INSTDIR$\""
+        ;ExecWait "$INSTDIR\AgentFirstSetup.exe -i $\"$INSTDIR$\""
         
         #-----------------------------------------------------------------------------------
         # Copy the GUI
@@ -317,10 +320,10 @@ Section "Start Menu Shortcuts"
         SetShellVarContext current # reset to current user
 
         # Ask user if he wants to run Agent GUI
-        MessageBox MB_YESNO "Run ProActive Agent Control and exit installer?" /SD IDYES IDNO endActiveSync
-          Exec "$INSTDIR\AgentForAgent.exe"
-          Quit
-         endActiveSync:
+        ;MessageBox MB_YESNO "Run ProActive Agent Control and exit installer?" /SD IDYES IDNO endActiveSync
+        ;  Exec "$INSTDIR\AgentForAgent.exe"
+        ;  Quit
+        ; endActiveSync:
 SectionEnd
 ######################################
 
@@ -359,9 +362,11 @@ Section "Uninstall"
         
 	SetOutPath $INSTDIR
 	#-----------------------------------------------------------------------------------
-        # Call AgentFirstSetup to unistall the service
+        # Check if the service is installed and delete it
         #-----------------------------------------------------------------------------------
-	ExecWait "$INSTDIR\AgentFirstSetup.exe -u"
+        !insertmacro SERVICE "stop" ${SERVICE_NAME} "" "un."
+        !insertmacro SERVICE "delete" ${SERVICE_NAME} "" "un."
+	#ExecWait "$INSTDIR\AgentFirstSetup.exe -u"
 	
 	# Delete regkey from uninstall
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ProActiveAgent"
