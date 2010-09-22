@@ -196,28 +196,9 @@ namespace ProActiveAgent
             // First check if the directory exists
             if (!Directory.Exists(binDirectory))
             {
-                // If the Directory.Exists() method return false it can be an access restriction/problem or the
-                // directory does not exists. In case of an UNC path (ie remote resource) the following code checks
-                // if the proactive location is accessible, the following code can throw an exception if the remote
-                // machine has "Password protected sharing turned on" (usually on Vista and 7)
+                // Check for UNC path 
+                checkUNC(config.proactiveHome);
 
-                try
-                {
-                    DirectoryInfo binDirectoryInfo = new DirectoryInfo(config.proactiveHome);
-                    binDirectoryInfo.GetAccessControl();
-                }
-                catch (IOException e)
-                {
-                    // Maybe an authentication is required ... 
-                    throw new ApplicationException("Unable to read the classpath, cannot access the location " + config.proactiveHome + System.Environment.NewLine +
-                        "In case of an UNC path it is possible that 'Password protected sharing' is turned on on the remote machine", e);
-                }
-                catch (Exception e)
-                {
-                    // A problem can occur, for example path too long, etc ...
-                    throw new ApplicationException("Unable to read the classpath, cannot access the location " + config.proactiveHome, e);
-                }  
-                
                 // If here it certainly means that the 'bin' directory simply does not exist
                 throw new ApplicationException("Unable to read the classpath, invalid ProActive location " + binDirectory);
             }
@@ -244,25 +225,57 @@ namespace ProActiveAgent
 
             if (config.javaHome == null || config.javaHome.Equals(""))
             {
+                // The classpath will be filled using the JAVA_HOME variable defined in the parent environement
                 string envJavaHome = System.Environment.GetEnvironmentVariable(Constants.JAVA_HOME);
 
                 if (envJavaHome == null || envJavaHome.Equals(""))
                 {
                     throw new ApplicationException("Unable to read the classpath, please specify the java location in the configuration or set JAVA_HOME environement variable.");
-                }
-                else
-                {
-                    // Fill classpath in the configuration using the JAVA_HOME variable defined in the parent environement
-                    config.classpath = VariableEchoer.echoVariable(initScript, Constants.CLASSPATH, info);
-                }
+                }                                
             }
             else
             {
+                // First check if the directory exists
+                if (!Directory.Exists(config.javaHome))
+                {
+                    // Check for UNC path 
+                    checkUNC(config.javaHome);
+
+                    // If here it certainly means that the 'bin' directory simply does not exist
+                    throw new ApplicationException("Unable to read the classpath, invalid java home " + config.javaHome);
+                }
+
                 // Use configuration specific java location
                 info.EnvironmentVariables[Constants.JAVA_HOME] = config.javaHome;
-                // Fill classpath in the configuration
-                config.classpath = VariableEchoer.echoVariable(initScript, Constants.CLASSPATH, info);
             }
+
+            // Fill classpath in the configuration
+            config.classpath = VariableEchoer.echoVariable(initScript, Constants.CLASSPATH, info);
+        }
+
+        private static void checkUNC(string directory)
+        {
+            // If the Directory.Exists() method return false it can be an access restriction/problem or the
+            // directory does not exists. In case of an UNC path (ie remote resource) the following code checks
+            // if the proactive location is accessible, the following code can throw an exception if the remote
+            // machine has "Password protected sharing turned on" (usually on Vista and 7)
+
+            try
+            {
+                DirectoryInfo binDirectoryInfo = new DirectoryInfo(directory);
+                binDirectoryInfo.GetAccessControl();
+            }
+            catch (IOException e)
+            {
+                // Maybe an authentication is required ... 
+                throw new ApplicationException("Unable to read the classpath, cannot access the location " + directory + System.Environment.NewLine +
+                    "In case of an UNC path it is possible that 'Password protected sharing' is turned on on the remote machine", e);
+            }
+            catch (Exception e)
+            {
+                // A problem can occur, for example path too long, etc ...
+                throw new ApplicationException("Unable to read the classpath, cannot access the location " + directory, e);
+            }  
         }
 
         /// <summary>        
