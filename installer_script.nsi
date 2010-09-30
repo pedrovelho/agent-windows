@@ -14,7 +14,7 @@
 #-----------------------------------------------------------------------------------
 !define SERVICE_NAME "ProActiveAgent"
 !define SERVICE_DESC "The ProActive Agent enables desktop computers as an important source of computational power"
-!define VERSION "2.2"
+!define VERSION "2.3"
 !define PAGE_FILE "serviceInstallPage.ini"
 # Define the name of the service logon right
 !define SERVICE_LOGON_RIGHT 'SeServiceLogonRight'
@@ -107,6 +107,14 @@ Function MyCustomLeave
                   MessageBox MB_OK "Unable to add privileges"
                     Abort
         	${EndIf}
+        	# Build the user environment of the user (Registry hive, Documents and settings etc.), returns status string
+        	UserMgr::BuiltAccountEnv $R3 $R4
+        	Pop $0
+        	${If} $0 == "FALSE" # Means could not add privilege
+                  DetailPrint "Unable to build account env"
+                  MessageBox MB_OK "Unable to build account env"
+                    Abort
+        	${EndIf}
             # Unknown error just print and still try to install the user
             ${Else}
                DetailPrint "Unable to check for service logon right due to $0, still trying to install the service"
@@ -123,6 +131,8 @@ Function MyCustomLeave
           ${EndIf}
         ${EndIf}
   ${EndIf}
+  # Run the GUI editor
+  Exec "$INSTDIR\AgentForAgent.exe"
 FunctionEnd
 
 ############################################################################################
@@ -281,11 +291,6 @@ Section "ProActive Agent"
         WriteRegStr HKLM "Software\ProActiveAgent" "ConfigLocation" "$INSTDIR\config\PAAgent-config.xml"
         
         #-----------------------------------------------------------------------------------
-        # Run the internal service installer
-        #-----------------------------------------------------------------------------------
-        ;ExecWait "$INSTDIR\AgentFirstSetup.exe -i $\"$INSTDIR$\""
-        
-        #-----------------------------------------------------------------------------------
         # Copy the GUI
         #-----------------------------------------------------------------------------------
         SetOutPath $INSTDIR
@@ -359,6 +364,13 @@ Section "Uninstall"
           SetRegView 64
         ${EndIf}
         
+	#-----------------------------------------------------------------------------------
+        # Close the ProActive Agent Control
+        #-----------------------------------------------------------------------------------
+        Push ""
+        Push "ProActive Agent Control"
+        Call un.FindWindowClose
+       
 	SetOutPath $INSTDIR
 	#-----------------------------------------------------------------------------------
         # Check if the service is installed and delete it
@@ -405,3 +417,25 @@ Section "Uninstall"
 	SetShellVarContext current # reset to current user
 	
 SectionEnd
+
+Function un.FindWindowClose
+    Exch $0
+    Exch
+    Exch $1
+    Push $2
+    Push $3
+    find:
+        FindWindow $2 $1 $0
+        IntCmp $2 0 nowindow
+        SendMessage $2 16 "" ""
+        Sleep 500
+        FindWindow $2 $1 $0
+        IntCmp $2 0 nowindow
+            MessageBox MB_OK|MB_ICONSTOP "An instance of the program is running. Please close it and press OK to continue."
+            Goto find
+    nowindow:
+    Pop $3
+    Pop $2
+    Pop $1
+    Pop $0
+FunctionEnd

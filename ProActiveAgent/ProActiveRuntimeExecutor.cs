@@ -74,7 +74,7 @@ namespace ProActiveAgent
 
         /// <summary>
         /// The unique rank of this executor</summary>
-        private readonly int rank;
+        private readonly int rank;        
         /// <summary>
         /// The logger of this class, logs all info about this executor.</summary>
         private readonly ILog LOGGER;
@@ -151,6 +151,11 @@ namespace ProActiveAgent
             }
             // Create new instance of the cpu limiter
             this.cpuLimiter = new CPULimiter();
+        }
+
+        public bool isStarted()
+        {
+            return this.proActiveRuntimeProcess != null;
         }
 
         /// <summary>
@@ -318,7 +323,7 @@ namespace ProActiveAgent
             this.proActiveRuntimeProcess.BeginOutputReadLine();
 
             //-- runtime started = true
-            setRegistryIsRuntimeStarted(true);
+            // setRegistryIsRuntimeStarted(true);
 
             return true;
         }
@@ -456,7 +461,7 @@ namespace ProActiveAgent
             this.proActiveRuntimeProcess = null;
 
             //this registry shows that the runtime is not running:
-            setRegistryIsRuntimeStarted(false);
+            // setRegistryIsRuntimeStarted(false);
 
             if (disabledRestarting)
             {
@@ -505,22 +510,22 @@ namespace ProActiveAgent
             }
         }
 
-        public void setRegistryIsRuntimeStarted(bool value)
-        {
-            try
-            {
-                RegistryKey confKey = Registry.LocalMachine.OpenSubKey(Constants.PROACTIVE_AGENT_EXECUTORS_REG_SUBKEY, true);
-                if (confKey != null)
-                {
-                    confKey.SetValue(this.rank + Constants.PROACTIVE_AGENT_IS_RUNNING_EXECUTOR_REG_VALUE_NAME, value);
-                    confKey.Close();
-                }
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("The executor " + this.rank + " cannot write its state into the registry", e);
-            }
-        }
+        //public void setRegistryIsRuntimeStarted(bool value)
+        //{
+        //    try
+        //    {
+        //        RegistryKey confKey = Registry.CurrentUser.OpenSubKey(Constants.PROACTIVE_AGENT_EXECUTORS_REG_SUBKEY, true);
+        //        if (confKey != null)
+        //        {
+        //            confKey.SetValue(this.rank + Constants.PROACTIVE_AGENT_IS_RUNNING_EXECUTOR_REG_VALUE_NAME, value);
+        //            confKey.Close();
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        LOGGER.Error("The executor " + this.rank + " cannot write its state into the registry", e);
+        //    }
+        //}
 
         // this method has to be synchronized as it is dealing with a process object
 
@@ -553,7 +558,7 @@ namespace ProActiveAgent
             this.internalClean();
             this.proActiveRuntimeProcess = null;
             //-- runtime started = false
-            setRegistryIsRuntimeStarted(false);
+            // setRegistryIsRuntimeStarted(false);
         }
 
         // !!WARNING!! This method removes all listeners and kills all processes in the job object

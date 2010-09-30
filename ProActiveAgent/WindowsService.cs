@@ -39,6 +39,9 @@ using System.ServiceProcess;
 using ConfigParser;
 using log4net;
 using Microsoft.Win32;
+using System.IO.Pipes;
+using System.IO;
+using System.Threading;
 
 namespace ProActiveAgent
 {
@@ -48,6 +51,8 @@ namespace ProActiveAgent
         /// <summary>
         /// The executors manager that loads events and keeps start/stop timers.</summary>
         private ExecutorsManager executorsManager;
+        private Worker pipeServerWorker;
+
         /// <summary>
         /// Public Constructor for WindowsService.
         /// - Put all of your Initialization code here.
@@ -57,8 +62,8 @@ namespace ProActiveAgent
             // Set the service name
             base.ServiceName = Constants.PROACTIVE_AGENT_SERVICE_NAME;
             // These Flags set whether or not to handle that specific
-            //  type of event. Set to true if you need it, false otherwise.            
-            this.CanPauseAndContinue = true;
+            // type of event. Set to true if you need it, false otherwise.
+            this.CanPauseAndContinue = false;
             this.CanShutdown = true;
             this.CanStop = true;
         }
@@ -73,7 +78,7 @@ namespace ProActiveAgent
             LOGGER.Info("Starting ProActive Agent service");
 
             // The location will be read from the registry
-            string agentInstallLocation;            
+            string agentInstallLocation;
             // The location of the cofig file
             string agentConfigLocation;
 
@@ -113,6 +118,8 @@ namespace ProActiveAgent
 
             this.executorsManager = new ExecutorsManager(configuration);
 
+            this.pipeServerWorker = new Worker(this.executorsManager);
+
             base.OnStart(args);
         }
 
@@ -132,26 +139,10 @@ namespace ProActiveAgent
                 this.executorsManager.dispose();
             }
 
+            this.pipeServerWorker.requestStop();
+
             //BUT THIS SHOULD NOT BE NECESSARY:
             base.OnStop();
-        }
-
-        /// <summary>
-        /// OnPause: Put your pause code here
-        /// - Pause working threads, etc.
-        /// </summary>
-        protected override void OnPause()
-        {
-            base.OnPause();
-        }
-
-        /// <summary>
-        /// OnContinue(): Put your continue code here
-        /// - Un-pause working threads, etc.
-        /// </summary>
-        protected override void OnContinue()
-        {
-            base.OnContinue();
         }
 
         /// <summary>
@@ -222,6 +213,100 @@ namespace ProActiveAgent
         static void Main()
         {
             ServiceBase.Run(new WindowsService());
+        }
+
+        /// <summary>
+        /// This worker class will start a thread that will wait for the         
+        /// </summary>
+        sealed class Worker
+        {
+            private readonly ExecutorsManager manager;
+            private readonly Thread thread;
+            private volatile bool shouldStop;
+
+            public Worker(ExecutorsManager manager)
+            {
+                this.manager = manager;
+                thread = new Thread(sendExecutorsCount);
+                thread.IsBackground = true;
+                // Start the server pipe 
+                thread.Start();
+            }
+
+            // This method can be called outside worker thread
+            public void requestStop()
+            {               
+                // Tell the main loop to stop
+                this.shouldStop = true;
+
+                // Wait until the thread is stopped (2s timeout)
+                thread.Join(2000);                
+            }
+
+            private void sendExecutorsCount()
+            {
+                // Until the service stop loop and recreate a new pipe
+                while (!shouldStop)
+                {
+                    using (NamedPipeServerStream pipeServer = new NamedPipeServerStream(Constants.PIPE_NAME, PipeDirection.Out))
+                    {
+                        // Wait for a client to connect
+                        pipeServer.WaitForConnection();
+
+                        LOGGER.Info("The GUI client has connected");
+
+                        try
+                        {
+                            // Create a stream writer                
+                            using (StreamWriter sw = new StreamWriter(pipeServer))
+                            {
+                                sw.AutoFlush = true;
+
+                                while (!shouldStop)
+                                {
+                                    int count = 0;
+                                    // Count the running executors
+                                    foreach (ProActiveRuntimeExecutor p in manager.getExecutors())
+                                    {
+                                        if (p.isStarted())
+                                        {
+                                            count++;
+                                        }
+                                    }
+                                    // Write the count into the stream
+                                    sw.WriteLine(count);
+
+                                    // Wait for 1 sec
+                                    Thread.Sleep(1 * 1000);
+                                }
+
+                                sw.WriteLine(0);
+                            }
+                        }
+                        // Catch the IOException that is raised if the pipe is broken
+                        // or disconnected.
+                        catch(IOException) {
+                            LOGGER.Info("The the GUI client has disconnected");
+                        }
+                        catch (Exception e)
+                        {
+                            LOGGER.Error("A problem occured when writing into the pipe", e);
+                        }
+
+                        try
+                        {
+                            // Close the server
+                            pipeServer.Close();
+                        }
+                        catch (Exception e)
+                        {
+                            // Log me
+                            LOGGER.Error("A problem occured during pipe close", e);
+                        }
+                    }
+                }
+            }
+
         }
     }
 }

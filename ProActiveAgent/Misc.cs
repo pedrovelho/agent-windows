@@ -39,9 +39,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Runtime.InteropServices;
 using System.Text;
-using log4net;
-using System.Security.AccessControl;
+using System.Windows.Forms;
 
 namespace ProActiveAgent
 {
@@ -127,6 +127,9 @@ namespace ProActiveAgent
         /// <summary>
         /// The default Resource Manager url.</summary>
         public const string DEFAULT_RM_URL = "rmi://localhost:1099";
+        /// <summary>
+        /// The name of the pipe used by the ProActive agent to communicate with the gui.</summary>
+        public const string PIPE_NAME = "ProActiveAgentPipe";
     }
 
     /// <summary>
@@ -154,8 +157,6 @@ namespace ProActiveAgent
     /// A static class that contains several utilitary methods</summary>
     public static class Utils
     {        
-        //private static readonly ILog LOGGER = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
         /// <summary>
         /// Returns a decimal value of the available physical memory in mbytes of this computer.
         /// </summary> 
@@ -202,7 +203,7 @@ namespace ProActiveAgent
                 // If here it certainly means that the 'bin' directory simply does not exist
                 throw new ApplicationException("Unable to read the classpath, invalid ProActive location " + binDirectory);
             }
-                                  
+
             string initScript = binDirectory + @"\init.bat";
             // Check if the 'bin\init.bat' script exists
             if (!System.IO.File.Exists(initScript))
@@ -231,7 +232,7 @@ namespace ProActiveAgent
                 if (envJavaHome == null || envJavaHome.Equals(""))
                 {
                     throw new ApplicationException("Unable to read the classpath, please specify the java location in the configuration or set JAVA_HOME environement variable.");
-                }                                
+                }
             }
             else
             {
@@ -241,7 +242,7 @@ namespace ProActiveAgent
                     // Check for UNC path 
                     checkUNC(config.javaHome);
 
-                    // If here it certainly means that the 'bin' directory simply does not exist
+                    // If here it certainly means that the directory simply does not exist
                     throw new ApplicationException("Unable to read the classpath, invalid java home " + config.javaHome);
                 }
 
@@ -275,7 +276,7 @@ namespace ProActiveAgent
             {
                 // A problem can occur, for example path too long, etc ...
                 throw new ApplicationException("Unable to read the classpath, cannot access the location " + directory, e);
-            }  
+            }
         }
 
         /// <summary>        
@@ -311,10 +312,6 @@ namespace ProActiveAgent
 
             return true;
         }
-    }
-
-    public static class JavaNetworkInterfaceLister
-    {
 
         public static string[] listJavaNetworkInterfaces(string javaLocation, string agentLocation)
         {
@@ -477,4 +474,96 @@ namespace ProActiveAgent
             }
         }
     }
+
+    /// <summary>
+    /// Check running processes for an already-running instance. Implements a simple and
+    /// always effective algorithm to find currently running processes with a main window
+    /// matching a given substring and focus it.
+    /// Combines code written by Lion Shi (MS) and Sam Allen.
+    /// </summary>
+    public static class ProcessChecker
+    {
+        /// <summary>
+        /// Stores a required string that must be present in the window title for it
+        /// to be detected.
+        /// </summary>
+        static string _requiredString;
+
+        /// <summary>
+        /// Contains signatures for C++ DLLs using interop.
+        /// </summary>
+        internal static class NativeMethods
+        {
+            [DllImport("user32.dll")]
+            public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
+
+            [DllImport("user32.dll")]
+            public static extern bool SetForegroundWindow(IntPtr hWnd);
+
+            [DllImport("user32.dll")]
+            public static extern bool EnumWindows(EnumWindowsProcDel lpEnumFunc,
+                Int32 lParam);
+
+            [DllImport("user32.dll")]
+            public static extern int GetWindowThreadProcessId(IntPtr hWnd,
+                ref Int32 lpdwProcessId);
+
+            [DllImport("user32.dll")]
+            public static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString,
+                Int32 nMaxCount);
+
+            public const int SW_SHOWNORMAL = 1;
+        }
+
+        public delegate bool EnumWindowsProcDel(IntPtr hWnd, Int32 lParam);
+
+        /// <summary>
+        /// Perform finding and showing of running window.
+        /// </summary>
+        /// <returns>Bool, which is important and must be kept to match up
+        /// with system call.</returns>
+        static private bool EnumWindowsProc(IntPtr hWnd, Int32 lParam)
+        {
+            int processId = 0;
+            NativeMethods.GetWindowThreadProcessId(hWnd, ref processId);
+
+            StringBuilder caption = new StringBuilder(1024);
+            NativeMethods.GetWindowText(hWnd, caption, 1024);
+
+            // Use IndexOf to make sure our required string is in the title.
+            if (processId == lParam && (caption.ToString().IndexOf(_requiredString,
+                StringComparison.OrdinalIgnoreCase) != -1))
+            {
+                // Restore the window.
+                NativeMethods.ShowWindowAsync(hWnd, NativeMethods.SW_SHOWNORMAL);
+                NativeMethods.SetForegroundWindow(hWnd);
+            }
+            return true; // Keep this.
+        }
+
+        /// <summary>
+        /// Find out if we need to continue to load the current process. If we
+        /// don't focus the old process that is equivalent to this one.
+        /// </summary>
+        /// <param name="forceTitle">This string must be contained in the window
+        /// to restore. Use a string that contains the most
+        /// unique sequence possible. If the program has windows with the string
+        /// "Journal", pass that word.</param>
+        /// <returns>False if no previous process was activated. True if we did
+        /// focus a previous process and should simply exit the current one.</returns>
+        static public bool IsOnlyProcess(string forceTitle)
+        {
+            _requiredString = forceTitle;
+            foreach (Process proc in Process.GetProcessesByName(Application.ProductName))
+            {
+                if (proc.Id != Process.GetCurrentProcess().Id)
+                {
+                    NativeMethods.EnumWindows(new EnumWindowsProcDel(EnumWindowsProc),
+                        proc.Id);
+                    return false;
+                }
+            }
+            return true;
+        }
+    }    
 }

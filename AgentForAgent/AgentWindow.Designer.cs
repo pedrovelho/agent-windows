@@ -147,7 +147,7 @@
             // spawnedRuntimesValue
             // 
             this.spawnedRuntimesValue.AutoSize = true;
-            this.spawnedRuntimesValue.Location = new System.Drawing.Point(119, 53);
+            this.spawnedRuntimesValue.Location = new System.Drawing.Point(114, 53);
             this.spawnedRuntimesValue.Name = "spawnedRuntimesValue";
             this.spawnedRuntimesValue.Size = new System.Drawing.Size(13, 13);
             this.spawnedRuntimesValue.TabIndex = 3;
@@ -156,7 +156,7 @@
             // agentStatusValue
             // 
             this.agentStatusValue.AutoSize = true;
-            this.agentStatusValue.Location = new System.Drawing.Point(52, 24);
+            this.agentStatusValue.Location = new System.Drawing.Point(114, 24);
             this.agentStatusValue.Name = "agentStatusValue";
             this.agentStatusValue.Size = new System.Drawing.Size(53, 13);
             this.agentStatusValue.TabIndex = 2;
@@ -174,7 +174,7 @@
             // agentStatusLabel
             // 
             this.agentStatusLabel.AutoSize = true;
-            this.agentStatusLabel.Location = new System.Drawing.Point(6, 24);
+            this.agentStatusLabel.Location = new System.Drawing.Point(68, 24);
             this.agentStatusLabel.Name = "agentStatusLabel";
             this.agentStatusLabel.Size = new System.Drawing.Size(40, 13);
             this.agentStatusLabel.TabIndex = 0;
@@ -230,7 +230,7 @@
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(105, 13);
             this.label3.TabIndex = 6;
-            this.label3.Text = "ProActiveAgent v2.2";
+            this.label3.Text = "ProActiveAgent v2.3";
             // 
             // label4
             // 

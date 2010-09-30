@@ -36,7 +36,10 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
+using System.IO.Pipes;
 using System.ServiceProcess;
+using System.Threading;
 using System.Windows.Forms;
 using ConfigParser;
 using Microsoft.Win32;
@@ -49,41 +52,28 @@ namespace AgentForAgent
 
         public const string AGENT_AUTO_RUN_SUBKEY = "Software\\Microsoft\\Windows\\CurrentVersion\\Run";
 
-        // The following constants are used by the gui
-        public const string STOP_PENDING = "Stopping";
-        public const string STOPPED = "Stopped";
-        public const string START_PENDING = "Starting";
-        public const string RUNNING = "Running";
-        public const string UNKNOWN = "Unknown";
-
-        private readonly ServiceController sc;
-
-        private readonly string agentLocation;        
-
         private ConfigurationEditor window;
+        private readonly string agentLocation;
+        private readonly ServiceController sc;
+        private Thread pipeClientThread;
 
-        public ConfigurationDialog(string agentLocation, string configLocation)
+
+        public ConfigurationDialog(string agentLocation, string configLocation, ServiceController sc)
         {
-            // First of all, try to connect to the agent service
-            try
-            {
-                this.sc = new ServiceController(Constants.PROACTIVE_AGENT_SERVICE_NAME);
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show("Could not connect to the service " + Constants.PROACTIVE_AGENT_SERVICE_NAME + ". It appears that the agent might not have been installed properly. " + e.ToString(), "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            // Init all visuals
-            InitializeComponent();            
-            UpdateStatus();
+            // Init all visuals components
+            InitializeComponent();
 
             this.agentLocation = agentLocation;
             this.configLocation.Text = configLocation;
+            this.sc = sc;
 
+            // Update the status
+            this.updateStatus();
 
-            // Retrieve register value for auto start agent
+            // Start pipe client            
+            this.startPipeClientThread();
+            
+            // Find registry value for auto start agent
             try
             {
                 RegistryKey confKey = Registry.LocalMachine.CreateSubKey(AGENT_AUTO_RUN_SUBKEY);
@@ -102,95 +92,105 @@ namespace AgentForAgent
             }
         }
 
-        private void UpdateConfigLocation()
+        public void receiveFromPipe()
         {
-            RegistryKey confKey = Registry.LocalMachine.OpenSubKey(Constants.PROACTIVE_AGENT_REG_SUBKEY, true);
-            if (confKey != null)
+            using (NamedPipeClientStream pipeStream = new NamedPipeClientStream(".", Constants.PIPE_NAME, PipeDirection.In))
             {
-                confKey.SetValue(Constants.PROACTIVE_AGENT_CONFIG_LOCATION_REG_VALUE_NAME, configLocation.Text);
-                confKey.Close();
+                try
+                {
+                    // The connect function will indefinately wait for the pipe to become available
+                    // If that is not acceptable specify a maximum waiting time (in ms)
+                    pipeStream.Connect();
+
+                    using (StreamReader sr = new StreamReader(pipeStream))
+                    {
+                        string temp;
+                        // We read from the pipe to the end
+                        while ((temp = sr.ReadLine()) != null)
+                        {                            
+                            this.Invoke((MethodInvoker)delegate
+                            {
+                                if (this.spawnedRuntimesValue.Text != temp)
+                                {
+                                    this.spawnedRuntimesValue.Text = "" + temp; // runs on UI thread
+                                    int runningExecutorsCount = Convert.ToInt32(temp);
+                                    agentStatusNotifyIcon.Icon = Icon = (runningExecutorsCount > 0 ? (Icon)Resource1.icon_active : (Icon)Resource1.icon_passive);
+                                }
+                            });
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    // Pipe connection lost, maybe later we can handle this and report it to the user
+                    // anyway if the service is restarted manually, the gui will need to be restarted 
+                }
+                this.Invoke((MethodInvoker)delegate
+                {
+                    this.spawnedRuntimesValue.Text = "";
+                });
+            }            
+        }
+
+        private void startPipeClientThread()
+        {
+            // There must be no already running pipe client thread
+            // and the service must be running otherwise the pipe.Connect()
+            // can hang on at 100% CPU
+            if (this.pipeClientThread == null && this.sc.Status == ServiceControllerStatus.Running) {                        
+                this.pipeClientThread = new Thread(receiveFromPipe);
+                this.pipeClientThread.IsBackground = true;
+                pipeClientThread.Start();
             }
         }
 
-        private void UpdateStatus()
+        private void updateStatus()
         {
+            // Refresh the service status
+            this.sc.Refresh();
+            this.agentStatusValue.Text = this.agentStatusNotifyIcon.Text = Enum.GetName(typeof(ServiceControllerStatus), this.sc.Status);
             switch (this.sc.Status)
             {
-                case ServiceControllerStatus.StopPending:
-                    this.agentStatusValue.Text = STOP_PENDING;
+                case ServiceControllerStatus.StopPending:            
                     this.startService.Enabled = false;
                     this.stopService.Enabled = false;
                     this.startServiceToolStripMenuItem.Enabled = false;
-                    this.stopServiceToolStripMenuItem.Enabled = false;
-
-                    this.agentStatusNotifyIcon.Text = STOP_PENDING;
+                    this.stopServiceToolStripMenuItem.Enabled = false;                    
                     break;
-                case ServiceControllerStatus.Stopped:
-                    this.agentStatusValue.Text = STOPPED;
+                case ServiceControllerStatus.Stopped:                    
                     this.startService.Enabled = true;
                     this.stopService.Enabled = false;
                     this.startServiceToolStripMenuItem.Enabled = true;
                     this.stopServiceToolStripMenuItem.Enabled = false;
-
-                    this.agentStatusNotifyIcon.Text = STOPPED;
+                    
+                    // Set the pipe to null
+                    this.pipeClientThread = null;
                     break;
-                case ServiceControllerStatus.StartPending:
-                    this.agentStatusValue.Text = START_PENDING;
+                case ServiceControllerStatus.StartPending:                    
                     this.startService.Enabled = false;
                     this.stopService.Enabled = false;
                     this.startServiceToolStripMenuItem.Enabled = false;
-                    this.stopServiceToolStripMenuItem.Enabled = false;
-
-                    this.agentStatusNotifyIcon.Text = START_PENDING;
+                    this.stopServiceToolStripMenuItem.Enabled = false;                    
                     break;
-                case ServiceControllerStatus.Running:
-                    this.agentStatusValue.Text = RUNNING;
+                case ServiceControllerStatus.Running:                    
                     this.startService.Enabled = false;
                     this.stopService.Enabled = true;
                     this.startServiceToolStripMenuItem.Enabled = false;
-                    this.stopServiceToolStripMenuItem.Enabled = true;
-
-                    this.agentStatusNotifyIcon.Text = RUNNING;
+                    this.stopServiceToolStripMenuItem.Enabled = true;                    
                     break;
-                default:
-                    this.agentStatusValue.Text = UNKNOWN;
+                default:                    
                     this.startService.Enabled = false;
                     this.stopService.Enabled = false;
                     this.startServiceToolStripMenuItem.Enabled = false;
                     this.stopServiceToolStripMenuItem.Enabled = false;
-
-                    this.agentStatusNotifyIcon.Text = UNKNOWN;
                     break;
             }
 
-            // We consider that the runtime is started if there is more than one subkey 
-            int runningExecutorsCount = 0;
-            //--Read the register and update the trayIcon
-            RegistryKey confKey = Registry.LocalMachine.OpenSubKey(Constants.PROACTIVE_AGENT_EXECUTORS_REG_SUBKEY);
-            if (confKey != null)
-            {
-                // Count all true values
-                string[] isRunningValues = confKey.GetValueNames();
-
-                foreach (string name in isRunningValues)
-                {
-                    if (Convert.ToBoolean(confKey.GetValue(name)))
-                    {
-                        runningExecutorsCount++;
-                    }
-                }
-                this.spawnedRuntimesValue.Text = "" + runningExecutorsCount;
-                confKey.Close();
-            }
-
+            // If the service is not running a red icon will appear
             if (sc.Status != ServiceControllerStatus.Running)
             {
-                //-- stopped icon
+                
                 agentStatusNotifyIcon.Icon = Icon = (Icon)Resource1.icon_stop;
-            }
-            else
-            {
-                agentStatusNotifyIcon.Icon = Icon = (runningExecutorsCount > 0 ? (Icon)Resource1.icon_active : (Icon)Resource1.icon_passive);
             }
         }
 
@@ -204,18 +204,12 @@ namespace AgentForAgent
             p.Start();
         }
 
-        private void troubleshoot_Click(object sender, EventArgs e)
-        {
-            Process p = new Process();
-            p.StartInfo.FileName = "services.msc";
-            p.StartInfo.Arguments = "";
-            //p.StartInfo.UseShellExecute = false;
-            p.Start();
-        }
-
+        /// <summary>
+        /// Starts the service.
+        /// </summary>
         private void startService_Click(object sender, EventArgs e)
         {
-            // 1) Parse the xml config file            
+            // 1 - Parse the xml config file            
             try
             {
                 ConfigurationParser.parseXml(configLocation.Text, agentLocation);
@@ -227,7 +221,7 @@ namespace AgentForAgent
                 return;
             }
 
-            // 2) Start the service
+            // 2 - Start the service
             try
             {
                 sc.Start();
@@ -239,24 +233,34 @@ namespace AgentForAgent
                 return;
             }
 
-            // 3) Disable gui components to avoid user errors
+            // 3 - Disable gui components to avoid user errors
             startService.Enabled = false;
             stopService.Enabled = false;
             startServiceToolStripMenuItem.Enabled = false;
             stopServiceToolStripMenuItem.Enabled = false;
+
+            // 4 - Wait for the service to be running (ie the pipe server to be available)
+            this.sc.WaitForStatus(ServiceControllerStatus.Running);
+
+            // 5 - Start a new thread that will receive data from the service through the pipe           
+            this.startPipeClientThread();
+
         }
 
+        /// <summary>
+        /// Stops the service.
+        /// </summary>
         private void stopService_Click(object sender, EventArgs e)
         {
-            startService.Enabled = false;
-            stopService.Enabled = false;
-            startServiceToolStripMenuItem.Enabled = false;
-            stopServiceToolStripMenuItem.Enabled = false;
+            // 1 - Refresh the service status
+            this.sc.Refresh();
+
+            // 2 - Stop the service through the service controller
             try
             {
-                if (sc != null && sc.CanStop && sc.Status != ServiceControllerStatus.Stopped)
+                if (this.sc.CanStop && this.sc.Status != ServiceControllerStatus.Stopped)
                 {
-                    sc.Stop();
+                    this.sc.Stop();
                 }
             }
             catch (Exception ex)
@@ -264,14 +268,23 @@ namespace AgentForAgent
                 // Cannot continue show error message box and exit from this method
                 MessageBox.Show("Cannot stop the service. " + ex.ToString(), "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
+            // 3 - Disable all controls
+            startService.Enabled = false;
+            stopService.Enabled = false;
+            startServiceToolStripMenuItem.Enabled = false;
+            stopServiceToolStripMenuItem.Enabled = false;
+
+            // 4 - The pipe client thread will terminate and the ref is no longer needed
+            this.pipeClientThread = null;
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
             try
             {
-                sc.Refresh();
-                UpdateStatus();
+                this.sc.Refresh();
+                this.updateStatus();
             }
             catch (Exception)
             {
@@ -296,10 +309,10 @@ namespace AgentForAgent
             browseConfig.Filter = "Xml File|*.xml";
             browseConfig.ShowDialog();
             configLocation.Text = browseConfig.FileName;
-            
+
             // Try to validate against current version schema
             try
-            {                
+            {
                 ConfigurationParser.validateXMLFile(configLocation.Text, agentLocation);
             }
             catch (Exception e)
@@ -337,7 +350,7 @@ namespace AgentForAgent
         }
 
         private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
-        {            
+        {
             Show();
             WindowState = FormWindowState.Normal;
         }
@@ -467,8 +480,13 @@ namespace AgentForAgent
 
         private void configLocation_TextChanged(object sender, EventArgs e)
         {
-            UpdateConfigLocation();
-        }        
+            RegistryKey confKey = Registry.LocalMachine.OpenSubKey(Constants.PROACTIVE_AGENT_REG_SUBKEY, true);
+            if (confKey != null)
+            {
+                confKey.SetValue(Constants.PROACTIVE_AGENT_CONFIG_LOCATION_REG_VALUE_NAME, configLocation.Text);
+                confKey.Close();
+            }
+        }
 
         private void proActiveInriaLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {

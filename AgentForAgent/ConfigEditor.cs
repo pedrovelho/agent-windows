@@ -524,7 +524,7 @@ namespace AgentForAgent
             }
             try
             {
-                string[] values = JavaNetworkInterfaceLister.listJavaNetworkInterfaces(this.jvmDirectory.Text, this.agentLocation);
+                string[] values = Utils.listJavaNetworkInterfaces(this.jvmDirectory.Text, this.agentLocation);
                 this.networkInterfacesListBox.Items.Clear();
                 this.networkInterfacesListBox.Items.AddRange(values);
                 this.useNetworkInterfaceButton.Enabled = values.Length > 0;

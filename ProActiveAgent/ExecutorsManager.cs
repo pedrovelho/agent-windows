@@ -39,6 +39,8 @@ using System.Threading;
 using ConfigParser;
 using log4net;
 using Microsoft.Win32;
+using System.IO.Pipes;
+using System.IO;
 
 /** 
  * ExecutorsManager manages scheduled start/stop of executors.
@@ -52,7 +54,7 @@ namespace ProActiveAgent
     {
         private static readonly ILog LOGGER = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private static TimeSpan WEEK_DELAY = new TimeSpan(7,0,0,0);
+        private static TimeSpan WEEK_DELAY = new TimeSpan(7, 0, 0, 0);
         private static int BARRIER_SAFETY_MARGIN_MS = 15000;
         // The barrier a safety margin interval    
         private static TimeSpan SAFETY_MARGIN_TIMESPAN = new TimeSpan(0, 0, 0, 0, BARRIER_SAFETY_MARGIN_MS);
@@ -89,28 +91,29 @@ namespace ProActiveAgent
             }
 
             // Try to create the sub key in registry for executors stats            
-            // delete all sub keys of the executors key
-            RegistryKey key = Registry.LocalMachine.OpenSubKey(Constants.PROACTIVE_AGENT_EXECUTORS_REG_SUBKEY, true);
-            if (key != null)
-            {
-                foreach (string name in key.GetValueNames())
-                {
-                    key.DeleteValue(name);
-                }
-                key.Close();
-            }
-            else
-            {
-                key = Registry.LocalMachine.CreateSubKey(Constants.PROACTIVE_AGENT_EXECUTORS_REG_SUBKEY);
-                if (key != null)
-                {
-                    key.Close();
-                }
-            }
+            // delete all sub keys of the executors key           
+            //RegistryKey key = Registry.CurrentUser.OpenSubKey(Constants.PROACTIVE_AGENT_EXECUTORS_REG_SUBKEY, true);
+            //if (key != null)
+            //{
+            //    foreach (string name in key.GetValueNames())
+            //    {
+            //        key.DeleteValue(name);
+            //    }
+            //    key.Close();
+            //}
+            //else
+            //{
+            //    key = Registry.CurrentUser.CreateSubKey(Constants.PROACTIVE_AGENT_EXECUTORS_REG_SUBKEY);
+            //    if (key != null)
+            //    {
+            //        key.Close();
+            //    }
+            //}
+
             // Create the start/stop timers for scheduled events
             this.startTimers = new List<Timer>();
             this.stopTimers = new List<Timer>();
-            
+
             // Fix the current time (usefull when there is a lot of events)            
             DateTime currentFixedTime = DateTime.Now;
             int currentDayOfWeek = (int)currentFixedTime.DayOfWeek;
@@ -152,7 +155,7 @@ namespace ProActiveAgent
 
                 // Absolute stop time
                 DateTime absoluteStopTime = absoluteStartTime.Add(duration);
-                
+
                 // Check if we need to start immidiately
                 bool startNow = (delayUntilStart < TimeSpan.Zero && delayUntilStop > TimeSpan.Zero);
 
@@ -196,7 +199,7 @@ namespace ProActiveAgent
                     this.mySendStartAction(startInfo);
                 }
             }
-        }
+        }       
 
         public List<ProActiveRuntimeExecutor> getExecutors()
         {
@@ -277,5 +280,7 @@ namespace ProActiveAgent
             }
             this.proActiveRuntimeExecutors.Clear();
         }
+
+
     }
 }

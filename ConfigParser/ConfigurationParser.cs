@@ -96,7 +96,7 @@ namespace ConfigParser
         }
         
         /// <summary>
-        /// Tries to validate against agent-windows.xsd with fallback to agent-old.xsd
+        /// Tries to parse and deserialize as AgentType with fallback to ConfigurationOLD
         /// </summary>
         /// <param name="filePath">The path to the configuration file</param>
         /// <param name="agentHome">The home dir of the agent</param>

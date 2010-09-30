@@ -12,11 +12,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgentForAgent", "AgentForAg
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenSaver", "ScreenSaver\ScreenSaver.csproj", "{62176B11-E98A-40D9-8BE7-AB5464A395D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgentFirstSetup", "AgentFirstSetup\AgentFirstSetup.csproj", "{AF23E8C6-383B-415B-99B4-DA1479626092}"
-	ProjectSection(ProjectDependencies) = postProject
-		{91B8D1E6-3204-4AC5-91A6-6CB53C0F03F2} = {91B8D1E6-3204-4AC5-91A6-6CB53C0F03F2}
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigParserOLD", "ConfigParserOLD\ConfigParserOLD.csproj", "{E5705A77-B374-4334-8FD2-86E0153A04F8}"
 EndProject
 Global
@@ -59,14 +54,6 @@ Global
 		{62176B11-E98A-40D9-8BE7-AB5464A395D8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{62176B11-E98A-40D9-8BE7-AB5464A395D8}.Release|x86.ActiveCfg = Release|x86
 		{62176B11-E98A-40D9-8BE7-AB5464A395D8}.Release|x86.Build.0 = Release|x86
-		{AF23E8C6-383B-415B-99B4-DA1479626092}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AF23E8C6-383B-415B-99B4-DA1479626092}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AF23E8C6-383B-415B-99B4-DA1479626092}.Debug|x86.ActiveCfg = Debug|x86
-		{AF23E8C6-383B-415B-99B4-DA1479626092}.Debug|x86.Build.0 = Debug|x86
-		{AF23E8C6-383B-415B-99B4-DA1479626092}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AF23E8C6-383B-415B-99B4-DA1479626092}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AF23E8C6-383B-415B-99B4-DA1479626092}.Release|x86.ActiveCfg = Release|x86
-		{AF23E8C6-383B-415B-99B4-DA1479626092}.Release|x86.Build.0 = Release|x86
 		{E5705A77-B374-4334-8FD2-86E0153A04F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E5705A77-B374-4334-8FD2-86E0153A04F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E5705A77-B374-4334-8FD2-86E0153A04F8}.Debug|x86.ActiveCfg = Debug|Any CPU
