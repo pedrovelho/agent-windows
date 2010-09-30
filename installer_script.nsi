@@ -199,10 +199,10 @@ Function .onInit
         #-----------------------------------------------------------------------------------
         # Check if User Account Protection is Activated (Windows Vista)
         #-----------------------------------------------------------------------------------
-        # ReadRegDWORD $1 HKLM Software\Microsoft\Windows\CurrentVersion\Policies\System EnableLUA
-        # StrCmp $1 '1' 0 +3
-        #  MessageBox MB_OK "It appears that the User Account Control (UAC) feature is enabled. The installation cannot continue. Please disable the UAC feature and restart the installation. To disable the UAC feature: Go to the User Accounts part in the Control Panel and click on the 'Turn User Account Control on or off' Next, uncheck the 'Use User Account' check box to disable and reboot."
-        #    Abort
+        ## ReadRegDWORD $1 HKLM Software\Microsoft\Windows\CurrentVersion\Policies\System EnableLUA
+        ## StrCmp $1 '1' 0 +3
+        ##  MessageBox MB_OK "It appears that the User Account Control (UAC) feature is enabled. The installation cannot continue. Please disable the UAC feature and restart the installation. To disable the UAC feature: Go to the User Accounts part in the Control Panel and click on the 'Turn User Account Control on or off' Next, uncheck the 'Use User Account' check box to disable and reboot."
+        ##    Abort
 
         #-----------------------------------------------------------------------------------
         # Check if a previous version of the unistaller is available
