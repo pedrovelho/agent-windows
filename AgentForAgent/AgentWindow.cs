@@ -212,6 +212,20 @@ namespace AgentForAgent
             configLocation.Text = title;
         }
 
+        public void askAndRestart()
+        {
+            if (this.sc.Status == ServiceControllerStatus.Running)
+            {
+                DialogResult res = MessageBox.Show("The ProActive Agent must be restarted to apply changes.\nRestart now?", "Restart the ProActive Agent", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                if (res == DialogResult.Yes)
+                {
+                    this.stopService_Click(null, null);
+                    this.sc.WaitForStatus(ServiceControllerStatus.Stopped);
+                    this.startService_Click(null, null);
+                }
+            }
+        }
+
         private void editConfig_Click(object sender, EventArgs e)
         {
             string filename = this.configLocation.Text;

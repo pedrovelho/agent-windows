@@ -418,15 +418,7 @@ namespace AgentForAgent
                 MessageBox.Show("Could not save the configuration file: " + exception.ToString());
             }
 
-            if (this.iniConfiguration.GetValue("params", "saveWarning") != "0")
-            {
-                DialogResult res = MessageBox.Show("The ProActive Agent must be restarted to apply changes.\nDisplay this message again?", "Restart the ProActive Agent", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-                if (res == DialogResult.No)
-                {
-                    this.iniConfiguration.SetValue("params", "saveWarning", "0");
-                    this.iniConfiguration.Save();
-                }
-            }
+            this.hook.askAndRestart();
         }
 
         private void internalCopyEventsList()
