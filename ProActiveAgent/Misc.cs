@@ -53,41 +53,25 @@ namespace ProActiveAgent
     {
         /// <summary>
         /// The name of the ProActive Agent service</summary>
-        public const string PROACTIVE_AGENT_SERVICE_NAME = "ProActiveAgent";
-        /// <summary>
-        /// The name of the ProActive Agent executable</summary>
-        public const string PROACTIVE_AGENT_EXECUTABLE_NAME = "ProActiveAgent.exe";
-        /// <summary>
-        /// The name of the windows event logging system used by the ProActive Agent.
-        /// This can be Application, System, Security, or cusotm log name.</summary>
-        public const string PROACTIVE_AGENT_WINDOWS_EVENTLOG_LOG = "Application";
+        public const string SERVICE_NAME = "ProActiveAgent";
         /// <summary>
         /// The default install dir location of the ProActive Agent.</summary>
-        public const string PROACTIVE_AGENT_DEFAULT_INSTALL_LOCATION = "C:\\Program Files\\ProActiveAgent";
+        public const string DEFAULT_INSTALL_LOCATION = "C:\\Program Files\\ProActiveAgent";
         /// <summary>
         /// The default config location of the ProActive Agent.</summary>
-        public const string PROACTIVE_AGENT_DEFAULT_CONFIG_LOCATION = PROACTIVE_AGENT_DEFAULT_INSTALL_LOCATION + "\\PAAgent-config.xml";
+        public const string DEFAULT_CONFIG_LOCATION = DEFAULT_INSTALL_LOCATION + "\\config\\PAAgent-config.xml";
         /// <summary>
         /// The windows registry subkey used by ProActive Agent.</summary>
-        public const string PROACTIVE_AGENT_REG_SUBKEY = "Software\\ProActiveAgent";
+        public const string REG_SUBKEY = "Software\\ProActiveAgent";
         /// <summary>
         /// The name of the reg value used for install location.</summary>
-        public const string PROACTIVE_AGENT_INSTALL_LOCATION_REG_VALUE_NAME = "AgentLocation";
+        public const string INSTALL_LOCATION_REG_VALUE_NAME = "AgentLocation";
         /// <summary>
         /// The name of the reg value used for config location.</summary>
-        public const string PROACTIVE_AGENT_CONFIG_LOCATION_REG_VALUE_NAME = "ConfigLocation";
+        public const string CONFIG_LOCATION_REG_VALUE_NAME = "ConfigLocation";
         /// <summary>
-        /// The name of the reg value used for config location.</summary>
-        public const string PROACTIVE_AGENT_IS_RUNNING_EXECUTOR_REG_VALUE_NAME = "IsRunning";
-        /// <summary>
-        /// The name of the reg value used for the service user.</summary>
-        public const string PROACTIVE_AGENT_SERVICE_USER_REG_VALUE_NAME = "ServiceUser";
-        /// <summary>
-        /// The windows registry subkey used for storing executors status.</summary>
-        public const string PROACTIVE_AGENT_EXECUTORS_REG_SUBKEY = "Software\\ProActiveAgent\\Executors";
-        /// <summary>
-        /// This timeout can be usefull in case of service re-installation to avoid "1072 - Service marked for deletion problem".</summary>
-        public const int PROACTIVE_AGENT_POST_UNINSTALL_SERVICE_TIMEOUT = 3;
+        /// The name of the reg value used for logs directory.</summary>
+        public const string LOGS_DIR_REG_VALUE_NAME = "LogsDirectory";
         /// <summary>
         /// A boolean flag to allow memory limitation per job (set of processes).</summary>
         public const bool ALLOW_PROCESS_MEMORY_LIMIT = true;
@@ -123,7 +107,7 @@ namespace ProActiveAgent
         public const int MAX_PROACTIVE_RMI_PORT = 65534;
         /// <summary>
         /// The link to the official documentation.</summary>
-        public const string DOC_LINK = "http://proactive.inria.fr/release-doc/Resourcing/single_html/ResourceManagerManual.html#ProActiveWindowsAgent_89";
+        public const string DOC_LINK = "http://proactive.inria.fr/release-doc/Resourcing/multiple_html/ProActiveWindowsAgent_89.html";
         /// <summary>
         /// The default Resource Manager url.</summary>
         public const string DEFAULT_RM_URL = "rmi://localhost:1099";

@@ -38,9 +38,6 @@ using System.Collections.Generic;
 using System.Threading;
 using ConfigParser;
 using log4net;
-using Microsoft.Win32;
-using System.IO.Pipes;
-using System.IO;
 
 /** 
  * ExecutorsManager manages scheduled start/stop of executors.
@@ -89,26 +86,6 @@ namespace ProActiveAgent
                 ProActiveRuntimeExecutor executor = new ProActiveRuntimeExecutor(commonStartInfo, rank);
                 this.proActiveRuntimeExecutors.Add(executor);
             }
-
-            // Try to create the sub key in registry for executors stats            
-            // delete all sub keys of the executors key           
-            //RegistryKey key = Registry.CurrentUser.OpenSubKey(Constants.PROACTIVE_AGENT_EXECUTORS_REG_SUBKEY, true);
-            //if (key != null)
-            //{
-            //    foreach (string name in key.GetValueNames())
-            //    {
-            //        key.DeleteValue(name);
-            //    }
-            //    key.Close();
-            //}
-            //else
-            //{
-            //    key = Registry.CurrentUser.CreateSubKey(Constants.PROACTIVE_AGENT_EXECUTORS_REG_SUBKEY);
-            //    if (key != null)
-            //    {
-            //        key.Close();
-            //    }
-            //}
 
             // Create the start/stop timers for scheduled events
             this.startTimers = new List<Timer>();

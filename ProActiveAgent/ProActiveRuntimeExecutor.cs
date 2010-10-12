@@ -46,7 +46,6 @@ using log4net;
 using log4net.Appender;
 using log4net.Layout;
 using log4net.Repository.Hierarchy;
-using Microsoft.Win32;
 
 /**
  * Executor of the ProActive Runtime process. If the executed process exits, the executor handles the restart with a Timer.
@@ -113,6 +112,7 @@ namespace ProActiveAgent
         /// Process object that represents running runner script.</summary>                        
         public ProActiveRuntimeExecutor(CommonStartInfo commonStartInfo, int rank)
         {
+            this.commonStartInfo = commonStartInfo;
             this.rank = rank;
             if (this.rank == 0)
             {
@@ -122,25 +122,24 @@ namespace ProActiveAgent
             // Init the current and increment the next usable port
             this.currentProActivePort = nextUsableProActivePort++;
 
-            this.LOGGER = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType + "" + this.rank);
+            this.LOGGER = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType + "" + rank);
             // The logger needs to be customized programmatically to log stout/stderr into a separate file
-            this.processLogger = LogManager.GetLogger("Executor" + this.rank + "ProcessLogger");
+            this.processLogger = LogManager.GetLogger("Executor" + rank + "ProcessLogger");
             Logger customLogger = this.processLogger.Logger as log4net.Repository.Hierarchy.Logger;
             if (customLogger != null)
             {
                 customLogger.Additivity = false;
-                customLogger.AddAppender(CreateRollingFileAppender("Executor" + this.rank + "RollingFileAppender", "Executor" + this.rank + "Process-log.txt"));
-            }
-            this.commonStartInfo = commonStartInfo;
+                customLogger.AddAppender(createRollingFileAppender(rank)/*, commonStartInfo.logsDirectory */);
+            }            
             // The restart timer is only created it will not start until Timer.Change() method is called
             this.restartTimer = new Timer(new TimerCallback(internalRestart), null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
             this.callersState = new Dictionary<ApplicationType, Int32>();
             this.proActiveRuntimeProcess = null;
             // Create a new job object for limits
-            this.jobObject = new JobObject(Constants.JOB_OBJECT_NAME + this.rank);
+            this.jobObject = new JobObject(Constants.JOB_OBJECT_NAME + rank);
             this.jobObject.Events.OnNewProcess += new jobEventHandler<NewProcessEventArgs>(Events_OnNewProcess);
             // If memory management is enabled
-            ushort memoryLimit = this.commonStartInfo.configuration.config.memoryLimit;
+            ushort memoryLimit = commonStartInfo.configuration.config.memoryLimit;
             if (memoryLimit != 0)
             {
                 // Add user defined memory limitations
@@ -717,11 +716,11 @@ namespace ProActiveAgent
             this.cpuLimiter.setNewMaxCpuUsage(maxCpuUsage);
         }
 
-        private static IAppender CreateRollingFileAppender(string name, string fileName)
+        private static IAppender createRollingFileAppender(int rank)
         {
             log4net.Appender.RollingFileAppender appender = new log4net.Appender.RollingFileAppender();
-            appender.Name = name;
-            appender.File = fileName;
+            appender.Name = "Executor" + rank + "RollingFileAppender";
+            appender.File = CommonStartInfo.logsDirectory + "\\Executor" + rank + "Process-log.txt";
             appender.AppendToFile = true;
             appender.RollingStyle = log4net.Appender.RollingFileAppender.RollingMode.Size;
             appender.MaxSizeRollBackups = 10;

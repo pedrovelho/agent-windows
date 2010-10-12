@@ -46,7 +46,8 @@ namespace ProActiveAgent
     sealed class CommonStartInfo
     {
         private static readonly ILog LOGGER = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
+        // Initialized by the WindowsService.main(), the directory will contain all logs file (runtime and executors logs)
+        public static string logsDirectory;
         /// <summary>
         /// The configuration used to run the process</summary>
         private readonly AgentType _configuration;
@@ -56,6 +57,9 @@ namespace ProActiveAgent
         /// <summary>
         /// All jvm parameters (default and user defined)</summary>
         private readonly string[] _jvmParameters;
+        /// <summary>
+        /// The log directory read from the registry</summary>
+        // private readonly string _logsDirectory;
 
         /// <summary>
         /// The constructor of this class.</summary>
@@ -134,5 +138,12 @@ namespace ProActiveAgent
                 return this._enabledConnection.javaStarterClass;
             }
         }
+
+        //public string logsDirectory {
+        //    get
+        //    {
+        //        return this._logsDirectory;
+        //    }
+        //}
     }
 }

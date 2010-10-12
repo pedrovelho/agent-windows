@@ -34,14 +34,13 @@
  * $$ACTIVEEON_CONTRIBUTOR$$
  */
 using System;
-using System.Collections.Generic;
+using System.IO;
+using System.IO.Pipes;
 using System.ServiceProcess;
+using System.Threading;
 using ConfigParser;
 using log4net;
 using Microsoft.Win32;
-using System.IO.Pipes;
-using System.IO;
-using System.Threading;
 
 namespace ProActiveAgent
 {
@@ -60,12 +59,12 @@ namespace ProActiveAgent
         public WindowsService()
         {
             // Set the service name
-            base.ServiceName = Constants.PROACTIVE_AGENT_SERVICE_NAME;
+            base.ServiceName = Constants.SERVICE_NAME;
             // These Flags set whether or not to handle that specific
             // type of event. Set to true if you need it, false otherwise.
             this.CanPauseAndContinue = false;
             this.CanShutdown = true;
-            this.CanStop = true;
+            this.CanStop = true;            
         }
 
         /// <summary>
@@ -83,21 +82,21 @@ namespace ProActiveAgent
             string agentConfigLocation;
 
             // Try to read install and config locations from registry
-            RegistryKey confKey = Registry.LocalMachine.OpenSubKey(Constants.PROACTIVE_AGENT_REG_SUBKEY);
+            RegistryKey confKey = Registry.LocalMachine.OpenSubKey(Constants.REG_SUBKEY);
             if (confKey == null)
             {
                 if (LOGGER.IsWarnEnabled)
                 {
-                    LOGGER.Warn("ProActive Agent could not read " + Constants.PROACTIVE_AGENT_REG_SUBKEY + " from windows registry");
+                    LOGGER.Warn("ProActive Agent could not read " + Constants.REG_SUBKEY + " from windows registry");
                 }
                 // If registry key is unknown set default locations
-                agentInstallLocation = Constants.PROACTIVE_AGENT_DEFAULT_INSTALL_LOCATION;
-                agentConfigLocation = Constants.PROACTIVE_AGENT_DEFAULT_CONFIG_LOCATION;
+                agentInstallLocation = Constants.DEFAULT_INSTALL_LOCATION;
+                agentConfigLocation = Constants.DEFAULT_CONFIG_LOCATION;
             }
             else
             {
-                agentInstallLocation = (string)confKey.GetValue(Constants.PROACTIVE_AGENT_INSTALL_LOCATION_REG_VALUE_NAME);
-                agentConfigLocation = (string)confKey.GetValue(Constants.PROACTIVE_AGENT_CONFIG_LOCATION_REG_VALUE_NAME);
+                agentInstallLocation = (string)confKey.GetValue(Constants.INSTALL_LOCATION_REG_VALUE_NAME);
+                agentConfigLocation = (string)confKey.GetValue(Constants.CONFIG_LOCATION_REG_VALUE_NAME);
                 confKey.Close();
             }
 
@@ -113,9 +112,11 @@ namespace ProActiveAgent
             catch (Exception ex)
             {
                 LOGGER.Error("An exception occured when reading the classpath", ex);
+                // Cannot start the service if the class path is not set
+                base.Stop();
                 return;
             }
-
+            
             this.executorsManager = new ExecutorsManager(configuration);
 
             this.pipeServerWorker = new Worker(this.executorsManager);
@@ -139,7 +140,9 @@ namespace ProActiveAgent
                 this.executorsManager.dispose();
             }
 
-            this.pipeServerWorker.requestStop();
+            if (this.pipeServerWorker != null) {
+                this.pipeServerWorker.requestStop();
+            }
 
             //BUT THIS SHOULD NOT BE NECESSARY:
             base.OnStop();
@@ -211,7 +214,30 @@ namespace ProActiveAgent
         /// The Main Thread: This is where your Service is Run.
         /// </summary>
         static void Main()
-        {
+        {            
+            // Read logs directory from the registry
+            CommonStartInfo.logsDirectory = System.IO.Path.GetTempPath();
+            try
+            {
+                RegistryKey confKey = Registry.LocalMachine.OpenSubKey(Constants.REG_SUBKEY);
+                if (confKey != null)
+                {
+                    CommonStartInfo.logsDirectory = (string)confKey.GetValue(Constants.LOGS_DIR_REG_VALUE_NAME);
+                    confKey.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                // Unable to read the logs directory from the registry this is possibly due to an error during the installation                
+                throw e;
+            }
+            log4net.ThreadContext.Properties["LogFilePath"] = CommonStartInfo.logsDirectory;            
+            // Specify the location of the log4net configuration file
+            System.Reflection.Assembly a = System.Reflection.Assembly.GetEntryAssembly();
+            string baseDir = System.IO.Path.GetDirectoryName(a.Location);
+            FileInfo f = new FileInfo(baseDir + "\\log4net.config");
+            log4net.Config.XmlConfigurator.Configure(f);
+            // Start the service
             ServiceBase.Run(new WindowsService());
         }
 

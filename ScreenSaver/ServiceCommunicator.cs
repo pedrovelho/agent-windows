@@ -49,7 +49,7 @@ namespace ScreenSaver
 {
     public class ServiceCommunicator
     {
-        private readonly ServiceController sc = new ServiceController(Constants.PROACTIVE_AGENT_SERVICE_NAME);
+        private readonly ServiceController sc = new ServiceController(Constants.SERVICE_NAME);
 
         public void sendStartAction()
         {

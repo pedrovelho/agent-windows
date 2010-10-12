@@ -60,7 +60,7 @@ namespace AgentForAgent
         private readonly AgentType configuration;
         private string configurationLocation;
         private readonly string agentLocation;
-        private readonly ConfigurationDialog hook;
+        private readonly AgentWindow hook;
 
         private Chart chart;
 
@@ -71,7 +71,7 @@ namespace AgentForAgent
 
         private IniFile iniConfiguration;
         //--Constructor
-        public ConfigurationEditor(AgentType conf, string confLocation, string agentLocation, ConfigurationDialog hook)
+        public ConfigurationEditor(AgentType conf, string confLocation, string agentLocation, AgentWindow hook)
         {
             // First initialize all widgets (gui-generated)
             InitializeComponent();
@@ -121,6 +121,7 @@ namespace AgentForAgent
             }
             else
             {
+                this.nbRuntimesNumericUpDown.Value = conf.config.nbRuntimes;
                 this.nbRuntimesNumericUpDown.Enabled = true;
             }                        
             
@@ -331,16 +332,16 @@ namespace AgentForAgent
         private void internalSave(string internalLocation)
         {
             // Copy all jvm parameters from listbox into the cofiguration
-            if (this.jvmParametersListBox.Items.Count != 0)
+            string[] values = new string[this.jvmParametersListBox.Items.Count];
+            if (this.jvmParametersListBox.Items.Count > 0)
             {
-                string[] values = new string[this.jvmParametersListBox.Items.Count];
-                this.jvmParametersListBox.Items.CopyTo(values, 0);
-                this.configuration.config.jvmParameters = values;
+                this.jvmParametersListBox.Items.CopyTo(values, 0);                
             }
-            if (!"".Equals(this.scriptLocationTextBox.Text))
-            {
-                this.configuration.config.onRuntimeExitScript = this.scriptLocationTextBox.Text;
-            }            
+            this.configuration.config.jvmParameters = values;
+
+            // Set the on runtime exit script
+            this.configuration.config.onRuntimeExitScript = this.scriptLocationTextBox.Text;
+
             // Save memory management configuration
             ushort memoryLimit = Convert.ToUInt16(memoryLimitNumericUpDown.Value);
             if (memoryLimit > 0) {

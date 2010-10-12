@@ -34,12 +34,10 @@
  * $$ACTIVEEON_CONTRIBUTOR$$
  */
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml.Serialization;
+using System.IO;
 using System.Xml;
 using System.Xml.Schema;
-using System.IO;
+using System.Xml.Serialization;
 using ConfigParserOLD;
 
 namespace ConfigParser

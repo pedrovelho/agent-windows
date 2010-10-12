@@ -56,14 +56,14 @@ namespace AgentForAgent
                 return;
             }
 
-            // Check if the current user have admin rights   
-            WindowsPrincipal principal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
-            if (!principal.IsInRole(WindowsBuiltInRole.Administrator))
-            {
-                // report error and exit                     
-                MessageBox.Show("Adminstrator rights are required to run the ProActive Agent Control.", "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
+            //// Check if the current user have admin rights   
+            //WindowsPrincipal principal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
+            //if (!principal.IsInRole(WindowsBuiltInRole.Administrator))
+            //{
+            //    // report error and exit                     
+            //    MessageBox.Show("Adminstrator rights are required to run the ProActive Agent Control.", "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //    return;
+            //}
 
             // Check if this application is already running
             Process[] alreadyRunningProcesses = Process.GetProcessesByName("AgentForAgent");
@@ -76,29 +76,39 @@ namespace AgentForAgent
             // ie check if the agent was correctly installed
             try
             {
-                RegistryKey agentKey = Registry.LocalMachine.OpenSubKey(Constants.PROACTIVE_AGENT_REG_SUBKEY);
+                RegistryKey agentKey = Registry.LocalMachine.OpenSubKey(Constants.REG_SUBKEY);
                 if (agentKey == null)
                 {
                     // Cannot continue, report error message box and exit                         
-                    MessageBox.Show("Can not open the following registry subkey (LocalMachine) " + Constants.PROACTIVE_AGENT_REG_SUBKEY + ". It appears that the agent might not have been installed properly.", "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Can not open the following registry subkey (LocalMachine) " + Constants.REG_SUBKEY + ". It appears that the agent might not have been installed properly.", "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
-                string agentLocation = (string)agentKey.GetValue(Constants.PROACTIVE_AGENT_INSTALL_LOCATION_REG_VALUE_NAME);
+                string agentLocation = (string)agentKey.GetValue(Constants.INSTALL_LOCATION_REG_VALUE_NAME);
                 if (agentLocation == null)
                 {
                     // report error and exit                     
-                    MessageBox.Show("Cannot get the agent location in " + Constants.PROACTIVE_AGENT_REG_SUBKEY + ". It appears that the agent might not have been installed properly.", "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Cannot get the agent location in " + Constants.REG_SUBKEY + ". It appears that the agent might not have been installed properly.", "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     // Close the registry key
                     agentKey.Close();
                     return;
                 }
 
-                string configLocation = (string)agentKey.GetValue(Constants.PROACTIVE_AGENT_CONFIG_LOCATION_REG_VALUE_NAME);
+                string configLocation = (string)agentKey.GetValue(Constants.CONFIG_LOCATION_REG_VALUE_NAME);
                 if (configLocation == null)
                 {
                     // report error and exit
-                    MessageBox.Show("Cannot get the config location in " + Constants.PROACTIVE_AGENT_REG_SUBKEY + ". It appears that the agent might not have been installed properly.", "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Cannot get the config location in " + Constants.REG_SUBKEY + ". It appears that the agent might not have been installed properly.", "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    // Close the registry key
+                    agentKey.Close();
+                    return;
+                }
+
+                string logsDirectory = (string)agentKey.GetValue(Constants.LOGS_DIR_REG_VALUE_NAME);
+                if (logsDirectory == null)
+                {
+                    // report error and exit
+                    MessageBox.Show("Cannot get the logs directory in " + Constants.REG_SUBKEY + ". It appears that the agent might not have been installed properly.", "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     // Close the registry key
                     agentKey.Close();
                     return;
@@ -111,20 +121,19 @@ namespace AgentForAgent
                 ServiceController sc = null;
                 try
                 {
-                    sc = new ServiceController(Constants.PROACTIVE_AGENT_SERVICE_NAME);
+                    sc = new ServiceController(Constants.SERVICE_NAME);
                 }
                 catch (Exception e)
                 {
-                    MessageBox.Show("Could not connect to the service " + Constants.PROACTIVE_AGENT_SERVICE_NAME + ". It appears that the agent might not have been installed properly. " + e.ToString(), "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Could not connect to the service " + Constants.SERVICE_NAME + ". It appears that the agent might not have been installed properly. " + e.ToString(), "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
                 // Launch the GUI
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-                ConfigurationDialog dialog = new ConfigurationDialog(agentLocation, configLocation, sc);
-                Application.Run(dialog);
-                dialog.Show();
+                AgentWindow dialog = new AgentWindow(agentLocation, configLocation, logsDirectory, sc);
+                Application.Run(dialog);                
             }
             catch (Exception e)
             {

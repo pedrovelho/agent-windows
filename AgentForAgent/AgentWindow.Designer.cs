@@ -1,6 +1,6 @@
 ﻿namespace AgentForAgent
 {
-    partial class ConfigurationDialog
+    partial class AgentWindow
     {
         /// <summary>
         /// Required designer variable.
@@ -29,11 +29,11 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfigurationDialog));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AgentWindow));
             this.configurationFileLocationLabel = new System.Windows.Forms.Label();
             this.configLocation = new System.Windows.Forms.TextBox();
             this.browse = new System.Windows.Forms.Button();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.configurationGroupBox = new System.Windows.Forms.GroupBox();
             this.guiEditButton = new System.Windows.Forms.Button();
             this.textEditConfig = new System.Windows.Forms.Button();
             this.infoGroupBox = new System.Windows.Forms.GroupBox();
@@ -41,29 +41,30 @@
             this.agentStatusValue = new System.Windows.Forms.Label();
             this.spawnedRuntimesLabel = new System.Windows.Forms.Label();
             this.agentStatusLabel = new System.Windows.Forms.Label();
-            this.viewLogsWithNotepadButton = new System.Windows.Forms.Button();
             this.stopService = new System.Windows.Forms.Button();
             this.startService = new System.Windows.Forms.Button();
             this.proActiveLogoPictureBox = new System.Windows.Forms.PictureBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.timer = new System.Windows.Forms.Timer(this.components);
             this.browseConfig = new System.Windows.Forms.OpenFileDialog();
             this.agentStatusNotifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.startServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stopServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.startToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeAdministrationPanelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.proActiveInriaLinkLabel = new System.Windows.Forms.LinkLabel();
+            this.webPageLinkLabel = new System.Windows.Forms.LinkLabel();
             this.controlsGroupBox = new System.Windows.Forms.GroupBox();
             this.logsGroupBox = new System.Windows.Forms.GroupBox();
+            this.viewLogsLinkLabel = new System.Windows.Forms.LinkLabel();
             this.viewLogsWithExplorerButton = new System.Windows.Forms.Button();
             this.documentationLinkLabel = new System.Windows.Forms.LinkLabel();
-            this.groupBox1.SuspendLayout();
+            this.viewLogsWithNotepadButton = new System.Windows.Forms.Button();
+            this.configurationGroupBox.SuspendLayout();
             this.infoGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.proActiveLogoPictureBox)).BeginInit();
-            this.contextMenuStrip1.SuspendLayout();
+            this.contextMenuStrip.SuspendLayout();
             this.controlsGroupBox.SuspendLayout();
             this.logsGroupBox.SuspendLayout();
             this.SuspendLayout();
@@ -73,16 +74,16 @@
             this.configurationFileLocationLabel.AutoSize = true;
             this.configurationFileLocationLabel.Location = new System.Drawing.Point(6, 21);
             this.configurationFileLocationLabel.Name = "configurationFileLocationLabel";
-            this.configurationFileLocationLabel.Size = new System.Drawing.Size(128, 13);
+            this.configurationFileLocationLabel.Size = new System.Drawing.Size(51, 13);
             this.configurationFileLocationLabel.TabIndex = 0;
-            this.configurationFileLocationLabel.Text = "Configuration file location:";
+            this.configurationFileLocationLabel.Text = "Location:";
             // 
             // configLocation
             // 
-            this.configLocation.Location = new System.Drawing.Point(140, 18);
+            this.configLocation.Location = new System.Drawing.Point(63, 18);
             this.configLocation.Name = "configLocation";
             this.configLocation.ReadOnly = true;
-            this.configLocation.Size = new System.Drawing.Size(350, 20);
+            this.configLocation.Size = new System.Drawing.Size(427, 20);
             this.configLocation.TabIndex = 1;
             this.configLocation.Text = "C:\\PAAgent-config.xml";
             this.configLocation.TextChanged += new System.EventHandler(this.configLocation_TextChanged);
@@ -93,23 +94,23 @@
             this.browse.Name = "browse";
             this.browse.Size = new System.Drawing.Size(75, 23);
             this.browse.TabIndex = 2;
-            this.browse.Text = "Load...";
+            this.browse.Text = "Browse";
             this.browse.UseVisualStyleBackColor = true;
             this.browse.Click += new System.EventHandler(this.browse_Click);
             // 
-            // groupBox1
+            // configurationGroupBox
             // 
-            this.groupBox1.Controls.Add(this.guiEditButton);
-            this.groupBox1.Controls.Add(this.configLocation);
-            this.groupBox1.Controls.Add(this.textEditConfig);
-            this.groupBox1.Controls.Add(this.browse);
-            this.groupBox1.Controls.Add(this.configurationFileLocationLabel);
-            this.groupBox1.Location = new System.Drawing.Point(9, 117);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(577, 81);
-            this.groupBox1.TabIndex = 3;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Settings";
+            this.configurationGroupBox.Controls.Add(this.guiEditButton);
+            this.configurationGroupBox.Controls.Add(this.configLocation);
+            this.configurationGroupBox.Controls.Add(this.textEditConfig);
+            this.configurationGroupBox.Controls.Add(this.browse);
+            this.configurationGroupBox.Controls.Add(this.configurationFileLocationLabel);
+            this.configurationGroupBox.Location = new System.Drawing.Point(9, 117);
+            this.configurationGroupBox.Name = "configurationGroupBox";
+            this.configurationGroupBox.Size = new System.Drawing.Size(577, 81);
+            this.configurationGroupBox.TabIndex = 3;
+            this.configurationGroupBox.TabStop = false;
+            this.configurationGroupBox.Text = "Configuration";
             // 
             // guiEditButton
             // 
@@ -119,7 +120,7 @@
             this.guiEditButton.TabIndex = 3;
             this.guiEditButton.Text = "GUI Edit";
             this.guiEditButton.UseVisualStyleBackColor = true;
-            this.guiEditButton.Click += new System.EventHandler(this.button1_Click);
+            this.guiEditButton.Click += new System.EventHandler(this.guiEditButton_Click);
             // 
             // textEditConfig
             // 
@@ -180,16 +181,6 @@
             this.agentStatusLabel.TabIndex = 0;
             this.agentStatusLabel.Text = "Status:";
             // 
-            // viewLogsWithNotepadButton
-            // 
-            this.viewLogsWithNotepadButton.Location = new System.Drawing.Point(61, 19);
-            this.viewLogsWithNotepadButton.Name = "viewLogsWithNotepadButton";
-            this.viewLogsWithNotepadButton.Size = new System.Drawing.Size(118, 23);
-            this.viewLogsWithNotepadButton.TabIndex = 4;
-            this.viewLogsWithNotepadButton.Text = "View with Notepad";
-            this.viewLogsWithNotepadButton.UseVisualStyleBackColor = true;
-            this.viewLogsWithNotepadButton.Click += new System.EventHandler(this.viewLogs_Click);
-            // 
             // stopService
             // 
             this.stopService.Location = new System.Drawing.Point(110, 48);
@@ -242,11 +233,11 @@
             this.label4.TabIndex = 6;
             this.label4.Text = "(C) 2008-2010 INRIA";
             // 
-            // timer1
+            // timer
             // 
-            this.timer1.Enabled = true;
-            this.timer1.Interval = 800;
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            this.timer.Enabled = true;
+            this.timer.Interval = 800;
+            this.timer.Tick += new System.EventHandler(this.timer_Tick);
             // 
             // browseConfig
             // 
@@ -255,22 +246,22 @@
             // 
             // agentStatusNotifyIcon
             // 
-            this.agentStatusNotifyIcon.ContextMenuStrip = this.contextMenuStrip1;
+            this.agentStatusNotifyIcon.ContextMenuStrip = this.contextMenuStrip;
             this.agentStatusNotifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("agentStatusNotifyIcon.Icon")));
             this.agentStatusNotifyIcon.Text = "ProActiveAgent";
             this.agentStatusNotifyIcon.Visible = true;
             this.agentStatusNotifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDoubleClick);
             // 
-            // contextMenuStrip1
+            // contextMenuStrip
             // 
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.startServiceToolStripMenuItem,
             this.stopServiceToolStripMenuItem,
             this.startToolStripMenuItem,
             this.closeAdministrationPanelToolStripMenuItem});
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.contextMenuStrip1.Size = new System.Drawing.Size(212, 92);
+            this.contextMenuStrip.Name = "contextMenuStrip1";
+            this.contextMenuStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
+            this.contextMenuStrip.Size = new System.Drawing.Size(212, 92);
             // 
             // startServiceToolStripMenuItem
             // 
@@ -302,18 +293,18 @@
             this.closeAdministrationPanelToolStripMenuItem.Text = "Close Administration Panel";
             this.closeAdministrationPanelToolStripMenuItem.Click += new System.EventHandler(this.closeAdministrationPanelToolStripMenuItem_Click_1);
             // 
-            // proActiveInriaLinkLabel
+            // webPageLinkLabel
             // 
-            this.proActiveInriaLinkLabel.AutoSize = true;
-            this.proActiveInriaLinkLabel.BackColor = System.Drawing.Color.White;
-            this.proActiveInriaLinkLabel.DisabledLinkColor = System.Drawing.Color.White;
-            this.proActiveInriaLinkLabel.Location = new System.Drawing.Point(430, 85);
-            this.proActiveInriaLinkLabel.Name = "proActiveInriaLinkLabel";
-            this.proActiveInriaLinkLabel.Size = new System.Drawing.Size(113, 13);
-            this.proActiveInriaLinkLabel.TabIndex = 9;
-            this.proActiveInriaLinkLabel.TabStop = true;
-            this.proActiveInriaLinkLabel.Text = "http://proactive.inria.fr";
-            this.proActiveInriaLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.proActiveInriaLinkLabel_LinkClicked);
+            this.webPageLinkLabel.AutoSize = true;
+            this.webPageLinkLabel.BackColor = System.Drawing.Color.White;
+            this.webPageLinkLabel.DisabledLinkColor = System.Drawing.Color.White;
+            this.webPageLinkLabel.Location = new System.Drawing.Point(430, 85);
+            this.webPageLinkLabel.Name = "webPageLinkLabel";
+            this.webPageLinkLabel.Size = new System.Drawing.Size(113, 13);
+            this.webPageLinkLabel.TabIndex = 9;
+            this.webPageLinkLabel.TabStop = true;
+            this.webPageLinkLabel.Text = "http://proactive.inria.fr";
+            this.webPageLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.webPageLinkLabel_LinkClicked);
             // 
             // controlsGroupBox
             // 
@@ -328,8 +319,9 @@
             // 
             // logsGroupBox
             // 
-            this.logsGroupBox.Controls.Add(this.viewLogsWithExplorerButton);
             this.logsGroupBox.Controls.Add(this.viewLogsWithNotepadButton);
+            this.logsGroupBox.Controls.Add(this.viewLogsLinkLabel);
+            this.logsGroupBox.Controls.Add(this.viewLogsWithExplorerButton);
             this.logsGroupBox.Location = new System.Drawing.Point(204, 204);
             this.logsGroupBox.Name = "logsGroupBox";
             this.logsGroupBox.Size = new System.Drawing.Size(185, 81);
@@ -337,15 +329,26 @@
             this.logsGroupBox.TabStop = false;
             this.logsGroupBox.Text = "Logs";
             // 
+            // viewLogsLinkLabel
+            // 
+            this.viewLogsLinkLabel.AutoSize = true;
+            this.viewLogsLinkLabel.Location = new System.Drawing.Point(21, 39);
+            this.viewLogsLinkLabel.Name = "viewLogsLinkLabel";
+            this.viewLogsLinkLabel.Size = new System.Drawing.Size(56, 13);
+            this.viewLogsLinkLabel.TabIndex = 0;
+            this.viewLogsLinkLabel.TabStop = true;
+            this.viewLogsLinkLabel.Text = "View Logs";
+            this.viewLogsLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.viewLogsLinkLabel_LinkClicked);
+            // 
             // viewLogsWithExplorerButton
             // 
-            this.viewLogsWithExplorerButton.Location = new System.Drawing.Point(61, 48);
+            this.viewLogsWithExplorerButton.Location = new System.Drawing.Point(83, 48);
             this.viewLogsWithExplorerButton.Name = "viewLogsWithExplorerButton";
-            this.viewLogsWithExplorerButton.Size = new System.Drawing.Size(118, 23);
+            this.viewLogsWithExplorerButton.Size = new System.Drawing.Size(78, 23);
             this.viewLogsWithExplorerButton.TabIndex = 5;
-            this.viewLogsWithExplorerButton.Text = "View with Explorer";
+            this.viewLogsWithExplorerButton.Text = "with Explorer";
             this.viewLogsWithExplorerButton.UseVisualStyleBackColor = true;
-            this.viewLogsWithExplorerButton.Click += new System.EventHandler(this.viewLogsWithIExplorerButton_Click);
+            this.viewLogsWithExplorerButton.Click += new System.EventHandler(this.withIExplorerButton_Click);
             // 
             // documentationLinkLabel
             // 
@@ -359,7 +362,17 @@
             this.documentationLinkLabel.Text = "Official Documentation";
             this.documentationLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.documentationLinkLabel_LinkClicked);
             // 
-            // ConfigurationDialog
+            // viewLogsWithNotepadButton
+            // 
+            this.viewLogsWithNotepadButton.Location = new System.Drawing.Point(83, 19);
+            this.viewLogsWithNotepadButton.Name = "viewLogsWithNotepadButton";
+            this.viewLogsWithNotepadButton.Size = new System.Drawing.Size(78, 23);
+            this.viewLogsWithNotepadButton.TabIndex = 6;
+            this.viewLogsWithNotepadButton.Text = "with Notepad";
+            this.viewLogsWithNotepadButton.UseVisualStyleBackColor = true;
+            this.viewLogsWithNotepadButton.Click += new System.EventHandler(this.withNotepadButton_Click);
+            // 
+            // AgentWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -368,27 +381,28 @@
             this.Controls.Add(this.documentationLinkLabel);
             this.Controls.Add(this.logsGroupBox);
             this.Controls.Add(this.infoGroupBox);
-            this.Controls.Add(this.proActiveInriaLinkLabel);
+            this.Controls.Add(this.webPageLinkLabel);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.configurationGroupBox);
             this.Controls.Add(this.proActiveLogoPictureBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
-            this.Name = "ConfigurationDialog";
+            this.Name = "AgentWindow";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "ProActive Agent Control";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ConfigurationDialog_FormClosing);
             this.Resize += new System.EventHandler(this.ConfigurationDialog_Resize);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.configurationGroupBox.ResumeLayout(false);
+            this.configurationGroupBox.PerformLayout();
             this.infoGroupBox.ResumeLayout(false);
             this.infoGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.proActiveLogoPictureBox)).EndInit();
-            this.contextMenuStrip1.ResumeLayout(false);
+            this.contextMenuStrip.ResumeLayout(false);
             this.controlsGroupBox.ResumeLayout(false);
             this.logsGroupBox.ResumeLayout(false);
+            this.logsGroupBox.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -399,7 +413,7 @@
         private System.Windows.Forms.Label configurationFileLocationLabel;
         private System.Windows.Forms.TextBox configLocation;
         private System.Windows.Forms.Button browse;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox configurationGroupBox;
         private System.Windows.Forms.Button textEditConfig;
         private System.Windows.Forms.GroupBox infoGroupBox;
         private System.Windows.Forms.Button stopService;
@@ -410,19 +424,18 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         //private System.Windows.Forms.Button troubleshoot;
-        private System.Windows.Forms.Timer timer1;
-        private System.Windows.Forms.Button viewLogsWithNotepadButton;
+        private System.Windows.Forms.Timer timer;
         private System.Windows.Forms.OpenFileDialog browseConfig;
         //private System.Windows.Forms.Button scrSvrStart;
         //private System.Windows.Forms.Button globalStop;
         private System.Windows.Forms.NotifyIcon agentStatusNotifyIcon;
-        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
         private System.Windows.Forms.Button guiEditButton;
         private System.Windows.Forms.ToolStripMenuItem startToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeAdministrationPanelToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem startServiceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem stopServiceToolStripMenuItem;
-        private System.Windows.Forms.LinkLabel proActiveInriaLinkLabel;
+        private System.Windows.Forms.LinkLabel webPageLinkLabel;
         private System.Windows.Forms.GroupBox controlsGroupBox;
         private System.Windows.Forms.GroupBox logsGroupBox;
         private System.Windows.Forms.Label spawnedRuntimesLabel;
@@ -430,6 +443,8 @@
         private System.Windows.Forms.Label agentStatusValue;
         private System.Windows.Forms.Label spawnedRuntimesValue;
         private System.Windows.Forms.LinkLabel documentationLinkLabel;
+        private System.Windows.Forms.LinkLabel viewLogsLinkLabel;
+        private System.Windows.Forms.Button viewLogsWithNotepadButton;
         //private System.Windows.Forms.Button allowForbidRT;
     }
 }
