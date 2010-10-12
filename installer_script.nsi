@@ -1,22 +1,23 @@
-#-----------------------------------------------------------------------------------
+############################################################################################################################
 # Includes:
 # - x64.nsh for few simple macros to handle installation on x64 architecture
 # - DotNetVer.nsh for checking Microsoft .NET Framework versions (see http://ontheperiphery.veraida.com/project/dotnetver)
 # - servicelib.nsh for Windows service installation
-#-----------------------------------------------------------------------------------
+############################################################################################################################
 !include x64.nsh
 !include "DotNetVer.nsh"
 !include "MUI.nsh"
 !include "servicelib.nsh"
+!include "NTProfiles.nsh"
 
-#-----------------------------------------------------------------------------------
-# ProActive Agent service name constant
-#-----------------------------------------------------------------------------------
+#################################################################
+# Some constants definitions like service name, version, etc ...
+#################################################################
 !define SERVICE_NAME "ProActiveAgent"
 !define SERVICE_DESC "The ProActive Agent enables desktop computers as an important source of computational power"
 !define VERSION "2.3"
 !define PAGE_FILE "serviceInstallPage.ini"
-# Define the name of the service logon right
+!define SUBINACL_PATH "$PROGRAMFILES\Windows Resource Kits\Tools\subinacl.exe"
 !define SERVICE_LOGON_RIGHT 'SeServiceLogonRight'
 
 CRCCheck on
@@ -27,10 +28,10 @@ OutFile ProActiveAgent-setup-${VERSION}.exe
 LicenseText "This program is Licensed under the GNU General Public License (GPL)."
 LicenseData "LICENSE.txt"
 
-#-----------------------------------------------------------------------------------
+#####################################################################
 # By default the installation directory is "Program Files" however
 # on x64 architecture it will be translated as "Program Files (x86)"
-#-----------------------------------------------------------------------------------
+#####################################################################
 InstallDir $PROGRAMFILES\ProActiveAgent
 
 ComponentText "This will install ProActive Agent on your computer. Select which optional components you want installed."
@@ -41,107 +42,16 @@ Page License
 Page Components
 Page Directory
 Page Instfiles
+# The page that specifies locations and service account
 Page Custom MyCustomPage MyCustomLeave
 
-Function MyCustomPage
-  ReserveFile ${PAGE_FILE}
-  !insertmacro MUI_INSTALLOPTIONS_EXTRACT ${PAGE_FILE}
-  !insertmacro MUI_INSTALLOPTIONS_DISPLAY ${PAGE_FILE}
-FunctionEnd
-
-Function MyCustomLeave
-  # R3 will store the Username, R4 the Password and R5 the Domain
-  !insertmacro MUI_INSTALLOPTIONS_READ $R3 ${PAGE_FILE} "Field 4" "State"
-  !insertmacro MUI_INSTALLOPTIONS_READ $R4 ${PAGE_FILE} "Field 5" "State"
-  !insertmacro MUI_INSTALLOPTIONS_READ $R5 ${PAGE_FILE} "Field 8" "State"
-
-  # R1 will store the value of "Install as LocalSystem"
-  !insertmacro MUI_INSTALLOPTIONS_READ $R1 ${PAGE_FILE} "Field 6" "State"
-  ${If} $R1 == "1"
-        !insertmacro SERVICE "create" ${SERVICE_NAME} "path=$INSTDIR\ProActiveAgent.exe;autostart=1;interact=0;display=${SERVICE_NAME};description=${SERVICE_DESC};" ""
-  ${EndIf}
-  # R1 will store the value of "Specify an account"
-  !insertmacro MUI_INSTALLOPTIONS_READ $R1 ${PAGE_FILE} "Field 7" "State"
-  ${If} $R1 == "1"
-        # Check for empty username
-        ${If} $R3 == ""
-          MessageBox MB_OK "Please enter a valid account name"
-            Abort # Go back to page.
-        # Check for empty password
-        ${Else}
-          ${If} $R4 == ""
-            MessageBox MB_OK "Please enter a valid password"
-              Abort # Go back to page.
-          ${Else}
-            # Check for service logon right
-            UserMgr::HasPrivilege $R3 ${SERVICE_LOGON_RIGHT}
-            Pop $0
-            ${If} $0 == "True"
-                  Goto installService
-            ${EndIf}
-            # If FALSE that means the account does not have the service logon right
-            ${If} $0 == "FALSE" 
-               DetailPrint "User $R3 does not have the service logon right !"
-               MessageBox MB_OK "The user $R3 does not have the log on service right assignment. In the 'Administrative Tools' of the 'Control Panel' open the 'Local Security Policy'. In 'Security Settings', select 'Local Policies' then select 'User Rights Assignments'. Finally, in the list of policies open the properties of 'Log on as a service' policy and add the user $R3."
-                 Abort # Go back to page.
-            ${EndIf}
-            # Treat specific error ... the account does not exist
-            ${If} $0 == "ERROR GetAccountSid" 
-               DetailPrint "The account $R3 does not exist ... asking user if he wants to create a new account"
-               # Ask the user if he wants to create a new account
-               MessageBox MB_YESNO "The account $R3 does not exist, would you like to create it ?" IDYES createAccount
-                Abort
-               createAccount:
-               UserMgr::CreateAccount $R3 $R4 "The ProActive Agent service may be started under this account."
-  	       Pop $0
-               ${If} $0 == "ERROR 2224" # Means account already exists .. it's strange but yes it is possible !
-                  DetailPrint "The account $R3 already exist"
-                  MessageBox MB_OK "The account $R3 already exist"
-                    Abort
-        	${EndIf}
-        	# Add service log on privilege
-        	UserMgr::AddPrivilege $R3 ${SERVICE_LOGON_RIGHT}
-        	Pop $0
-        	${If} $0 == "FALSE" # Means could not add privilege
-                  DetailPrint "Unable to add privileges"
-                  MessageBox MB_OK "Unable to add privileges"
-                    Abort
-        	${EndIf}
-        	# Build the user environment of the user (Registry hive, Documents and settings etc.), returns status string
-        	UserMgr::BuiltAccountEnv $R3 $R4
-        	Pop $0
-        	${If} $0 == "FALSE" # Means could not add privilege
-                  DetailPrint "Unable to build account env"
-                  MessageBox MB_OK "Unable to build account env"
-                    Abort
-        	${EndIf}
-            # Unknown error just print and still try to install the user
-            ${Else}
-               DetailPrint "Unable to check for service logon right due to $0, still trying to install the service"
-               MessageBox MB_OK "Unable to check for service logon right due to $0"
-            ${EndIf}
-            installService:
-            !insertmacro SERVICE "create" ${SERVICE_NAME} "path=$INSTDIR\ProActiveAgent.exe;autostart=1;interact=0;display=${SERVICE_NAME};description=${SERVICE_DESC};user=$R5\$R3;password=$R4;" ""
-            Pop $0
-            # Means the service is not installed !
-            ${If} $0 != "true"
-              DetailPrint "Unable to install as service."
-              MessageBox MB_OK "Unable to install as service. To install manually use sc.exe command"
-           ${EndIf}
-          ${EndIf}
-        ${EndIf}
-  ${EndIf}
-  # Run the GUI editor
-  Exec "$INSTDIR\AgentForAgent.exe"
-FunctionEnd
-
-############################################################################################
+########################################
 # On init peforms the following checks:
 # - admin rights
 # - Microsoft .NET Framework 3.5
 # - VC++ redist 2008
 # - Previous version of the unistaller
-############################################################################################
+########################################
 Function .onInit
 
         #-----------------------------------------------------------------------------------
@@ -215,15 +125,177 @@ Function .onInit
         MessageBox MB_YESNO "The previous version of the ProActive Windows Agent must be uninstalled. Run the uninstaller ?" /SD IDYES IDNO abortLabel
         Exec $INSTDIR\uninstall.exe
         Goto endLabel
-        
         abortLabel:
         Abort
-        
         endLabel:
-
+        # Here we go to the custom page
 FunctionEnd
 
-######################################
+Function MyCustomPage
+  ReserveFile ${PAGE_FILE}
+  !insertmacro MUI_INSTALLOPTIONS_EXTRACT ${PAGE_FILE}
+   # Set default location for configuration file
+  !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "Field 14" State "$INSTDIR\config\PAAgent-config.xml"
+   # Set default location for logs directory
+  !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "Field 13" State "$INSTDIR\logs"
+  # Display the custom page
+  !insertmacro MUI_INSTALLOPTIONS_DISPLAY ${PAGE_FILE}
+FunctionEnd
+
+Function MyCustomLeave
+  #-----------------------------------------------------------------------------------
+  # !! CHECK LOCATIONS !!
+  #-----------------------------------------------------------------------------------
+
+  # Check config file location stored in R1
+  !insertmacro MUI_INSTALLOPTIONS_READ $R1 ${PAGE_FILE} "Field 14" State
+  ${If} $R1 == ""
+    MessageBox MB_OK "Please enter a valid location for the Configuration File"
+     Abort
+  ${EndIf}
+
+  # Check logs location stored in R2
+  !insertmacro MUI_INSTALLOPTIONS_READ $R2 ${PAGE_FILE} "Field 13" State
+  ${If} $R1 == ""
+    MessageBox MB_OK "Please enter a valid location for the logs"
+     Abort
+  ${EndIf}
+
+  #-----------------------------------------------------------------------------------
+  # !! SELECTED: Install as LocalSystem !!
+  #-----------------------------------------------------------------------------------
+
+  # R1 will store the value of "Install as LocalSystem"
+  !insertmacro MUI_INSTALLOPTIONS_READ $R0 ${PAGE_FILE} "Field 6" State
+  ${If} $R0 == "1"
+    !insertmacro SERVICE "create" ${SERVICE_NAME} "path=$INSTDIR\ProActiveAgent.exe ;autostart=1;interact=0;display=${SERVICE_NAME};description=${SERVICE_DESC};" ""
+    goto writeToRegistryLABEL
+  ${EndIf}
+
+  #-----------------------------------------------------------------------------------
+  # !! CHECK ACCOUNT FIELDS !!
+  #-----------------------------------------------------------------------------------
+
+  # Check for empty username stored in R3
+  !insertmacro MUI_INSTALLOPTIONS_READ $R3 ${PAGE_FILE} "Field 4" "State"
+  ${If} $R3 == ""
+    MessageBox MB_OK "Please enter a valid account name"
+     Abort
+  ${EndIf}
+
+  # Check for empty password stored in R4
+  !insertmacro MUI_INSTALLOPTIONS_READ $R4 ${PAGE_FILE} "Field 5" "State"
+  ${If} $R4 == ""
+    MessageBox MB_OK "Please enter a valid password"
+     Abort
+  ${EndIf}
+
+  # Check for empty domain stored in R5
+  !insertmacro MUI_INSTALLOPTIONS_READ $R5 ${PAGE_FILE} "Field 8" "State"
+  ${If} $R5 == ""
+    MessageBox MB_OK "Please enter a valid domain"
+     Abort
+  ${EndIf}
+
+  #-----------------------------------------------------------------------------------
+  # !! SELECTED: Specify an account !!
+  #-----------------------------------------------------------------------------------
+
+  # If "Specify an account" is selected check entered account
+  !insertmacro MUI_INSTALLOPTIONS_READ $R0 ${PAGE_FILE} "Field 7" State
+  ${If} $R0 == "1"
+    # Check for service logon right
+    UserMgr::HasPrivilege $R3 ${SERVICE_LOGON_RIGHT}
+    Pop $0
+    ${If} $0 == "True"
+      Goto installService
+    ${EndIf}
+    # If FALSE that means the account does not have the service logon right
+    ${If} $0 == "FALSE"
+      DetailPrint "User $R3 does not have the service logon right !"
+      MessageBox MB_OK "The user $R3 does not have the log on service right assignment. In the 'Administrative Tools' of the 'Control Panel' open the 'Local Security Policy'. In 'Security Settings', select 'Local Policies' then select 'User Rights Assignments'. Finally, in the list of policies open the properties of 'Log on as a service' policy and add the user $R3."
+        Abort # Go back to page.
+    ${EndIf}
+    # Treat specific error ... the account does not exist
+    ${If} $0 == "ERROR GetAccountSid"
+      DetailPrint "The account $R3 does not exist ... asking user if he wants to create a new account"
+      # Ask the user if he wants to create a new account
+      MessageBox MB_YESNO "The account $R3 does not exist, would you like to create it ?" IDYES createAccount
+        Abort
+      createAccount:
+      UserMgr::CreateAccount $R3 $R4 "The ProActive Agent service may be started under this account."
+      Pop $0
+      ${If} $0 == "ERROR 2224" # Means account already exists .. it's strange but yes it is possible !
+        DetailPrint "The account $R3 already exist"
+        MessageBox MB_OK "The account $R3 already exist"
+          Abort
+      ${EndIf}
+      # Add service log on privilege
+      UserMgr::AddPrivilege $R3 ${SERVICE_LOGON_RIGHT}
+      Pop $0
+      ${If} $0 == "FALSE" # Means could not add privilege
+        DetailPrint "Unable to add privileges"
+        MessageBox MB_OK "Unable to add privileges"
+          Abort
+      ${EndIf}
+      # Build the user environment of the user (Registry hive, Documents and settings etc.), returns status string
+      UserMgr::BuiltAccountEnv $R3 $R4
+      Pop $0
+      ${If} $0 == "FALSE" # Means could not add privilege
+        DetailPrint "Unable to build account env"
+        MessageBox MB_OK "Unable to build account env"
+          Abort
+      ${EndIf}
+      # Unknown error just print and still try to install the user
+    ${Else}
+      DetailPrint "Unable to check for service logon right due to $0, still trying to install the service"
+      MessageBox MB_OK "Unable to check for service logon right due to $0"
+        Abort
+    ${EndIf}
+    installService:
+    !insertmacro SERVICE "create" ${SERVICE_NAME} "path=$INSTDIR\ProActiveAgent.exe;autostart=1;interact=0;display=${SERVICE_NAME};description=${SERVICE_DESC};user=$R5\$R3;password=$R4;" ""
+    Pop $0
+    # Means the service is not installed !
+    ${If} $0 != "true"
+      DetailPrint "Unable to install as service."
+      MessageBox MB_OK "Unable to install as service. To install manually use sc.exe command"
+    ${EndIf}
+  ${EndIf}
+
+  writeToRegistryLABEL:
+  # Write the config file location into the registry
+  WriteRegStr HKLM "Software\ProActiveAgent" "ConfigLocation" $R1
+  # Write the config file location into the registry
+  WriteRegStr HKLM "Software\ProActiveAgent" "LogsDirectory" $R2
+
+  # If "Allow everyone to strat/stop" is selected check for subinacl
+  !insertmacro MUI_INSTALLOPTIONS_READ $R0 ${PAGE_FILE} "Field 15" State
+  ${If} $R0 == "1"
+    # Check if already installed
+    IfFileExists "${SUBINACL_PATH}" existLABEL notExistLABEL
+    notExistLABEL:
+    # Automatic download of SubInAcl
+    NSISdl::download http://download.microsoft.com/download/1/7/d/17d82b72-bc6a-4dc8-bfaa-98b37b22b367/subinacl.msi $INSTDIR\SubInACL.msi
+    # Run the installer
+    ExecWait $INSTDIR\SubInACL.msi
+    # Check if correctly installed
+    IfFileExists "${SUBINACL_PATH}" existLABEL incorrectLABEL
+    incorrectLABEL:
+    MessageBox MB_OK "Unable to find ${SUBINACL_PATH}"
+    goto runGuiLABEL
+    existLABEL:
+    # Run the command in a console view to allow the user to see eventual
+    ExecWait 'cmd.exe /C "${SUBINACL_PATH}" /service ${SERVICE_NAME} /grant=S-1-1-0=TO & pause'
+  ${EndIf}
+  runGuiLABEL:
+  # Run the Agent GUI
+  Exec "$INSTDIR\AgentForAgent.exe"
+FunctionEnd
+
+#############################
+# !! SECTIONS DEFINITIONS !!
+#############################
+
 Section "ProActive Agent"
         
         #-----------------------------------------------------------------------------------
@@ -296,14 +368,11 @@ Section "ProActive Agent"
         SetOutPath $INSTDIR
         File "bin\Release\AgentForAgent.exe"
 SectionEnd
-######################################
 
-######################################
 Section "ProActive ScreenSaver"
         SetOutPath $SYSDIR
         File "bin\Release\ProActiveSSaver.scr"
 SectionEnd
-######################################
 
 ######################################
 # Section "Desktop shortcuts"
@@ -314,7 +383,6 @@ SectionEnd
 # SectionEnd
 ######################################
 
-######################################
 Section "Start Menu Shortcuts"
         SetShellVarContext all # All users
         CreateDirectory "$SMPROGRAMS\ProActiveAgent"
@@ -322,14 +390,7 @@ Section "Start Menu Shortcuts"
         CreateShortCut  "$SMPROGRAMS\ProActiveAgent\Uninstall ProActive Agent.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
         CreateShortCut  "$SMPROGRAMS\ProActiveAgent\ProActive Agent Documentation.lnk" "$INSTDIR\ProActive Agent Documentation.pdf" "" "$INSTDIR\ProActive Agent Documentation.pdf" 0
         SetShellVarContext current # reset to current user
-
-        # Ask user if he wants to run Agent GUI
-        ;MessageBox MB_YESNO "Run ProActive Agent Control and exit installer?" /SD IDYES IDNO endActiveSync
-        ;  Exec "$INSTDIR\AgentForAgent.exe"
-        ;  Quit
-        ; endActiveSync:
 SectionEnd
-######################################
 
 #uninstall section
 
@@ -412,6 +473,7 @@ Section "Uninstall"
         Delete "uninstall.exe"
         Delete "ProActiveAgent-log.txt"
         Delete "AgentForAgent.exe"
+        Delete "SubInACL.msi"
 
 	RMDir /r "$SMPROGRAMS\ProActiveAgent"
 	SetShellVarContext current # reset to current user
