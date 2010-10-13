@@ -18,6 +18,8 @@
 !define VERSION "2.3"
 !define PAGE_FILE "serviceInstallPage.ini"
 !define SUBINACL_PATH "$PROGRAMFILES\Windows Resource Kits\Tools\subinacl.exe"
+!define SUBINACL_URL "http://download.microsoft.com/download/1/7/d/17d82b72-bc6a-4dc8-bfaa-98b37b22b367/subinacl.msi"
+!define SUBINACL_MANUAL_INSTALL "Please download SubInAcl.msi and install it manually then run the command: subinacl.exe /service ${SERVICE_NAME} /grant=S-1-1-0=TO"
 !define SERVICE_LOGON_RIGHT 'SeServiceLogonRight'
 
 CRCCheck on
@@ -274,14 +276,24 @@ Function MyCustomLeave
     # Check if already installed
     IfFileExists "${SUBINACL_PATH}" existLABEL notExistLABEL
     notExistLABEL:
+    # Ask the user if he wants to download the tool
+    MessageBox MB_YESNO "To allow everyone to start/stop the agent a Microsoft Resource Kit is needed. Do you want to download it automatically from ${SUBINACL_URL} ? $\nNote that during the installation the default install path is required." IDYES downloadToolLABEL
+      Abort
+    downloadToolLABEL:
     # Automatic download of SubInAcl
-    NSISdl::download http://download.microsoft.com/download/1/7/d/17d82b72-bc6a-4dc8-bfaa-98b37b22b367/subinacl.msi $INSTDIR\SubInACL.msi
+    NSISdl::download ${SUBINACL_URL} $INSTDIR\SubInACL.msi
+    # Check for downloaded msi file, if it does not exist report to user then finish installation
+    IfFileExists "$INSTDIR\SubInACL.msi" downloadedLABEL problemLABEL
+    problemLABEL:
+    MessageBox MB_OK "Unable to download ${SUBINACL_URL} $\n${SUBINACL_MANUAL_INSTALL}"
+    Goto runGuiLABEL
+    downloadedLABEL:
     # Run the installer
-    ExecWait $INSTDIR\SubInACL.msi
+    ExecWait 'cmd.exe /C "$INSTDIR\SubInACL.msi"'
     # Check if correctly installed
     IfFileExists "${SUBINACL_PATH}" existLABEL incorrectLABEL
     incorrectLABEL:
-    MessageBox MB_OK "Unable to find ${SUBINACL_PATH}"
+    MessageBox MB_OK "Unable to find ${SUBINACL_PATH} $\n${SUBINACL_MANUAL_INSTALL}"
     goto runGuiLABEL
     existLABEL:
     # Run the command in a console view to allow the user to see eventual
