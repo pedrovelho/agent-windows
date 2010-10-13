@@ -21,6 +21,8 @@
 !define SUBINACL_URL "http://download.microsoft.com/download/1/7/d/17d82b72-bc6a-4dc8-bfaa-98b37b22b367/subinacl.msi"
 !define SUBINACL_MANUAL_INSTALL "Please download SubInAcl.msi and install it manually then run the command: subinacl.exe /service ${SERVICE_NAME} /grant=S-1-1-0=TO"
 !define SERVICE_LOGON_RIGHT 'SeServiceLogonRight'
+!define DEFAULT_CONFIG_FILENAME "PAAgent-config.xml"
+!define DEFAULT_CONFIG_PATH "$INSTDIR\config\${DEFAULT_CONFIG_FILENAME}"
 
 CRCCheck on
 
@@ -137,7 +139,7 @@ Function MyCustomPage
   ReserveFile ${PAGE_FILE}
   !insertmacro MUI_INSTALLOPTIONS_EXTRACT ${PAGE_FILE}
    # Set default location for configuration file
-  !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "Field 14" State "$INSTDIR\config\PAAgent-config.xml"
+  !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "Field 14" State "$INSTDIR\config"
    # Set default location for logs directory
   !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "Field 13" State "$INSTDIR\logs"
   # Display the custom page
@@ -154,6 +156,26 @@ Function MyCustomLeave
   ${If} $R1 == ""
     MessageBox MB_OK "Please enter a valid location for the Configuration File"
      Abort
+  ${Else}
+    # If the location is NOT THE DEFAULT ONE
+    ${If} $R1 != "$INSTDIR\config"
+      # Check if the specified directory exists
+      IfFileExists $R1 dirExistLABEL dirNotExistLABEL
+      dirNotExistLABEL:
+      MessageBox MB_OK "The specified directory $R1 for configuration file doesn't exist"
+        Abort
+      dirExistLABEL:
+      # Check if there is already a config file
+      IfFileExists "$R1\${DEFAULT_CONFIG_FILENAME}" askUseLABEL copyDefaultLABEL
+      askUseLABEL:
+      # Ask the user if he wants to use the existing file (if not the default one will be copied to this dir)
+      MessageBox MB_YESNO "Use existing configuration file $R1\${DEFAULT_CONFIG_FILENAME} ?" IDYES setLocationLABEL
+      copyDefaultLABEL:
+      SetOutPath $R1
+      File "utils\PAAgent-config.xml"
+      setLocationLABEL:
+      StrCpy $R1 "$R1\${DEFAULT_CONFIG_FILENAME}" # R1 will contain the full path
+    ${EndIf}
   ${EndIf}
 
   # Check logs location stored in R2
