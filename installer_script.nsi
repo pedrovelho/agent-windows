@@ -209,14 +209,8 @@ Function MyCustomLeave
     # Check for service logon right
     UserMgr::HasPrivilege $R3 ${SERVICE_LOGON_RIGHT}
     Pop $0
-    ${If} $0 == "True"
+    ${If} $0 == "TRUE"
       Goto installService
-    ${EndIf}
-    # If FALSE that means the account does not have the service logon right
-    ${If} $0 == "FALSE"
-      DetailPrint "User $R3 does not have the service logon right !"
-      MessageBox MB_OK "The user $R3 does not have the log on service right assignment. In the 'Administrative Tools' of the 'Control Panel' open the 'Local Security Policy'. In 'Security Settings', select 'Local Policies' then select 'User Rights Assignments'. Finally, in the list of policies open the properties of 'Log on as a service' policy and add the user $R3."
-        Abort # Go back to page.
     ${EndIf}
     # Treat specific error ... the account does not exist
     ${If} $0 == "ERROR GetAccountSid"
@@ -243,16 +237,16 @@ Function MyCustomLeave
       # Build the user environment of the user (Registry hive, Documents and settings etc.), returns status string
       UserMgr::BuiltAccountEnv $R3 $R4
       Pop $0
-      ${If} $0 == "FALSE" # Means could not add privilege
+      ${If} $0 == "FALSE" # Means could not build account env
         DetailPrint "Unable to build account env"
         MessageBox MB_OK "Unable to build account env"
           Abort
       ${EndIf}
-      # Unknown error just print and still try to install the user
+    # Unknown result that means the account does not have the service logon right
     ${Else}
-      DetailPrint "Unable to check for service logon right due to $0, still trying to install the service"
-      MessageBox MB_OK "Unable to check for service logon right due to $0"
-        Abort
+      DetailPrint "User $R3 does not have the service logon right ! Result was $0"
+      MessageBox MB_OK "The user $R3 does not have the log on service right assignment. In the 'Administrative Tools' of the 'Control Panel' open the 'Local Security Policy'. In 'Security Settings', select 'Local Policies' then select 'User Rights Assignments'. Finally, in the list of policies open the properties of 'Log on as a service' policy and add the user $R3."
+        Abort # Go back to page.
     ${EndIf}
     installService:
     !insertmacro SERVICE "create" ${SERVICE_NAME} "path=$INSTDIR\ProActiveAgent.exe;autostart=1;interact=0;display=${SERVICE_NAME};description=${SERVICE_DESC};user=$R5\$R3;password=$R4;" ""
