@@ -21,8 +21,8 @@
 !define SUBINACL_URL "http://download.microsoft.com/download/1/7/d/17d82b72-bc6a-4dc8-bfaa-98b37b22b367/subinacl.msi"
 !define SUBINACL_MANUAL_INSTALL "Please download SubInAcl.msi and install it manually then run the command: subinacl.exe /service ${SERVICE_NAME} /grant=S-1-1-0=TO"
 !define SERVICE_LOGON_RIGHT 'SeServiceLogonRight'
-!define DEFAULT_CONFIG_FILENAME "PAAgent-config.xml"
-!define DEFAULT_CONFIG_PATH "$INSTDIR\config\${DEFAULT_CONFIG_FILENAME}"
+!define CONFIG_NAME "PAAgent-config.xml"
+!define DEFAULT_CONFIG_PATH "$INSTDIR\config\${CONFIG_NAME}"
 
 CRCCheck on
 
@@ -166,15 +166,17 @@ Function MyCustomLeave
         Abort
       dirExistLABEL:
       # Check if there is already a config file
-      IfFileExists "$R1\${DEFAULT_CONFIG_FILENAME}" askUseLABEL copyDefaultLABEL
+      IfFileExists "$R1\${CONFIG_NAME}" askUseLABEL copyDefaultLABEL
       askUseLABEL:
       # Ask the user if he wants to use the existing file (if not the default one will be copied to this dir)
-      MessageBox MB_YESNO "Use existing configuration file $R1\${DEFAULT_CONFIG_FILENAME} ?" IDYES setLocationLABEL
+      MessageBox MB_YESNO "Use existing configuration file $R1\${CONFIG_NAME} ?" IDYES setLocationLABEL
       copyDefaultLABEL:
       SetOutPath $R1
       File "utils\PAAgent-config.xml"
       setLocationLABEL:
-      StrCpy $R1 "$R1\${DEFAULT_CONFIG_FILENAME}" # R1 will contain the full path
+      StrCpy $R1 "$R1\${CONFIG_NAME}" # R1 will contain the full path
+    ${Else}
+      StrCpy $R1 "$INSTDIR\config\${CONFIG_NAME}"
     ${EndIf}
   ${EndIf}
 
