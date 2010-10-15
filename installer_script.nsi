@@ -23,6 +23,7 @@
 !define SERVICE_LOGON_RIGHT 'SeServiceLogonRight'
 !define CONFIG_NAME "PAAgent-config.xml"
 !define DEFAULT_CONFIG_PATH "$INSTDIR\config\${CONFIG_NAME}"
+!define PERFORMANCE_MONITOR_GROUP_NAME "S-1-5-32-558"
 
 CRCCheck on
 
@@ -234,7 +235,7 @@ Function MyCustomLeave
     UserMgr::HasPrivilege $R3 ${SERVICE_LOGON_RIGHT}
     Pop $0
     ${If} $0 == "TRUE"
-      Goto installService
+      Goto checkGroupMember
     ${EndIf}
     # Treat specific error ... the account does not exist
     ${If} $0 == "ERROR GetAccountSid"
@@ -266,13 +267,43 @@ Function MyCustomLeave
         MessageBox MB_OK "Unable to build account env"
           Abort
       ${EndIf}
+      # Here set R6 1 to know that a new account was created
+      StrCpy $R6 "1"
     # Unknown result that means the account does not have the service logon right
     ${Else}
-      DetailPrint "User $R3 does not have the service logon right ! Result was $0"
-      MessageBox MB_OK "The user $R3 does not have the log on service right assignment. In the 'Administrative Tools' of the 'Control Panel' open the 'Local Security Policy'. In 'Security Settings', select 'Local Policies' then select 'User Rights Assignments'. Finally, in the list of policies open the properties of 'Log on as a service' policy and add the user $R3."
+      DetailPrint "The account $R3 does not have the service logon right ! Result was $0"
+      MessageBox MB_OK "The account $R3 does not have the log on service right assignment. In the 'Administrative Tools' of the 'Control Panel' open the 'Local Security Policy'. In 'Security Settings', select 'Local Policies' then select 'User Rights Assignments'. Finally, in the list of policies open the properties of 'Log on as a service' policy and add the account $R3."
         Abort # Go back to page.
     ${EndIf}
-    installService:
+    checkGroupMember:
+    # Check if the account is part of 'Performace Monitor Group' of SID "S-1-5-32-558"
+    # returns "TRUE" if the account is a member of the specified group, else returns "FALSE"
+    UserMgr::IsMemberOfGroup $R3 ${PERFORMANCE_MONITOR_GROUP_NAME}
+    Pop $0
+    ${If} $0 == "TRUE"
+      Goto createServiceLABEL
+    ${ElseIf} $0 == "FALSE"
+      # If a new account was created no need to ask to add the user to the group
+      ${If} $R6 == "1"
+        UserMgr::AddToGroup $R3 ${PERFORMANCE_MONITOR_GROUP_NAME}
+        Pop $0
+        ${If} $0 == "TRUE"
+          Goto createServiceLABEL
+        ${Else}
+          MessageBox MB_OK "Could not add the account $R3 to the Performance Monitor Group"
+        ${EndIf}
+      ${EndIf}
+      MessageBox MB_OK "The account $R3 must be a member of the Performance Monitor Group"
+        Abort
+    ${ElseIf} $0 == "ERROR 2220"
+      # The group does not exist, this occur on Windows XP so there is nothing to do
+      Goto createServiceLABEL
+    ${Else}
+      MessageBox MB_OK "Unable to check if the user $R3 is a member of the Performance Monitor Group. Error is $0"
+        Abort
+    ${EndIf}
+    createServiceLABEL:
+    # Create the service under the given use and password
     !insertmacro SERVICE "create" ${SERVICE_NAME} "path=$INSTDIR\ProActiveAgent.exe;autostart=1;interact=0;display=${SERVICE_NAME};description=${SERVICE_DESC};user=$R5\$R3;password=$R4;" ""
     Pop $0
     # Means the service is not installed !
