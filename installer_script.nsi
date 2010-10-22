@@ -459,6 +459,18 @@ UninstallText "This will uninstall ProActive Agent. Hit next to continue."
 
 Section "Uninstall"
         #-----------------------------------------------------------------------------------
+        # Check user admin rights
+        #-----------------------------------------------------------------------------------
+        System::Call "kernel32::GetModuleHandle(t 'shell32.dll') i .s"
+        System::Call "kernel32::GetProcAddress(i s, i 680) i .r0"
+        System::Call "::$0() i .r0"
+        DetailPrint "Check: Current user is admin? $0"
+        StrCmp $0 '0' 0 +3
+          MessageBox MB_OK "Adminstrator rights are required to uninstall the ProActive Agent."
+          Abort
+
+
+        #-----------------------------------------------------------------------------------
         # For all users
        	#-----------------------------------------------------------------------------------
 	SetShellVarContext all
