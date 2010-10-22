@@ -54,21 +54,21 @@ namespace ConfigParser
             return new string[] { base.nodename };
         }
 
-        // Default jvm parameters needed for this type of connection
-        public override void fillDefaultJvmParameters(List<string> jvmParameters, string proactiveLocation)
+        // Default jvm options needed for this type of connection
+        public override void fillDefaultJvmOptions(List<string> jvmOptions, string proactiveLocation)
         {
-            base.fillDefaultJvmParameters(jvmParameters, proactiveLocation);
+            base.fillDefaultJvmOptions(jvmOptions, proactiveLocation);
             // Check 2 locations of the security policy file
             string location = proactiveLocation + "\\config\\security.java.policy-client";
             // ProActive Scheduling
             if (System.IO.File.Exists(location))
             {
-                jvmParameters.Add("-Djava.security.policy=\"" + location + "\"");
+                jvmOptions.Add("-Djava.security.policy=\"" + location + "\"");
             }
             // ProActive Programming
             else
             {
-                jvmParameters.Add("-Djava.security.policy=\"" + proactiveLocation + "\\examples\\proactive.java.policy\"");
+                jvmOptions.Add("-Djava.security.policy=\"" + proactiveLocation + "\\examples\\proactive.java.policy\"");
             }
         }
     }

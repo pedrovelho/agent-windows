@@ -52,7 +52,7 @@ namespace ConfigParser
 
         /// <summary>
         /// The list of parameters to be passed to the JVM.</summary>
-        [XmlArray("jvmParameters")]
+        [XmlArray("jvmOptions")]
         [XmlArrayItem("param")]
         public string[] jvmParameters;
 

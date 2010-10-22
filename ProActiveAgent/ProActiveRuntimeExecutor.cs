@@ -226,7 +226,7 @@ namespace ProActiveAgent
 
                 bool containsAgentRankProperty = false;
                 // Merge all jvm parameters (user-specified)
-                foreach (string parameter in this.commonStartInfo.jvmParameters)
+                foreach (string parameter in this.commonStartInfo.jvmOptions)
                 {
                     // Replace all occurences of "${rank}" by the rank of this ProActive Executor
                     jvmParametersBuilder.Append(" " + parameter.Replace("${rank}", "" + this.rank));

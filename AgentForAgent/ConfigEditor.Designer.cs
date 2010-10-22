@@ -242,7 +242,7 @@ namespace AgentForAgent
             // 
             this.addJvmParameterButton.Location = new System.Drawing.Point(6, 95);
             this.addJvmParameterButton.Name = "addJvmParameterButton";
-            this.addJvmParameterButton.Size = new System.Drawing.Size(133, 23);
+            this.addJvmParameterButton.Size = new System.Drawing.Size(133, 21);
             this.addJvmParameterButton.TabIndex = 10;
             this.addJvmParameterButton.Text = "Add JVM Option";
             this.addJvmParameterButton.UseVisualStyleBackColor = true;

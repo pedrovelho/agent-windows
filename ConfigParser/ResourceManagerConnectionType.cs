@@ -91,14 +91,14 @@ namespace ConfigParser
             }
         }
 
-        // Default jvm parameters needed for this type of connection
-        public override void fillDefaultJvmParameters(List<string> jvmParameters, string proactiveLocation)
+        // Default jvm options needed for this type of connection
+        public override void fillDefaultJvmOptions(List<string> jvmOptions, string proactiveLocation)
         {
-            base.fillDefaultJvmParameters(jvmParameters, proactiveLocation);
-            jvmParameters.Add("-Dpa.scheduler.home=\"" + proactiveLocation + "\"");
-            jvmParameters.Add("-Dpa.rm.home=\"" + proactiveLocation + "\"");
-            jvmParameters.Add("-Djava.security.policy=\"" + proactiveLocation + "\\config\\security.java.policy-client\"");
-            jvmParameters.Add("-Dlog4j.configuration=\"file:///" + proactiveLocation + "\\config\\log4j\\log4j-client\"");
+            base.fillDefaultJvmOptions(jvmOptions, proactiveLocation);
+            jvmOptions.Add("-Dpa.scheduler.home=\"" + proactiveLocation + "\"");
+            jvmOptions.Add("-Dpa.rm.home=\"" + proactiveLocation + "\"");
+            jvmOptions.Add("-Djava.security.policy=\"" + proactiveLocation + "\\config\\security.java.policy-client\"");
+            jvmOptions.Add("-Dlog4j.configuration=\"file:///" + proactiveLocation + "\\config\\log4j\\log4j-client\"");
         }
     }
 }

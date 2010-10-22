@@ -76,9 +76,6 @@ namespace ProActiveAgent
         /// A boolean flag to allow memory limitation per job (set of processes).</summary>
         public const bool ALLOW_PROCESS_MEMORY_LIMIT = true;
         /// <summary>
-        /// The minimal requried memory of a jvm.</summary>
-        public const uint MINIMAL_REQUIRED_MEMORY = 96; // 64 for initial heap size + 32 jvm internals
-        /// <summary>
         /// The name of the job object used for usage limitations.</summary>
         public const string JOB_OBJECT_NAME = "ProActiveAgentJobObject";
         /// <summary>

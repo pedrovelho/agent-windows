@@ -55,8 +55,8 @@ namespace ProActiveAgent
         /// The selected connection</summary>
         private readonly ConnectionType _enabledConnection;
         /// <summary>
-        /// All jvm parameters (default and user defined)</summary>
-        private readonly string[] _jvmParameters;
+        /// All jvm options (default and user defined)</summary>
+        private readonly string[] _jvmOptions;
         /// <summary>
         /// The log directory read from the registry</summary>
         // private readonly string _logsDirectory;
@@ -66,45 +66,25 @@ namespace ProActiveAgent
         public CommonStartInfo(AgentType configuration)
         {
             this._configuration = configuration;
-            // Get the selected action, if no action is enabled it is an error
+            // Get the selected connection, if no connection is enabled it is an error
             this._enabledConnection = configuration.getEnabledConnection();
             if (this._enabledConnection == null)
             {
-                LOGGER.Error("No selected action in the configuration. Exiting ...");
+                LOGGER.Error("No selected connection in the configuration. Exiting ...");
                 Environment.Exit(0);
             }
             else
             {
-                LOGGER.Info("Selected action " + this._enabledConnection.GetType().Name);
-            }    
+                LOGGER.Info("Selected connection " + this._enabledConnection.GetType().Name);
+            }            
 
-            // Prepare jvm parameters, cmd and args from the given action type
-
-            // The list of jvm parameters
-            List<string> jvmParametersList = new List<string>();
-
+            // The list of jvm options (default + user defined)
+            List<string> mergedJvmOptionsList = new List<string>();
             // Add default parameters
-            this._enabledConnection.fillDefaultJvmParameters(jvmParametersList, this._configuration.config.proactiveHome);
-            
-            // Init -Xms to default value unless it was explicitely specified by the user from the configuration
-            string xms = "-Xms" + Constants.MINIMAL_REQUIRED_MEMORY + "M";
-            if (this._configuration.config.jvmParameters != null)
-            {
-                // Append all params and check for overriden jvm memory parameters
-                foreach (string s in this._configuration.config.jvmParameters)
-                {
-                    // Check if user specifically defined jvm memory params and override them with user values
-                    if (s != null && s.Contains("-Xms"))
-                    {
-                        xms = s;
-                        continue;
-                    }
-                    jvmParametersList.Add(s);
-                }
-            }
-            jvmParametersList.Add(xms);
-
-            this._jvmParameters = jvmParametersList.ToArray();
+            this._enabledConnection.fillDefaultJvmOptions(mergedJvmOptionsList, this._configuration.config.proactiveHome);
+            // Add user defined
+            mergedJvmOptionsList.AddRange(this._configuration.config.jvmParameters);            
+            this._jvmOptions = mergedJvmOptionsList.ToArray();
         }
 
         public AgentType configuration
@@ -123,11 +103,11 @@ namespace ProActiveAgent
             }
         }
 
-        public string[] jvmParameters
+        public string[] jvmOptions
         {
             get
             {
-                return this._jvmParameters;
+                return this._jvmOptions;
             }
         }
 
@@ -138,12 +118,5 @@ namespace ProActiveAgent
                 return this._enabledConnection.javaStarterClass;
             }
         }
-
-        //public string logsDirectory {
-        //    get
-        //    {
-        //        return this._logsDirectory;
-        //    }
-        //}
     }
 }
