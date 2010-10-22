@@ -64,7 +64,7 @@ namespace AgentForAgent
 
         private Chart chart;
 
-        // Internal data used for jvm parameters list customization
+        // Internal data used for jvm options list customization
         private const int DELTA = 5;
         private System.Windows.Forms.TextBox editBox;
         int itemSelected = -1;
@@ -242,15 +242,15 @@ namespace AgentForAgent
 
         private void CreateEditBox(object sender)
         {
-            this.jvmParametersListBox = (ListBox)sender;
-            this.itemSelected = this.jvmParametersListBox.SelectedIndex;
-            Rectangle r = this.jvmParametersListBox.GetItemRectangle(this.itemSelected);
-            string itemText = (string)this.jvmParametersListBox.Items[this.itemSelected];
+            this.jvmOptionsListBox = (ListBox)sender;
+            this.itemSelected = this.jvmOptionsListBox.SelectedIndex;
+            Rectangle r = this.jvmOptionsListBox.GetItemRectangle(this.itemSelected);
+            string itemText = (string)this.jvmOptionsListBox.Items[this.itemSelected];
 
             editBox.Location = new System.Drawing.Point(r.X /*+ DELTA*/, r.Y/* + DELTA*/);
             editBox.Size = new System.Drawing.Size(r.Width /*- 10*/, r.Height/* - DELTA*/);
             editBox.Show();
-            this.jvmParametersListBox.Controls.AddRange(new System.Windows.Forms.Control[] { this.editBox });
+            this.jvmOptionsListBox.Controls.AddRange(new System.Windows.Forms.Control[] { this.editBox });
             editBox.Text = itemText;
             editBox.Focus();
             editBox.SelectAll();
@@ -262,7 +262,7 @@ namespace AgentForAgent
 
         private void FocusOver(object sender, System.EventArgs e)
         {
-            this.jvmParametersListBox.Items[this.itemSelected] = editBox.Text;
+            this.jvmOptionsListBox.Items[this.itemSelected] = editBox.Text;
             editBox.Hide();
         }
 
@@ -270,9 +270,9 @@ namespace AgentForAgent
         {
             if (e.KeyChar == 13) //Keys.Enter
             {
-                this.jvmParametersListBox.Items[this.itemSelected] = editBox.Text;
+                this.jvmOptionsListBox.Items[this.itemSelected] = editBox.Text;
                 this.editBox.Hide();
-                this.jvmParametersListBox.Focus();
+                this.jvmOptionsListBox.Focus();
                 return;
             }
 
@@ -331,11 +331,11 @@ namespace AgentForAgent
 
         private void internalSave(string internalLocation)
         {
-            // Copy all jvm parameters from listbox into the cofiguration
-            string[] values = new string[this.jvmParametersListBox.Items.Count];
-            if (this.jvmParametersListBox.Items.Count > 0)
+            // Copy all jvm options from listbox into the cofiguration
+            string[] values = new string[this.jvmOptionsListBox.Items.Count];
+            if (this.jvmOptionsListBox.Items.Count > 0)
             {
-                this.jvmParametersListBox.Items.CopyTo(values, 0);                
+                this.jvmOptionsListBox.Items.CopyTo(values, 0);                
             }
             this.configuration.config.jvmParameters = values;
 
@@ -531,7 +531,7 @@ namespace AgentForAgent
         private void useNetworkInterfaceButton_Click(object sender, EventArgs e)
         {
             // Get the selected element in the network interfaces list box then 
-            // extract the java interface name add add it as jvm parameter
+            // extract the java interface name add add it as jvm option
 
             int selectedIndex = this.networkInterfacesListBox.SelectedIndex;
             if (selectedIndex == -1)
@@ -546,25 +546,25 @@ namespace AgentForAgent
                 string[] splittedStr = str.Split(new char[] { ' ' });
                 string paramNetworkInterface = "-Dproactive.net.interface=" + splittedStr[0];
 
-                // Search in the JVM parameters the -Dproactive.net.interface string
-                int indexOfJvmParameter = -1;
-                for (int i = 0; i < this.jvmParametersListBox.Items.Count; i++)
+                // Search in the JVM options the -Dproactive.net.interface string
+                int indexOfJvmOption = -1;
+                for (int i = 0; i < this.jvmOptionsListBox.Items.Count; i++)
                 {
-                    string s = (string)this.jvmParametersListBox.Items[i];
+                    string s = (string)this.jvmOptionsListBox.Items[i];
                     if (s.StartsWith("-Dproactive.net.interface="))
                     {
-                        indexOfJvmParameter = i;
+                        indexOfJvmOption = i;
                         break;
                     }
                 }
-                if (indexOfJvmParameter == -1)
+                if (indexOfJvmOption == -1)
                 {
-                    // No parameter was found so add a new one
-                    this.jvmParametersListBox.Items.Add(paramNetworkInterface);
+                    // No option was found so add a new one
+                    this.jvmOptionsListBox.Items.Add(paramNetworkInterface);
                 }
                 else
                 {
-                    this.jvmParametersListBox.Items[indexOfJvmParameter] = paramNetworkInterface;
+                    this.jvmOptionsListBox.Items[indexOfJvmOption] = paramNetworkInterface;
                 }
 
                 saveConfig.Enabled = true;
@@ -979,31 +979,31 @@ namespace AgentForAgent
         /** GENERAL configuration tab GUI HANDLING METHODS **/
         /****************************************************/
 
-        private void addJvmParameterButton_Click(object sender, EventArgs e)
+        private void addJvmOptionButton_Click(object sender, EventArgs e)
         {
-            // Add a new entry in the jvm parameter list box
-            int i = this.jvmParametersListBox.Items.Add("New parameter");
-            this.jvmParametersListBox.SetSelected(i, true);
+            // Add a new entry in the jvm option list box
+            int i = this.jvmOptionsListBox.Items.Add("New option");
+            this.jvmOptionsListBox.SetSelected(i, true);
             saveConfig.Enabled = true;
         }
 
-        private void removeJvmParameterButton_Click(object sender, EventArgs e)
+        private void removeJvmOptionButton_Click(object sender, EventArgs e)
         {
-            int selectedIndex = this.jvmParametersListBox.SelectedIndex;
+            int selectedIndex = this.jvmOptionsListBox.SelectedIndex;
             if (selectedIndex != -1)
             {
-                this.jvmParametersListBox.Items.RemoveAt(selectedIndex--);
+                this.jvmOptionsListBox.Items.RemoveAt(selectedIndex--);
                 // After deletion automatically select precedent if there is one
                 if (selectedIndex > -1)
                 {
-                    this.jvmParametersListBox.SelectedIndex = selectedIndex;
+                    this.jvmOptionsListBox.SelectedIndex = selectedIndex;
                 }
                 else
                 {
                     // Try to select the last if there is one
-                    if (this.jvmParametersListBox.Items.Count > 0)
+                    if (this.jvmOptionsListBox.Items.Count > 0)
                     {
-                        this.jvmParametersListBox.SelectedIndex = this.jvmParametersListBox.Items.Count - 1;
+                        this.jvmOptionsListBox.SelectedIndex = this.jvmOptionsListBox.Items.Count - 1;
                     }
                 }
                 saveConfig.Enabled = true;
@@ -1016,7 +1016,7 @@ namespace AgentForAgent
             this.editBox.Location = new System.Drawing.Point(0, 0);
             this.editBox.Size = new System.Drawing.Size(0, 0);
             this.editBox.Hide();
-            this.jvmParametersListBox.Controls.AddRange(new System.Windows.Forms.Control[] { this.editBox });
+            this.jvmOptionsListBox.Controls.AddRange(new System.Windows.Forms.Control[] { this.editBox });
             this.editBox.Text = "";
             this.editBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.EditOver);
             this.editBox.LostFocus += new System.EventHandler(this.FocusOver);
@@ -1027,33 +1027,33 @@ namespace AgentForAgent
 
             if (this.configuration.config.jvmParameters != null)
             {
-                this.jvmParametersListBox.Items.AddRange(this.configuration.config.jvmParameters);
+                this.jvmOptionsListBox.Items.AddRange(this.configuration.config.jvmParameters);
             }
         }
 
-        private void jvmParametersListBox_DoubleClick(object sender, EventArgs e)
+        private void jvmOptionsListBox_DoubleClick(object sender, EventArgs e)
         {
             // If no selected items and list box is empty add one item and select it
             // otherwise select current item
-            if (this.jvmParametersListBox.SelectedIndex == -1)
+            if (this.jvmOptionsListBox.SelectedIndex == -1)
             {
-                if (this.jvmParametersListBox.Items.Count == 0)
+                if (this.jvmOptionsListBox.Items.Count == 0)
                 {
-                    this.jvmParametersListBox.SelectedIndex = this.jvmParametersListBox.Items.Add("New parameter");
+                    this.jvmOptionsListBox.SelectedIndex = this.jvmOptionsListBox.Items.Add("New option");
                 }
                 else
                 {
-                    this.jvmParametersListBox.SelectedIndex = this.jvmParametersListBox.Items.Count - 1;
+                    this.jvmOptionsListBox.SelectedIndex = this.jvmOptionsListBox.Items.Count - 1;
                 }
             }
             this.CreateEditBox(sender);
         }
 
-        private void jvmParametersListBox_KeyPress(object sender, KeyPressEventArgs e)
+        private void jvmOptionsListBox_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == 13) // Enter key
             {
-                if (this.jvmParametersListBox.SelectedIndex > -1)
+                if (this.jvmOptionsListBox.SelectedIndex > -1)
                 {
                     this.CreateEditBox(sender);
                 }

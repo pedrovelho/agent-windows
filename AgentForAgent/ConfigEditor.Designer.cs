@@ -42,7 +42,7 @@ namespace AgentForAgent
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfigurationEditor));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.jvmParametersListBox = new System.Windows.Forms.ListBox();
+            this.jvmOptionsListBox = new System.Windows.Forms.ListBox();
             this.removeJvmParameterButton = new System.Windows.Forms.Button();
             this.addJvmParameterButton = new System.Windows.Forms.Button();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
@@ -201,7 +201,7 @@ namespace AgentForAgent
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.jvmParametersListBox);
+            this.groupBox1.Controls.Add(this.jvmOptionsListBox);
             this.groupBox1.Controls.Add(this.removeJvmParameterButton);
             this.groupBox1.Controls.Add(this.addJvmParameterButton);
             this.groupBox1.Controls.Add(this.checkBox1);
@@ -216,37 +216,37 @@ namespace AgentForAgent
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "ProActive Configuration";
             // 
-            // jvmParametersListBox
+            // jvmOptionsListBox
             // 
-            this.jvmParametersListBox.FormattingEnabled = true;
-            this.jvmParametersListBox.Location = new System.Drawing.Point(145, 95);
-            this.jvmParametersListBox.Name = "jvmParametersListBox";
-            this.jvmParametersListBox.Size = new System.Drawing.Size(514, 69);
-            this.jvmParametersListBox.TabIndex = 12;
-            this.toolTip.SetToolTip(this.jvmParametersListBox, "If the parameter contains ${rank} it will be dynamically replaced by the Runtime " +
+            this.jvmOptionsListBox.FormattingEnabled = true;
+            this.jvmOptionsListBox.Location = new System.Drawing.Point(145, 95);
+            this.jvmOptionsListBox.Name = "jvmOptionsListBox";
+            this.jvmOptionsListBox.Size = new System.Drawing.Size(514, 69);
+            this.jvmOptionsListBox.TabIndex = 12;
+            this.toolTip.SetToolTip(this.jvmOptionsListBox, "If the parameter contains ${rank} it will be dynamically replaced by the Runtime " +
                     "rank.");
-            this.jvmParametersListBox.DoubleClick += new System.EventHandler(this.jvmParametersListBox_DoubleClick);
-            this.jvmParametersListBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.jvmParametersListBox_KeyPress);
+            this.jvmOptionsListBox.DoubleClick += new System.EventHandler(this.jvmOptionsListBox_DoubleClick);
+            this.jvmOptionsListBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.jvmOptionsListBox_KeyPress);
             // 
             // removeJvmParameterButton
             // 
             this.removeJvmParameterButton.Location = new System.Drawing.Point(6, 124);
             this.removeJvmParameterButton.Name = "removeJvmParameterButton";
-            this.removeJvmParameterButton.Size = new System.Drawing.Size(133, 20);
+            this.removeJvmParameterButton.Size = new System.Drawing.Size(133, 21);
             this.removeJvmParameterButton.TabIndex = 11;
-            this.removeJvmParameterButton.Text = "Remove JVM Parameter";
+            this.removeJvmParameterButton.Text = "Remove JVM Option";
             this.removeJvmParameterButton.UseVisualStyleBackColor = true;
-            this.removeJvmParameterButton.Click += new System.EventHandler(this.removeJvmParameterButton_Click);
+            this.removeJvmParameterButton.Click += new System.EventHandler(this.removeJvmOptionButton_Click);
             // 
             // addJvmParameterButton
             // 
             this.addJvmParameterButton.Location = new System.Drawing.Point(6, 95);
             this.addJvmParameterButton.Name = "addJvmParameterButton";
-            this.addJvmParameterButton.Size = new System.Drawing.Size(133, 20);
+            this.addJvmParameterButton.Size = new System.Drawing.Size(133, 23);
             this.addJvmParameterButton.TabIndex = 10;
-            this.addJvmParameterButton.Text = "Add JVM Parameter";
+            this.addJvmParameterButton.Text = "Add JVM Option";
             this.addJvmParameterButton.UseVisualStyleBackColor = true;
-            this.addJvmParameterButton.Click += new System.EventHandler(this.addJvmParameterButton_Click);
+            this.addJvmParameterButton.Click += new System.EventHandler(this.addJvmOptionButton_Click);
             // 
             // checkBox1
             // 
@@ -1626,7 +1626,7 @@ namespace AgentForAgent
         private System.Windows.Forms.Label availablePhysicalMemoryValue;
         private System.Windows.Forms.Button removeJvmParameterButton;
         private System.Windows.Forms.Button addJvmParameterButton;
-        private System.Windows.Forms.ListBox jvmParametersListBox;
+        private System.Windows.Forms.ListBox jvmOptionsListBox;
         private System.Windows.Forms.Label memoryLimitLabel;
         private System.Windows.Forms.NumericUpDown memoryLimitNumericUpDown;
         private System.Windows.Forms.GroupBox durationGroupBox;
