@@ -2,7 +2,7 @@
 <agent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:proactive:agent:0.90:windows">
   <config>
     <proactiveHome />
-    <javaHome>C:\Program Files\Java\jdk1.6.0_21</javaHome>
+    <javaHome />
     <memoryLimit>0</memoryLimit>
     <nbRuntimes>1</nbRuntimes>
     <protocol>rmi</protocol>

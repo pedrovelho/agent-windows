@@ -38,6 +38,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.IO.Pipes;
+using System.Security.Principal;
 using System.ServiceProcess;
 using System.Threading;
 using System.Windows.Forms;
@@ -52,24 +53,41 @@ namespace AgentForAgent
         public const string AGENT_AUTO_RUN_SUBKEY = "Software\\Microsoft\\Windows\\CurrentVersion\\Run";
 
         private ConfigurationEditor configEditor;
+       
         private readonly string agentLocation;
+        private readonly string configFileLocation;
         private readonly string logsDirectory;
         private ServiceController sc;        
         private Thread pipeClientThread;
 
-        public AgentWindow(string agentLocation, string configLocation, string logsDirectory, ServiceController sc)
-        {
-            // Init all visuals components
-            InitializeComponent();
-
+        public AgentWindow(string agentLocation, string configFileLocation, string logsDirectory, ServiceController sc)
+        {            
             this.agentLocation = agentLocation;
-            this.configLocation.Text = configLocation;
+            this.configFileLocation = configFileLocation;
             this.logsDirectory = logsDirectory;
             this.sc = sc;
 
-            // Update the status
-            this.updateStatus();
-            
+            // Init all visuals components
+            InitializeComponent();                        
+        }
+
+        // !! Event !!
+        private void AgentWindow_Load(object sender, EventArgs e)
+        {
+            this.configFileLocationTextBox.Enabled = false;
+            this.configFileLocationTextBox.Text = this.configFileLocation;
+            this.configFileLocationTextBox.Enabled = true;
+
+            // Administrators only can edit the location of the config file            
+            WindowsPrincipal principal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
+            if (!principal.IsInRole(WindowsBuiltInRole.Administrator))
+            {
+                this.browseConfigFileLocation.Enabled = false;
+            }
+
+            // Update the status 
+            this.updateFromServiceStatus();
+
             // Find registry value for auto start agent
             try
             {
@@ -83,13 +101,84 @@ namespace AgentForAgent
                     confKey.Close();
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                MessageBox.Show("Cannot open the following subkey " + AGENT_AUTO_RUN_SUBKEY + ". " + e.ToString(), "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Cannot open the following subkey " + AGENT_AUTO_RUN_SUBKEY + ". " + ex, "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        public void receiveFromPipe()
+        private void updateFromServiceStatus()
+        {
+            if (this.sc == null)
+            {
+                return;
+            }
+            // Refresh the service status
+            this.sc.Refresh();
+            // Update the status text on the GUI
+            this.agentStatusValue.Text = this.agentStatusNotifyIcon.Text = Enum.GetName(typeof(ServiceControllerStatus), this.sc.Status);
+            switch (this.sc.Status)
+            {
+                case ServiceControllerStatus.StopPending:
+                    this.startService.Enabled = false;
+                    this.stopService.Enabled = false;
+                    this.startServiceToolStripMenuItem.Enabled = false;
+                    this.stopServiceToolStripMenuItem.Enabled = false;
+                    break;
+                case ServiceControllerStatus.Stopped:
+                    this.startService.Enabled = true;
+                    this.stopService.Enabled = false;
+                    this.startServiceToolStripMenuItem.Enabled = true;
+                    this.stopServiceToolStripMenuItem.Enabled = false;
+
+                    // Set the pipe to null
+                    this.pipeClientThread = null;
+                    break;
+                case ServiceControllerStatus.StartPending:
+                    this.startService.Enabled = false;
+                    this.stopService.Enabled = false;
+                    this.startServiceToolStripMenuItem.Enabled = false;
+                    this.stopServiceToolStripMenuItem.Enabled = false;
+                    break;
+                case ServiceControllerStatus.Running:
+                    this.startService.Enabled = false;
+                    this.stopService.Enabled = true;
+                    this.startServiceToolStripMenuItem.Enabled = false;
+                    this.stopServiceToolStripMenuItem.Enabled = true;
+
+                    // Start a new thread that will receive data from the service through the pipe
+                    // it should be started only once per started service
+                    this.startPipeClientThread();
+                    break;
+                default:
+                    this.startService.Enabled = false;
+                    this.stopService.Enabled = false;
+                    this.startServiceToolStripMenuItem.Enabled = false;
+                    this.stopServiceToolStripMenuItem.Enabled = false;
+                    break;
+            }
+
+            // If the service is not running a red icon will appear
+            if (sc.Status != ServiceControllerStatus.Running)
+            {
+                agentStatusNotifyIcon.Icon = Icon = (Icon)Resource1.icon_stop;
+            }
+        }
+
+        // !! WARNING - MUST BE CALLED ONLY IF THE SERVICE IS STARTED !!
+        private void startPipeClientThread()
+        {
+            // There must be no already running pipe client thread
+            // and the service must be running otherwise the pipe.Connect()
+            // can hang on at 100% CPU
+            if (this.pipeClientThread == null) {                        
+                this.pipeClientThread = new Thread(receiveFromPipe);
+                this.pipeClientThread.IsBackground = true;
+                pipeClientThread.Start();
+            }
+        }
+
+        private void receiveFromPipe()
         {
             using (NamedPipeClientStream pipeStream = new NamedPipeClientStream(".", Constants.PIPE_NAME, PipeDirection.In))
             {
@@ -98,8 +187,8 @@ namespace AgentForAgent
                     // The connect function will indefinately wait for the pipe to become available
                     // If that is not acceptable specify a maximum waiting time (in ms)
                     try
-                    {                        
-                       pipeStream.Connect(3 * 1000); // timeout avoids undefinite occupation of 100% cpu on waiting
+                    {
+                        pipeStream.Connect(3 * 1000); // timeout avoids undefinite occupation of 100% cpu on waiting
                     }
                     catch (Exception)
                     {
@@ -112,7 +201,7 @@ namespace AgentForAgent
                         string temp;
                         // We read from the pipe to the end
                         while ((temp = sr.ReadLine()) != null)
-                        {                            
+                        {
                             this.Invoke((MethodInvoker)delegate
                             {
                                 if (this.spawnedRuntimesValue.Text != temp)
@@ -134,82 +223,12 @@ namespace AgentForAgent
                 {
                     this.spawnedRuntimesValue.Text = "";
                 });
-            }            
-        }
-
-        // !! WARNING - MUST BE CALLED ONLY IF THE SERVICE IS STARTED !!
-        private void startPipeClientThread()
-        {
-            // There must be no already running pipe client thread
-            // and the service must be running otherwise the pipe.Connect()
-            // can hang on at 100% CPU
-            if (this.pipeClientThread == null) {                        
-                this.pipeClientThread = new Thread(receiveFromPipe);
-                this.pipeClientThread.IsBackground = true;
-                pipeClientThread.Start();
-            }
-        }
-
-        private void updateStatus()
-        {
-            if (this.sc == null) {
-                return;
-            }            
-            // Refresh the service status
-            this.sc.Refresh();
-            // Update the status text on the GUI
-            this.agentStatusValue.Text = this.agentStatusNotifyIcon.Text = Enum.GetName(typeof(ServiceControllerStatus), this.sc.Status);
-            switch (this.sc.Status)
-            {
-                case ServiceControllerStatus.StopPending:            
-                    this.startService.Enabled = false;
-                    this.stopService.Enabled = false;
-                    this.startServiceToolStripMenuItem.Enabled = false;
-                    this.stopServiceToolStripMenuItem.Enabled = false;                    
-                    break;
-                case ServiceControllerStatus.Stopped:                    
-                    this.startService.Enabled = true;
-                    this.stopService.Enabled = false;
-                    this.startServiceToolStripMenuItem.Enabled = true;
-                    this.stopServiceToolStripMenuItem.Enabled = false;
-                    
-                    // Set the pipe to null
-                    this.pipeClientThread = null;
-                    break;
-                case ServiceControllerStatus.StartPending:                    
-                    this.startService.Enabled = false;
-                    this.stopService.Enabled = false;
-                    this.startServiceToolStripMenuItem.Enabled = false;
-                    this.stopServiceToolStripMenuItem.Enabled = false;                    
-                    break;
-                case ServiceControllerStatus.Running:                    
-                    this.startService.Enabled = false;
-                    this.stopService.Enabled = true;
-                    this.startServiceToolStripMenuItem.Enabled = false;
-                    this.stopServiceToolStripMenuItem.Enabled = true;
-
-                    // Start a new thread that will receive data from the service through the pipe
-                    // it should be started only once per started service
-                    this.startPipeClientThread();
-                    break;
-                default:                    
-                    this.startService.Enabled = false;
-                    this.stopService.Enabled = false;
-                    this.startServiceToolStripMenuItem.Enabled = false;
-                    this.stopServiceToolStripMenuItem.Enabled = false;
-                    break;
-            }
-
-            // If the service is not running a red icon will appear
-            if (sc.Status != ServiceControllerStatus.Running)
-            {                
-                agentStatusNotifyIcon.Icon = Icon = (Icon)Resource1.icon_stop;
             }
         }
 
         public void setConfigLocation(string title)
         {
-            configLocation.Text = title;
+            configFileLocationTextBox.Text = title;
         }
 
         public void askAndRestart()
@@ -226,9 +245,10 @@ namespace AgentForAgent
             }
         }
 
+        // !! Event !!
         private void editConfig_Click(object sender, EventArgs e)
         {
-            string filename = this.configLocation.Text;
+            string filename = this.configFileLocationTextBox.Text;
             Process p = new Process();
             p.StartInfo.FileName = "notepad.exe";
             p.StartInfo.Arguments = filename;
@@ -236,15 +256,13 @@ namespace AgentForAgent
             p.Start();
         }
 
-        /// <summary>
-        /// Starts the service.
-        /// </summary>
+        // !! Event !!
         private void startService_Click(object sender, EventArgs e)
         {
             // 1 - Parse the xml config file            
             try
             {
-                ConfigurationParser.parseXml(configLocation.Text, agentLocation);
+                ConfigurationParser.parseXml(configFileLocationTextBox.Text, agentLocation);
             }
             catch (Exception ex) // since the parseXml method does not declare any exceptions like IncorrectConfigurationException 
             {
@@ -272,9 +290,7 @@ namespace AgentForAgent
             stopServiceToolStripMenuItem.Enabled = false;
         }
 
-        /// <summary>
-        /// Stops the service.
-        /// </summary>
+        // !! Event !!
         private void stopService_Click(object sender, EventArgs e)
         {
             // 1 - Refresh the service status
@@ -304,11 +320,12 @@ namespace AgentForAgent
             this.pipeClientThread = null;
         }
 
+        // !! Event !!
         private void timer_Tick(object sender, EventArgs e)
         {
             try
             {                                    
-               this.updateStatus();               
+               this.updateFromServiceStatus();               
             }
             catch (Exception)
             {
@@ -317,17 +334,18 @@ namespace AgentForAgent
             }
         }
 
+        // !! Event !!
         private void browse_Click(object sender, EventArgs args)
         {
-            browseConfig.FileName = configLocation.Text;
+            browseConfig.FileName = configFileLocationTextBox.Text;
             browseConfig.Filter = "Xml File|*.xml";
             browseConfig.ShowDialog();
-            configLocation.Text = browseConfig.FileName;
+            configFileLocationTextBox.Text = browseConfig.FileName;
 
             // Try to validate against current version schema
             try
             {
-                ConfigurationParser.validateXMLFile(configLocation.Text, agentLocation);
+                ConfigurationParser.validateXMLFile(configFileLocationTextBox.Text, agentLocation);
             }
             catch (Exception e)
             {
@@ -335,6 +353,7 @@ namespace AgentForAgent
             }
         }
 
+        // !! Event !!
         private void scrSvrStart_Click(object sender, EventArgs e)
         {
             Process p = new Process();
@@ -350,6 +369,7 @@ namespace AgentForAgent
             }
         }
 
+        // !! Event !!
         private void ConfigurationDialog_Resize(object sender, EventArgs e)
         {
 
@@ -359,6 +379,7 @@ namespace AgentForAgent
             }
         }
 
+        // !! Event !!
         private void ConfigurationDialog_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (e.CloseReason == CloseReason.UserClosing)
@@ -372,18 +393,20 @@ namespace AgentForAgent
             }
         }
 
+        // !! Event !!
         private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             Show();
             WindowState = FormWindowState.Normal;
         }
 
+        // !! Event !!
         private void guiEditButton_Click(object sender, EventArgs e)
         {
             try
             {
-                AgentType conf = ConfigurationParser.parseXml(configLocation.Text, agentLocation);
-                configEditor = new ConfigurationEditor(conf, configLocation.Text, agentLocation, this);
+                AgentType conf = ConfigurationParser.parseXml(configFileLocationTextBox.Text, agentLocation);
+                configEditor = new ConfigurationEditor(conf, configFileLocationTextBox.Text, agentLocation, this);
                 configEditor.ShowDialog();
             }
             catch (Exception ex)
@@ -392,6 +415,7 @@ namespace AgentForAgent
             }
         }
 
+        // !! Event !!
         private void startToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (((ToolStripMenuItem)sender).CheckState == CheckState.Checked)
@@ -400,6 +424,7 @@ namespace AgentForAgent
                 ((ToolStripMenuItem)sender).CheckState = CheckState.Checked;
         }
 
+        // !! Event !!
         private void startToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
         {
             // Add Register the automatic launch
@@ -419,6 +444,7 @@ namespace AgentForAgent
             }
         }
 
+        // !! Event !!
         private void closeAdministrationPanelToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             DialogResult res = MessageBox.Show("This operation doesn't change the state of ProActive service", "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
@@ -437,21 +463,28 @@ namespace AgentForAgent
             }
         }
 
-        private void configLocation_TextChanged(object sender, EventArgs e)
+        // !! Event !!
+        private void configFileLocationTextBox_TextChanged(object sender, EventArgs e)
         {
-            RegistryKey confKey = Registry.LocalMachine.OpenSubKey(Constants.REG_SUBKEY, true);
-            if (confKey != null)
+            // To intercept initial assignement of the TextBox
+            if (this.configFileLocationTextBox.Enabled)
             {
-                confKey.SetValue(Constants.CONFIG_LOCATION_REG_VALUE_NAME, configLocation.Text);
-                confKey.Close();
+                RegistryKey confKey = Registry.LocalMachine.OpenSubKey(Constants.REG_SUBKEY, true);
+                if (confKey != null)
+                {
+                    confKey.SetValue(Constants.CONFIG_LOCATION_REG_VALUE_NAME, configFileLocationTextBox.Text);
+                    confKey.Close();
+                }
             }
         }
 
+        // !! Event !!
         private void webPageLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             System.Diagnostics.Process.Start(this.webPageLinkLabel.Text);
         }
 
+        // !! Event !!
         private void withNotepadButton_Click(object sender, EventArgs e)
         {
             Process p = new Process();
@@ -460,6 +493,7 @@ namespace AgentForAgent
             p.Start();
         }
 
+        // !! Event !!
         private void withIExplorerButton_Click(object sender, EventArgs e)
         {
             Process p = new Process();
@@ -468,11 +502,13 @@ namespace AgentForAgent
             p.Start();
         }
 
+        // !! Event !!
         private void documentationLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             System.Diagnostics.Process.Start(Constants.DOC_LINK);
         }
 
+        // !! Event !!
         private void viewLogsLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             System.Diagnostics.Process.Start(this.logsDirectory);

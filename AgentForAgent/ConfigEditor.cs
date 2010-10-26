@@ -34,12 +34,12 @@
  * $$ACTIVEEON_CONTRIBUTOR$$
  */
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using ConfigParser;
 using ProActiveAgent;
-using System.Collections.Generic;
 
 namespace AgentForAgent
 {

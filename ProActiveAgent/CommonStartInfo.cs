@@ -83,7 +83,10 @@ namespace ProActiveAgent
             // Add default parameters
             this._enabledConnection.fillDefaultJvmOptions(mergedJvmOptionsList, this._configuration.config.proactiveHome);
             // Add user defined
-            mergedJvmOptionsList.AddRange(this._configuration.config.jvmParameters);            
+            if (this._configuration.config.jvmParameters != null)
+            {
+                mergedJvmOptionsList.AddRange(this._configuration.config.jvmParameters);
+            }
             this._jvmOptions = mergedJvmOptionsList.ToArray();
         }
 

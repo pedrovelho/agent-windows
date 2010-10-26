@@ -31,8 +31,8 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AgentWindow));
             this.configurationFileLocationLabel = new System.Windows.Forms.Label();
-            this.configLocation = new System.Windows.Forms.TextBox();
-            this.browse = new System.Windows.Forms.Button();
+            this.configFileLocationTextBox = new System.Windows.Forms.TextBox();
+            this.browseConfigFileLocation = new System.Windows.Forms.Button();
             this.configurationGroupBox = new System.Windows.Forms.GroupBox();
             this.guiEditButton = new System.Windows.Forms.Button();
             this.textEditConfig = new System.Windows.Forms.Button();
@@ -57,10 +57,10 @@
             this.webPageLinkLabel = new System.Windows.Forms.LinkLabel();
             this.controlsGroupBox = new System.Windows.Forms.GroupBox();
             this.logsGroupBox = new System.Windows.Forms.GroupBox();
+            this.viewLogsWithNotepadButton = new System.Windows.Forms.Button();
             this.viewLogsLinkLabel = new System.Windows.Forms.LinkLabel();
             this.viewLogsWithExplorerButton = new System.Windows.Forms.Button();
             this.documentationLinkLabel = new System.Windows.Forms.LinkLabel();
-            this.viewLogsWithNotepadButton = new System.Windows.Forms.Button();
             this.configurationGroupBox.SuspendLayout();
             this.infoGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.proActiveLogoPictureBox)).BeginInit();
@@ -78,32 +78,32 @@
             this.configurationFileLocationLabel.TabIndex = 0;
             this.configurationFileLocationLabel.Text = "Location:";
             // 
-            // configLocation
+            // configFileLocationTextBox
             // 
-            this.configLocation.Location = new System.Drawing.Point(63, 18);
-            this.configLocation.Name = "configLocation";
-            this.configLocation.ReadOnly = true;
-            this.configLocation.Size = new System.Drawing.Size(427, 20);
-            this.configLocation.TabIndex = 1;
-            this.configLocation.Text = "C:\\PAAgent-config.xml";
-            this.configLocation.TextChanged += new System.EventHandler(this.configLocation_TextChanged);
+            this.configFileLocationTextBox.Enabled = false;
+            this.configFileLocationTextBox.Location = new System.Drawing.Point(63, 18);
+            this.configFileLocationTextBox.Name = "configFileLocationTextBox";
+            this.configFileLocationTextBox.ReadOnly = true;
+            this.configFileLocationTextBox.Size = new System.Drawing.Size(427, 20);
+            this.configFileLocationTextBox.TabIndex = 1;
+            this.configFileLocationTextBox.TextChanged += new System.EventHandler(this.configFileLocationTextBox_TextChanged);
             // 
-            // browse
+            // browseConfigFileLocation
             // 
-            this.browse.Location = new System.Drawing.Point(496, 16);
-            this.browse.Name = "browse";
-            this.browse.Size = new System.Drawing.Size(75, 23);
-            this.browse.TabIndex = 2;
-            this.browse.Text = "Browse";
-            this.browse.UseVisualStyleBackColor = true;
-            this.browse.Click += new System.EventHandler(this.browse_Click);
+            this.browseConfigFileLocation.Location = new System.Drawing.Point(496, 16);
+            this.browseConfigFileLocation.Name = "browseConfigFileLocation";
+            this.browseConfigFileLocation.Size = new System.Drawing.Size(75, 23);
+            this.browseConfigFileLocation.TabIndex = 2;
+            this.browseConfigFileLocation.Text = "Browse";
+            this.browseConfigFileLocation.UseVisualStyleBackColor = true;
+            this.browseConfigFileLocation.Click += new System.EventHandler(this.browse_Click);
             // 
             // configurationGroupBox
             // 
             this.configurationGroupBox.Controls.Add(this.guiEditButton);
-            this.configurationGroupBox.Controls.Add(this.configLocation);
+            this.configurationGroupBox.Controls.Add(this.configFileLocationTextBox);
             this.configurationGroupBox.Controls.Add(this.textEditConfig);
-            this.configurationGroupBox.Controls.Add(this.browse);
+            this.configurationGroupBox.Controls.Add(this.browseConfigFileLocation);
             this.configurationGroupBox.Controls.Add(this.configurationFileLocationLabel);
             this.configurationGroupBox.Location = new System.Drawing.Point(9, 117);
             this.configurationGroupBox.Name = "configurationGroupBox";
@@ -329,6 +329,16 @@
             this.logsGroupBox.TabStop = false;
             this.logsGroupBox.Text = "Logs";
             // 
+            // viewLogsWithNotepadButton
+            // 
+            this.viewLogsWithNotepadButton.Location = new System.Drawing.Point(83, 19);
+            this.viewLogsWithNotepadButton.Name = "viewLogsWithNotepadButton";
+            this.viewLogsWithNotepadButton.Size = new System.Drawing.Size(78, 23);
+            this.viewLogsWithNotepadButton.TabIndex = 6;
+            this.viewLogsWithNotepadButton.Text = "with Notepad";
+            this.viewLogsWithNotepadButton.UseVisualStyleBackColor = true;
+            this.viewLogsWithNotepadButton.Click += new System.EventHandler(this.withNotepadButton_Click);
+            // 
             // viewLogsLinkLabel
             // 
             this.viewLogsLinkLabel.AutoSize = true;
@@ -362,16 +372,6 @@
             this.documentationLinkLabel.Text = "Official Documentation";
             this.documentationLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.documentationLinkLabel_LinkClicked);
             // 
-            // viewLogsWithNotepadButton
-            // 
-            this.viewLogsWithNotepadButton.Location = new System.Drawing.Point(83, 19);
-            this.viewLogsWithNotepadButton.Name = "viewLogsWithNotepadButton";
-            this.viewLogsWithNotepadButton.Size = new System.Drawing.Size(78, 23);
-            this.viewLogsWithNotepadButton.TabIndex = 6;
-            this.viewLogsWithNotepadButton.Text = "with Notepad";
-            this.viewLogsWithNotepadButton.UseVisualStyleBackColor = true;
-            this.viewLogsWithNotepadButton.Click += new System.EventHandler(this.withNotepadButton_Click);
-            // 
             // AgentWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -392,6 +392,7 @@
             this.Name = "AgentWindow";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "ProActive Agent Control";
+            this.Load += new System.EventHandler(this.AgentWindow_Load);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ConfigurationDialog_FormClosing);
             this.Resize += new System.EventHandler(this.ConfigurationDialog_Resize);
             this.configurationGroupBox.ResumeLayout(false);
@@ -411,23 +412,19 @@
         #endregion
 
         private System.Windows.Forms.Label configurationFileLocationLabel;
-        private System.Windows.Forms.TextBox configLocation;
-        private System.Windows.Forms.Button browse;
+        private System.Windows.Forms.TextBox configFileLocationTextBox;
+        private System.Windows.Forms.Button browseConfigFileLocation;
         private System.Windows.Forms.GroupBox configurationGroupBox;
         private System.Windows.Forms.Button textEditConfig;
         private System.Windows.Forms.GroupBox infoGroupBox;
         private System.Windows.Forms.Button stopService;
         private System.Windows.Forms.Button startService;
         private System.Windows.Forms.Label agentStatusLabel;
-        private System.Windows.Forms.PictureBox proActiveLogoPictureBox;
-        //private System.Windows.Forms.Button close;
+        private System.Windows.Forms.PictureBox proActiveLogoPictureBox;        
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
-        //private System.Windows.Forms.Button troubleshoot;
+        private System.Windows.Forms.Label label4;        
         private System.Windows.Forms.Timer timer;
-        private System.Windows.Forms.OpenFileDialog browseConfig;
-        //private System.Windows.Forms.Button scrSvrStart;
-        //private System.Windows.Forms.Button globalStop;
+        private System.Windows.Forms.OpenFileDialog browseConfig;        
         private System.Windows.Forms.NotifyIcon agentStatusNotifyIcon;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
         private System.Windows.Forms.Button guiEditButton;
@@ -444,8 +441,7 @@
         private System.Windows.Forms.Label spawnedRuntimesValue;
         private System.Windows.Forms.LinkLabel documentationLinkLabel;
         private System.Windows.Forms.LinkLabel viewLogsLinkLabel;
-        private System.Windows.Forms.Button viewLogsWithNotepadButton;
-        //private System.Windows.Forms.Button allowForbidRT;
+        private System.Windows.Forms.Button viewLogsWithNotepadButton;       
     }
 }
 
