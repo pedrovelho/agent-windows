@@ -56,14 +56,14 @@ namespace AgentForAgent
                 return;
             }
 
-            //// Check if the current user have admin rights   
-            //WindowsPrincipal principal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
-            //if (!principal.IsInRole(WindowsBuiltInRole.Administrator))
-            //{
-            //    // report error and exit                     
-            //    MessageBox.Show("Adminstrator rights are required to run the ProActive Agent Control.", "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //    return;
-            //}
+            // Guest accounts Check if the current user have admin rights   
+            WindowsPrincipal principal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
+            if (principal.IsInRole(WindowsBuiltInRole.Guest))
+            {
+                // report error and exit                     
+                MessageBox.Show("Guest users cannot run the ProActive Agent Control.", "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
             // Check if this application is already running
             Process[] alreadyRunningProcesses = Process.GetProcessesByName("AgentForAgent");
