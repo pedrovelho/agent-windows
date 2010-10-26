@@ -91,12 +91,6 @@ namespace ProActiveAgent
         /// The name of the ProActive Communication Protocol java property.</summary>
         public const string PROACTIVE_COMMUNICATION_PROTOCOL_JAVA_PROPERTY = "-Dproactive.communication.protocol";
         /// <summary>
-        /// The name of the ProActive Rmi Port java property.</summary>
-        public const string PROACTIVE_RMI_PORT_JAVA_PROPERTY = "-Dproactive.rmi.port";
-        /// <summary>
-        /// The name of the ProActive Http Port java property.</summary>
-        public const string PROACTIVE_HTTP_PORT_JAVA_PROPERTY = "-Dproactive.http.port";
-        /// <summary>
         /// The name of the ProActive Agent rank java property.</summary>
         public const string PROACTIVE_AGENT_RANK_JAVA_PROPERTY = "-Dproactive.agent.rank";
         /// <summary>

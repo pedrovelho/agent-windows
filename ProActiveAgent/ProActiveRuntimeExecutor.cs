@@ -206,21 +206,11 @@ namespace ProActiveAgent
                 {
                     jvmParametersBuilder.Append(Constants.PROACTIVE_COMMUNICATION_PROTOCOL_JAVA_PROPERTY);
                     jvmParametersBuilder.Append("=");
-                    string protocol = this.commonStartInfo.configuration.config.protocol;
-                    protocol = protocol.ToLower();
-                    if (protocol.Equals("rmi"))
-                    {
-                        jvmParametersBuilder.Append("rmi");
-                        jvmParametersBuilder.Append(" ");
-                        jvmParametersBuilder.Append(Constants.PROACTIVE_RMI_PORT_JAVA_PROPERTY);
-                    }
-                    else if (protocol.Equals("http"))
-                    {
-                        jvmParametersBuilder.Append("http");
-                        jvmParametersBuilder.Append(" ");
-                        jvmParametersBuilder.Append(Constants.PROACTIVE_HTTP_PORT_JAVA_PROPERTY);
-                    }
-                    jvmParametersBuilder.Append("=");
+                    string protocol = this.commonStartInfo.configuration.config.protocol.ToLower();
+                    jvmParametersBuilder.Append(protocol);
+                    jvmParametersBuilder.Append(" -Dproactive.");
+                    jvmParametersBuilder.Append(protocol);
+                    jvmParametersBuilder.Append(".port=");
                     jvmParametersBuilder.Append(this.currentProActivePort);
                 }
 
