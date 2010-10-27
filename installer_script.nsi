@@ -17,13 +17,14 @@
 !define SERVICE_DESC "The ProActive Agent enables desktop computers as an important source of computational power"
 !define VERSION "2.3"
 !define PAGE_FILE "serviceInstallPage.ini"
-!define SUBINACL_PATH "$PROGRAMFILES\Windows Resource Kits\Tools\subinacl.exe"
+!define SUBINACL_DIR "$PROGRAMFILES\Windows Resource Kits\Tools"
+!define SUBINACL_PATH "${SUBINACL_DIR}\subinacl.exe"
 !define SUBINACL_URL "http://download.microsoft.com/download/1/7/d/17d82b72-bc6a-4dc8-bfaa-98b37b22b367/subinacl.msi"
 !define SUBINACL_MANUAL_INSTALL "Please download SubInAcl.msi and install it manually then run the command: subinacl.exe /service ${SERVICE_NAME} /grant=S-1-1-0=TO"
 !define SERVICE_LOGON_RIGHT 'SeServiceLogonRight'
 !define CONFIG_NAME "PAAgent-config.xml"
 !define DEFAULT_CONFIG_PATH "$INSTDIR\config\${CONFIG_NAME}"
-!define PERFORMANCE_MONITOR_GROUP_NAME "S-1-5-32-558"
+!define PERFORMANCE_MONITOR_SID "S-1-5-32-558"
 
 CRCCheck on
 
@@ -278,14 +279,14 @@ Function MyCustomLeave
     checkGroupMember:
     # Check if the account is part of 'Performace Monitor Group' of SID "S-1-5-32-558"
     # returns "TRUE" if the account is a member of the specified group, else returns "FALSE"
-    UserMgr::IsMemberOfGroup $R3 ${PERFORMANCE_MONITOR_GROUP_NAME}
+    UserMgr::IsMemberOfGroup $R3 ${PERFORMANCE_MONITOR_SID}
     Pop $0
     ${If} $0 == "TRUE"
       Goto createServiceLABEL
     ${ElseIf} $0 == "FALSE"
       # If a new account was created no need to ask to add the user to the group
       ${If} $R6 == "1"
-        UserMgr::AddToGroup $R3 ${PERFORMANCE_MONITOR_GROUP_NAME}
+        UserMgr::AddToGroup $R3 ${PERFORMANCE_MONITOR_SID}
         Pop $0
         ${If} $0 == "TRUE"
           Goto createServiceLABEL
@@ -345,8 +346,10 @@ Function MyCustomLeave
     MessageBox MB_OK "Unable to find ${SUBINACL_PATH} $\n${SUBINACL_MANUAL_INSTALL}"
     goto runGuiLABEL
     existLABEL:
-    # Run the command in a console view to allow the user to see eventual
-    ExecWait 'cmd.exe /C "${SUBINACL_PATH}" /service ${SERVICE_NAME} /grant=S-1-1-0=TO & pause'
+    # Run the command in a console view to allow the user to see output
+    # The first command allows control of the service by ALL USERS group
+    # The second command allows full control of the configuration file by ALL USERS group
+    ExecWait 'cmd.exe /C cd "${SUBINACL_DIR}" & subinacl.exe /service ${SERVICE_NAME} /grant=S-1-1-0=TO & subinacl.exe /file "$R1" /grant=S-1-1-0=F & pause'
   ${EndIf}
   runGuiLABEL:
   # Run the Agent GUI
