@@ -3,12 +3,14 @@
 # - x64.nsh for few simple macros to handle installation on x64 architecture
 # - DotNetVer.nsh for checking Microsoft .NET Framework versions (see http://ontheperiphery.veraida.com/project/dotnetver)
 # - servicelib.nsh for Windows service installation
+# - UserManagement.nsh contains GetServerName and AddUserToGroup1 from http://nsis.sourceforge.net/User_Management_using_API_calls#Add_User_to_a_group
 ############################################################################################################################
 !include x64.nsh
 !include "DotNetVer.nsh"
 !include "MUI.nsh"
 !include "servicelib.nsh"
 !include "NTProfiles.nsh"
+!include "UserManagement.nsh"
 
 #################################################################
 # Some constants definitions like service name, version, etc ...
@@ -25,6 +27,8 @@
 !define CONFIG_NAME "PAAgent-config.xml"
 !define DEFAULT_CONFIG_PATH "$INSTDIR\config\${CONFIG_NAME}"
 !define PERFORMANCE_MONITOR_SID "S-1-5-32-558"
+
+Var Hostname
 
 CRCCheck on
 
@@ -278,30 +282,21 @@ Function MyCustomLeave
     ${EndIf}
     checkGroupMember:
     # Check if the account is part of 'Performace Monitor Group' of SID "S-1-5-32-558"
-    # returns "TRUE" if the account is a member of the specified group, else returns "FALSE"
-    UserMgr::IsMemberOfGroup $R3 ${PERFORMANCE_MONITOR_SID}
+    # The function UserMgr::IsMemberOfGroup does not work.
+    # Instead we use the UserMgr::GetUserNameFromSID to check if the group exists if so
+    # the user is added using a macro.
+    UserMgr::GetUserNameFromSID ${PERFORMANCE_MONITOR_SID}
     Pop $0
-    ${If} $0 == "TRUE"
-      Goto createServiceLABEL
-    ${ElseIf} $0 == "FALSE"
-      # If a new account was created no need to ask to add the user to the group
-      ${If} $R6 == "1"
-        UserMgr::AddToGroup $R3 ${PERFORMANCE_MONITOR_SID}
-        Pop $0
-        ${If} $0 == "TRUE"
-          Goto createServiceLABEL
-        ${Else}
-          MessageBox MB_OK "Could not add the account $R3 to the Performance Monitor Group"
-        ${EndIf}
-      ${EndIf}
-      MessageBox MB_OK "The account $R3 must be a member of the Performance Monitor Group"
-        Abort
-    ${ElseIf} $0 == "ERROR 2220"
+    ${If} $0 == "ERROR"
       # The group does not exist, this occur on Windows XP so there is nothing to do
       Goto createServiceLABEL
     ${Else}
-      MessageBox MB_OK "Unable to check if the user $R3 is a member of the Performance Monitor Group. Error is $0"
-        Abort
+      # If a new account was created no need to ask to add the user to the group
+      ${If} $R6 == "1"
+        # The function UserMgr::AddToGroup does not work
+        !insertmacro GetServerName $Hostname
+        !insertmacro AddUserToGroup1 $Hostname $R3 "558"
+      ${EndIf}
     ${EndIf}
     createServiceLABEL:
     # Create the service under the given use and password
