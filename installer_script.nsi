@@ -27,8 +27,14 @@
 !define CONFIG_NAME "PAAgent-config.xml"
 !define DEFAULT_CONFIG_PATH "$INSTDIR\config\${CONFIG_NAME}"
 !define PERFORMANCE_MONITOR_SID "S-1-5-32-558"
+!define TXT_LOGSDIR "Field 13"
+!define TXT_CONF "Field 14"
+!define SEL_INSTLOC "Field 6"
+!define SEL_SPECREAC "Field 7"
+!define CHK_LOGSHOME "Field 16"
 
 Var Hostname
+Var tmp
 
 CRCCheck on
 
@@ -54,6 +60,75 @@ Page Directory
 Page Instfiles
 # The page that specifies locations and service account
 Page Custom MyCustomPage MyCustomLeave
+
+
+!include "WordFunc.nsh"
+!insertmacro WordReplace
+!insertmacro WordFind
+
+; Activate a group of controls, depending on the state of one control
+;
+; Usage:
+;
+; eg. !insertmacro GROUPCONTROLS "${DIALOG1}" "${CHK_PROXYSETTINGS}" "${LBL_IPADDRESS}|${TXT_IPADDRESS}|${LBL_PORT1}|${TXT_PORT1}|${CHK_ENCRYPTION}"
+; FILE:          INI-file in $pluginsdir
+; SOURCECONTROL: RadioButton, Checkbox
+; CONTROLGROUP:  pipe delimited list of controls; ${BUTTON1}|${CHECKBOX}|${TEXTFIELD}
+;
+; Requires:
+;
+; !include "WordFunc.nsh"
+; !insertmacro WordReplace
+; !insertmacro WordFind
+;
+!macro GROUPCONTROLS FILE SOURCECONTROL CONTROLGROUP INV
+  Push $R0 ;holds element
+  Push $R1 ;counter
+  Push $R2 ;state of the control
+  Push $R3 ;flags of the control / hwnd of the control
+
+  !insertmacro MUI_INSTALLOPTIONS_READ $R2 "${FILE}" "${SOURCECONTROL}" "State"
+  
+  ${If} ${INV} == "1"
+    ${If} "$R2" == "1"
+      StrCpy $R2 0
+    ${Else}
+      StrCpy $R2 1
+    ${EndIf}
+  ${EndIf}
+
+  StrCpy $R1 1
+  ${Do}
+    ClearErrors
+    ${WordFind} "${CONTROLGROUP}" "|" "E+$R1" $R0
+
+    ${If} ${Errors}
+    ${OrIf} $R0 == ""
+      ${ExitDo}
+    ${EndIf}
+
+    ; Put state change in flags of element as well
+    !insertmacro MUI_INSTALLOPTIONS_READ $R3 "${FILE}" "$R0" "Flags"
+    ${If} "$R2" == "1"
+       ${WordReplace} $R3 "DISABLED" "" "+" $R3
+       ${WordReplace} $R3 "||" "|" "+" $R3
+      !insertmacro MUI_INSTALLOPTIONS_WRITE "${FILE}" "$R0" "Flags" $R3
+    ${Else}
+      !insertmacro MUI_INSTALLOPTIONS_WRITE "${FILE}" "$R0" "Flags" "$R3|DISABLED"
+    ${EndIf}
+
+    !insertmacro MUI_INSTALLOPTIONS_READ $R3 "${FILE}" "$R0" "HWND"
+    EnableWindow $R3 $R2
+
+    IntOp $R1 $R1 + 1
+  ${Loop}
+
+  Pop $R3
+  Pop $R2
+  Pop $R1
+  Pop $R0
+
+!macroend
 
 ########################################
 # On init peforms the following checks:
@@ -148,17 +223,43 @@ Function MyCustomPage
   !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "Field 14" State "$INSTDIR\config"
    # Set default location for logs directory
   !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "Field 13" State "$INSTDIR\logs"
+  # Disable "Use service account home"
+  !insertmacro GROUPCONTROLS "${PAGE_FILE}" "${SEL_INSTLOC}" "${CHK_LOGSHOME}|" "1"
   # Display the custom page
   !insertmacro MUI_INSTALLOPTIONS_DISPLAY ${PAGE_FILE}
 FunctionEnd
 
 Function MyCustomLeave
+
+  # Handle notify event of checkbox "Use service account home"
+  
+  !insertmacro MUI_INSTALLOPTIONS_READ $tmp "${PAGE_FILE}" "Settings" "State"
+  ${Switch} "Field $tmp"
+    ${Case} "${CHK_LOGSHOME}"
+      !insertmacro GROUPCONTROLS "${PAGE_FILE}" "${CHK_LOGSHOME}" "${TXT_LOGSDIR}|${TXT_CONF}" "1"
+      Abort
+    ${Case} "${SEL_INSTLOC}"
+      !insertmacro GROUPCONTROLS "${PAGE_FILE}" "${SEL_INSTLOC}" "${CHK_LOGSHOME}|" "1"
+      Abort
+    ${Case} "${SEL_SPECREAC}"
+      !insertmacro GROUPCONTROLS "${PAGE_FILE}" "${SEL_SPECREAC}" "${CHK_LOGSHOME}|" "0"
+      Abort
+  ${EndSwitch}
+
+
   #-----------------------------------------------------------------------------------
   # !! CHECK LOCATIONS !!
   #-----------------------------------------------------------------------------------
+  
+  # Check "Use service account home" for logs location stored in R7
+  !insertmacro MUI_INSTALLOPTIONS_READ $R7 ${PAGE_FILE} "${CHK_LOGSHOME}" State
+  ${If} $R7 == "1"
+    #MessageBox MB_OK "--------------> "
+    Goto skipLocationsLABEL
+  ${EndIf}
 
   # Check config file location stored in R1
-  !insertmacro MUI_INSTALLOPTIONS_READ $R1 ${PAGE_FILE} "Field 14" State
+  !insertmacro MUI_INSTALLOPTIONS_READ $R1 ${PAGE_FILE} "${TXT_CONF}" State
   ${If} $R1 == ""
     MessageBox MB_OK "Please enter a valid location for the Configuration File"
      Abort
@@ -187,11 +288,13 @@ Function MyCustomLeave
   ${EndIf}
 
   # Check logs location stored in R2
-  !insertmacro MUI_INSTALLOPTIONS_READ $R2 ${PAGE_FILE} "Field 13" State
-  ${If} $R1 == ""
+  !insertmacro MUI_INSTALLOPTIONS_READ $R2 ${PAGE_FILE} "${TXT_LOGSDIR}" State
+  ${If} $R2 == ""
     MessageBox MB_OK "Please enter a valid location for the logs"
      Abort
   ${EndIf}
+
+  skipLocationsLABEL:
 
   #-----------------------------------------------------------------------------------
   # !! SELECTED: Install as LocalSystem !!
@@ -310,12 +413,48 @@ Function MyCustomLeave
   ${EndIf}
 
   writeToRegistryLABEL:
+  ${If} $R7 == "1"
+    # The goal is to read the path of AppData folder
+    
+    # Get the SID of the user
+    UserMgr::GetSIDFromUserName $R5 $R3
+    Pop $0
+    #MessageBox MB_OK "User sid: $0"
+    
+    # If it is loaded in HKU by SID check in the Volatile Environment
+    ReadRegStr $1 HKU "$0\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders" AppData
+    #MessageBox MB_OK "AppData: $1"
+    
+    # If the result is empty, load the account into the HKU by username the read the same key
+    ${If} $1 == ""
+      UserMgr::RegLoadUserHive $R3
+      #Pop $0
+      #MessageBox MB_OK "Load ? $0"
+
+      ReadRegStr $1 HKU "$R3\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders" AppData
+      #MessageBox MB_OK "User app data: $1"
+
+      UserMgr::RegUnLoadUserHive $R3
+      #Pop $0
+      #MessageBox MB_OK "Load ? $0"
+    ${EndIf}
+
+    StrCpy $R1 "$1\ProActiveAgent\config"
+    # Copy the configuration file
+    SetOutPath $R1
+    File "utils\PAAgent-config.xml"
+    # The location wil be written into the registry
+    StrCpy $R1 "$R1\PAAgent-config.xml"
+    # Create the logs dir
+    CreateDirectory "$1\ProActiveAgent\logs"
+    StrCpy $R2 "$1\ProActiveAgent\logs"
+  ${EndIf}
   # Write the config file location into the registry
   WriteRegStr HKLM "Software\ProActiveAgent" "ConfigLocation" $R1
   # Write the config file location into the registry
   WriteRegStr HKLM "Software\ProActiveAgent" "LogsDirectory" $R2
 
-  # If "Allow everyone to strat/stop" is selected check for subinacl
+  # If "Allow everyone to start/stop" is selected check for subinacl
   !insertmacro MUI_INSTALLOPTIONS_READ $R0 ${PAGE_FILE} "Field 15" State
   ${If} $R0 == "1"
     # Check if already installed
