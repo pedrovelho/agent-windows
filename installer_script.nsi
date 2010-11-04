@@ -11,6 +11,7 @@
 !include "servicelib.nsh"
 !include "NTProfiles.nsh"
 !include "UserManagement.nsh"
+!include WinVer.nsh
 
 #################################################################
 # Some constants definitions like service name, version, etc ...
@@ -421,23 +422,33 @@ Function MyCustomLeave
     Pop $0
     #MessageBox MB_OK "User sid: $0"
     
-    # If it is loaded in HKU by SID check in the Volatile Environment
-    ReadRegStr $1 HKU "$0\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders" AppData
-    #MessageBox MB_OK "AppData: $1"
-    
-    # If the result is empty, load the account into the HKU by username the read the same key
-    ${If} $1 == ""
-      UserMgr::RegLoadUserHive $R3
-      #Pop $0
-      #MessageBox MB_OK "Load ? $0"
+    # On xp use the standard way
+    ${If} ${IsWinXP}
+      # If it is loaded in HKU by SID check in the Volatile Environment
+      ReadRegStr $1 HKU "$0\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders" AppData
+      #MessageBox MB_OK "AppData path: $1"
 
-      ReadRegStr $1 HKU "$R3\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders" AppData
-      #MessageBox MB_OK "User app data: $1"
+      # If the result is empty, load the account into the HKU by username the read the same key
+      ${If} $1 == ""
+        UserMgr::RegLoadUserHive $R3
+        #Pop $0
+        #MessageBox MB_OK "Load ? $0"
 
-      UserMgr::RegUnLoadUserHive $R3
-      #Pop $0
-      #MessageBox MB_OK "Load ? $0"
+        ReadRegStr $1 HKU "$R3\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders" AppData
+        #MessageBox MB_OK "User app data: $1"
+
+        UserMgr::RegUnLoadUserHive $R3
+        #Pop $0
+        #MessageBox MB_OK "Load ? $0"
+      ${EndIf}
+    ${Else}
+      # On other OS like Vista or 7 use HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\SID ProfileImagePath
+      # If it is loaded in HKU by SID check in the Volatile Environment
+      ReadRegStr $1 HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$0" ProfileImagePath
+      StrCpy $1 "$1\AppData\Roaming"
     ${EndIf}
+    
+    #MessageBox MB_OK "AppData path: $1"
 
     StrCpy $R1 "$1\ProActiveAgent\config"
     # Copy the configuration file
