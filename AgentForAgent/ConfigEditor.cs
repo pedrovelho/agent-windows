@@ -569,7 +569,12 @@ namespace AgentForAgent
 
                 saveConfig.Enabled = true;
             }
+        }
 
+        private void networkInterfacesListBox_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            // Double click is equivalent 'Use' button
+            useNetworkInterfaceButton_Click(sender, e);
         }
 
         /**************************************************************

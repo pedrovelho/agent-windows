@@ -461,6 +461,7 @@ namespace AgentForAgent
             this.networkInterfacesListBox.Size = new System.Drawing.Size(262, 134);
             this.networkInterfacesListBox.TabIndex = 2;
             this.toolTip.SetToolTip(this.networkInterfacesListBox, "The list of available network interfaces.");
+            this.networkInterfacesListBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.networkInterfacesListBox_MouseDoubleClick);
             // 
             // refreshNetworkInterfacesButton
             // 
