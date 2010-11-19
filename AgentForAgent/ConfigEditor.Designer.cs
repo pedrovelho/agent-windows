@@ -486,7 +486,7 @@ namespace AgentForAgent
             this.memoryLimitGroupBox.Size = new System.Drawing.Size(226, 111);
             this.memoryLimitGroupBox.TabIndex = 1;
             this.memoryLimitGroupBox.TabStop = false;
-            this.memoryLimitGroupBox.Text = "Memory Limit (Mbytes)";
+            this.memoryLimitGroupBox.Text = "Runtime Memory Limit (Mbytes)";
             // 
             // memoryLimitNotice2Label
             // 
