@@ -149,7 +149,6 @@ namespace AgentForAgent
             this.showButton = new System.Windows.Forms.Button();
             this.createEventButton = new System.Windows.Forms.Button();
             this.deleteEventButton = new System.Windows.Forms.Button();
-            this.eventsList = new AgentForAgent.RefreshingListBox();
             this.saveConfig = new System.Windows.Forms.Button();
             this.closeConfig = new System.Windows.Forms.Button();
             this.proActiveLocationBrowser = new System.Windows.Forms.FolderBrowserDialog();
@@ -159,6 +158,7 @@ namespace AgentForAgent
             this.scriptLocationOpenDialog = new System.Windows.Forms.OpenFileDialog();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.credentialLocationOpenDialog = new System.Windows.Forms.OpenFileDialog();
+            this.eventsList = new AgentForAgent.RefreshingListBox();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.generalTabPage.SuspendLayout();
@@ -1443,16 +1443,6 @@ namespace AgentForAgent
             this.deleteEventButton.UseVisualStyleBackColor = true;
             this.deleteEventButton.Click += new System.EventHandler(this.deleteEventButton_Click);
             // 
-            // eventsList
-            // 
-            this.eventsList.FormattingEnabled = true;
-            this.eventsList.Location = new System.Drawing.Point(6, 19);
-            this.eventsList.Name = "eventsList";
-            this.eventsList.Size = new System.Drawing.Size(235, 303);
-            this.eventsList.TabIndex = 0;
-            this.toolTip.SetToolTip(this.eventsList, "The list of weekly plans.");
-            this.eventsList.SelectedIndexChanged += new System.EventHandler(this.eventsList_SelectedIndexChanged);
-            // 
             // saveConfig
             // 
             this.saveConfig.Enabled = false;
@@ -1505,6 +1495,16 @@ namespace AgentForAgent
             this.credentialLocationOpenDialog.DefaultExt = "cred";
             this.credentialLocationOpenDialog.Filter = "Credentials .cred|*.cred";
             // 
+            // eventsList
+            // 
+            this.eventsList.FormattingEnabled = true;
+            this.eventsList.Location = new System.Drawing.Point(6, 19);
+            this.eventsList.Name = "eventsList";
+            this.eventsList.Size = new System.Drawing.Size(235, 303);
+            this.eventsList.TabIndex = 0;
+            this.toolTip.SetToolTip(this.eventsList, "The list of weekly plans.");
+            this.eventsList.SelectedIndexChanged += new System.EventHandler(this.eventsList_SelectedIndexChanged);
+            // 
             // ConfigurationEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1518,7 +1518,6 @@ namespace AgentForAgent
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "ConfigurationEditor";
-            this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Configuration Editor";
             this.Load += new System.EventHandler(this.ConfigEditor_Load);

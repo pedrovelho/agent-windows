@@ -51,6 +51,11 @@ namespace ConfigParser
         [XmlArrayItem("arg")]
         public string[] args;
 
-        public CustomConnectionType() {}        
+        public CustomConnectionType() {}
+
+        public override string[] getArgs()
+        {
+            return this.args;
+        }
     }
 }
