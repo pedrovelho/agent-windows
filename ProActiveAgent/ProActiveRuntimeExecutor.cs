@@ -66,11 +66,9 @@ namespace ProActiveAgent
         /// The next usable ProActive Port that will be initialized by the first executor, then it cycles incrementally 
         /// depnding on the port availability until max value.</summary>
         private static int nextUsableProActivePort;
-
         /// <summary>
         /// The current ProActive port used by this executor</summary>
         private int currentProActivePort;
-
         /// <summary>
         /// The unique rank of this executor</summary>
         private readonly int rank;        
@@ -148,6 +146,10 @@ namespace ProActiveAgent
                 // Add event handler to keep track of job events
                 this.jobObject.Events.OnJobMemoryLimit += new jobEventHandler<JobMemoryLimitEventArgs>(Events_OnJobMemoryLimit);
             }
+
+            // Children process will not be able to escape from job
+            this.jobObject.Limits.CanChildProcessBreakAway = false;
+
             // Create new instance of the cpu limiter
             this.cpuLimiter = new CPULimiter();
         }
