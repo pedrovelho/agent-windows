@@ -267,7 +267,7 @@ namespace ProActiveAgent
                 info.EnvironmentVariables[Constants.CLASSPATH] = this.commonStartInfo.configuration.config.classpath;
                 // Configure runtime specifics
                 info.UseShellExecute = false; // needed to redirect output
-                info.CreateNoWindow = false;
+                info.CreateNoWindow = true;
                 info.RedirectStandardOutput = true;
                 info.RedirectStandardError = true;
                 // Set the process start info 
