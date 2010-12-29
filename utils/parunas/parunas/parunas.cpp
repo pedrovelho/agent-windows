@@ -186,7 +186,7 @@ int wmain(int argc, WCHAR **argv)
 		DWORD dwType=REG_SZ;
 		DWORD dwSize;
 		WCHAR *keyName = L"SOFTWARE\\ProActiveAgent\\Creds";
-		returnStatus = RegOpenKeyEx(HKEY_LOCAL_MACHINE, keyName, 0L,  KEY_QUERY_VALUE, &hKey);
+		returnStatus = RegOpenKeyEx(HKEY_LOCAL_MACHINE, keyName, 0L,  KEY_QUERY_VALUE|KEY_READ|KEY_WOW64_64KEY, &hKey);
 		if (returnStatus == ERROR_SUCCESS)
 		{
 			dwSize = 255;
@@ -208,6 +208,7 @@ int wmain(int argc, WCHAR **argv)
 			}
 		} else {
 			LOG_ERROR(L"Unable to access creds!");
+			LOG_NUM(returnStatus);
 		}
 		// Close the registry key
 		RegCloseKey(hKey);
