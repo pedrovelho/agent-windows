@@ -20,18 +20,19 @@
 // Default include
 #include "stdafx.h"
 #include <windows.h>
-#include <stdio.h>
+//#include <stdio.h>
 // Required by CreateEnvironmentBlock
 #include <UserEnv.h>
-#include <Wtsapi32.h>
-#include <Psapi.h>
-#include <tlhelp32.h>
-#include <stdio.h>
-#include <malloc.h>
-#include <lmcons.h>
+//#include <Wtsapi32.h>
+//#include <Psapi.h>
+//#include <tlhelp32.h>
+//#include <stdio.h>
+//#include <malloc.h>
+//#include <lmcons.h>
 
 #define LOG_ERROR(...) if (bVerbose) wprintf(L"%s errno=%d\n", __VA_ARGS__, GetLastError());
 #define LOG_INFO(...) if (bVerbose) wprintf(L"%s\n", __VA_ARGS__);
+#define LOG_NUM(...) if (bVerbose) wprintf(L"%u\n", __VA_ARGS__);
 
 static BOOL bVerbose = true;
 
@@ -122,6 +123,12 @@ int wmain(int argc, WCHAR **argv)
 			}
 			swprintf_s(username, L"%ws", argp);
 			break;
+		case 'p': // The the password of the account under which to run the program
+			if (len == 0) {				
+				bShowHelp = TRUE;
+			}
+			swprintf_s(password, L"%ws", argp);
+			break;
 		case 'w': // Working directory
 			if (len == 0) {
 				printf("Please specify a value for the working directory option!");
@@ -177,21 +184,26 @@ int wmain(int argc, WCHAR **argv)
 		HKEY hKey;
 		LONG returnStatus;
 		DWORD dwType=REG_SZ;
-		DWORD dwSize=255;
+		DWORD dwSize;
 		WCHAR *keyName = L"SOFTWARE\\ProActiveAgent\\Creds";
 		returnStatus = RegOpenKeyEx(HKEY_LOCAL_MACHINE, keyName, 0L,  KEY_QUERY_VALUE, &hKey);
 		if (returnStatus == ERROR_SUCCESS)
 		{
-			returnStatus = RegQueryValueEx(hKey, L"username", NULL, &dwType,(LPBYTE)&username, &dwSize);		
+			dwSize = 255;
+			returnStatus = RegQueryValueEx(hKey, L"username", NULL, &dwType,(LPBYTE)&username, &dwSize);			
 			if (returnStatus != ERROR_SUCCESS)
 			{
 				LOG_ERROR(L"Unable to access creds value1 in registry!");
+				LOG_NUM(returnStatus);
 				return 1;
 			}
+			// reset this value since lpcbData is in out
+			dwSize = 255;
 			returnStatus = RegQueryValueEx(hKey, L"password", NULL, &dwType,(LPBYTE)&password, &dwSize);		
 			if (returnStatus != ERROR_SUCCESS)
 			{
 				LOG_ERROR(L"Unable to access creds value2 in registry!");
+				LOG_NUM(returnStatus);
 				return 1;
 			}
 		} else {
@@ -201,9 +213,7 @@ int wmain(int argc, WCHAR **argv)
 		RegCloseKey(hKey);
 	}
 
-	printf("--> %ws %ws", username, password);
-
-
+	//printf("--> %ws %ws", username, password);
 
 	// The command line is the last argument
 	WCHAR **w = CommandLineToArgvW(GetCommandLineW(), &argc);	
@@ -395,6 +405,19 @@ int StartInteractiveClientProcess(
 		LOG_ERROR(L"GetLogonSID() failed!");
 		goto Cleanup;
 	}
+
+	// When running many times, it will keeps adding more ACLs to the Windows station until you hit some limit
+	// http://support.microsoft.com/kb/185292/
+	// Then SetUserObjectSecurity() will fails with ERROR_NOT_ENOUGH_QUOTA.
+	// Undone any changes that were made to the Windows station and desktop.	
+	LOG_INFO(L"Removing the ACE from Window station and desktop...");
+
+	if ( !RemoveAceFromWindowStation(hwinsta, pSid) )
+		LOG_ERROR(L"RemoveAceFromWindowStation() failed!");
+
+	if ( !RemoveAceFromDesktop(hdesk, pSid) ) 
+		LOG_ERROR(L"RemoveAceFromDesktop() failed!");
+
 
 	// Allow logon SID full access to interactive window station.
 	LOG_INFO(L"Allowing client sid full access to winsta0...");
@@ -843,14 +866,14 @@ static BOOL AddAceToWindowStation(HWINSTA hWinsta, PSID pSid)
                        
                         if (psd == NULL)
                               __leave;
-                        else
-                              wprintf(L"Heap allocated for psd!\n");
+                        //else
+                        //      wprintf(L"Heap allocated for psd!\n");
                        
                         psdNew = (PSECURITY_DESCRIPTOR)HeapAlloc(GetProcessHeap(),HEAP_ZERO_MEMORY,dwSdSizeNeeded);
                         if (psdNew == NULL)
                               __leave;
-                        else
-                              wprintf(L"Heap allocated for psdNew!\n");
+                        //else
+                        //      wprintf(L"Heap allocated for psdNew!\n");
                        
                         dwSidSize = dwSdSizeNeeded;
                         if (!GetUserObjectSecurity(hWinsta,&si,psd,dwSidSize,&dwSdSizeNeeded))
@@ -858,20 +881,20 @@ static BOOL AddAceToWindowStation(HWINSTA hWinsta, PSID pSid)
                               wprintf(L"GetUserObjectSecurity() failed, error %d\n", GetLastError());
                               __leave;
                         }
-                        else
-                              wprintf(L"GetUserObjectSecurity() is working!\n");
+                        //else
+                        //      wprintf(L"GetUserObjectSecurity() is working!\n");
                   }
                   else
                         __leave;
            
             // Create a new DACL.
             if (!InitializeSecurityDescriptor(psdNew,SECURITY_DESCRIPTOR_REVISION))
-            {
-                  wprintf(L"InitializeSecurityDescriptor() failed, error %d\n", GetLastError());
+            {                  
+				  LOG_ERROR(L"InitializeSecurityDescriptor() failed!");
                   __leave;
             }
-            else
-                  wprintf(L"InitializeSecurityDescriptor() is working!\n");
+            //else
+            //      wprintf(L"InitializeSecurityDescriptor() is working!\n");
            
             // Get the DACL from the security descriptor.
             if (!GetSecurityDescriptorDacl(psd,&bDaclPresent,&pacl,&bDaclExist))
@@ -879,8 +902,8 @@ static BOOL AddAceToWindowStation(HWINSTA hWinsta, PSID pSid)
                   wprintf(L"GetSecurityDescriptorDacl() failed, error %d\n", GetLastError());
                   __leave;
             }
-            else
-                  wprintf(L"GetSecurityDescriptorDacl() is working!\n");
+            //else
+            //      wprintf(L"GetSecurityDescriptorDacl() is working!\n");
            
             // Initialize the ACL
             SecureZeroMemory(&aclSizeInfo, sizeof(ACL_SIZE_INFORMATION));
@@ -894,8 +917,8 @@ static BOOL AddAceToWindowStation(HWINSTA hWinsta, PSID pSid)
                         wprintf(L"GetAclInformation() failed, error %d\n", GetLastError());
                         __leave;
                   }
-                  else
-                        wprintf(L"GetAclInformation() is working!\n");
+                  //else
+                  //      wprintf(L"GetAclInformation() is working!\n");
             }
            
             // Compute the size of the new ACL
@@ -905,8 +928,8 @@ static BOOL AddAceToWindowStation(HWINSTA hWinsta, PSID pSid)
            
             if (pNewAcl == NULL)
                   __leave;
-            else
-                  wprintf(L"Heap allocated for pNewAcl!\n");
+            //else
+            //      wprintf(L"Heap allocated for pNewAcl!\n");
            
             // Initialize the new DACL
             if (!InitializeAcl(pNewAcl, dwNewAclSize, ACL_REVISION))
@@ -914,8 +937,8 @@ static BOOL AddAceToWindowStation(HWINSTA hWinsta, PSID pSid)
                   wprintf(L"InitializeAcl() failed, error %d\n", GetLastError());
                   __leave;
             }
-            else
-                  wprintf(L"InitializeAcl() is working!\n");
+            //else
+            //      wprintf(L"InitializeAcl() is working!\n");
  
             // If DACL is present, copy it to a new DACL
             if (bDaclPresent)
@@ -923,16 +946,19 @@ static BOOL AddAceToWindowStation(HWINSTA hWinsta, PSID pSid)
                   // Copy the ACEs to the new ACL.
                   if (aclSizeInfo.AceCount)
                   {
-                        for (i=0; i < aclSizeInfo.AceCount; i++)
+					  LOG_INFO(L"Ace count: ");
+					  LOG_NUM(aclSizeInfo.AceCount);
+
+                      for (i=0; i < aclSizeInfo.AceCount; i++)
                         {
                               // Get an ACE.
                               if (!GetAce(pacl, i, &pTempAce))
-                              {
-                                    wprintf(L"GetAce() failed, error %d\n", GetLastError());
+                              {                                    
+									LOG_ERROR(L"GetAce() failed!");
                                     __leave;
                               }
-                              else
-                                    wprintf(L"GetAce() is working! (iter=%u)\n",i);
+                              //else
+                              //      wprintf(L"GetAce() is working! (iter=%u)\n",i);
  
                               // Add the ACE to the new ACL.
                               if (!AddAce(pNewAcl,ACL_REVISION,MAXDWORD,pTempAce,((PACE_HEADER)pTempAce)->AceSize))
@@ -940,8 +966,8 @@ static BOOL AddAceToWindowStation(HWINSTA hWinsta, PSID pSid)
                                     wprintf(L"AddAce() failed, error %d\n", GetLastError());
                                     __leave;
                               }
-                              else
-                                    wprintf(L"AddAce() is working!\n");
+                              //else
+                              //      wprintf(L"AddAce() is working!\n");
                         }
                   }
             }
@@ -951,8 +977,8 @@ static BOOL AddAceToWindowStation(HWINSTA hWinsta, PSID pSid)
            
             if (pace == NULL)
                   __leave;
-            else
-                  wprintf(L"Heap allocated for pace!\n");
+            //else
+            //      wprintf(L"Heap allocated for pace!\n");
            
             pace->Header.AceType  = ACCESS_ALLOWED_ACE_TYPE;
             pace->Header.AceFlags = CONTAINER_INHERIT_ACE | INHERIT_ONLY_ACE | OBJECT_INHERIT_ACE;
@@ -964,16 +990,16 @@ static BOOL AddAceToWindowStation(HWINSTA hWinsta, PSID pSid)
                   wprintf(L"CopySid() failed, error %d\n", GetLastError());
                   __leave;
             }
-            else
-                  wprintf(L"CopySid() is working!\n");
+            //else
+            //      wprintf(L"CopySid() is working!\n");
            
             if (!AddAce(pNewAcl,ACL_REVISION,MAXDWORD,(LPVOID)pace,pace->Header.AceSize))
             {
                   wprintf(L"AddAce() failed, error %d\n", GetLastError());
                   __leave;
             }
-            else
-                  wprintf(L"AddAce() 1 is working!\n");
+            //else
+            //      wprintf(L"AddAce() 1 is working!\n");
            
             // Add the second ACE to the window station
             pace->Header.AceFlags = NO_PROPAGATE_INHERIT_ACE;
@@ -984,8 +1010,8 @@ static BOOL AddAceToWindowStation(HWINSTA hWinsta, PSID pSid)
                   wprintf(L"AddAce() failed, error %d\n", GetLastError());
                   __leave;
             }
-            else
-                  wprintf(L"AddAce() 2 is working!\n");
+            //else
+            //      wprintf(L"AddAce() 2 is working!\n");
            
             // Set a new DACL for the security descriptor
             if (!SetSecurityDescriptorDacl(psdNew,TRUE,pNewAcl,FALSE))
@@ -993,8 +1019,8 @@ static BOOL AddAceToWindowStation(HWINSTA hWinsta, PSID pSid)
                   wprintf(L"SetSecurityDescriptorDacl() failed, error %d\n", GetLastError());
                   __leave;
             }
-            else
-                  wprintf(L"SetSecurityDescriptorDacl() is working!\n");
+            //else
+            //      wprintf(L"SetSecurityDescriptorDacl() is working!\n");
  
             // Set the new security descriptor for the window station
             if (!SetUserObjectSecurity(hWinsta, &si, psdNew))
@@ -1002,8 +1028,8 @@ static BOOL AddAceToWindowStation(HWINSTA hWinsta, PSID pSid)
                   wprintf(L"SetUserObjectSecurity() failed, error %d\n", GetLastError());
                   __leave;
             }
-            else
-                  wprintf(L"SetUserObjectSecurity() is working!\n");
+            //else
+            //      wprintf(L"SetUserObjectSecurity() is working!\n");
  
             // Indicate success
             bSuccess = TRUE;
@@ -1394,190 +1420,5 @@ static BOOL isCurrentUserInAdminGroup(){
 	// Free SID and return.
 	FreeSid(AdministratorsGroup);
 	return IsInAdminGroup;
-}
-
-static void GetShellProcess(TCHAR shell[_MAX_PATH])
-{
-   HKEY  hKey   = NULL;
-   DWORD dwType = REG_SZ;
-   DWORD dwSize = _MAX_PATH * sizeof(TCHAR);
-   LONG  lRet   = 0;
-
-   // initialize to "explorer.exe"
-   _tcscpy(shell, _T("explorer.exe"));
-
-   // gets the default shell process
-   RegOpenKeyEx(HKEY_LOCAL_MACHINE,
-      _T("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon"),
-      0, KEY_READ, &hKey);
-
-   if (hKey != NULL) {
-      lRet = RegQueryValueEx(hKey, _T("Shell"), NULL, &dwType, (LPBYTE)shell, &dwSize);
-      if (lRet == ERROR_SUCCESS) {
-         _tcslwr(shell);
-      } 
-      RegCloseKey(hKey);
-   }
-}
-
-typedef struct sEnumData {
-   DWORD dwSessionID;
-   DWORD dwPID;
-   BOOL (WINAPI* ProcessIdToSessionId)(DWORD, DWORD*);
-   TCHAR szShell[_MAX_PATH];
-} tEnumData;
-
-BOOL CALLBACK EnumWindowsProc(HWND hWnd, LPARAM lParam)
-{
-   wchar_t       *szBasename;
-   TCHAR       szFilename[_MAX_PATH];
-   DWORD      dwSessionID;
-   DWORD      dwPID = 0;
-   DWORD      dwSize = 0;
-   tEnumData  *pEnumData = (tEnumData*)lParam;
-   HANDLE     hProcess;
-   HMODULE    hModule;
-
-   GetWindowThreadProcessId(hWnd, &dwPID);
-   hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, false, dwPID);
-   if (hProcess) {
-      if (EnumProcessModules(hProcess, &hModule, sizeof(hModule), &dwSize)) {
-         GetModuleFileNameEx(hProcess, hModule, szFilename, sizeof(szFilename));
-         // get basename of module path
-         {
-            wchar_t *cp;
-            
-            cp = wcschr(szFilename, '\\');
-            if (cp != NULL) {
-               cp++;
-               *cp = '\0';
-               szBasename = cp;
-            } else {
-               szBasename = szFilename;
-            }
-         }
-         
-         if (_wcsicmp(szBasename, pEnumData->szShell) == 0) {
-            // Found the explorer.exe
-            if (pEnumData->ProcessIdToSessionId != NULL) {
-               pEnumData->ProcessIdToSessionId(dwPID, &dwSessionID);
-               if (dwSessionID == pEnumData->dwSessionID) {
-                  pEnumData->dwPID = dwPID;
-                  return FALSE;
-               }
-            }
-            return FALSE;
-         }
-      }
-      CloseHandle(hProcess);
-   } else {
-	  LOG_ERROR(L"Problem");
-      LOG_ERROR(L"Cant open Process wit PID %ld", dwPID);
-      return FALSE;
-   }
-   return TRUE;
-}
-
-static DWORD GetShellProcessPidForSession(DWORD dwSessionID)
-{
-   tEnumData myEnumData;
-
-   // init struct that is to be filled by callback function EnumWindowsProc
-   myEnumData.ProcessIdToSessionId = (BOOL(WINAPI*)(DWORD, DWORD*))
-      GetProcAddress(GetModuleHandle(_T("KERNEL32.DLL")), "ProcessIdToSessionId");
-   myEnumData.dwSessionID = dwSessionID;
-   myEnumData.dwPID = 0;
-   GetShellProcess(myEnumData.szShell);
-
-   if (EnumWindows(EnumWindowsProc, (LPARAM)&myEnumData) != TRUE) {
-      return myEnumData.dwPID;
-   }
-   return 0;
-}
-
-DWORD GetExplorerProcessID()
-{
-      HANDLE hSnapshot;
-      PROCESSENTRY32 pe32;
-      ZeroMemory(&pe32,sizeof(pe32));
-      DWORD temp;
-
-    hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS,NULL);
-
-	LOG_INFO(L"-------");
-      
-      pe32.dwSize = sizeof(PROCESSENTRY32);
-
-      if(Process32First(hSnapshot,&pe32))
-      {
-            do
-            {
-				wprintf(L"---> exe %s\n", pe32.szExeFile);
-                  if(!wcscmp(pe32.szExeFile,L"explorer.exe"))
-                  {
-                        temp = pe32.th32ProcessID;
-                        break;
-                  }
-
-            }while(Process32Next(hSnapshot,&pe32));
-      }
-
-    //LOG_ERROR(L"Explorer PID: %d\n", temp);
-
-	return temp;
-}
-
-static HANDLE WINAPI GetInteractiveUserToken()
-{
-	DWORD  dwSessionID;
-	DWORD  dwShellInteractivePID;
-	HANDLE hProcess      = NULL;
-	HANDLE hToken        = NULL;
-	HANDLE hPrimaryToken = NULL;
-
-	// WTSEnumerateSessions() might be a solution here
-	// TODO: return after first error. This means here return if
-	//       dwSessionID is invalid !!!
-	dwSessionID = WTSGetActiveConsoleSessionId();
-	LOG_INFO(L"OK");
-
-	// TODO: WTSQueryUserToken() will fail when no user is logged into the
-	//       system for vista hosts. This means starting a GUI job without
-	//       any user logged into the system will fail.
-
-	// try to get the token of the user of the interactive console session
-	// from the Windows Terminal Services
-	if (WTSQueryUserToken(dwSessionID, &hToken) == FALSE) {	   
-		
-		LOG_ERROR(L"WTSQueryUserToken returned false!");
-		// it didn't work, so try to get the process id of the shell of
-		// the interactively logged on user
-		dwShellInteractivePID = GetShellProcessPidForSession(dwSessionID);
-		if (dwShellInteractivePID == 0) {
-			// no chance to get the right user token
-			return NULL;
-		}
-
-		// open the shell process and get the user token
-		hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwShellInteractivePID);
-		if (hProcess == NULL ||
-			OpenProcessToken(hProcess, TOKEN_ALL_ACCESS, &hToken) == FALSE) {
-				return NULL;
-		}
-		CloseHandle(hProcess);
-	}   
-
-			// here we have the impersonation token of the user, create a primary
-				// user token out of it
-				if (DuplicateTokenEx(hToken, TOKEN_ALL_ACCESS, NULL, SecurityImpersonation,
-					TokenPrimary, &hPrimaryToken) == FALSE) {
-						CloseHandle(hToken);
-						return NULL;
-				}
-
-
-	CloseHandle(hToken);
-
-	return hPrimaryToken;
 }
 
