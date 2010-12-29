@@ -30,7 +30,7 @@
     </localBind>
     <rmConnection enabled="false">
       <respawnIncrement>10</respawnIncrement>
-      <javaStarterClass>org.ow2.proactive.resourcemanager.utils.PAAgentServiceRMStarter</javaStarterClass>
+      <javaStarterClass>org.ow2.proactive.resourcemanager.utils.RMNodeStarter</javaStarterClass>
       <url>rmi://localhost:1099</url>
     </rmConnection>
     <customConnection enabled="false">
