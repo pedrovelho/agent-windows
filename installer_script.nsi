@@ -24,15 +24,18 @@
 !define SUBINACL_PATH "${SUBINACL_DIR}\subinacl.exe"
 !define SUBINACL_URL "http://download.microsoft.com/download/1/7/d/17d82b72-bc6a-4dc8-bfaa-98b37b22b367/subinacl.msi"
 !define SUBINACL_MANUAL_INSTALL "Please download SubInAcl.msi and install it manually then run the command: subinacl.exe /service ${SERVICE_NAME} /grant=S-1-1-0=TO"
+
+# Privileges
 !define SERVICE_LOGON_RIGHT 'SeServiceLogonRight'
+!define SE_INCREASE_QUOTA_NAME 'SeIncreaseQuotaPrivilege'
+!define SE_ASSIGNPRIMARYTOKEN_NAME 'SeAssignPrimaryTokenPrivilege'
+
 !define CONFIG_NAME "PAAgent-config.xml"
 !define DEFAULT_CONFIG_PATH "$INSTDIR\config\${CONFIG_NAME}"
 !define PERFORMANCE_MONITOR_SID "S-1-5-32-558"
-!define TXT_LOGSDIR "Field 13"
-!define TXT_CONF "Field 14"
-!define SEL_INSTLOC "Field 6"
-!define SEL_SPECREAC "Field 7"
-!define CHK_LOGSHOME "Field 16"
+!define TXT_CONF "Field 9"
+!define TXT_LOGSDIR "Field 10"
+!define CHK_LOGSHOME "Field 12"
 
 Var Hostname
 Var tmp
@@ -220,12 +223,12 @@ FunctionEnd
 Function MyCustomPage
   ReserveFile ${PAGE_FILE}
   !insertmacro MUI_INSTALLOPTIONS_EXTRACT ${PAGE_FILE}
-   # Set default location for configuration file
-  !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "Field 14" State "$INSTDIR\config"
-   # Set default location for logs directory
-  !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "Field 13" State "$INSTDIR\logs"
+  # Set default location for configuration file
+  !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "${TXT_CONF}" State "$INSTDIR\config"
+  # Set default location for logs directory
+  !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "${TXT_LOGSDIR}" State "$INSTDIR\logs"
   # Disable "Use service account home"
-  !insertmacro GROUPCONTROLS "${PAGE_FILE}" "${SEL_INSTLOC}" "${CHK_LOGSHOME}|" "1"
+  # !insertmacro GROUPCONTROLS "${PAGE_FILE}" "${SEL_INSTLOC}" "${CHK_LOGSHOME}|" "1"
   # Display the custom page
   !insertmacro MUI_INSTALLOPTIONS_DISPLAY ${PAGE_FILE}
 FunctionEnd
@@ -239,12 +242,12 @@ Function MyCustomLeave
     ${Case} "${CHK_LOGSHOME}"
       !insertmacro GROUPCONTROLS "${PAGE_FILE}" "${CHK_LOGSHOME}" "${TXT_LOGSDIR}|${TXT_CONF}" "1"
       Abort
-    ${Case} "${SEL_INSTLOC}"
-      !insertmacro GROUPCONTROLS "${PAGE_FILE}" "${SEL_INSTLOC}" "${CHK_LOGSHOME}|" "1"
-      Abort
-    ${Case} "${SEL_SPECREAC}"
-      !insertmacro GROUPCONTROLS "${PAGE_FILE}" "${SEL_SPECREAC}" "${CHK_LOGSHOME}|" "0"
-      Abort
+ #   ${Case} "${SEL_INSTLOC}"
+ #     !insertmacro GROUPCONTROLS "${PAGE_FILE}" "${SEL_INSTLOC}" "${CHK_LOGSHOME}|" "1"
+ #     Abort
+ #   ${Case} "${SEL_SPECREAC}"
+ #     !insertmacro GROUPCONTROLS "${PAGE_FILE}" "${SEL_SPECREAC}" "${CHK_LOGSHOME}|" "0"
+ #     Abort
   ${EndSwitch}
 
 
@@ -298,17 +301,6 @@ Function MyCustomLeave
   skipLocationsLABEL:
 
   #-----------------------------------------------------------------------------------
-  # !! SELECTED: Install as LocalSystem !!
-  #-----------------------------------------------------------------------------------
-
-  # R1 will store the value of "Install as LocalSystem"
-  !insertmacro MUI_INSTALLOPTIONS_READ $R0 ${PAGE_FILE} "Field 6" State
-  ${If} $R0 == "1"
-    !insertmacro SERVICE "create" ${SERVICE_NAME} "path=$INSTDIR\ProActiveAgent.exe ;autostart=1;interact=0;display=${SERVICE_NAME};description=${SERVICE_DESC};" ""
-    goto writeToRegistryLABEL
-  ${EndIf}
-
-  #-----------------------------------------------------------------------------------
   # !! CHECK ACCOUNT FIELDS !!
   #-----------------------------------------------------------------------------------
 
@@ -326,46 +318,60 @@ Function MyCustomLeave
      Abort
   ${EndIf}
 
-  # Check for empty domain stored in R5
-  !insertmacro MUI_INSTALLOPTIONS_READ $R5 ${PAGE_FILE} "Field 8" "State"
-  ${If} $R5 == ""
-    MessageBox MB_OK "Please enter a valid domain"
-     Abort
-  ${EndIf}
-
   #-----------------------------------------------------------------------------------
   # !! SELECTED: Specify an account !!
   #-----------------------------------------------------------------------------------
 
-  # If "Specify an account" is selected check entered account
-  !insertmacro MUI_INSTALLOPTIONS_READ $R0 ${PAGE_FILE} "Field 7" State
-  ${If} $R0 == "1"
-    # Check for service logon right
-    UserMgr::HasPrivilege $R3 ${SERVICE_LOGON_RIGHT}
+    # Check for SE_INCREASE_QUOTA_NAME and SE_ASSIGNPRIMARYTOKEN_NAME privilege
+    UserMgr::HasPrivilege $R3 ${SE_INCREASE_QUOTA_NAME}
     Pop $0
     ${If} $0 == "TRUE"
-      Goto checkGroupMember
+      UserMgr::HasPrivilege $R3 ${SE_ASSIGNPRIMARYTOKEN_NAME}
+      Pop $0
+      ${If} $0 == "TRUE"
+        Goto checkGroupMember
+      ${Else}
+        Goto reportErrorPrivilege
+      ${EndIf}
+    ${ElseIf} $0 == "ERROR GetAccountSid"
+       Goto createNewAccount
+    ${Else}
+       Goto reportErrorPrivilege
     ${EndIf}
+    
+    reportErrorPrivilege:
+      DetailPrint "The account $R3 must have SE_INCREASE_QUOTA_NAME and SE_ASSIGNPRIMARYTOKEN_NAME privileges ! Result was $0"
+      MessageBox MB_OK "The account $R3 must have SE_INCREASE_QUOTA_NAME and SE_ASSIGNPRIMARYTOKEN_NAME privileges. In the 'Administrative Tools' of the 'Control Panel' open the 'Local Security Policy'. In 'Security Settings', select 'Local Policies' then select 'User Rights Assignments'. Finally, in the list of policies open the corresponding properties and add the account $R3."
+        Abort # Go back to page.
+    
     # Treat specific error ... the account does not exist
-    ${If} $0 == "ERROR GetAccountSid"
+    createNewAccount:
       DetailPrint "The account $R3 does not exist ... asking user if he wants to create a new account"
       # Ask the user if he wants to create a new account
       MessageBox MB_YESNO "The account $R3 does not exist, would you like to create it ?" IDYES createAccount
         Abort
       createAccount:
-      UserMgr::CreateAccount $R3 $R4 "The ProActive Agent service may be started under this account."
+      UserMgr::CreateAccount $R3 $R4 "The ProActive Agent runs a Java Virtual Machine under this account."
       Pop $0
       ${If} $0 == "ERROR 2224" # Means account already exists .. it's strange but yes it is possible !
         DetailPrint "The account $R3 already exist"
         MessageBox MB_OK "The account $R3 already exist"
           Abort
       ${EndIf}
-      # Add service log on privilege
-      UserMgr::AddPrivilege $R3 ${SERVICE_LOGON_RIGHT}
+      # Add SE_INCREASE_QUOTA_NAME account privilege
+      UserMgr::AddPrivilege $R3 ${SE_INCREASE_QUOTA_NAME}
       Pop $0
       ${If} $0 == "FALSE" # Means could not add privilege
-        DetailPrint "Unable to add privileges"
-        MessageBox MB_OK "Unable to add privileges"
+        DetailPrint "Unable to add privilege SE_INCREASE_QUOTA_NAME"
+        MessageBox MB_OK "Unable to add privilege SE_INCREASE_QUOTA_NAME"
+          Abort
+      ${EndIf}
+      # Add SE_ASSIGNPRIMARYTOKEN_NAME account privilege
+      UserMgr::AddPrivilege $R3 ${SE_ASSIGNPRIMARYTOKEN_NAME}
+      Pop $0
+      ${If} $0 == "FALSE" # Means could not add privilege
+        DetailPrint "Unable to add privilege SE_ASSIGNPRIMARYTOKEN_NAME"
+        MessageBox MB_OK "Unable to add privilege SE_ASSIGNPRIMARYTOKEN_NAME"
           Abort
       ${EndIf}
       # Build the user environment of the user (Registry hive, Documents and settings etc.), returns status string
@@ -378,12 +384,7 @@ Function MyCustomLeave
       ${EndIf}
       # Here set R6 1 to know that a new account was created
       StrCpy $R6 "1"
-    # Unknown result that means the account does not have the service logon right
-    ${Else}
-      DetailPrint "The account $R3 does not have the service logon right ! Result was $0"
-      MessageBox MB_OK "The account $R3 does not have the log on service right assignment. In the 'Administrative Tools' of the 'Control Panel' open the 'Local Security Policy'. In 'Security Settings', select 'Local Policies' then select 'User Rights Assignments'. Finally, in the list of policies open the properties of 'Log on as a service' policy and add the account $R3."
-        Abort # Go back to page.
-    ${EndIf}
+
     checkGroupMember:
     # Check if the account is part of 'Performace Monitor Group' of SID "S-1-5-32-558"
     # The function UserMgr::IsMemberOfGroup does not work.
@@ -402,23 +403,59 @@ Function MyCustomLeave
         !insertmacro AddUserToGroup1 $Hostname $R3 "558"
       ${EndIf}
     ${EndIf}
+    
     createServiceLABEL:
-    # Create the service under the given use and password
-    !insertmacro SERVICE "create" ${SERVICE_NAME} "path=$INSTDIR\ProActiveAgent.exe;autostart=1;interact=0;display=${SERVICE_NAME};description=${SERVICE_DESC};user=$R5\$R3;password=$R4;" ""
+    # HERE WE CHECK for SubInACL tool before continue
+    
+    # In order to restrict access to the registry key we need SubInAcl tool
+    # Check if already installed
+    IfFileExists "${SUBINACL_PATH}" existLABEL notExistLABEL
+    notExistLABEL:
+    # Ask the user if he wants to download the tool
+    MessageBox MB_YESNO "The installation requires a Microsoft Resource Kit is needed (SubInACL tool). Do you want to download it automatically from ${SUBINACL_URL} ? $\nNote that during the installation the default install path is required." IDYES downloadToolLABEL
+      Abort
+    downloadToolLABEL:
+    # Automatic download of SubInAcl
+    NSISdl::download ${SUBINACL_URL} $INSTDIR\SubInACL.msi
+    # Check for downloaded msi file, if it does not exist report to user then finish installation
+    IfFileExists "$INSTDIR\SubInACL.msi" downloadedLABEL problemLABEL
+    problemLABEL:
+    MessageBox MB_OK "Unable to download ${SUBINACL_URL} $\n${SUBINACL_MANUAL_INSTALL}"
+      Abort
+    downloadedLABEL:
+    # Run the installer
+    ExecWait 'cmd.exe /C "$INSTDIR\SubInACL.msi"'
+    # Check if correctly installed
+    IfFileExists "${SUBINACL_PATH}" existLABEL incorrectLABEL
+    incorrectLABEL:
+    MessageBox MB_OK "Unable to find ${SUBINACL_PATH} $\n${SUBINACL_MANUAL_INSTALL}"
+      Abort
+
+    existLABEL:
+    
+    # Create the service under the Local System and store the user and password in the restricted registry key
+    !insertmacro SERVICE "create" ${SERVICE_NAME} "path=$INSTDIR\ProActiveAgent.exe ;autostart=1;interact=1;display=${SERVICE_NAME};description=${SERVICE_DESC};" ""
     Pop $0
     # Means the service is not installed !
     ${If} $0 != "true"
       DetailPrint "Unable to install as service."
       MessageBox MB_OK "Unable to install as service. To install manually use sc.exe command"
     ${EndIf}
-  ${EndIf}
+    
+    # Ok the service is installed
+    WriteRegStr HKLM "Software\ProActiveAgent\Creds" "username" $R3
+    WriteRegStr HKLM "Software\ProActiveAgent\Creds" "password" $R4
+    
+    # Run the command in a console view to allow the user to see output
+    # The command uses well known SIDs to supresses all permissions for Users and Power Users groups and grants full acces to Administrators group
+    ExecWait 'cmd.exe /C cd "${SUBINACL_DIR}" & subinacl.exe /keyreg HKEY_LOCAL_MACHINE\SOFTWARE\ProActiveAgent\Creds /revoke=S-1-5-32-545 /revoke=S-1-5-32-547 /grant=S-1-5-32-544=F /setowner=S-1-5-32-544 & pause'
 
   writeToRegistryLABEL:
   ${If} $R7 == "1"
     # The goal is to read the path of AppData folder
     
     # Get the SID of the user
-    UserMgr::GetSIDFromUserName $R5 $R3
+    UserMgr::GetSIDFromUserName "." $R3
     Pop $0
     #MessageBox MB_OK "User sid: $0"
     
@@ -468,29 +505,6 @@ Function MyCustomLeave
   # If "Allow everyone to start/stop" is selected check for subinacl
   !insertmacro MUI_INSTALLOPTIONS_READ $R0 ${PAGE_FILE} "Field 15" State
   ${If} $R0 == "1"
-    # Check if already installed
-    IfFileExists "${SUBINACL_PATH}" existLABEL notExistLABEL
-    notExistLABEL:
-    # Ask the user if he wants to download the tool
-    MessageBox MB_YESNO "To allow everyone to start/stop the agent a Microsoft Resource Kit is needed. Do you want to download it automatically from ${SUBINACL_URL} ? $\nNote that during the installation the default install path is required." IDYES downloadToolLABEL
-      Abort
-    downloadToolLABEL:
-    # Automatic download of SubInAcl
-    NSISdl::download ${SUBINACL_URL} $INSTDIR\SubInACL.msi
-    # Check for downloaded msi file, if it does not exist report to user then finish installation
-    IfFileExists "$INSTDIR\SubInACL.msi" downloadedLABEL problemLABEL
-    problemLABEL:
-    MessageBox MB_OK "Unable to download ${SUBINACL_URL} $\n${SUBINACL_MANUAL_INSTALL}"
-    Goto runGuiLABEL
-    downloadedLABEL:
-    # Run the installer
-    ExecWait 'cmd.exe /C "$INSTDIR\SubInACL.msi"'
-    # Check if correctly installed
-    IfFileExists "${SUBINACL_PATH}" existLABEL incorrectLABEL
-    incorrectLABEL:
-    MessageBox MB_OK "Unable to find ${SUBINACL_PATH} $\n${SUBINACL_MANUAL_INSTALL}"
-    goto runGuiLABEL
-    existLABEL:
     # Run the command in a console view to allow the user to see output
     # The first command allows control of the service by ALL USERS group
     # The second command allows full control of the configuration file by ALL USERS group
@@ -538,9 +552,10 @@ Section "ProActive Agent"
         File "bin\Release\ProActiveAgent.exe"
         File "utils\icon.ico"
         File "utils\ListNetworkInterfaces.class"
+        File "utils\parunas\Release\parunas.exe"
         File "ProActive Agent Documentation.pdf"
-        File "ProActiveAgent\lib\log4net.dll"
         File "ProActiveAgent\log4net.config"
+        File "ProActiveAgent\lib\log4net.dll"
         File "ProActiveAgent\lib\InJobProcessCreator.exe"
         ${If} ${RunningX64}
           File "ProActiveAgent\lib\x64\JobManagement.dll"
@@ -684,6 +699,7 @@ Section "Uninstall"
         Delete "ProActiveAgent.exe"
         Delete "log4net.dll"
         Delete "log4net.config"
+        Delete "parunas.exe"
         Delete "InJobProcessCreator.exe"
         Delete "JobManagement.dll"
         Delete "icon.ico"
