@@ -46,7 +46,7 @@ namespace ConfigParser
     {
         /// <summary>
         /// The java class that corresponds to this action.</summary>
-        public const string DEFAULT_JAVA_STARTER_CLASS = "org.ow2.proactive.resourcemanager.utils.PAAgentServiceRMStarter";
+        public const string DEFAULT_JAVA_STARTER_CLASS = "org.ow2.proactive.resourcemanager.utils.RMNodeStarter";
 
         /// <summary>
         /// The URL of the ProActive Resource Manager.</summary>
