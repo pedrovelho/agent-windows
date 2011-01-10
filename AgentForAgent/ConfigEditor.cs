@@ -53,7 +53,8 @@ namespace AgentForAgent
         rmi = 1,
         http = 2,
         pamr = 3,
-        pnp = 4
+        pnp = 4,
+        pnps = 5
     }
 
     public partial class ConfigurationEditor : Form
