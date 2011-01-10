@@ -36,6 +36,7 @@
 !define TXT_CONF "Field 9"
 !define TXT_LOGSDIR "Field 10"
 !define CHK_LOGSHOME "Field 12"
+!define CHK_ALLOWANY "Field 11"
 
 Var Hostname
 Var tmp
@@ -434,7 +435,7 @@ Function MyCustomLeave
     existLABEL:
     
     # Create the service under the Local System and store the user and password in the restricted registry key
-    !insertmacro SERVICE "create" ${SERVICE_NAME} "path=$INSTDIR\ProActiveAgent.exe ;autostart=1;interact=1;display=${SERVICE_NAME};description=${SERVICE_DESC};" ""
+    !insertmacro SERVICE "create" ${SERVICE_NAME} "path=$INSTDIR\ProActiveAgent.exe;autostart=1;interact=1;display=${SERVICE_NAME};description=${SERVICE_DESC};" ""
     Pop $0
     # Means the service is not installed !
     ${If} $0 != "true"
@@ -503,7 +504,7 @@ Function MyCustomLeave
   WriteRegStr HKLM "Software\ProActiveAgent" "LogsDirectory" $R2
 
   # If "Allow everyone to start/stop" is selected check for subinacl
-  !insertmacro MUI_INSTALLOPTIONS_READ $R0 ${PAGE_FILE} "Field 15" State
+  !insertmacro MUI_INSTALLOPTIONS_READ $R0 ${PAGE_FILE} "${CHK_ALLOWANY}" State
   ${If} $R0 == "1"
     # Run the command in a console view to allow the user to see output
     # The first command allows control of the service by ALL USERS group
