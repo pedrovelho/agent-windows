@@ -486,24 +486,45 @@ namespace AgentForAgent
             System.Diagnostics.Process.Start(this.webPageLinkLabel.Text);
         }
 
+        private Process logsNotepadProcess;
+
         // !! Event !!
         private void withNotepadButton_Click(object sender, EventArgs e)
         {
-            Process p = new Process();
-            p.StartInfo.FileName = "notepad.exe";
-            p.StartInfo.Arguments = this.logsDirectory + "\\ProActiveAgent-log.txt";
-            p.Start();
+            string logfile = this.logsDirectory + "\\ProActiveAgent-log.txt";
+
+            if (!File.Exists(logfile))
+            {
+                return;
+            }
+
+            if (logsNotepadProcess != null && !logsNotepadProcess.HasExited)
+            {
+                logsNotepadProcess.Kill();
+            }
+
+            logsNotepadProcess = new Process();
+            logsNotepadProcess.StartInfo.FileName = "notepad.exe";
+            logsNotepadProcess.StartInfo.Arguments = logfile;
+            logsNotepadProcess.Start();
         }
 
         private Process logsBrowserProcess;
 
         // !! Event !!
         private void withIExplorerButton_Click(object sender, EventArgs e)
-        {            
+        {
+            string logfile = this.logsDirectory + "\\ProActiveAgent-log.txt";
+
+            if (!File.Exists(logfile))
+            {
+                return;
+            }
+
             if (logsBrowserProcess == null || logsBrowserProcess.HasExited) {
                logsBrowserProcess = new Process();
                logsBrowserProcess.StartInfo.FileName = "iexplore.exe";
-               logsBrowserProcess.StartInfo.Arguments = this.logsDirectory + "\\ProActiveAgent-log.txt";
+               logsBrowserProcess.StartInfo.Arguments = logfile;
                logsBrowserProcess.Start();
             } else {                
                 int hwnd = (int)logsBrowserProcess.MainWindowHandle;                
