@@ -46,6 +46,7 @@ using System.Windows.Forms;
 using ConfigParser;
 using Microsoft.Win32;
 using ProActiveAgent;
+using System.Runtime.InteropServices;
 
 namespace AgentForAgent
 {
@@ -494,13 +495,21 @@ namespace AgentForAgent
             p.Start();
         }
 
+        private Process logsBrowserProcess;
+
         // !! Event !!
         private void withIExplorerButton_Click(object sender, EventArgs e)
-        {
-            Process p = new Process();
-            p.StartInfo.FileName = "iexplore.exe";
-            p.StartInfo.Arguments = this.logsDirectory + "\\ProActiveAgent-log.txt";
-            p.Start();
+        {            
+            if (logsBrowserProcess == null || logsBrowserProcess.HasExited) {
+               logsBrowserProcess = new Process();
+               logsBrowserProcess.StartInfo.FileName = "iexplore.exe";
+               logsBrowserProcess.StartInfo.Arguments = this.logsDirectory + "\\ProActiveAgent-log.txt";
+               logsBrowserProcess.Start();
+            } else {                
+                int hwnd = (int)logsBrowserProcess.MainWindowHandle;                
+                ShowWindow(hwnd, SW_SHOWNORMAL);
+                SetForegroundWindow(hwnd);
+            }            
         }
 
         // !! Event !!
@@ -514,5 +523,12 @@ namespace AgentForAgent
         {
             System.Diagnostics.Process.Start(this.logsDirectory);
         }
+
+        [DllImport("User32.dll")]
+        public static extern Int32 SetForegroundWindow(int hWnd);
+
+        [DllImport("User32")]
+        private static extern int ShowWindow(int hwnd, int nCmdShow);
+        private const int SW_SHOWNORMAL = 1;
     }
 }
