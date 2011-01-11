@@ -559,7 +559,6 @@ Section "ProActive Agent"
         File "utils\ListNetworkInterfaces.class"
         File "utils\restrict.dat"
         File "utils\parunas\Release\parunas.exe"
-        File "ProActive Agent Documentation.pdf"
         File "ProActiveAgent\log4net.config"
         File "ProActiveAgent\lib\log4net.dll"
         File "ProActiveAgent\lib\InJobProcessCreator.exe"
@@ -586,6 +585,8 @@ Section "ProActive Agent"
         File "utils\xml\agent-windows.xsd"
         File "utils\xml\agent-common.xsd"
         File "utils\xml\agent-old.xsd"
+        SetOutPath $INSTDIR\doc
+        File "ProActive Agent Documentation.pdf"
 
         #-----------------------------------------------------------------------------------
         # The agent requires the following reg sub-key to know its default configuration
@@ -618,7 +619,7 @@ Section "Start Menu Shortcuts"
         CreateDirectory "$SMPROGRAMS\ProActiveAgent"
         CreateShortCut  "$SMPROGRAMS\ProActiveAgent\ProActive Agent Control.lnk" "$INSTDIR\AgentForAgent.exe" "" "$INSTDIR\icon.ico" 0
         CreateShortCut  "$SMPROGRAMS\ProActiveAgent\Uninstall ProActive Agent.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
-        CreateShortCut  "$SMPROGRAMS\ProActiveAgent\ProActive Agent Documentation.lnk" "$INSTDIR\ProActive Agent Documentation.pdf" "" "$INSTDIR\ProActive Agent Documentation.pdf" 0
+        CreateShortCut  "$SMPROGRAMS\ProActiveAgent\ProActive Agent Documentation.lnk" "$INSTDIR\doc\ProActive Agent Documentation.pdf" "" "$INSTDIR\doc\ProActive Agent Documentation.pdf" 0
         SetShellVarContext current # reset to current user
 SectionEnd
 
@@ -700,6 +701,8 @@ Section "Uninstall"
         Delete "$INSTDIR\xml\agent-common.xsd"
         Delete "$INSTDIR\xml\agent-old.xsd"
 	RMDir /r "$INSTDIR\xml"
+        Delete "$INSTDIR\doc\ProActive Agent Documentation.pdf"
+	RMDir /r "$INSTDIR\doc"
         Delete "ConfigParser.dll"
         Delete "ConfigParserOLD.dll"
         Delete "ProActiveAgent.exe"
@@ -711,7 +714,6 @@ Section "Uninstall"
         Delete "icon.ico"
         Delete "restrict.dat"
         Delete "ListNetworkInterfaces.class"
-        Delete "ProActive Agent Documentation.pdf"
         Delete "LICENSE.txt"
         Delete "configuration.ini"
         Delete "uninstall.exe"
