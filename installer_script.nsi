@@ -406,33 +406,6 @@ Function MyCustomLeave
     ${EndIf}
     
     createServiceLABEL:
-    # HERE WE CHECK for SubInACL tool before continue
-    
-    # In order to restrict access to the registry key we need SubInAcl tool
-    # Check if already installed
-    IfFileExists "${SUBINACL_PATH}" existLABEL notExistLABEL
-    notExistLABEL:
-    # Ask the user if he wants to download the tool
-    MessageBox MB_YESNO "The installation requires a Microsoft Resource Kit is needed (SubInACL tool). Do you want to download it automatically from ${SUBINACL_URL} ? $\nNote that during the installation the default install path is required." IDYES downloadToolLABEL
-      Abort
-    downloadToolLABEL:
-    # Automatic download of SubInAcl
-    NSISdl::download ${SUBINACL_URL} $INSTDIR\SubInACL.msi
-    # Check for downloaded msi file, if it does not exist report to user then finish installation
-    IfFileExists "$INSTDIR\SubInACL.msi" downloadedLABEL problemLABEL
-    problemLABEL:
-    MessageBox MB_OK "Unable to download ${SUBINACL_URL} $\n${SUBINACL_MANUAL_INSTALL}"
-      Abort
-    downloadedLABEL:
-    # Run the installer
-    ExecWait 'cmd.exe /C "$INSTDIR\SubInACL.msi"'
-    # Check if correctly installed
-    IfFileExists "${SUBINACL_PATH}" existLABEL incorrectLABEL
-    incorrectLABEL:
-    MessageBox MB_OK "Unable to find ${SUBINACL_PATH} $\n${SUBINACL_MANUAL_INSTALL}"
-      Abort
-
-    existLABEL:
     
     # Create the service under the Local System and store the user and password in the restricted registry key
     !insertmacro SERVICE "create" ${SERVICE_NAME} "path=$INSTDIR\ProActiveAgent.exe;autostart=1;interact=1;display=${SERVICE_NAME};description=${SERVICE_DESC};" ""
@@ -447,9 +420,10 @@ Function MyCustomLeave
     WriteRegStr HKLM "Software\ProActiveAgent\Creds" "username" $R3
     WriteRegStr HKLM "Software\ProActiveAgent\Creds" "password" $R4
     
-    # Run the command in a console view to allow the user to see output
-    # The command uses well known SIDs to supresses all permissions for Users and Power Users groups and grants full acces to Administrators group
-    ExecWait 'cmd.exe /C cd "${SUBINACL_DIR}" & subinacl.exe /keyreg HKEY_LOCAL_MACHINE\SOFTWARE\ProActiveAgent\Creds /revoke=S-1-5-32-545 /revoke=S-1-5-32-547 /grant=S-1-5-32-544=F /setowner=S-1-5-32-544 & pause'
+    # Using the regini shell command we need to restrict the access to the HKEY_LOCAL_MACHINE\SOFTWARE\ProActiveAgent\Creds key
+    # The command uses well known SIDs to restrict permissions only for SYSTEM (ie LocalSystem), Creator and Administrators group
+
+    ExecWait 'cmd.exe /C regini $INSTDIR\restrict.dat'
 
   writeToRegistryLABEL:
   ${If} $R7 == "1"
@@ -506,6 +480,36 @@ Function MyCustomLeave
   # If "Allow everyone to start/stop" is selected check for subinacl
   !insertmacro MUI_INSTALLOPTIONS_READ $R0 ${PAGE_FILE} "${CHK_ALLOWANY}" State
   ${If} $R0 == "1"
+    # HERE WE CHECK for SubInACL tool before continue
+
+    # In order to restrict access to the registry key we need SubInAcl tool
+    # Check if already installed
+    IfFileExists "${SUBINACL_PATH}" existLABEL notExistLABEL
+    notExistLABEL:
+    # Ask the user if he wants to download the tool
+    MessageBox MB_YESNO "The installation requires a Microsoft Resource Kit is needed (SubInACL tool). Do you want to download it automatically from ${SUBINACL_URL} ? $\nNote that during the installation the default install path is required." IDYES downloadToolLABEL
+      Abort
+    downloadToolLABEL:
+    # Automatic download of SubInAcl
+    NSISdl::download ${SUBINACL_URL} $INSTDIR\SubInACL.msi
+    # Check for downloaded msi file, if it does not exist report to user then finish installation
+    IfFileExists "$INSTDIR\SubInACL.msi" downloadedLABEL problemLABEL
+    problemLABEL:
+    MessageBox MB_OK "Unable to download ${SUBINACL_URL} $\n${SUBINACL_MANUAL_INSTALL}"
+      Abort
+    downloadedLABEL:
+    # Run the installer
+    ExecWait 'cmd.exe /C "$INSTDIR\SubInACL.msi"'
+    # Check if correctly installed
+    IfFileExists "${SUBINACL_PATH}" existLABEL incorrectLABEL
+    incorrectLABEL:
+    MessageBox MB_OK "Unable to find ${SUBINACL_PATH} $\n${SUBINACL_MANUAL_INSTALL}"
+      Abort
+
+    existLABEL:
+  
+  
+  
     # Run the command in a console view to allow the user to see output
     # The first command allows control of the service by ALL USERS group
     # The second command allows full control of the configuration file by ALL USERS group
@@ -553,6 +557,7 @@ Section "ProActive Agent"
         File "bin\Release\ProActiveAgent.exe"
         File "utils\icon.ico"
         File "utils\ListNetworkInterfaces.class"
+        File "utils\restrict.dat"
         File "utils\parunas\Release\parunas.exe"
         File "ProActive Agent Documentation.pdf"
         File "ProActiveAgent\log4net.config"
@@ -704,6 +709,7 @@ Section "Uninstall"
         Delete "InJobProcessCreator.exe"
         Delete "JobManagement.dll"
         Delete "icon.ico"
+        Delete "restrict.dat"
         Delete "ListNetworkInterfaces.class"
         Delete "ProActive Agent Documentation.pdf"
         Delete "LICENSE.txt"
