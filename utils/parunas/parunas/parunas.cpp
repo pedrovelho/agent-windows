@@ -70,7 +70,7 @@
 #define LOG_INFO(...) if (bVerbose) wprintf(L"%s\n", __VA_ARGS__);
 #define LOG_NUM(...) if (bVerbose) wprintf(L"%u\n", __VA_ARGS__);
 
-static BOOL bVerbose = true;
+static BOOL bVerbose = false;
 
 // Constants
 #define DESKTOP_ALL (DESKTOP_READOBJECTS | DESKTOP_CREATEWINDOW | \
@@ -891,7 +891,7 @@ static BOOL AddAceToWindowStation(HWINSTA hWinsta, PSID pSid)
       SECURITY_INFORMATION si = DACL_SECURITY_INFORMATION;
       unsigned int         i;
      
-      wprintf(L"\nAdding ACE to WindowStation...\n");
+      LOG_INFO(L"Adding ACE to WindowStation...\n");
  
       __try
       {
@@ -914,8 +914,8 @@ static BOOL AddAceToWindowStation(HWINSTA hWinsta, PSID pSid)
                        
                         dwSidSize = dwSdSizeNeeded;
                         if (!GetUserObjectSecurity(hWinsta,&si,psd,dwSidSize,&dwSdSizeNeeded))
-                        {
-                              wprintf(L"GetUserObjectSecurity() failed, error %d\n", GetLastError());
+                        {                              
+							  LOG_ERROR(L"GetUserObjectSecurity() failed!");
                               __leave;
                         }
                         //else
@@ -935,8 +935,8 @@ static BOOL AddAceToWindowStation(HWINSTA hWinsta, PSID pSid)
            
             // Get the DACL from the security descriptor.
             if (!GetSecurityDescriptorDacl(psd,&bDaclPresent,&pacl,&bDaclExist))
-            {
-                  wprintf(L"GetSecurityDescriptorDacl() failed, error %d\n", GetLastError());
+            {                  
+				  LOG_ERROR(L"GetSecurityDescriptorDacl() failed!");
                   __leave;
             }
             //else
@@ -950,8 +950,8 @@ static BOOL AddAceToWindowStation(HWINSTA hWinsta, PSID pSid)
             {
                   // get the file ACL size info
                   if (!GetAclInformation(pacl,(LPVOID)&aclSizeInfo,sizeof(ACL_SIZE_INFORMATION),AclSizeInformation))
-                  {
-                        wprintf(L"GetAclInformation() failed, error %d\n", GetLastError());
+                  {                        
+						LOG_ERROR(L"GetAclInformation() failed!");
                         __leave;
                   }
                   //else
@@ -970,8 +970,8 @@ static BOOL AddAceToWindowStation(HWINSTA hWinsta, PSID pSid)
            
             // Initialize the new DACL
             if (!InitializeAcl(pNewAcl, dwNewAclSize, ACL_REVISION))
-            {
-                  wprintf(L"InitializeAcl() failed, error %d\n", GetLastError());
+            {                  
+				  LOG_ERROR(L"InitializeAcl() failed!");
                   __leave;
             }
             //else
@@ -999,8 +999,8 @@ static BOOL AddAceToWindowStation(HWINSTA hWinsta, PSID pSid)
  
                               // Add the ACE to the new ACL.
                               if (!AddAce(pNewAcl,ACL_REVISION,MAXDWORD,pTempAce,((PACE_HEADER)pTempAce)->AceSize))
-                              {
-                                    wprintf(L"AddAce() failed, error %d\n", GetLastError());
+                              {                                    
+									LOG_ERROR(L"AddAce() failed!");
                                     __leave;
                               }
                               //else
@@ -1023,16 +1023,16 @@ static BOOL AddAceToWindowStation(HWINSTA hWinsta, PSID pSid)
             pace->Mask            = GENERIC_ACCESS;
            
             if (!CopySid(GetLengthSid(pSid), &pace->SidStart, pSid))
-            {
-                  wprintf(L"CopySid() failed, error %d\n", GetLastError());
+            {                  
+				  LOG_ERROR(L"CopySid() failed!");
                   __leave;
             }
             //else
             //      wprintf(L"CopySid() is working!\n");
            
             if (!AddAce(pNewAcl,ACL_REVISION,MAXDWORD,(LPVOID)pace,pace->Header.AceSize))
-            {
-                  wprintf(L"AddAce() failed, error %d\n", GetLastError());
+            {                  
+				  LOG_ERROR(L"AddAce() failed!");
                   __leave;
             }
             //else
@@ -1043,8 +1043,8 @@ static BOOL AddAceToWindowStation(HWINSTA hWinsta, PSID pSid)
             pace->Mask            = WINSTA_ALL;
            
             if (!AddAce(pNewAcl,ACL_REVISION,MAXDWORD,(LPVOID)pace,pace->Header.AceSize))
-            {
-                  wprintf(L"AddAce() failed, error %d\n", GetLastError());
+            {                  
+				  LOG_ERROR(L"AddAce() failed!");
                   __leave;
             }
             //else
@@ -1053,7 +1053,7 @@ static BOOL AddAceToWindowStation(HWINSTA hWinsta, PSID pSid)
             // Set a new DACL for the security descriptor
             if (!SetSecurityDescriptorDacl(psdNew,TRUE,pNewAcl,FALSE))
             {
-                  wprintf(L"SetSecurityDescriptorDacl() failed, error %d\n", GetLastError());
+				  LOG_ERROR(L"SetSecurityDescriptorDacl() failed!");
                   __leave;
             }
             //else
@@ -1061,8 +1061,8 @@ static BOOL AddAceToWindowStation(HWINSTA hWinsta, PSID pSid)
  
             // Set the new security descriptor for the window station
             if (!SetUserObjectSecurity(hWinsta, &si, psdNew))
-            {
-                  wprintf(L"SetUserObjectSecurity() failed, error %d\n", GetLastError());
+            {                  
+				  LOG_ERROR(L"SetUserObjectSecurity() failed!");
                   __leave;
             }
             //else
