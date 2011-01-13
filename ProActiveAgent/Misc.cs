@@ -106,6 +106,9 @@ namespace ProActiveAgent
         /// <summary>
         /// The name of the pipe used by the ProActive agent to communicate with the gui.</summary>
         public const string PIPE_NAME = "ProActiveAgentPipe";
+        /// <summary>
+        /// A unique ISO8601 like date format string.</summary>
+        public const string DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     }
 
     /// <summary>
