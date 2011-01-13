@@ -237,7 +237,7 @@ namespace ProActiveAgent
             System.Reflection.Assembly a = System.Reflection.Assembly.GetEntryAssembly();
             string baseDir = System.IO.Path.GetDirectoryName(a.Location);
             FileInfo f = new FileInfo(baseDir + "\\log4net.config");
-            log4net.Config.XmlConfigurator.Configure(f);
+            log4net.Config.XmlConfigurator.ConfigureAndWatch(f);
             // Start the service
             ServiceBase.Run(new WindowsService());
         }
