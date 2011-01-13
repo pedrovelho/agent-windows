@@ -255,6 +255,7 @@ namespace ProActiveAgent
             {
                 this.manager = manager;
                 thread = new Thread(sendExecutorsCount);
+                thread.Name = "GuiCommunicatingWorker";
                 thread.IsBackground = true;
                 // Start the server pipe 
                 thread.Start();
