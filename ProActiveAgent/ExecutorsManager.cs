@@ -155,13 +155,8 @@ namespace ProActiveAgent
 
                 if (LOGGER.IsDebugEnabled)
                 {
-                    LOGGER.Debug("Loading weekly event " + absoluteStartTime.DayOfWeek + " - " +
-                        absoluteStartTime.Hour + ":" +
-                        absoluteStartTime.Minute + ":" +
-                        absoluteStartTime.Second + " => " + absoluteStopTime.DayOfWeek + " - " +
-                        absoluteStopTime.Hour + ":" +
-                        absoluteStopTime.Minute + ":" +
-                        absoluteStopTime.Second);
+                    LOGGER.Debug("Loading weekly event [" + absoluteStartTime.DayOfWeek + ":" + absoluteStartTime.ToString(Constants.DATE_FORMAT) + "] -> [" +
+                        absoluteStopTime.DayOfWeek + ":" + absoluteStopTime.ToString(Constants.DATE_FORMAT) + "]");
                 }
 
                 // After dueStart milliseconds this timer will invoke only once per week the callback
@@ -177,7 +172,7 @@ namespace ProActiveAgent
                     this.mySendStartAction(startInfo);
                 }
             }
-        }       
+        }
 
         public List<ProActiveRuntimeExecutor> getExecutors()
         {
@@ -258,7 +253,5 @@ namespace ProActiveAgent
             }
             this.proActiveRuntimeExecutors.Clear();
         }
-
-
     }
 }
