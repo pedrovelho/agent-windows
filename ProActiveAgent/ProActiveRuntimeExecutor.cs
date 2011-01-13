@@ -72,7 +72,7 @@ namespace ProActiveAgent
         private int currentProActivePort;
         /// <summary>
         /// The unique rank of this executor</summary>
-        private readonly int rank;        
+        private readonly int rank;
         /// <summary>
         /// The logger of this class, logs all info about this executor.</summary>
         private readonly ILog LOGGER;
@@ -129,7 +129,7 @@ namespace ProActiveAgent
             {
                 customLogger.Additivity = false;
                 customLogger.AddAppender(createRollingFileAppender(rank)/*, commonStartInfo.logsDirectory */);
-            }            
+            }
             // The restart timer is only created it will not start until Timer.Change() method is called
             this.restartTimer = new Timer(new TimerCallback(internalRestart), null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
             this.callersState = new Dictionary<ApplicationType, Int32>();
@@ -368,7 +368,7 @@ namespace ProActiveAgent
             {
                 return;
             }
-            Process incriminatedProcess = args.TheProcess;                                    
+            Process incriminatedProcess = args.TheProcess;
             // If the incriminated process is the ProActiveRuntime process then stop it permanently
             if (this.proActiveRuntimeProcess.Id == incriminatedProcess.Id)
             {
@@ -483,14 +483,14 @@ namespace ProActiveAgent
                     this.restartTimer.Change(this.restartDelayInMs, System.Threading.Timeout.Infinite);
                     if (LOGGER.IsDebugEnabled)
                     {
-                        LOGGER.Debug("The ProActive Runtime process restart delay is " + this.restartDelayInMs + " ms [barrier:" + this.restartBarrierDateTime.ToString() + "]");
+                        LOGGER.Debug("The ProActive Runtime process restart delay is " + this.restartDelayInMs + " ms [barrier:" + this.restartBarrierDateTime.ToString(Constants.DATE_FORMAT) + "]");
                     }
                 }
                 else
                 {
                     if (LOGGER.IsDebugEnabled)
                     {
-                        LOGGER.Debug("Discarding the restart of the ProActive Runtime process because it would happen outside the allocated time. [delayDateTime: " + delayDateTime.ToString() + " and restartBarrierDateTime: " + this.restartBarrierDateTime.ToString() + "]");
+                        LOGGER.Debug("Discarding the restart of the ProActive Runtime process because it would happen outside the allocated time. [delayDateTime: " + delayDateTime.ToString(Constants.DATE_FORMAT) + " and restartBarrierDateTime: " + this.restartBarrierDateTime.ToString(Constants.DATE_FORMAT) + "]");
                     }
                 }
             }
