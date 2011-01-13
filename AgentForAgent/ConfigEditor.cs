@@ -801,7 +801,7 @@ namespace AgentForAgent
                     // with by default a normal process priority and 100% max CPU usage
                     CalendarEventType cEv = new CalendarEventType();
                     cEv.config.portRange = null; // not needed
-                    cEv.start.day = DayOfWeek.Sunday;
+                    cEv.start.day = DayOfWeek.Monday;
                     cEv.start.hour = 0;
                     cEv.start.minute = 0;
                     cEv.start.second = 0;
