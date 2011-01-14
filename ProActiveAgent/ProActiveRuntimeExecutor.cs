@@ -95,8 +95,12 @@ namespace ProActiveAgent
         /// For an application type (i.e AgentScheduler) boolean value = true if this type has sent the "start command". It is set to false when the same app type sends stop command.</summary>
         private readonly Dictionary<ApplicationType, Int32> callersState;
         /// <summary>
-        /// Process object that represents running runner script.</summary>
-        private Process proActiveRuntimeProcess;
+        /// Process object that represents the root process.</summary>
+        private Process rootProcess;
+        /// <summary>
+        /// Process object that represents the spawned java process. Volatile because it is initialized by an event listener thread and can be used by 
+        /// by another thread.</summary>
+        private volatile Process paRuntimeJavaProcess;
         /// <summary>
         /// The job object used to set the usage limits for the ProActive Runtime process and its child processes.</summary>
         private readonly JobObject jobObject;
@@ -133,7 +137,7 @@ namespace ProActiveAgent
             // The restart timer is only created it will not start until Timer.Change() method is called
             this.restartTimer = new Timer(new TimerCallback(internalRestart), null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
             this.callersState = new Dictionary<ApplicationType, Int32>();
-            this.proActiveRuntimeProcess = null;
+            this.rootProcess = null;
             // Create a new job object for limits
             this.jobObject = new JobObject(Constants.JOB_OBJECT_NAME + rank);
             this.jobObject.Events.OnNewProcess += new jobEventHandler<NewProcessEventArgs>(Events_OnNewProcess);
@@ -143,7 +147,7 @@ namespace ProActiveAgent
             {
                 // Add user defined memory limitations
                 this.jobObject.Limits.JobMemoryLimit = new IntPtr(memoryLimit * 1024 * 1024);
-                LOGGER.Info("A memory limitation of " + memoryLimit + " Mbytes is set for the ProActive Runtime process");
+                LOGGER.Info("A memory limitation of " + memoryLimit + " Mbytes is set for the ProActive Runtime process (and its children)");
                 // Add event handler to keep track of job events
                 this.jobObject.Events.OnJobMemoryLimit += new jobEventHandler<JobMemoryLimitEventArgs>(Events_OnJobMemoryLimit);
             }
@@ -157,7 +161,7 @@ namespace ProActiveAgent
 
         public bool isStarted()
         {
-            return this.proActiveRuntimeProcess != null;
+            return this.rootProcess != null;
         }
 
         /// <summary>
@@ -167,7 +171,7 @@ namespace ProActiveAgent
         [MethodImpl(MethodImplOptions.Synchronized)]
         private bool start()
         {
-            if (this.disabledRestarting || this.proActiveRuntimeProcess != null)
+            if (this.disabledRestarting || this.rootProcess != null)
             {
                 return false;
             }
@@ -190,7 +194,7 @@ namespace ProActiveAgent
                         if (++this.currentProActivePort >= Constants.MAX_PROACTIVE_RMI_PORT)
                         {
                             // If the maximum is reached then exit from this method
-                            LOGGER.Error("Could not start the ProActive Runtime process, unable to find an available ProActive Rmi Port");
+                            LOGGER.Error("Could not start the process, unable to find an available ProActive Rmi Port");
                             return false;
                         }
                     }
@@ -247,7 +251,7 @@ namespace ProActiveAgent
                 }
 
                 // Create a new process
-                this.proActiveRuntimeProcess = new Process();
+                this.rootProcess = new Process();
 
                 // Use process info to specify all options               
                 // Application filename is java executable with full path
@@ -274,35 +278,35 @@ namespace ProActiveAgent
                 info.RedirectStandardOutput = true;
                 info.RedirectStandardError = true;
                 // Set the process start info 
-                this.proActiveRuntimeProcess.StartInfo = info;
+                this.rootProcess.StartInfo = info;
 
                 // We attach a handler in order to intercept killing of that process
                 // Therefore, we will be able to relaunch script in that event
-                this.proActiveRuntimeProcess.EnableRaisingEvents = true;
-                this.proActiveRuntimeProcess.Exited += Events_OnProActiveRuntimeProcessExit;
-                this.proActiveRuntimeProcess.ErrorDataReceived += Events_OnProActiveRuntimeProcessErrorDataReceived;
-                this.proActiveRuntimeProcess.OutputDataReceived += Events_OnProActiveRuntimeProcessOutputDataReceived;
+                this.rootProcess.EnableRaisingEvents = true;
+                this.rootProcess.Exited += Events_OnProActiveRuntimeProcessExit;
+                this.rootProcess.ErrorDataReceived += Events_OnProActiveRuntimeProcessErrorDataReceived;
+                this.rootProcess.OutputDataReceived += Events_OnProActiveRuntimeProcessOutputDataReceived;
 
-                if (!this.proActiveRuntimeProcess.Start())
+                if (!this.rootProcess.Start())
                 {
                     int errorCode = Marshal.GetLastWin32Error();
                     throw new System.ComponentModel.Win32Exception(errorCode);
                 }
 
-                LOGGER.Info("Started ProActive Runtime process [pid:" + this.proActiveRuntimeProcess.Id + "]" + System.Environment.NewLine +
+                LOGGER.Info("Started process [pid:" + this.rootProcess.Id + "]" + System.Environment.NewLine +
                             "  CLASSPATH=" + info.EnvironmentVariables[Constants.CLASSPATH] + System.Environment.NewLine +
                             "  Command-line: " + info.FileName + " " + info.Arguments);
             }
             catch (Exception ex)
             {
-                LOGGER.Error("Could not start the ProActive Runtime process! Command-line: " + info.FileName + " " + info.Arguments, ex);
+                LOGGER.Error("Could not start the process! Command-line: " + info.FileName + " " + info.Arguments, ex);
                 return false;
             }
 
             // Assign the process to the job for limitations
             try
             {
-                this.jobObject.AssignProcessToJob(this.proActiveRuntimeProcess);
+                this.jobObject.AssignProcessToJob(this.rootProcess);
             }
             catch (Exception ex)
             {
@@ -313,8 +317,8 @@ namespace ProActiveAgent
             }
 
             // notify process about asynchronous reads
-            this.proActiveRuntimeProcess.BeginErrorReadLine();
-            this.proActiveRuntimeProcess.BeginOutputReadLine();
+            this.rootProcess.BeginErrorReadLine();
+            this.rootProcess.BeginOutputReadLine();
 
             //-- runtime started = true
             // setRegistryIsRuntimeStarted(true);
@@ -364,18 +368,23 @@ namespace ProActiveAgent
         /// <param name="args">The arguments of this event</param>
         void Events_OnJobMemoryLimit(object sender, JobMemoryLimitEventArgs args)
         {
-            if (this.proActiveRuntimeProcess.HasExited)
+            if (this.rootProcess.HasExited)
             {
                 return;
             }
             Process incriminatedProcess = args.TheProcess;
-            // If the incriminated process is the ProActiveRuntime process then stop it permanently
-            if (this.proActiveRuntimeProcess.Id == incriminatedProcess.Id)
+
+            if (this.paRuntimeJavaProcess != null)
             {
-                LOGGER.Info("The ProActive Runtime process [pid:" + this.proActiveRuntimeProcess.Id + "] reached the memory limit and will be killed");
-                this.stop();
-                return;
+                // If the incriminated process is the ProActiveRuntime process then stop it permanently
+                if (this.paRuntimeJavaProcess.Id == incriminatedProcess.Id)
+                {
+                    LOGGER.Info("The ProActive Runtime process [pid:" + this.rootProcess.Id + "] reached the memory limit and will be killed");
+                    this.stop();
+                    return;
+                }
             }
+
             // Log info about the incriminated process
             LOGGER.Info("The process " + incriminatedProcess.ProcessName + " [pid:" + incriminatedProcess.Id + "] reached the memory limit and will be killed");
             // Kill the incriminated process that reached the job memory limit
@@ -405,10 +414,19 @@ namespace ProActiveAgent
             try
             {
                 Process incriminatedProcess = args.TheProcess;
-                if (this.proActiveRuntimeProcess.Id != incriminatedProcess.Id)
+                if (this.rootProcess.Id != incriminatedProcess.Id)
                 {
-                    // Log info about the incriminated process            
+                    // Log info about the incriminated process
                     LOGGER.Info("A new process " + incriminatedProcess.ProcessName + " [pid:" + incriminatedProcess.Id + "] has been detected");
+
+                    // The parunas tool will spawn the java process (ProActive Runtime)
+                    if (this.paRuntimeJavaProcess == null)
+                    {
+                        if (incriminatedProcess != null && "java".Equals(incriminatedProcess.ProcessName))
+                        {
+                            this.paRuntimeJavaProcess = incriminatedProcess;
+                        }
+                    }
                 }
                 // add the process to the cpu limiter
                 if (this.cpuLimiter.addProcessToWatchList(incriminatedProcess))
@@ -435,8 +453,8 @@ namespace ProActiveAgent
 
             // Log a message to the user with the ProActive Runtime process logs location
             string logFile = this.commonStartInfo.configuration.agentInstallLocation + "\\Executor" + this.rank + "Process-log.txt";
-            StringBuilder b = new StringBuilder("The ProActive Runtime process has exited [exitCode:");
-            b.Append(this.proActiveRuntimeProcess.ExitCode);
+            StringBuilder b = new StringBuilder("The root process has exited [exitCode:");
+            b.Append(this.rootProcess.ExitCode);
             b.Append("]");
             b.Append(System.Environment.NewLine);
             b.Append("  Logs: ");
@@ -446,13 +464,13 @@ namespace ProActiveAgent
             b.Append("Process-log.txt");
             LOGGER.Info(b.ToString());
 
-            int proActiveRuntimeProcessPid = this.proActiveRuntimeProcess.Id;
+            int proActiveRuntimeProcessPid = this.rootProcess.Id;
 
             // Remove listeners and kill all forked processes
             this.internalClean();
 
             // Set current process to null
-            this.proActiveRuntimeProcess = null;
+            this.rootProcess = null;
 
             //this registry shows that the runtime is not running:
             // setRegistryIsRuntimeStarted(false);
@@ -483,14 +501,14 @@ namespace ProActiveAgent
                     this.restartTimer.Change(this.restartDelayInMs, System.Threading.Timeout.Infinite);
                     if (LOGGER.IsDebugEnabled)
                     {
-                        LOGGER.Debug("The ProActive Runtime process restart delay is " + this.restartDelayInMs + " ms [barrier:" + this.restartBarrierDateTime.ToString(Constants.DATE_FORMAT) + "]");
+                        LOGGER.Debug("The process restart delay is " + this.restartDelayInMs + " ms [barrier:" + this.restartBarrierDateTime.ToString(Constants.DATE_FORMAT) + "]");
                     }
                 }
                 else
                 {
                     if (LOGGER.IsDebugEnabled)
                     {
-                        LOGGER.Debug("Discarding the restart of the ProActive Runtime process because it would happen outside the allocated time. [delayDateTime: " + delayDateTime.ToString(Constants.DATE_FORMAT) + " and restartBarrierDateTime: " + this.restartBarrierDateTime.ToString(Constants.DATE_FORMAT) + "]");
+                        LOGGER.Debug("Discarding the restart of the process because it would happen outside the allocated time. [delayDateTime: " + delayDateTime.ToString(Constants.DATE_FORMAT) + " and restartBarrierDateTime: " + this.restartBarrierDateTime.ToString(Constants.DATE_FORMAT) + "]");
                     }
                 }
             }
@@ -532,13 +550,13 @@ namespace ProActiveAgent
         [MethodImpl(MethodImplOptions.Synchronized)]
         private void stop()
         {
-            if (this.proActiveRuntimeProcess == null)
+            if (this.rootProcess == null)
             {
                 return;
             }
             if (LOGGER.IsDebugEnabled)
             {
-                LOGGER.Debug("Stopping the ProActive Runtime process");
+                LOGGER.Debug("Stopping executor");
             }
 
             // Remove event listeners of the job object
@@ -550,7 +568,7 @@ namespace ProActiveAgent
 
             // clean listeners and kill all forked processes
             this.internalClean();
-            this.proActiveRuntimeProcess = null;
+            this.rootProcess = null;
             //-- runtime started = false
             // setRegistryIsRuntimeStarted(false);
         }
@@ -560,15 +578,37 @@ namespace ProActiveAgent
         private void internalClean()
         {
             // Remove event listeners of the process
-            this.proActiveRuntimeProcess.Exited -= Events_OnProActiveRuntimeProcessExit;
-            this.proActiveRuntimeProcess.ErrorDataReceived -= Events_OnProActiveRuntimeProcessErrorDataReceived;
-            this.proActiveRuntimeProcess.OutputDataReceived -= Events_OnProActiveRuntimeProcessOutputDataReceived;
+            this.rootProcess.Exited -= Events_OnProActiveRuntimeProcessExit;
+            this.rootProcess.ErrorDataReceived -= Events_OnProActiveRuntimeProcessErrorDataReceived;
+            this.rootProcess.OutputDataReceived -= Events_OnProActiveRuntimeProcessOutputDataReceived;
 
             // Clear the watch list of the cpu limiter
             this.cpuLimiter.clearWatchList();
 
-            // Use the job object to kill the ProActive Runtime process and its forked processes
-            this.jobObject.TerminateAllProcesses(42); // this exit code was used in the examples of the JobObjectWrapper API                       
+            // Save the pid of the runtime
+            int paRuntimeJavaProcessPid = 0;
+
+            // Kill the java process then wait until parunas tool dies then kill all forked processes using job object
+            if (this.paRuntimeJavaProcess != null && !this.paRuntimeJavaProcess.HasExited)
+            {
+                paRuntimeJavaProcessPid = this.paRuntimeJavaProcess.Id;
+                try
+                {
+                    // Kill the java process
+                    this.paRuntimeJavaProcess.Kill();
+                }
+                catch (Exception)
+                {
+                    // ignore exceptions
+                }
+                this.paRuntimeJavaProcess = null;
+
+                // Wait until parunas dies with 1 second timeout
+                this.rootProcess.WaitForExit(1000);
+            }
+
+            // Use the job object to kill all its forked processes
+            this.jobObject.TerminateAllProcesses(42); // this exit code was used in the examples of the JobObjectWrapper API   
 
             // If a "On Runtime Exit" script was specified run it (this can cause serious issues in case of never-ending script)
             // Check if a script was specified 
@@ -578,10 +618,10 @@ namespace ProActiveAgent
                 return;
             }
 
-            LOGGER.Info("On runtime exit script: " + scriptAbsolutePath + " " + this.proActiveRuntimeProcess.Id);
+            LOGGER.Info("On runtime exit script: " + scriptAbsolutePath + " " + paRuntimeJavaProcessPid);
             try
             {
-                string scriptOutput = ScriptExecutor.executeScript(scriptAbsolutePath, "" + this.proActiveRuntimeProcess.Id);
+                string scriptOutput = ScriptExecutor.executeScript(scriptAbsolutePath, "" + paRuntimeJavaProcessPid);
                 if (LOGGER.IsDebugEnabled)
                 {
                     LOGGER.Debug(scriptOutput);
