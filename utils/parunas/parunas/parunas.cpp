@@ -66,7 +66,7 @@
 //#include <malloc.h>
 //#include <lmcons.h>
 
-#define LOG_ERROR(...) if (bVerbose) wprintf(L"%s errno=%d\n", __VA_ARGS__, GetLastError());
+#define LOG_ERROR(...) wprintf(L"%s errno=%d\n", __VA_ARGS__, GetLastError());
 #define LOG_INFO(...) if (bVerbose) wprintf(L"%s\n", __VA_ARGS__);
 #define LOG_NUM(...) if (bVerbose) wprintf(L"%u\n", __VA_ARGS__);
 
