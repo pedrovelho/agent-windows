@@ -542,6 +542,10 @@ namespace AgentForAgent
         // !! Event !!
         private void viewLogsLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
+            if (!File.Exists(this.logsDirectory))
+            {
+                return;                
+            }
             System.Diagnostics.Process.Start(this.logsDirectory);
         }
 
