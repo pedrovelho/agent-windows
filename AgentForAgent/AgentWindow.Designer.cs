@@ -219,9 +219,9 @@
             this.label3.BackColor = System.Drawing.Color.White;
             this.label3.Location = new System.Drawing.Point(430, 29);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(105, 13);
+            this.label3.Size = new System.Drawing.Size(114, 13);
             this.label3.TabIndex = 6;
-            this.label3.Text = "ProActiveAgent v2.3";
+            this.label3.Text = "ProActiveAgent v2.3.1";
             // 
             // label4
             // 
