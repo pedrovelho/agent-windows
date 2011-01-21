@@ -266,12 +266,27 @@ namespace ProActiveAgent
                         throw new ApplicationException("Cannot locate the java home. Please specify the java directory in the configuration or set JAVA_HOME environement variable.");
                     }
                 }
+
+                // The parunas tool will create a process under a specific user
+                // the java command is given as parameter to the tool
+
                 //info.FileName = javaHome + "\\bin\\java.exe";                
                 //info.Arguments = jvmParametersBuilder.ToString() + " " + this.commonStartInfo.starterClass + " " + argumentsBuilder.ToString();
-                info.FileName = this.commonStartInfo.configuration.agentInstallLocation + "\\parunas.exe";
-                info.Arguments = "\"" + javaHome + "\\bin\\java.exe " + " -cp " + this.commonStartInfo.configuration.config.classpath + " " + jvmParametersBuilder.ToString() + " " + this.commonStartInfo.starterClass + " " + argumentsBuilder.ToString() + "\"";
+                
                 // Set the classpath
                 info.EnvironmentVariables[Constants.CLASSPATH] = this.commonStartInfo.configuration.config.classpath;
+
+                info.FileName = this.commonStartInfo.configuration.agentInstallLocation + "\\parunas.exe";
+
+                // We need to escape all quotes to avoid problems with whitespaces 
+
+                // Build the command 
+                string unescapedCommand = javaHome + "\\bin\\java.exe " + " -cp \"" + this.commonStartInfo.configuration.config.classpath + "\" " + jvmParametersBuilder.ToString() + " " + this.commonStartInfo.starterClass + " " + argumentsBuilder.ToString();
+
+                // Escape all quotes it means the every " will be replaced by a \" 
+                // The parunas tool requires the command to be surrounded with simple quotes
+                info.Arguments = "\"" + unescapedCommand.Replace("\"", "\\\"") + "\"";
+
                 // Configure runtime specifics
                 info.UseShellExecute = false; // needed to redirect output
                 info.CreateNoWindow = true;

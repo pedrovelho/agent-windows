@@ -108,7 +108,7 @@ namespace ProActiveAgent
             // Read classpath
             try
             {
-                Utils.readClasspath(configuration.config);
+                Utils.readClasspath(configuration.config, configuration.agentInstallLocation);
             }
             catch (Exception ex)
             {

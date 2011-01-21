@@ -36,13 +36,18 @@
  */
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
+using System.Security.Principal;
 using System.Text;
 using System.Windows.Forms;
+using Microsoft.Win32;
+using log4net;
+using System.Security;
 
 namespace ProActiveAgent
 {
@@ -64,6 +69,9 @@ namespace ProActiveAgent
         /// <summary>
         /// The windows registry subkey used by ProActive Agent.</summary>
         public const string REG_SUBKEY = "Software\\ProActiveAgent";
+        /// <summary>
+        /// The windows registry subkey that contains credentials of the forker.</summary>
+        public const string REG_CREDS_SUBKEY = "Software\\ProActiveAgent\\Creds";
         /// <summary>
         /// The name of the reg value used for install location.</summary>
         public const string INSTALL_LOCATION_REG_VALUE_NAME = "AgentLocation";
@@ -135,7 +143,7 @@ namespace ProActiveAgent
     /// <summary>
     /// A static class that contains several utilitary methods</summary>
     public static class Utils
-    {        
+    {
         /// <summary>
         /// Returns a decimal value of the available physical memory in mbytes of this computer.
         /// </summary> 
@@ -158,29 +166,112 @@ namespace ProActiveAgent
             result = Convert.ToDecimal(ramCounter.NextValue());
             return result;
         }
-
+        
         /// <summary>
         /// Reads the value of the CLASSPATH variable defined in a script and stores it into the configuration.
         /// This method checks if the provided ProActive location contains \bin\windows\init.bat script.        
         /// </summary>
         /// <param name="config">The user defined configuration.</param>
-        public static void readClasspath(ConfigParser.AgentConfigType config)
-        {
-            if ("".Equals(config.proactiveHome))
+        public static void readClasspath(ConfigParser.AgentConfigType config, string installLocation)
+        {            
+            if (config.proactiveHome == null || config.proactiveHome.Equals(""))
             {
-                throw new ApplicationException("Unable to read the classpath, the ProActive location is unknown!");
+                throw new ApplicationException("Unable to read the classpath, the ProActive location is unknown");
+            }            
+
+            // 1) Use the java location if it's specified in the configuration
+            // 2) If not specified use JAVA_HOME variable
+            // 3) If JAVA_HOME is not defined or empty throw exception
+
+            if (config.javaHome == null || config.javaHome.Equals(""))
+            {
+                // The classpath will be filled using the JAVA_HOME variable defined in the parent environement
+                config.javaHome = System.Environment.GetEnvironmentVariable(Constants.JAVA_HOME);
+
+                if (config.javaHome == null || config.javaHome.Equals(""))
+                {
+                    throw new ApplicationException("Unable to read the classpath, please specify the java location in the configuration or set JAVA_HOME environement variable");
+                }
             }
 
-            string binDirectory = config.proactiveHome + @"\bin";
+            string initScript = null;            
+
+            // First check if the proactiveHome or javaHome path are in UNC format
+            if (config.proactiveHome.StartsWith(@"\\") || config.javaHome.StartsWith(@"\\"))
+            {
+                string username = null;
+                string domain = null;
+                string password = null;
+
+                // Get forker credentials from registry
+                RegistryKey confKey = Registry.LocalMachine.OpenSubKey(Constants.REG_CREDS_SUBKEY);
+                if (confKey == null)
+                {                    
+                    throw new ApplicationException("Unable to read credentials from registry");
+                }
+                else
+                {
+                    username = (string)confKey.GetValue("username");
+                    domain = (string)confKey.GetValue("domain");
+                    password = (string)confKey.GetValue("password");
+                    confKey.Close();
+                }                
+
+                // Impersonate the forker (get its access rights) in his context UNC paths are accepted
+                using (new Impersonator(username, domain, password))
+                {
+                    // First check if the directory exists
+                    if (!Directory.Exists(config.javaHome))
+                    {
+                        throw new ApplicationException("Unable to read the classpath, the Java Home directory " + config.javaHome + " does not exist");
+                    }
+
+                    // Get the initScript 
+                    initScript = findInitScriptInternal(config.proactiveHome);                    
+                }
+
+                config.classpath = VariableEchoer.echoVariableAsForker(
+                    config.javaHome,                      // the Java install dir
+                    installLocation,                      // the ProActive Agent install dir
+                    config.proactiveHome+@"\bin\windows", // the current directory where to run the initScript
+                    initScript,                           // the full path of the initScript
+                    Constants.CLASSPATH);                 // the name of the variable to echo                
+            }
+            else
+            {
+                // The paths are local no need to impersonate
+
+                // First check if the directory exists
+                if (!Directory.Exists(config.javaHome))
+                {
+                    throw new ApplicationException("Unable to read the classpath, the Java Home directory " + config.javaHome + " does not exist");
+                }
+
+                // Get the initScript
+                initScript = findInitScriptInternal(config.proactiveHome);
+                
+                ProcessStartInfo info = new ProcessStartInfo();
+                info.EnvironmentVariables["PA_SCHEDULER"] = config.proactiveHome;
+                info.EnvironmentVariables["PROACTIVE"] = config.proactiveHome;                
+                info.EnvironmentVariables[Constants.JAVA_HOME] = config.javaHome;
+                
+                // Run initScript and get the value of the CLASSPATH variable
+                config.classpath = VariableEchoer.echoVariable(initScript, Constants.CLASSPATH, info);
+            }            
+        }
+
+        // !! This method can be executed in impersonated context !!
+        // This function finds the init.bat script :
+        // - if the proactiveHome is the ProActive install dir
+        // - if the proactiveHome is the Scheduling install dir
+        private static string findInitScriptInternal(string proactiveHome)
+        {
+            string binDirectory = proactiveHome + @"\bin";
 
             // First check if the directory exists
             if (!Directory.Exists(binDirectory))
             {
-                // Check for UNC path 
-                checkUNC(config.proactiveHome);
-
-                // If here it certainly means that the 'bin' directory simply does not exist
-                throw new ApplicationException("Unable to read the classpath, invalid ProActive location " + binDirectory);
+                throw new ApplicationException("Unable to read the classpath, the ProActive Home directory " + binDirectory + " does not exist");
             }
 
             string initScript = binDirectory + @"\init.bat";
@@ -191,72 +282,11 @@ namespace ProActiveAgent
                 initScript = binDirectory + @"\windows\init.bat";
                 if (!System.IO.File.Exists(initScript))
                 {
-                    throw new ApplicationException("Unable to read the classpath, cannot find the initialization script " + initScript);
+                    throw new ApplicationException("Unable to read the classpath, the initialization script " + initScript + " does not exist");
                 }
             }
-
-            ProcessStartInfo info = new ProcessStartInfo();
-            info.EnvironmentVariables["PA_SCHEDULER"] = config.proactiveHome;
-            info.EnvironmentVariables["PROACTIVE"] = config.proactiveHome;
-
-            // 1) Use the java location if it's specified in the configuration
-            // 2) If not specified use JAVA_HOME variable
-            // 3) If JAVA_HOME is not defined or empty throw exception
-
-            if (config.javaHome == null || config.javaHome.Equals(""))
-            {
-                // The classpath will be filled using the JAVA_HOME variable defined in the parent environement
-                string envJavaHome = System.Environment.GetEnvironmentVariable(Constants.JAVA_HOME);
-
-                if (envJavaHome == null || envJavaHome.Equals(""))
-                {
-                    throw new ApplicationException("Unable to read the classpath, please specify the java location in the configuration or set JAVA_HOME environement variable.");
-                }
-            }
-            else
-            {
-                // First check if the directory exists
-                if (!Directory.Exists(config.javaHome))
-                {
-                    // Check for UNC path 
-                    checkUNC(config.javaHome);
-
-                    // If here it certainly means that the directory simply does not exist
-                    throw new ApplicationException("Unable to read the classpath, invalid java home " + config.javaHome);
-                }
-
-                // Use configuration specific java location
-                info.EnvironmentVariables[Constants.JAVA_HOME] = config.javaHome;
-            }
-
-            // Fill classpath in the configuration
-            config.classpath = VariableEchoer.echoVariable(initScript, Constants.CLASSPATH, info);
-        }
-
-        private static void checkUNC(string directory)
-        {
-            // If the Directory.Exists() method return false it can be an access restriction/problem or the
-            // directory does not exists. In case of an UNC path (ie remote resource) the following code checks
-            // if the proactive location is accessible, the following code can throw an exception if the remote
-            // machine has "Password protected sharing turned on" (usually on Vista and 7)
-
-            try
-            {
-                DirectoryInfo binDirectoryInfo = new DirectoryInfo(directory);
-                binDirectoryInfo.GetAccessControl();
-            }
-            catch (IOException e)
-            {
-                // Maybe an authentication is required ... 
-                throw new ApplicationException("Unable to read the classpath, cannot access the location " + directory + System.Environment.NewLine +
-                    "In case of an UNC path it is possible that 'Password protected sharing' is turned on on the remote machine", e);
-            }
-            catch (Exception e)
-            {
-                // A problem can occur, for example path too long, etc ...
-                throw new ApplicationException("Unable to read the classpath, cannot access the location " + directory, e);
-            }
-        }
+            return initScript;
+        } 
 
         /// <summary>        
         /// This method checks if a tcp port is available. 
@@ -338,8 +368,8 @@ namespace ProActiveAgent
     /// <summary>
     /// A static class that spawns a process in order to echo a variable defined in the specified script.</summary>
     public static class VariableEchoer
-    {
-        private static readonly string PROMPT = System.IO.Directory.GetCurrentDirectory() + ">";
+    {        
+        private static readonly string PROMPT = ">";
 
         private static StringBuilder initializerOutput;
 
@@ -352,7 +382,7 @@ namespace ProActiveAgent
             info.UseShellExecute = false;
             info.CreateNoWindow = true;
             info.RedirectStandardInput = true;
-            info.RedirectStandardOutput = true;
+            info.RedirectStandardOutput = true;            
 
             // Create new process 
             Process p = new Process();
@@ -370,7 +400,7 @@ namespace ProActiveAgent
                 if (!p.Start())
                 {
                     throw new ApplicationException("Unable to run the script " + scriptFilename);
-                }
+                }                
 
                 // Use a stream writer to synchronously write the sort input.
                 System.IO.StreamWriter streamWriter = p.StandardInput;
@@ -405,8 +435,77 @@ namespace ProActiveAgent
             }
         }
 
-        private static void OutputHandler(object sendingProcess, System.Diagnostics.DataReceivedEventArgs outLine)
+        private static readonly ILog LOGGER = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        public static String echoVariableAsForker(string javaHome, string installLocation, string workingdir, string scriptFilename, string variableToEcho)
         {
+            ProcessStartInfo info = new ProcessStartInfo();
+            // Prepare to create a process that will run the script            
+            info.FileName = installLocation + "\\parunas.exe";
+            // /V:ON is equivalent to setlocal enabledelayedexpansion
+            // The JAVA_HOME is injected since its is required by the initScript
+            // The cmd.exe does not support UNC path as working dir therefore the CD is injected to get the correct
+            // The initScript will be surrounded with \" (escaped quotes)
+            info.Arguments = "\"cmd.exe /V:ON /K set JAVA_HOME="+javaHome+"&& set CD="+workingdir+"&& \\\"" + scriptFilename + "\\\"\"";
+            
+            info.UseShellExecute = false;
+            info.CreateNoWindow = true;
+            info.RedirectStandardInput = true;
+            info.RedirectStandardOutput = true;            
+
+            // Create new process 
+            Process p = new Process();
+            p.StartInfo = info;
+
+            // Create output buffer
+            VariableEchoer.initializerOutput = new StringBuilder("");
+
+            // Set our event handler to asynchronously read the output.
+            p.OutputDataReceived += new DataReceivedEventHandler(OutputHandler);
+
+            try
+            {
+                // Start the process
+                if (!p.Start())
+                {
+                    throw new ApplicationException("Unable to run the script " + scriptFilename);
+                }             
+
+                // Use a stream writer to synchronously write the sort input.
+                System.IO.StreamWriter streamWriter = p.StandardInput;
+
+                // Start the asynchronous read of the output stream.
+                p.BeginOutputReadLine();
+
+                // Write the command that will print the full java command
+                streamWriter.WriteLine("echo %" + variableToEcho + "%");
+
+                // End the input stream 
+                streamWriter.Close();
+
+                // Wait for the process to write the text lines
+                p.WaitForExit();
+
+                // Kill the process if its not finished
+                if (!p.HasExited)
+                {
+                    p.Kill();
+                }
+
+                return VariableEchoer.initializerOutput.ToString();
+            }
+            catch (Exception e)
+            {
+                throw new ApplicationException("Unable to echo the variable " + variableToEcho + " Filename=" + info.FileName + " Args=" + info.Arguments, e);
+            }
+            finally
+            {
+                p.Close();
+            }
+        }
+
+        private static void OutputHandler(object sendingProcess, System.Diagnostics.DataReceivedEventArgs outLine)
+        {                        
             if (outLine.Data == null || outLine.Data.Equals("") || outLine.Data.Contains(PROMPT))
             {
                 return;
@@ -544,5 +643,181 @@ namespace ProActiveAgent
             }
             return true;
         }
-    }    
+    }
+
+    /////////////////////////////////////////////////////////////////////////
+
+    /// <summary>
+    /// Impersonation of a user. Allows to execute code under another
+    /// user context.
+    /// Please note that the account that instantiates the Impersonator class
+    /// needs to have the 'Act as part of operating system' privilege set.
+    /// </summary>
+    /// <remarks>	
+    /// This class is based on the information in the Microsoft knowledge base
+    /// article http://support.microsoft.com/default.aspx?scid=kb;en-us;Q306158
+    /// 
+    /// Encapsulate an instance into a using-directive like e.g.:
+    /// 
+    ///		...
+    ///		using ( new Impersonator( "myUsername", "myDomainname", "myPassword" ) )
+    ///		{
+    ///			...
+    ///			[code that executes under the new context]
+    ///			...
+    ///		}
+    ///		...
+    /// 
+    /// Please contact the author Uwe Keim (mailto:uwe.keim@zeta-software.de)
+    /// for questions regarding this class.
+    /// </remarks>
+    public class Impersonator :
+        IDisposable
+    {
+        #region Public methods.
+        // ------------------------------------------------------------------
+
+        /// <summary>
+        /// Constructor. Starts the impersonation with the given credentials.
+        /// Please note that the account that instantiates the Impersonator class
+        /// needs to have the 'Act as part of operating system' privilege set.
+        /// </summary>
+        /// <param name="userName">The name of the user to act as.</param>
+        /// <param name="domainName">The domain name of the user to act as.</param>
+        /// <param name="password">The password of the user to act as.</param>
+        public Impersonator(
+            string userName,
+            string domainName,
+            string password)
+        {
+            ImpersonateValidUser(userName, domainName, password);
+        }
+
+        // ------------------------------------------------------------------
+        #endregion
+
+        #region IDisposable member.
+        // ------------------------------------------------------------------
+
+        public void Dispose()
+        {
+            UndoImpersonation();
+        }
+
+        // ------------------------------------------------------------------
+        #endregion
+
+        #region P/Invoke.
+        // ------------------------------------------------------------------
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        private static extern int LogonUser(
+            string lpszUserName,
+            string lpszDomain,
+            string lpszPassword,
+            int dwLogonType,
+            int dwLogonProvider,
+            ref IntPtr phToken);
+
+        [DllImport("advapi32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern int DuplicateToken(
+            IntPtr hToken,
+            int impersonationLevel,
+            ref IntPtr hNewToken);
+
+        [DllImport("advapi32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern bool RevertToSelf();
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+        private static extern bool CloseHandle(
+            IntPtr handle);
+
+        private const int LOGON32_LOGON_INTERACTIVE = 2;
+        private const int LOGON32_PROVIDER_DEFAULT = 0;
+
+        // ------------------------------------------------------------------
+        #endregion
+
+        #region Private member.
+        // ------------------------------------------------------------------
+
+        /// <summary>
+        /// Does the actual impersonation.
+        /// </summary>
+        /// <param name="userName">The name of the user to act as.</param>
+        /// <param name="domainName">The domain name of the user to act as.</param>
+        /// <param name="password">The password of the user to act as.</param>
+        private void ImpersonateValidUser(
+            string userName,
+            string domain,
+            string password)
+        {
+            WindowsIdentity tempWindowsIdentity = null;
+            IntPtr token = IntPtr.Zero;
+            IntPtr tokenDuplicate = IntPtr.Zero;
+
+            try
+            {
+                if (RevertToSelf())
+                {
+                    if (LogonUser(
+                        userName,
+                        domain,
+                        password,
+                        LOGON32_LOGON_INTERACTIVE,
+                        LOGON32_PROVIDER_DEFAULT,
+                        ref token) != 0)
+                    {
+                        if (DuplicateToken(token, 3, ref tokenDuplicate) != 0)
+                        {
+                            tempWindowsIdentity = new WindowsIdentity(tokenDuplicate);
+                            impersonationContext = tempWindowsIdentity.Impersonate();
+                        }
+                        else
+                        {
+                            throw new Win32Exception(Marshal.GetLastWin32Error());
+                        }
+                    }
+                    else
+                    {
+                        throw new Win32Exception(Marshal.GetLastWin32Error());
+                    }
+                }
+                else
+                {
+                    throw new Win32Exception(Marshal.GetLastWin32Error());
+                }
+            }
+            finally
+            {
+                if (token != IntPtr.Zero)
+                {
+                    CloseHandle(token);
+                }
+                if (tokenDuplicate != IntPtr.Zero)
+                {
+                    CloseHandle(tokenDuplicate);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Reverts the impersonation.
+        /// </summary>
+        private void UndoImpersonation()
+        {
+            if (impersonationContext != null)
+            {
+                impersonationContext.Undo();
+            }
+        }
+
+        private WindowsImpersonationContext impersonationContext = null;
+
+        // ------------------------------------------------------------------
+        #endregion
+    }
+
+    /////////////////////////////////////////////////////////////////////////
+
 }

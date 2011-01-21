@@ -37,6 +37,7 @@
 !define TXT_LOGSDIR "Field 10"
 !define CHK_LOGSHOME "Field 12"
 !define CHK_ALLOWANY "Field 11"
+!define TXT_DOMAIN "Field 15"
 
 Var Hostname
 Var tmp
@@ -318,6 +319,13 @@ Function MyCustomLeave
     MessageBox MB_OK "Please enter a valid password"
      Abort
   ${EndIf}
+  
+  # Check for empty domain stored in R5
+  !insertmacro MUI_INSTALLOPTIONS_READ $R5 ${PAGE_FILE} "${TXT_DOMAIN}" "State"
+  ${If} $R5 == ""
+    MessageBox MB_OK "Please enter a valid domain"
+     Abort
+  ${EndIf}
 
   #-----------------------------------------------------------------------------------
   # !! SELECTED: Specify an account !!
@@ -416,14 +424,15 @@ Function MyCustomLeave
       MessageBox MB_OK "Unable to install as service. To install manually use sc.exe command"
     ${EndIf}
     
-    # Ok the service is installed
+    # Ince the service is installed write auth data into a restricted acces key
     WriteRegStr HKLM "Software\ProActiveAgent\Creds" "username" $R3
     WriteRegStr HKLM "Software\ProActiveAgent\Creds" "password" $R4
+    WriteRegStr HKLM "Software\ProActiveAgent\Creds" "domain" $R5
     
     # Using the regini shell command we need to restrict the access to the HKEY_LOCAL_MACHINE\SOFTWARE\ProActiveAgent\Creds key
     # The command uses well known SIDs to restrict permissions only for SYSTEM (ie LocalSystem), Creator and Administrators group
 
-    ExecWait 'cmd.exe /C regini $INSTDIR\restrict.dat'
+    ExecWait 'cmd.exe /C regini.exe "$INSTDIR"\restrict.dat'
 
   writeToRegistryLABEL:
   ${If} $R7 == "1"
