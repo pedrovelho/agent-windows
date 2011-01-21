@@ -18,7 +18,7 @@
 #################################################################
 !define SERVICE_NAME "ProActiveAgent"
 !define SERVICE_DESC "The ProActive Agent enables desktop computers as an important source of computational power"
-!define VERSION "2.3"
+!define VERSION "2.3.1"
 !define PAGE_FILE "serviceInstallPage.ini"
 !define SUBINACL_DIR "$PROGRAMFILES\Windows Resource Kits\Tools"
 !define SUBINACL_PATH "${SUBINACL_DIR}\subinacl.exe"
@@ -355,6 +355,16 @@ Function MyCustomLeave
     
     # Treat specific error ... the account does not exist
     createNewAccount:
+      ${If} $R5 == "."
+         DetailPrint "The account $R3 does not exist ... asking user if he wants to create a new account"
+         # Ask the user if he wants to create a new account
+         MessageBox MB_YESNO "The account $R3 does not exist, would you like to create it ?" IDYES createAccount
+           Abort
+      ${Else}
+         # The  domain is not local so the account cannot be created
+         MessageBox MB_OK "The account $R3 does not exist, since the Domain is not local the account cannot be created, please specify an existing Domain account."
+           Abort
+      ${EndIf}
       DetailPrint "The account $R3 does not exist ... asking user if he wants to create a new account"
       # Ask the user if he wants to create a new account
       MessageBox MB_YESNO "The account $R3 does not exist, would you like to create it ?" IDYES createAccount
