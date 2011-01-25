@@ -54,13 +54,14 @@
             this.stopServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.startToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeAdministrationPanelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.webPageLinkLabel = new System.Windows.Forms.LinkLabel();
+            this.proActiveLinkLabel = new System.Windows.Forms.LinkLabel();
             this.controlsGroupBox = new System.Windows.Forms.GroupBox();
             this.logsGroupBox = new System.Windows.Forms.GroupBox();
             this.viewLogsWithNotepadButton = new System.Windows.Forms.Button();
             this.viewLogsLinkLabel = new System.Windows.Forms.LinkLabel();
             this.viewLogsWithExplorerButton = new System.Windows.Forms.Button();
-            this.documentationLinkLabel = new System.Windows.Forms.LinkLabel();
+            this.activeeonLinkLabel = new System.Windows.Forms.LinkLabel();
+            this.label1 = new System.Windows.Forms.Label();
             this.configurationGroupBox.SuspendLayout();
             this.infoGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.proActiveLogoPictureBox)).BeginInit();
@@ -217,7 +218,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.BackColor = System.Drawing.Color.White;
-            this.label3.Location = new System.Drawing.Point(430, 29);
+            this.label3.Location = new System.Drawing.Point(399, 24);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(114, 13);
             this.label3.TabIndex = 6;
@@ -227,11 +228,11 @@
             // 
             this.label4.AutoSize = true;
             this.label4.BackColor = System.Drawing.Color.White;
-            this.label4.Location = new System.Drawing.Point(430, 71);
+            this.label4.Location = new System.Drawing.Point(399, 46);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(106, 13);
+            this.label4.Size = new System.Drawing.Size(172, 13);
             this.label4.TabIndex = 6;
-            this.label4.Text = "(C) 2008-2011 INRIA";
+            this.label4.Text = "(C) 1997-2011 INRIA/University of ";
             // 
             // timer
             // 
@@ -293,18 +294,18 @@
             this.closeAdministrationPanelToolStripMenuItem.Text = "Close Administration Panel";
             this.closeAdministrationPanelToolStripMenuItem.Click += new System.EventHandler(this.closeAdministrationPanelToolStripMenuItem_Click_1);
             // 
-            // webPageLinkLabel
+            // proActiveLinkLabel
             // 
-            this.webPageLinkLabel.AutoSize = true;
-            this.webPageLinkLabel.BackColor = System.Drawing.Color.White;
-            this.webPageLinkLabel.DisabledLinkColor = System.Drawing.Color.White;
-            this.webPageLinkLabel.Location = new System.Drawing.Point(430, 85);
-            this.webPageLinkLabel.Name = "webPageLinkLabel";
-            this.webPageLinkLabel.Size = new System.Drawing.Size(113, 13);
-            this.webPageLinkLabel.TabIndex = 9;
-            this.webPageLinkLabel.TabStop = true;
-            this.webPageLinkLabel.Text = "http://proactive.inria.fr";
-            this.webPageLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.webPageLinkLabel_LinkClicked);
+            this.proActiveLinkLabel.AutoSize = true;
+            this.proActiveLinkLabel.BackColor = System.Drawing.Color.White;
+            this.proActiveLinkLabel.DisabledLinkColor = System.Drawing.Color.White;
+            this.proActiveLinkLabel.Location = new System.Drawing.Point(399, 77);
+            this.proActiveLinkLabel.Name = "proActiveLinkLabel";
+            this.proActiveLinkLabel.Size = new System.Drawing.Size(113, 13);
+            this.proActiveLinkLabel.TabIndex = 9;
+            this.proActiveLinkLabel.TabStop = true;
+            this.proActiveLinkLabel.Text = "http://proactive.inria.fr";
+            this.proActiveLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.proactiveLinkLabel_LinkClicked);
             // 
             // controlsGroupBox
             // 
@@ -360,31 +361,43 @@
             this.viewLogsWithExplorerButton.UseVisualStyleBackColor = true;
             this.viewLogsWithExplorerButton.Click += new System.EventHandler(this.withIExplorerButton_Click);
             // 
-            // documentationLinkLabel
+            // activeeonLinkLabel
             // 
-            this.documentationLinkLabel.AutoSize = true;
-            this.documentationLinkLabel.BackColor = System.Drawing.SystemColors.Window;
-            this.documentationLinkLabel.Location = new System.Drawing.Point(430, 42);
-            this.documentationLinkLabel.Name = "documentationLinkLabel";
-            this.documentationLinkLabel.Size = new System.Drawing.Size(114, 13);
-            this.documentationLinkLabel.TabIndex = 12;
-            this.documentationLinkLabel.TabStop = true;
-            this.documentationLinkLabel.Text = "Official Documentation";
-            this.documentationLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.documentationLinkLabel_LinkClicked);
+            this.activeeonLinkLabel.AutoSize = true;
+            this.activeeonLinkLabel.BackColor = System.Drawing.Color.White;
+            this.activeeonLinkLabel.DisabledLinkColor = System.Drawing.Color.White;
+            this.activeeonLinkLabel.Location = new System.Drawing.Point(399, 90);
+            this.activeeonLinkLabel.Name = "activeeonLinkLabel";
+            this.activeeonLinkLabel.Size = new System.Drawing.Size(135, 13);
+            this.activeeonLinkLabel.TabIndex = 13;
+            this.activeeonLinkLabel.TabStop = true;
+            this.activeeonLinkLabel.Text = "http://www.activeeon.com";
+            this.activeeonLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.activeeonLinkLabel_LinkClicked);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.BackColor = System.Drawing.Color.White;
+            this.label1.Location = new System.Drawing.Point(399, 59);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(164, 13);
+            this.label1.TabIndex = 14;
+            this.label1.Text = "Nice-Sophia Antipolis/ActiveEon ";
             // 
             // AgentWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(595, 295);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.activeeonLinkLabel);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.controlsGroupBox);
-            this.Controls.Add(this.documentationLinkLabel);
             this.Controls.Add(this.logsGroupBox);
             this.Controls.Add(this.infoGroupBox);
-            this.Controls.Add(this.webPageLinkLabel);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.label4);
             this.Controls.Add(this.configurationGroupBox);
+            this.Controls.Add(this.proActiveLinkLabel);
             this.Controls.Add(this.proActiveLogoPictureBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -432,16 +445,17 @@
         private System.Windows.Forms.ToolStripMenuItem closeAdministrationPanelToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem startServiceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem stopServiceToolStripMenuItem;
-        private System.Windows.Forms.LinkLabel webPageLinkLabel;
+        private System.Windows.Forms.LinkLabel proActiveLinkLabel;
         private System.Windows.Forms.GroupBox controlsGroupBox;
         private System.Windows.Forms.GroupBox logsGroupBox;
         private System.Windows.Forms.Label spawnedRuntimesLabel;
         private System.Windows.Forms.Button viewLogsWithExplorerButton;
         private System.Windows.Forms.Label agentStatusValue;
         private System.Windows.Forms.Label spawnedRuntimesValue;
-        private System.Windows.Forms.LinkLabel documentationLinkLabel;
         private System.Windows.Forms.LinkLabel viewLogsLinkLabel;
-        private System.Windows.Forms.Button viewLogsWithNotepadButton;       
+        private System.Windows.Forms.Button viewLogsWithNotepadButton;
+        private System.Windows.Forms.LinkLabel activeeonLinkLabel;
+        private System.Windows.Forms.Label label1;       
     }
 }
 

@@ -55,22 +55,22 @@ namespace AgentForAgent
         public const string AGENT_AUTO_RUN_SUBKEY = "Software\\Microsoft\\Windows\\CurrentVersion\\Run";
 
         private ConfigurationEditor configEditor;
-       
+
         private readonly string agentLocation;
         private readonly string configFileLocation;
         private readonly string logsDirectory;
-        private ServiceController sc;        
+        private ServiceController sc;
         private Thread pipeClientThread;
 
         public AgentWindow(string agentLocation, string configFileLocation, string logsDirectory, ServiceController sc)
-        {            
+        {
             this.agentLocation = agentLocation;
             this.configFileLocation = configFileLocation;
             this.logsDirectory = logsDirectory;
             this.sc = sc;
 
             // Init all visuals components
-            InitializeComponent();                        
+            InitializeComponent();
         }
 
         // !! Event !!
@@ -173,7 +173,8 @@ namespace AgentForAgent
             // There must be no already running pipe client thread
             // and the service must be running otherwise the pipe.Connect()
             // can hang on at 100% CPU
-            if (this.pipeClientThread == null) {                        
+            if (this.pipeClientThread == null)
+            {
                 this.pipeClientThread = new Thread(receiveFromPipe);
                 this.pipeClientThread.IsBackground = true;
                 pipeClientThread.Start();
@@ -326,8 +327,8 @@ namespace AgentForAgent
         private void timer_Tick(object sender, EventArgs e)
         {
             try
-            {                                    
-               this.updateFromServiceStatus();               
+            {
+                this.updateFromServiceStatus();
             }
             catch (Exception)
             {
@@ -455,10 +456,11 @@ namespace AgentForAgent
                 try
                 {
                     this.sc.Close();
-                    this.sc = null;                    
+                    this.sc = null;
                     base.Close();
                 }
-                catch (Exception) {
+                catch (Exception)
+                {
                 }
 
                 System.Windows.Forms.Application.Exit();
@@ -481,9 +483,15 @@ namespace AgentForAgent
         }
 
         // !! Event !!
-        private void webPageLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void activeeonLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start(this.webPageLinkLabel.Text);
+            System.Diagnostics.Process.Start(this.activeeonLinkLabel.Text);
+        }
+
+        // !! Event !!
+        private void proactiveLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(this.proActiveLinkLabel.Text);
         }
 
         private Process logsNotepadProcess;
@@ -521,22 +529,19 @@ namespace AgentForAgent
                 return;
             }
 
-            if (logsBrowserProcess == null || logsBrowserProcess.HasExited) {
-               logsBrowserProcess = new Process();
-               logsBrowserProcess.StartInfo.FileName = "iexplore.exe";
-               logsBrowserProcess.StartInfo.Arguments = logfile;
-               logsBrowserProcess.Start();
-            } else {                
-                int hwnd = (int)logsBrowserProcess.MainWindowHandle;                
+            if (logsBrowserProcess == null || logsBrowserProcess.HasExited)
+            {
+                logsBrowserProcess = new Process();
+                logsBrowserProcess.StartInfo.FileName = "iexplore.exe";
+                logsBrowserProcess.StartInfo.Arguments = logfile;
+                logsBrowserProcess.Start();
+            }
+            else
+            {
+                int hwnd = (int)logsBrowserProcess.MainWindowHandle;
                 ShowWindow(hwnd, SW_SHOWNORMAL);
                 SetForegroundWindow(hwnd);
-            }            
-        }
-
-        // !! Event !!
-        private void documentationLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            System.Diagnostics.Process.Start(Constants.DOC_LINK);
+            }
         }
 
         // !! Event !!
