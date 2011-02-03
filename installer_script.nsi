@@ -373,9 +373,16 @@ Function MyCustomLeave
       UserMgr::CreateAccount $R3 $R4 "The ProActive Agent runs a Java Virtual Machine under this account."
       Pop $0
       ${If} $0 == "ERROR 2224" # Means account already exists .. it's strange but yes it is possible !
-        DetailPrint "The account $R3 already exist"
         MessageBox MB_OK "The account $R3 already exist"
           Abort
+      ${ElseIf} $0 == "ERROR 2245"
+        MessageBox MB_OK "The password does not meet the password policy requirements. Check the minimum password length, password complexity and password history requirements."
+          Abort
+      ${Else}
+        ${If} $0 != "OK"
+          MessageBox MB_OK "Unable to create the service. ERROR $0"
+           Abort
+        ${EndIf}
       ${EndIf}
       # Add SE_INCREASE_QUOTA_NAME account privilege
       UserMgr::AddPrivilege $R3 ${SE_INCREASE_QUOTA_NAME}
