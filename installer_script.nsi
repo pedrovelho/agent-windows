@@ -18,7 +18,7 @@
 #################################################################
 !define SERVICE_NAME "ProActiveAgent"
 !define SERVICE_DESC "The ProActive Agent enables desktop computers as an important source of computational power"
-!define VERSION "2.3.1"
+!define VERSION "2.3.2"
 !define PAGE_FILE "serviceInstallPage.ini"
 !define SUBINACL_DIR "$PROGRAMFILES\Windows Resource Kits\Tools"
 !define SUBINACL_PATH "${SUBINACL_DIR}\subinacl.exe"
@@ -350,7 +350,7 @@ Function MyCustomLeave
     
     reportErrorPrivilege:
       DetailPrint "The account $R3 must have SE_INCREASE_QUOTA_NAME and SE_ASSIGNPRIMARYTOKEN_NAME privileges ! Result was $0"
-      MessageBox MB_OK "The account $R3 must have SE_INCREASE_QUOTA_NAME and SE_ASSIGNPRIMARYTOKEN_NAME privileges. In the 'Administrative Tools' of the 'Control Panel' open the 'Local Security Policy'. In 'Security Settings', select 'Local Policies' then select 'User Rights Assignments'. Finally, in the list of policies open the corresponding properties and add the account $R3."
+      MessageBox MB_OK "The account $R3 must have 'Adjust memory quotas for a process' and 'Replace a process-level token' privileges. In the 'Administrative Tools' of the 'Control Panel' open the 'Local Security Policy'. In 'Security Settings', select 'Local Policies' then select 'User Rights Assignments'. Finally, in the list of policies open the corresponding properties and add the account $R3."
         Abort # Go back to page.
     
     # Treat specific error ... the account does not exist
