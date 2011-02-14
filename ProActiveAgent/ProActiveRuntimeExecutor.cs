@@ -245,9 +245,12 @@ namespace ProActiveAgent
 
                 // Merge all arguments
                 StringBuilder argumentsBuilder = new StringBuilder();
-                foreach (string arg in this.commonStartInfo.enabledConnection.getArgs())
+                if (this.commonStartInfo.enabledConnection.getArgs() != null)
                 {
-                    argumentsBuilder.Append(" " + arg);
+                    foreach (string arg in this.commonStartInfo.enabledConnection.getArgs())
+                    {
+                        argumentsBuilder.Append(" " + arg);
+                    }
                 }
 
                 // Create a new process
@@ -272,7 +275,7 @@ namespace ProActiveAgent
 
                 //info.FileName = javaHome + "\\bin\\java.exe";                
                 //info.Arguments = jvmParametersBuilder.ToString() + " " + this.commonStartInfo.starterClass + " " + argumentsBuilder.ToString();
-                
+
                 // Set the classpath
                 info.EnvironmentVariables[Constants.CLASSPATH] = this.commonStartInfo.configuration.config.classpath;
 
