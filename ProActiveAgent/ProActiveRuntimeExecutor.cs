@@ -138,9 +138,11 @@ namespace ProActiveAgent
             this.restartTimer = new Timer(new TimerCallback(internalRestart), null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
             this.callersState = new Dictionary<ApplicationType, Int32>();
             this.rootProcess = null;
+
             // Create a new job object for limits
             this.jobObject = new JobObject(Constants.JOB_OBJECT_NAME + rank);
             this.jobObject.Events.OnNewProcess += new jobEventHandler<NewProcessEventArgs>(Events_OnNewProcess);
+
             // If memory management is enabled
             ushort memoryLimit = commonStartInfo.configuration.config.memoryLimit;
             if (memoryLimit != 0)
@@ -429,21 +431,24 @@ namespace ProActiveAgent
         [MethodImpl(MethodImplOptions.Synchronized)]
         void Events_OnNewProcess(object sender, NewProcessEventArgs args)
         {
+            Process incriminatedProcess = args.TheProcess;
+            // The process can be null in case of short life cycle
+            if (incriminatedProcess == null)
+            {
+                return;
+            }
+
             try
             {
-                Process incriminatedProcess = args.TheProcess;
                 if (this.rootProcess.Id != incriminatedProcess.Id)
                 {
                     // Log info about the incriminated process
                     LOGGER.Info("A new process " + incriminatedProcess.ProcessName + " [pid:" + incriminatedProcess.Id + "] has been detected");
 
                     // The parunas tool will spawn the java process (ProActive Runtime)
-                    if (this.paRuntimeJavaProcess == null)
+                    if (this.paRuntimeJavaProcess == null && "java".Equals(incriminatedProcess.ProcessName))
                     {
-                        if (incriminatedProcess != null && "java".Equals(incriminatedProcess.ProcessName))
-                        {
-                            this.paRuntimeJavaProcess = incriminatedProcess;
-                        }
+                        this.paRuntimeJavaProcess = incriminatedProcess;
                     }
                 }
                 // add the process to the cpu limiter
