@@ -35,6 +35,7 @@
  * $$ACTIVEEON_CONTRIBUTOR$$
  */
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
 using System.ServiceProcess;
@@ -215,7 +216,12 @@ namespace ProActiveAgent
         /// The Main Thread: This is where your Service is Run.
         /// </summary>
         static void Main()
-        {            
+        {
+            // To avoid debug assertions pop ups to the user
+            // remove Deal with trace debug assertions
+            System.Diagnostics.Debug.Listeners.Clear();            
+            System.Diagnostics.Debug.Listeners.Add(new ServiceTraceListener());
+
             // Read logs directory from the registry
             CommonStartInfo.logsDirectory = System.IO.Path.GetTempPath();
             try
@@ -241,100 +247,140 @@ namespace ProActiveAgent
             // Start the service
             ServiceBase.Run(new WindowsService());
         }
+    }
 
-        /// <summary>
-        /// This worker class will start a thread that will wait for the         
-        /// </summary>
-        sealed class Worker
+    /// <summary>
+    /// This worker class will start a thread that will wait for the GUI to connect to the server pipe
+    /// </summary>
+    sealed class ServiceTraceListener : TraceListener
+    {
+        private static readonly ILog LOGGER = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        public override void WriteLine(string message)
         {
-            private readonly ExecutorsManager manager;
-            private readonly Thread thread;
-            private volatile bool shouldStop;
-
-            public Worker(ExecutorsManager manager)
+            if (message.StartsWith("log4net")) 
             {
-                this.manager = manager;
-                thread = new Thread(sendExecutorsCount);
-                thread.Name = "GuiCommunicatingWorker";
-                thread.IsBackground = true;
-                // Start the server pipe 
-                thread.Start();
+                return;
+            }
+            LOGGER.Info(message);
+        }
+
+        public override void Write(string message)
+        {
+            if (message.StartsWith("log4net"))
+            {
+                return;
+            }
+            LOGGER.Info(message);
+        }
+
+        public override void Fail(string msg, string detailedMsg)
+        {
+            // Omit log4net messages
+            if ("log4net".Equals(msg))
+            {
+                return;
             }
 
-            // This method can be called outside worker thread
-            public void requestStop()
-            {               
-                // Tell the main loop to stop
-                this.shouldStop = true;
+            LOGGER.Error("From " + msg + ": " + detailedMsg);            
+        }
+    }
 
-                // Wait until the thread is stopped (2s timeout)
-                thread.Join(2000);                
-            }
+    /// <summary>
+    /// This worker class will start a thread that will wait for the GUI to connect to the server pipe
+    /// </summary>
+    sealed class Worker
+    {
+        private static readonly ILog LOGGER = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-            private void sendExecutorsCount()
+        private readonly ExecutorsManager manager;
+        private readonly Thread thread;
+        private volatile bool shouldStop;
+
+        public Worker(ExecutorsManager manager)
+        {
+            this.manager = manager;
+            thread = new Thread(sendExecutorsCount);
+            thread.Name = "GuiCommunicatingWorker";
+            thread.IsBackground = true;
+            // Start the server pipe 
+            thread.Start();
+        }
+
+        // This method can be called outside worker thread
+        public void requestStop()
+        {
+            // Tell the main loop to stop
+            this.shouldStop = true;
+
+            // Wait until the thread is stopped (2s timeout)
+            thread.Join(2000);
+        }
+
+        private void sendExecutorsCount()
+        {
+            // Until the service stop loop and recreate a new pipe
+            while (!shouldStop)
             {
-                // Until the service stop loop and recreate a new pipe
-                while (!shouldStop)
+                using (NamedPipeServerStream pipeServer = new NamedPipeServerStream(Constants.PIPE_NAME, PipeDirection.Out))
                 {
-                    using (NamedPipeServerStream pipeServer = new NamedPipeServerStream(Constants.PIPE_NAME, PipeDirection.Out))
+                    // Wait for a client to connect
+                    pipeServer.WaitForConnection();
+
+                    LOGGER.Info("The GUI client has connected");
+
+                    try
                     {
-                        // Wait for a client to connect
-                        pipeServer.WaitForConnection();
-
-                        LOGGER.Info("The GUI client has connected");
-
-                        try
+                        // Create a stream writer                
+                        using (StreamWriter sw = new StreamWriter(pipeServer))
                         {
-                            // Create a stream writer                
-                            using (StreamWriter sw = new StreamWriter(pipeServer))
+                            sw.AutoFlush = true;
+
+                            while (!shouldStop)
                             {
-                                sw.AutoFlush = true;
-
-                                while (!shouldStop)
+                                int count = 0;
+                                // Count the running executors
+                                foreach (ProActiveRuntimeExecutor p in manager.getExecutors())
                                 {
-                                    int count = 0;
-                                    // Count the running executors
-                                    foreach (ProActiveRuntimeExecutor p in manager.getExecutors())
+                                    if (p.isStarted())
                                     {
-                                        if (p.isStarted())
-                                        {
-                                            count++;
-                                        }
+                                        count++;
                                     }
-                                    // Write the count into the stream
-                                    sw.WriteLine(count);
-
-                                    // Wait for 1 sec
-                                    Thread.Sleep(1 * 1000);
                                 }
+                                // Write the count into the stream
+                                sw.WriteLine(count);
 
-                                sw.WriteLine(0);
+                                // Wait for 1 sec
+                                Thread.Sleep(1 * 1000);
                             }
-                        }
-                        // Catch the IOException that is raised if the pipe is broken
-                        // or disconnected.
-                        catch(IOException) {
-                            LOGGER.Info("The the GUI client has disconnected");
-                        }
-                        catch (Exception e)
-                        {
-                            LOGGER.Error("A problem occured when writing into the pipe", e);
-                        }
 
-                        try
-                        {
-                            // Close the server
-                            pipeServer.Close();
+                            sw.WriteLine(0);
                         }
-                        catch (Exception e)
-                        {
-                            // Log me
-                            LOGGER.Error("A problem occured during pipe close", e);
-                        }
+                    }
+                    // Catch the IOException that is raised if the pipe is broken
+                    // or disconnected.
+                    catch (IOException)
+                    {
+                        LOGGER.Info("The the GUI client has disconnected");
+                    }
+                    catch (Exception e)
+                    {
+                        LOGGER.Error("A problem occured when writing into the pipe", e);
+                    }
+
+                    try
+                    {
+                        // Close the server
+                        pipeServer.Close();
+                    }
+                    catch (Exception e)
+                    {
+                        // Log me
+                        LOGGER.Error("A problem occured during pipe close", e);
                     }
                 }
             }
-
         }
+
     }
 }
