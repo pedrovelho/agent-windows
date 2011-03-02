@@ -519,12 +519,13 @@ namespace ProActiveAgent
     /// A static class that spawns a process in order to execute a specified script.</summary>
     public static class ScriptExecutor
     {
-        public static string executeScript(string scriptAbsolutePath, string scriptArguments)
+        public static string executeScript(string installLocation, string scriptAbsolutePath, string scriptArguments)
         {
             ProcessStartInfo info = new ProcessStartInfo();
+
             // Prepare to create a process that will run the specified script
-            info.FileName = scriptAbsolutePath;
-            info.Arguments = scriptArguments;
+            info.FileName = installLocation + "\\parunas.exe";
+            info.Arguments = "\"" + scriptAbsolutePath + " " + scriptArguments + "\"";
             info.UseShellExecute = false;
             info.CreateNoWindow = true;
             info.RedirectStandardOutput = true;

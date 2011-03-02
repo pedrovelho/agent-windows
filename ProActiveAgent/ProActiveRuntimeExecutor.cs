@@ -459,7 +459,7 @@ namespace ProActiveAgent
             }
             catch (Exception ex)
             {
-                LOGGER.Info("An error occured in Events_OnNewProcess incrminatedProcess " + args.TheProcess, ex);
+                LOGGER.Info("An error occured in Events_OnNewProcess incrminatedProcess: " + incriminatedProcess, ex);
             }
         }
 
@@ -644,7 +644,10 @@ namespace ProActiveAgent
             LOGGER.Info("On runtime exit script: " + scriptAbsolutePath + " " + paRuntimeJavaProcessPid);
             try
             {
-                string scriptOutput = ScriptExecutor.executeScript(scriptAbsolutePath, "" + paRuntimeJavaProcessPid);
+                string scriptOutput = ScriptExecutor.executeScript(
+                    this.commonStartInfo.configuration.agentInstallLocation, // The agent install location
+                    scriptAbsolutePath, // The script to execute absolute path 
+                    "" + paRuntimeJavaProcessPid); // The arguments of the script
                 if (LOGGER.IsDebugEnabled)
                 {
                     LOGGER.Debug(scriptOutput);
