@@ -433,7 +433,7 @@ Function MyCustomLeave
     createServiceLABEL:
     
     # Create the service under the Local System and store the user and password in the restricted registry key
-    !insertmacro SERVICE "create" ${SERVICE_NAME} "path=$INSTDIR\ProActiveAgent.exe;autostart=1;interact=1;display=${SERVICE_NAME};description=${SERVICE_DESC};" ""
+    !insertmacro SERVICE "create" ${SERVICE_NAME} 'path="$INSTDIR\ProActiveAgent.exe";autostart=1;interact=1;display=${SERVICE_NAME};description=${SERVICE_DESC};' ""
     Pop $0
     # Means the service is not installed !
     ${If} $0 != "true"
