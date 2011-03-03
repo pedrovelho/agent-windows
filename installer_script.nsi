@@ -375,7 +375,7 @@ Function MyCustomLeave
       ${If} $0 == "ERROR 2224" # Means account already exists .. it's strange but yes it is possible !
         MessageBox MB_OK "The account $R3 already exist"
           Abort
-      ${ElseIf} $0 == "ERROR 2245"
+      ${ElseIf} $0 == "ERROR 2245" # The password requirements are not met (too short)
         MessageBox MB_OK "The password does not meet the password policy requirements. Check the minimum password length, password complexity and password history requirements."
           Abort
       ${Else}
