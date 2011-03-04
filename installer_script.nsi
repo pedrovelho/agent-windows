@@ -68,6 +68,7 @@ Page Instfiles
 Page Custom MyCustomPage MyCustomLeave
 
 
+##########################################################################################################################################
 !include "WordFunc.nsh"
 !insertmacro WordReplace
 !insertmacro WordFind
@@ -136,7 +137,63 @@ Page Custom MyCustomPage MyCustomLeave
 
 !macroend
 
-########################################
+##########################################################################################################################################
+# The following macro performs a user login, the DoLogonUser macro must be called like the following:
+# !insertmacro DoLogonUser "domain" "username" "password"
+# # Store user token
+# StrCpy $8 $R0
+# # Logoff user
+# !insertmacro DoLogoffUser $8
+#####################################################################
+
+!ifndef LogonUser
+!define LogonUser "AdvAPI32::LogonUserW(w, w, w, i, i, *i) i"
+!endif
+!ifndef CloseHandle
+!define CloseHandle "Kernel32::CloseHandle(i) i"
+!endif
+!ifndef LOGON32_LOGON_NETWORK
+!define LOGON32_LOGON_NETWORK 3
+!endif
+!ifndef LOGON32_PROVIDER_DEFAULT
+!define LOGON32_PROVIDER_DEFAULT 0
+!endif
+
+!define DEBUG
+
+!ifmacrondef DoLogonUser
+  ;Logs on a user, and returns their login token in $R0
+  !macro DoLogonUser Domain Username Password
+    System::Call "${LogonUser}('${Username}', '${Domain}', '${Password}', ${LOGON32_LOGON_NETWORK}, ${LOGON32_PROVIDER_DEFAULT}, .R0) .R8"
+    StrCmp $R8 0 logOnErr
+    goto logOnDone
+    logOnErr:
+      MessageBox MB_OK "Invalid username or password"
+      Abort
+    logOnDone:
+    !ifdef DEBUG
+      DetailPrint "Return token: $R0"
+      DetailPrint "Call return: $R8"
+    !endif
+  !macroend
+!endif
+
+!ifmacrondef DoLogoffUser
+  ;Logs off a user token (Returned from DoLogonUser)
+  !macro DoLogoffUser Token
+    System::Call "${CloseHandle}(${Token}) .R5"
+    StrCmp $R5 0 logOffErr
+    goto logOffDone
+    logOffErr:
+      DetailPrint "Error: Logging user off (Token: '${Token}')"
+    logOffDone:
+    !ifdef DEBUG
+      DetailPrint "Close return: $R5"
+    !endif
+  !macroend
+!endif
+
+##########################################################################################################################################
 # On init peforms the following checks:
 # - admin rights
 # - Microsoft .NET Framework 3.5
@@ -330,6 +387,14 @@ Function MyCustomLeave
   #-----------------------------------------------------------------------------------
   # !! SELECTED: Specify an account !!
   #-----------------------------------------------------------------------------------
+
+    # Perform user login (domain, username, password)
+    !insertmacro DoLogonUser $R5 $R3 $R4
+    
+    # The user is logged it means
+
+    # Logoff user
+    !insertmacro DoLogoffUser $R0
 
     # Check for SE_INCREASE_QUOTA_NAME and SE_ASSIGNPRIMARYTOKEN_NAME privilege
     UserMgr::HasPrivilege $R3 ${SE_INCREASE_QUOTA_NAME}
