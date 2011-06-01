@@ -59,9 +59,11 @@ namespace ProActiveAgent
         /// All jvm options (default and user defined)</summary>
         private readonly string[] _jvmOptions;
         /// <summary>
-        /// The log directory read from the registry</summary>
-        // private readonly string _logsDirectory;
-
+        /// The runtime start delay to avoid concurrent access problems</summary>
+        private readonly int _runtimeStartDelayInMs = 500;
+        /// <summary>
+        /// The runtime start delay is enabled if the PA_AGENT_RUNTIME_START_DELAY system env variable is defined</summary>
+        private readonly bool _runtimeStartDelayEnabled;
         /// <summary>
         /// The constructor of this class.</summary>
         public CommonStartInfo(AgentType configuration)
@@ -89,6 +91,19 @@ namespace ProActiveAgent
                 mergedJvmOptionsList.AddRange(this._configuration.config.jvmParameters);
             }
             this._jvmOptions = mergedJvmOptionsList.ToArray();
+
+            // The system env variable must not be null otherwise the delay is not enabled
+            string value = System.Environment.GetEnvironmentVariable("PA_AGENT_RUNTIME_START_DELAY", EnvironmentVariableTarget.Machine);
+            if (value != null)
+            {
+                if (!Int32.TryParse(value, out this._runtimeStartDelayInMs))
+                    LOGGER.Warn("Unable to parse the runtime start delay using default value " + this._runtimeStartDelayInMs + " ms");
+                else
+                {                    
+                    this._runtimeStartDelayEnabled = true;
+                    LOGGER.Info("Runtime start delay is set to " + this._runtimeStartDelayInMs + " ms");
+                }
+            }
         }
 
         public AgentType configuration
@@ -120,6 +135,22 @@ namespace ProActiveAgent
             get
             {
                 return this._enabledConnection.javaStarterClass;
+            }
+        }
+
+        public int runtimeStartDelayInMs
+        {
+            get
+            {
+                return this._runtimeStartDelayInMs;
+            }
+        }
+
+        public Boolean isRuntimeStartDelayEnabled
+        {
+            get 
+            {
+                return this._runtimeStartDelayEnabled;
             }
         }
     }

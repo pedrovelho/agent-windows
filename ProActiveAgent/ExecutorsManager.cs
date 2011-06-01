@@ -72,7 +72,7 @@ namespace ProActiveAgent
 
             // The configuration specifies the number of executors
             int nbProcesses = configuration.config.nbRuntimes == 0 ? Environment.ProcessorCount : configuration.config.nbRuntimes;
-            LOGGER.Info("Creating " + nbProcesses + " executors.");
+            LOGGER.Info("Creating " + nbProcesses + " executors");
 
             this.proActiveRuntimeExecutors = new List<ProActiveRuntimeExecutor>(nbProcesses);
 
@@ -82,7 +82,6 @@ namespace ProActiveAgent
             // Create as many executors as specified in the configuration
             for (int rank = 0; rank < nbProcesses; rank++)
             {
-
                 // Create new executor with a unique rank and a valid ProActive Rmi Port
                 ProActiveRuntimeExecutor executor = new ProActiveRuntimeExecutor(commonStartInfo, rank);
                 this.proActiveRuntimeExecutors.Add(executor);

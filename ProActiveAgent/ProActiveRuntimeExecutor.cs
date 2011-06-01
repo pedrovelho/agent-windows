@@ -57,7 +57,7 @@ namespace ProActiveAgent
     {
         private const int INITIAL_RESTART_DELAY_IN_MS = 5000;
         private const int MAX_RESTART_DELAY_IN_MS = 3 * 60 * 1000;
-        private const int RESTART_DELAY_INCREMENT_IN_MS = 5000;
+        private const int RESTART_DELAY_INCREMENT_IN_MS = 5000;                
 
         /// <summary>
         /// A lock shared between multiple instances of executors.</summary>
@@ -176,6 +176,13 @@ namespace ProActiveAgent
             if (this.disabledRestarting || this.rootProcess != null)
             {
                 return false;
+            }
+
+            // See the bug AGENT-148 (https://bugs.activeeon.com/browse/AGENT-149)
+            // Sometimes when starting multiple java.exe (multi-runtimes) a concurrent registry access can occur.
+            // To avoid such behavior the runtimes are started progressively, each runtime will wait a fixed delay in milliseconds.
+            if (this.commonStartInfo.isRuntimeStartDelayEnabled && this.rank != 0) {
+                Thread.Sleep(this.commonStartInfo.runtimeStartDelayInMs);
             }
 
             // Before starting a ProActive Runtime process an available ProActive Rmi Port is needed.
@@ -339,9 +346,6 @@ namespace ProActiveAgent
             // notify process about asynchronous reads
             this.rootProcess.BeginErrorReadLine();
             this.rootProcess.BeginOutputReadLine();
-
-            //-- runtime started = true
-            // setRegistryIsRuntimeStarted(true);
 
             return true;
         }
