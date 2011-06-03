@@ -107,9 +107,9 @@ namespace AgentForAgent
             System.Decimal val = Utils.getAvailablePhysicalMemory();
             this.availablePhysicalMemoryValue.Text = val.ToString();
             // Set maximums
-            this.memoryLimitNumericUpDown.Maximum = val;     
+            this.memoryLimitNumericUpDown.Maximum = val;
             // Load memory limit values from the configuration
-            this.memoryLimitNumericUpDown.Value = conf.config.memoryLimit;            
+            this.memoryLimitNumericUpDown.Value = conf.config.memoryLimit;
 
             ///////////////////////////////////////
             // Load Multi-Runtime related config //
@@ -125,40 +125,36 @@ namespace AgentForAgent
             {
                 this.nbRuntimesNumericUpDown.Value = conf.config.nbRuntimes;
                 this.nbRuntimesNumericUpDown.Enabled = true;
-            }                        
-            
+            }
+
             ////////////////////////////////////////
             // Load events from the configuration //
             ////////////////////////////////////////            
 
             // Init default values for list boxes
             this.weekdayStart.SelectedIndex = 0;
-            this.processPriorityComboBox.SelectedIndex = 0;
-            this.maxCpuUsageNumericUpDown.Value = this.maxCpuUsageNumericUpDown.Maximum;
 
-            // Load config events in the GUI
-            foreach (CalendarEventType cEv in this.configuration.events)
-            {                
-                int index = this.eventsList.Items.Add(cEv);
+            if (this.configuration.events.Length == 0)
+            {
+                this.alwaysAvailableCheckBox.Checked = true;
+                this.processPriorityComboBox.SelectedItem = Enum.GetName(typeof(ProcessPriorityClass), configuration.config.processPriority);                
+                this.maxCpuUsageNumericUpDown.Value = configuration.config.maxCpuUsage;
+            }
+            else
+            {
+                // Set default values for the no events selected state
+                this.processPriorityComboBox.SelectedIndex = 0;
+                this.maxCpuUsageNumericUpDown.Value = this.maxCpuUsageNumericUpDown.Maximum;
 
-                // Check for always available 
-                if (cEv.isAlwaysAvailable())
+                // Load config events in the GUI
+                foreach (CalendarEventType cEv in this.configuration.events)
                 {
-                    this.alwaysAvailableCheckBox.Checked = true;
-                    this.processPriorityComboBox.SelectedItem = Enum.GetName(typeof(ProcessPriorityClass), configuration.config.processPriority);
-                    this.maxCpuUsageNumericUpDown.Value = configuration.config.maxCpuUsage;
-                    this.eventsList.SelectedIndex = index;
-
-                    // Disable all other controls
-                    this.eventEditorGroup.Enabled = false;
-                    this.eventsList.Enabled = false;
-                    this.createEventButton.Enabled = false;
-                    this.deleteEventButton.Enabled = false;
+                    this.eventsList.Items.Add(cEv);
                 }
             }
 
             // Init default values for ProActive Communication Protocol and Port
-            this.protocolComboBox.SelectedItem = Enum.GetName(typeof(ProActiveCommunicationProtocol), Enum.Parse(typeof(ProActiveCommunicationProtocol),conf.config.protocol));
+            this.protocolComboBox.SelectedItem = Enum.GetName(typeof(ProActiveCommunicationProtocol), Enum.Parse(typeof(ProActiveCommunicationProtocol), conf.config.protocol));
             this.portInitialValueNumericUpDown.Value = conf.config.portRange.first;
 
             /////////////////////////////////////////////
@@ -184,7 +180,7 @@ namespace AgentForAgent
                     {
                         this.rmiRegistrationJavaActionClassTextBox.Text = con.javaStarterClass;
                     }
-                    LocalBindConnectionType localbind = (LocalBindConnectionType)con;                    
+                    LocalBindConnectionType localbind = (LocalBindConnectionType)con;
                     this.localRegistrationNodeName.Text = localbind.nodename;
                 }
                 else if (con.GetType() == typeof(ResoureManagerConnectionType))
@@ -337,7 +333,7 @@ namespace AgentForAgent
             string[] values = new string[this.jvmOptionsListBox.Items.Count];
             if (this.jvmOptionsListBox.Items.Count > 0)
             {
-                this.jvmOptionsListBox.Items.CopyTo(values, 0);                
+                this.jvmOptionsListBox.Items.CopyTo(values, 0);
             }
             this.configuration.config.jvmParameters = values;
 
@@ -346,15 +342,19 @@ namespace AgentForAgent
 
             // Save memory management configuration
             ushort memoryLimit = Convert.ToUInt16(memoryLimitNumericUpDown.Value);
-            if (memoryLimit > 0) {
+            if (memoryLimit > 0)
+            {
                 this.configuration.config.memoryLimit = memoryLimit;
-            }                        
+            }
             // Save multi process related config
-            if (this.useAllAvailableCPUsCheckBox.Checked) {
+            if (this.useAllAvailableCPUsCheckBox.Checked)
+            {
                 this.configuration.config.nbRuntimes = 0;
-            } else {
+            }
+            else
+            {
                 this.configuration.config.nbRuntimes = Convert.ToUInt16(this.nbRuntimesNumericUpDown.Value);
-            }            
+            }
             //--Events list                        
             this.internalCopyEventsList();
             // Save ProActive Communication Protocol and Port initial value
@@ -367,18 +367,22 @@ namespace AgentForAgent
             }
             // Save rmi registration action definition
             LocalBindConnectionType localbind = new LocalBindConnectionType();
-            if (!"".Equals(localRegistrationNodeName.Text)){
+            if (!"".Equals(localRegistrationNodeName.Text))
+            {
                 localbind.nodename = localRegistrationNodeName.Text;
             }
             localbind.javaStarterClass = this.rmiRegistrationJavaActionClassTextBox.Text;
-            localbind.enabled = this.localRegistrationRadioButton.Checked;            
+            localbind.enabled = this.localRegistrationRadioButton.Checked;
             this.configuration.connections[0] = localbind;
 
             // Save resource manager registration action definition
             ResoureManagerConnectionType rmConnection = new ResoureManagerConnectionType();
-            if ("".Equals(rmUrl.Text)) {
+            if ("".Equals(rmUrl.Text))
+            {
                 rmConnection.url = Constants.DEFAULT_RM_URL;
-            } else {
+            }
+            else
+            {
                 rmConnection.url = rmUrl.Text;
             }
             if (!"".Equals(nodeNameTextBox.Text))
@@ -389,13 +393,14 @@ namespace AgentForAgent
             {
                 rmConnection.nodeSourceName = nodeSourceNameTextBox.Text;
             }
-            if (!"".Equals(credentialLocationTextBox.Text)){ 
+            if (!"".Equals(credentialLocationTextBox.Text))
+            {
                 rmConnection.credential = credentialLocationTextBox.Text;
             }
             if (!"".Equals(this.resourceManagerRegistrationJavaActionClassTextBox.Text))
             {
                 rmConnection.javaStarterClass = this.resourceManagerRegistrationJavaActionClassTextBox.Text;
-            }            
+            }
             rmConnection.enabled = this.resourceManagerRegistrationRadioButton.Checked;
             this.configuration.connections[1] = rmConnection;
 
@@ -424,7 +429,7 @@ namespace AgentForAgent
         }
 
         private void internalCopyEventsList()
-        {            
+        {
             List<CalendarEventType> list = new List<CalendarEventType>();
             foreach (object item in this.eventsList.Items)
             {
@@ -511,10 +516,10 @@ namespace AgentForAgent
             {
                 return;
             }
-            if (!System.IO.File.Exists(this.jvmDirectory.Text+Constants.BIN_JAVA))
+            if (!System.IO.File.Exists(this.jvmDirectory.Text + Constants.BIN_JAVA))
             {
                 MessageBox.Show("The Java Home location is incorrect.", "Problem", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                jvmLocationButton_Click(null,null);
+                jvmLocationButton_Click(null, null);
                 return;
             }
             try
@@ -761,19 +766,39 @@ namespace AgentForAgent
 
         private void processPriorityComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (eventsList.SelectedIndex == -1)
-                return;
-            CalendarEventType calEvent = (CalendarEventType)this.eventsList.SelectedItem;
-            calEvent.config.processPriority = (ProcessPriorityClass)Enum.Parse(typeof(ProcessPriorityClass), (string)this.processPriorityComboBox.SelectedItem);
+            if (this.alwaysAvailableCheckBox.Checked)
+            {                
+                this.configuration.config.processPriority = (ProcessPriorityClass)Enum.Parse(typeof(ProcessPriorityClass), (string)this.processPriorityComboBox.SelectedItem);
+            }
+            else
+            {
+                if (eventsList.SelectedIndex == -1)
+                    return;
+                else
+                {
+                    CalendarEventType calEvent = (CalendarEventType)this.eventsList.SelectedItem;
+                    calEvent.config.processPriority = (ProcessPriorityClass)Enum.Parse(typeof(ProcessPriorityClass), (string)this.processPriorityComboBox.SelectedItem);
+                }
+            }
             this.saveConfig.Enabled = true;
         }
 
         private void maxCpuUsageNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            if (eventsList.SelectedIndex == -1)
-                return;
-            CalendarEventType calEvent = (CalendarEventType)this.eventsList.SelectedItem;
-            calEvent.config.maxCpuUsage = Convert.ToUInt16(this.maxCpuUsageNumericUpDown.Value);
+            if (this.alwaysAvailableCheckBox.Checked)
+            {
+                this.configuration.config.maxCpuUsage = Convert.ToUInt16(this.maxCpuUsageNumericUpDown.Value);
+            }
+            else
+            {
+                if (eventsList.SelectedIndex == -1)
+                    return;
+                else
+                {
+                    CalendarEventType calEvent = (CalendarEventType)this.eventsList.SelectedItem;
+                    calEvent.config.maxCpuUsage = Convert.ToUInt16(this.maxCpuUsageNumericUpDown.Value);
+                }
+            }
             this.saveConfig.Enabled = true;
         }
 
@@ -781,42 +806,29 @@ namespace AgentForAgent
 
         //--Behaviour of the "Always" Checkbox
         private void alwaysAvailableCheckBox_CheckStateChanged(object sender, EventArgs e)
-        {
+        {            
             if (alwaysAvailableCheckBox.Checked)
-            {
-                //--Check if the event always exist
-                bool isExist = false;
-                foreach (CalendarEventType ev in this.eventsList.Items)
+            {               
+                // Always available means no events                                
+
+                // 1. Check if there are user defined events and ask the user to save them 
+                //    into a sperate file
+                if (this.eventsList.Items.Count > 0)
                 {
-                    if (ev.isAlwaysAvailable())
+                    // Ask the user to to save before setting always available
+                    DialogResult res = MessageBox.Show("Always available will remove all plans, do you want to save your current planning ?", "Save Current Planning", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                    if (res == DialogResult.Yes)
                     {
-                        isExist = true;
-                        break;
-                    }
+                        this.saveConfigAs_Click(sender, e);
+                    }                    
                 }
 
-                if (!isExist)
-                {
-                    // The always available event is a full week
-                    // with by default a normal process priority and 100% max CPU usage
-                    CalendarEventType cEv = new CalendarEventType();
-                    cEv.config.portRange = null; // not needed
-                    cEv.start.day = DayOfWeek.Monday;
-                    cEv.start.hour = 0;
-                    cEv.start.minute = 0;
-                    cEv.start.second = 0;
+                // 2. Remove all events
+                this.eventsList.Items.Clear();
 
-                    cEv.duration.days = 6;
-                    cEv.duration.hours = 23;
-                    cEv.duration.minutes = 59;
-                    cEv.duration.seconds = 59;
-
-                    this.processPriorityComboBox.SelectedIndex = 0;
-                    this.maxCpuUsageNumericUpDown.Value = this.maxCpuUsageNumericUpDown.Maximum; 
-
-                    int index = this.eventsList.Items.Add(cEv);
-                    this.eventsList.SelectedIndex = index;
-                }
+                // 3. Load values for the process priority and the max cpu usage                
+                this.processPriorityComboBox.SelectedItem = Enum.GetName(typeof(ProcessPriorityClass), configuration.config.processPriority);
+                this.maxCpuUsageNumericUpDown.Value = configuration.config.maxCpuUsage;
 
                 // Disable buttons and group boxes
                 this.eventEditorGroup.Enabled = false;
@@ -834,23 +846,6 @@ namespace AgentForAgent
                 eventsList.Enabled = true;
                 createEventButton.Enabled = true;
                 deleteEventButton.Enabled = true;
-
-                //--Delete always available event if it exist
-                int idx = -1;
-                for (int i = 0; i < this.eventsList.Items.Count; i++)
-                {
-                    CalendarEventType cEv = (CalendarEventType)this.eventsList.Items[i];
-                    if (cEv.isAlwaysAvailable())
-                    {
-                        idx = i;
-                        break;
-                    }
-                }
-
-                if (idx == -1)
-                    return;
-                eventsList.Items.RemoveAt(idx);
-
             }
             saveConfig.Enabled = true;
         }

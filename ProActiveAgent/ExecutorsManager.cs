@@ -40,14 +40,11 @@ using System.Threading;
 using ConfigParser;
 using log4net;
 
-/** 
- * ExecutorsManager manages scheduled start/stop of executors.
- *    
- * The configuration cannot contain overlapping calendar events!
- */
-
 namespace ProActiveAgent
 {
+    /// <summary>
+    /// ExecutorsManager manages scheduled start/stop of executors.
+    /// The configuration cannot contain overlapping calendar events.</summary>
     sealed class ExecutorsManager
     {
         private static readonly ILog LOGGER = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -68,7 +65,7 @@ namespace ProActiveAgent
         public ExecutorsManager(AgentType configuration)
         {
             // Get the runtime common start info shared between all executors
-            CommonStartInfo commonStartInfo = new CommonStartInfo(configuration);
+            CommonStartInfo commonStartInfo = new CommonStartInfo(configuration);            
 
             // The configuration specifies the number of executors
             int nbProcesses = configuration.config.nbRuntimes == 0 ? Environment.ProcessorCount : configuration.config.nbRuntimes;
@@ -91,84 +88,96 @@ namespace ProActiveAgent
             this.startTimers = new List<Timer>();
             this.stopTimers = new List<Timer>();
 
-            // Fix the current time (usefull when there is a lot of events)            
-            DateTime currentFixedTime = DateTime.Now;
-            int currentDayOfWeek = (int)currentFixedTime.DayOfWeek;
-
-            foreach (CalendarEventType cEvent in configuration.events)
+            // If always available simply invoke start method with the stop time at max value
+            if (commonStartInfo.isAlwaysAvailable)
             {
-
-                // for each calendar event we calculate remaining time to start and stop service
-                // and according to that register timers                     
-
-                // we provide the day of the week to present start time
-                // the algorithm to count next start is as follows:
-                // 1. how many days are to start action
-                // 2. we add this amount to the current date
-                // 3. we create time event that will be the exact start time (taking year, month and
-                //    day from the current date and other fields from configuration
-                // 4. we keep duration of task
-                // 5. we count due time for beginning and stopping the task
-                // 6. if time is negative, we move it into next week (to avoid waiting for past events)
-
-                int eventDayOfWeek = (int)cEvent.start.day;
-                int daysAhead = dayDifference(currentDayOfWeek, eventDayOfWeek);
-
-                DateTime startTime = currentFixedTime.AddDays(daysAhead);
-
-                // Absolute start time
-                DateTime absoluteStartTime = new DateTime(startTime.Year, startTime.Month, startTime.Day,
-                    cEvent.start.hour, cEvent.start.minute, cEvent.start.second);
-
-                // Delay to wait until start
-                TimeSpan delayUntilStart = absoluteStartTime - currentFixedTime;
-
-                // Get the time span duration
-                TimeSpan duration = new TimeSpan(cEvent.duration.days, cEvent.duration.hours, cEvent.duration.minutes,
-                                    cEvent.duration.seconds);
-
-                // Delay to wait until stop
-                TimeSpan delayUntilStop = delayUntilStart.Add(duration);
-
-                // Absolute stop time
-                DateTime absoluteStopTime = absoluteStartTime.Add(duration);
-
-                // Check if we need to start immidiately
-                bool startNow = (delayUntilStart < TimeSpan.Zero && delayUntilStop > TimeSpan.Zero);
-
-                if (delayUntilStart < TimeSpan.Zero)
-                {
-                    delayUntilStart = delayUntilStart.Add(WEEK_DELAY);
-                }
-
-                if (delayUntilStop < TimeSpan.Zero)
-                {
-                    delayUntilStop = delayUntilStop.Add(WEEK_DELAY);
-                }
-
-                StartActionInfo startInfo = new StartActionInfo(
+                LOGGER.Info("Using always available planning");
+                this.mySendStartAction(new StartActionInfo(
                     commonStartInfo.enabledConnection,
-                    absoluteStopTime,
-                    cEvent.config.processPriority,
-                    cEvent.config.maxCpuUsage);
+                    DateTime.MaxValue,
+                    commonStartInfo.configuration.config.processPriority,
+                    commonStartInfo.configuration.config.maxCpuUsage));
+            }
+            else
+            {
+                // Fix the current time (usefull when there is a lot of events)            
+                DateTime currentFixedTime = DateTime.Now;
+                int currentDayOfWeek = (int)currentFixedTime.DayOfWeek;
 
-                if (LOGGER.IsDebugEnabled)
+                foreach (CalendarEventType cEvent in configuration.events)
                 {
-                    LOGGER.Debug("Loading weekly event [" + absoluteStartTime.DayOfWeek + ":" + absoluteStartTime.ToString(Constants.DATE_FORMAT) + "] -> [" +
-                        absoluteStopTime.DayOfWeek + ":" + absoluteStopTime.ToString(Constants.DATE_FORMAT) + "]");
-                }
 
-                // After dueStart milliseconds this timer will invoke only once per week the callback
-                Timer startT = new Timer(new TimerCallback(mySendStartAction), startInfo, delayUntilStart, WEEK_DELAY);
-                this.startTimers.Add(startT);
+                    // for each calendar event we calculate remaining time to start and stop service
+                    // and according to that register timers                     
 
-                // After dueStop milliseconds this timer will invoke only once per week the callback
-                Timer stopT = new Timer(new TimerCallback(mySendStopAction), null, delayUntilStop, WEEK_DELAY);
-                this.stopTimers.Add(stopT);
+                    // we provide the day of the week to present start time
+                    // the algorithm to count next start is as follows:
+                    // 1. how many days are to start action
+                    // 2. we add this amount to the current date
+                    // 3. we create time event that will be the exact start time (taking year, month and
+                    //    day from the current date and other fields from configuration
+                    // 4. we keep duration of task
+                    // 5. we count due time for beginning and stopping the task
+                    // 6. if time is negative, we move it into next week (to avoid waiting for past events)
 
-                if (startNow)
-                {
-                    this.mySendStartAction(startInfo);
+                    int eventDayOfWeek = (int)cEvent.start.day;
+                    int daysAhead = dayDifference(currentDayOfWeek, eventDayOfWeek);
+
+                    DateTime startTime = currentFixedTime.AddDays(daysAhead);
+
+                    // Absolute start time
+                    DateTime absoluteStartTime = new DateTime(startTime.Year, startTime.Month, startTime.Day,
+                        cEvent.start.hour, cEvent.start.minute, cEvent.start.second);
+
+                    // Delay to wait until start
+                    TimeSpan delayUntilStart = absoluteStartTime - currentFixedTime;
+
+                    // Get the time span duration
+                    TimeSpan duration = new TimeSpan(cEvent.duration.days, cEvent.duration.hours, cEvent.duration.minutes,
+                                        cEvent.duration.seconds);
+
+                    // Delay to wait until stop
+                    TimeSpan delayUntilStop = delayUntilStart.Add(duration);
+
+                    // Absolute stop time
+                    DateTime absoluteStopTime = absoluteStartTime.Add(duration);
+
+                    // Check if we need to start immidiately
+                    bool startNow = (delayUntilStart < TimeSpan.Zero && delayUntilStop > TimeSpan.Zero);
+
+                    if (delayUntilStart < TimeSpan.Zero)
+                    {
+                        delayUntilStart = delayUntilStart.Add(WEEK_DELAY);
+                    }
+
+                    if (delayUntilStop < TimeSpan.Zero)
+                    {
+                        delayUntilStop = delayUntilStop.Add(WEEK_DELAY);
+                    }
+
+                    StartActionInfo startInfo = new StartActionInfo(
+                        commonStartInfo.enabledConnection,
+                        absoluteStopTime,
+                        cEvent.config.processPriority,
+                        cEvent.config.maxCpuUsage);
+
+                    LOGGER.Info("Loading weekly event [" + absoluteStartTime.DayOfWeek + ":" + absoluteStartTime.ToString(Constants.DATE_FORMAT) + "] -> [" +
+                            absoluteStopTime.DayOfWeek + ":" + absoluteStopTime.ToString(Constants.DATE_FORMAT) + "]");
+
+                    // After dueStart milliseconds this timer will invoke only once per week the callback
+                    Timer startT = new Timer(new TimerCallback(mySendStartAction), startInfo, delayUntilStart, WEEK_DELAY);
+                    this.startTimers.Add(startT);
+
+                    // After dueStop milliseconds this timer will invoke only once per week the callback
+                    Timer stopT = new Timer(new TimerCallback(mySendStopAction), null, delayUntilStop, WEEK_DELAY);
+                    this.stopTimers.Add(stopT);
+
+                    LOGGER.Info("Starting immidiately ? ---> " + startNow) ;
+                    
+                    if (startNow)
+                    {
+                        this.mySendStartAction(startInfo);
+                    }
                 }
             }
         }

@@ -146,11 +146,19 @@ namespace ProActiveAgent
             }
         }
 
-        public Boolean isRuntimeStartDelayEnabled
+        public bool isRuntimeStartDelayEnabled
         {
             get 
             {
                 return this._runtimeStartDelayEnabled;
+            }
+        }
+
+        public bool isAlwaysAvailable
+        {
+            get
+            {
+                return this.configuration.events.Length == 0;
             }
         }
     }

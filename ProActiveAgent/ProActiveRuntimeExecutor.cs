@@ -48,21 +48,19 @@ using log4net.Appender;
 using log4net.Layout;
 using log4net.Repository.Hierarchy;
 
-/**
- * Executor of the ProActive Runtime process. If the executed process exits, the executor handles the restart with a Timer.
- */
 namespace ProActiveAgent
 {
+    /// <summary>
+    /// Executor of the ProActive Runtime process.
+    /// If the executed process exits, the executor handles the restart with a Timer.</summary>
     sealed class ProActiveRuntimeExecutor
     {
         private const int INITIAL_RESTART_DELAY_IN_MS = 5000;
         private const int MAX_RESTART_DELAY_IN_MS = 3 * 60 * 1000;
-        private const int RESTART_DELAY_INCREMENT_IN_MS = 5000;                
-
+        private const int RESTART_DELAY_INCREMENT_IN_MS = 5000;
         /// <summary>
         /// A lock shared between multiple instances of executors.</summary>
         private static readonly object interExecutorLock = new object();
-
         /// <summary>
         /// The next usable ProActive Port that will be initialized by the first executor, then it cycles incrementally 
         /// depnding on the port availability until max value.</summary>
@@ -153,6 +151,9 @@ namespace ProActiveAgent
                 // Add event handler to keep track of job events
                 this.jobObject.Events.OnJobMemoryLimit += new jobEventHandler<JobMemoryLimitEventArgs>(Events_OnJobMemoryLimit);
             }
+
+            // Apply priority
+            this.jobObject.Limits.PriorityClass = commonStartInfo.configuration.config.processPriority;
 
             // Children process will not be able to escape from job
             this.jobObject.Limits.CanChildProcessBreakAway = false;
@@ -770,14 +771,15 @@ namespace ProActiveAgent
             {
                 LOGGER.Debug("Setting process priority to " + processPriority + " and max cpu usage to " + maxCpuUsage + "%");
             }
-            // Apply the specified process priority to all processes inside the job
-            foreach (Process process in this.jobObject.ConstructAssignedProcessList())
-            {
-                if (!process.HasExited)
-                {
-                    process.PriorityClass = processPriority;
-                }
-            }
+            this.jobObject.Limits.PriorityClass = processPriority;
+            //// Apply the specified process priority to all processes inside the job
+            //foreach (Process process in this.jobObject.ConstructAssignedProcessList())
+            //{
+            //    if (!process.HasExited)
+            //    {
+            //        process.PriorityClass = processPriority;
+            //    }
+            //}
             this.cpuLimiter.setNewMaxCpuUsage(maxCpuUsage);
         }
 
