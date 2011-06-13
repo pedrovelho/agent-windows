@@ -170,9 +170,7 @@ namespace ProActiveAgent
 
                     // After dueStop milliseconds this timer will invoke only once per week the callback
                     Timer stopT = new Timer(new TimerCallback(mySendStopAction), null, delayUntilStop, WEEK_DELAY);
-                    this.stopTimers.Add(stopT);
-
-                    LOGGER.Info("Starting immidiately ? ---> " + startNow) ;
+                    this.stopTimers.Add(stopT);                    
                     
                     if (startNow)
                     {

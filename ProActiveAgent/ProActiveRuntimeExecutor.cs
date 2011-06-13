@@ -79,7 +79,7 @@ namespace ProActiveAgent
         private readonly ILog processLogger;
         /// <summary>
         /// Process object that represents running runner script.</summary>                
-        private bool disabledRestarting = false; // restarting of the process is disabled when the system shuts down
+        private bool disabledRestarting; // restarting of the process is disabled when the system shuts down
         /// <summary>
         /// The delay before restart in ms.</summary>
         private long restartDelayInMs;
@@ -134,6 +134,7 @@ namespace ProActiveAgent
             }
             // The restart timer is only created it will not start until Timer.Change() method is called
             this.restartTimer = new Timer(new TimerCallback(internalRestart), null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+            this.restartBarrierDateTime = DateTime.MaxValue;
             this.callersState = new Dictionary<ApplicationType, Int32>();
             this.rootProcess = null;
 
@@ -500,75 +501,29 @@ namespace ProActiveAgent
             // Set current process to null
             this.rootProcess = null;
 
-            //this registry shows that the runtime is not running:
-            // setRegistryIsRuntimeStarted(false);
-
             if (disabledRestarting)
             {
-                if (LOGGER.IsDebugEnabled)
-                {
-                    LOGGER.Debug("The restarting has been disabled. Aborting restart ...");
-                }
+                LOGGER.Info("Aborting restart ...");                
                 return;
             }
 
-            // if we use timer based config then we will use binary expotential backoff retry
-            // in other case we restart process immediately
+            // In order to restart correctly the delay must not be greater than the restart barrier date time
+            // To do so add the restart delay in ms to now, the AddMilliseconds() method return a new instance of the modified date
 
-            // we only perform delayed restart when action originated from scheduled calendar event
-            bool delayRestart = callersState.ContainsKey(ApplicationType.AgentScheduler) && (callersState[ApplicationType.AgentScheduler]) > 0;
-
-            if (delayRestart)
+            System.DateTime delayDateTime = System.DateTime.Now.AddMilliseconds(this.restartDelayInMs);
+            if (delayDateTime < this.restartBarrierDateTime)
             {
-                // In order to restart correctly the delay must not be greater than the restart barrier date time
-                // To do so add the restart delay in ms to now, the AddMilliseconds() method return a new instance of the modified date
-                System.DateTime delayDateTime = System.DateTime.Now.AddMilliseconds(this.restartDelayInMs);
-                if (delayDateTime < this.restartBarrierDateTime)
-                {
-                    // The restart timer will call the internalRestart method in the given delay
-                    this.restartTimer.Change(this.restartDelayInMs, System.Threading.Timeout.Infinite);
-                    if (LOGGER.IsDebugEnabled)
-                    {
-                        LOGGER.Debug("The process restart delay is " + this.restartDelayInMs + " ms [barrier:" + this.restartBarrierDateTime.ToString(Constants.DATE_FORMAT) + "]");
-                    }
-                }
-                else
-                {
-                    if (LOGGER.IsDebugEnabled)
-                    {
-                        LOGGER.Debug("Discarding the restart of the process because it would happen outside the allocated time. [delayDateTime: " + delayDateTime.ToString(Constants.DATE_FORMAT) + " and restartBarrierDateTime: " + this.restartBarrierDateTime.ToString(Constants.DATE_FORMAT) + "]");
-                    }
-                }
+                LOGGER.Info("Restarting in " + this.restartDelayInMs + " ms [barrier:" + this.restartBarrierDateTime.ToString(Constants.DATE_FORMAT) + "]");
+                // The restart timer will call the internalRestart method in the given delay
+                this.restartTimer.Change(this.restartDelayInMs, System.Threading.Timeout.Infinite);
             }
             else
             {
-                if (LOGGER.IsDebugEnabled)
-                {
-                    LOGGER.Debug("Restarting the ProActive Runtime process immediately");
-                }
-                this.start();
-            }
+                LOGGER.Info("Aborting restart, beacause it would happen outside the allocated time. [delayDateTime: " + delayDateTime.ToString(Constants.DATE_FORMAT) + " and barrier: " + this.restartBarrierDateTime.ToString(Constants.DATE_FORMAT) + "]");
+            }                     
         }
 
-        //public void setRegistryIsRuntimeStarted(bool value)
-        //{
-        //    try
-        //    {
-        //        RegistryKey confKey = Registry.CurrentUser.OpenSubKey(Constants.PROACTIVE_AGENT_EXECUTORS_REG_SUBKEY, true);
-        //        if (confKey != null)
-        //        {
-        //            confKey.SetValue(this.rank + Constants.PROACTIVE_AGENT_IS_RUNNING_EXECUTOR_REG_VALUE_NAME, value);
-        //            confKey.Close();
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        LOGGER.Error("The executor " + this.rank + " cannot write its state into the registry", e);
-        //    }
-        //}
-
         // this method has to be synchronized as it is dealing with a process object
-
         [MethodImpl(MethodImplOptions.Synchronized)]
         public void disableRestarting()
         {
@@ -597,8 +552,6 @@ namespace ProActiveAgent
             // clean listeners and kill all forked processes
             this.internalClean();
             this.rootProcess = null;
-            //-- runtime started = false
-            // setRegistryIsRuntimeStarted(false);
         }
 
         // !!WARNING!! This method removes all listeners and kills all processes in the job object
@@ -669,11 +622,9 @@ namespace ProActiveAgent
         // and calls internal methods
 
         public void sendStartAction(ApplicationType appType)
-        {
-            if (LOGGER.IsDebugEnabled)
-            {
-                LOGGER.Debug("Received start action request from " + appType.ToString());
-            }
+        {            
+            LOGGER.Info("Received start action request from " + appType.ToString());
+            
             if (callersState.ContainsKey(appType))
             {
                 callersState[appType]++;
@@ -689,35 +640,18 @@ namespace ProActiveAgent
 
         public void sendStopAction(ApplicationType appType)
         {
-            if (LOGGER.IsDebugEnabled)
+            // If this app type didn't start the action so it doesn't have the right to stop it
+            if (!callersState.ContainsKey(appType) || callersState[appType] == 0)
             {
-                LOGGER.Debug("Received stop action request from " + appType.ToString());
-            }
-            if (!callersState.ContainsKey(appType))
-            {
-                if (LOGGER.IsDebugEnabled)
-                {
-                    LOGGER.Debug("No caller for this appType");
-                }
-                // there were no previous actions from this application type (or we deleted them)
                 return;
             }
 
-            if (callersState[appType] == 0)
-            {
-                if (LOGGER.IsDebugEnabled)
-                {
-                    LOGGER.Debug("This app type didn't start the action so it doesn't have the right to stop it");
-                }
-                // this app type didn't start the action so it doesn't have the right to stop it
-                return;
-            }
-            // change state
+            LOGGER.Info("Received stop action request from " + appType.ToString());
+            // Change state
             callersState[appType]--;
-            if (LOGGER.IsDebugEnabled)
-            {
-                LOGGER.Debug("callersState -- " + appType.ToString());
-            }
+
+            // Set restart delay to an initial value
+            this.restartDelayInMs = 0;
 
             foreach (KeyValuePair<ApplicationType, Int32> app in callersState)
             {
@@ -727,6 +661,7 @@ namespace ProActiveAgent
                     return;
                 }
             }
+
             this.stop();
         }
 
@@ -739,10 +674,9 @@ namespace ProActiveAgent
             {
                 this.restartDelayInMs = MAX_RESTART_DELAY_IN_MS;
             }
-            if (LOGGER.IsDebugEnabled)
-            {
-                LOGGER.Debug("Restart delay is now set to " + this.restartDelayInMs + " ms");
-            }
+
+            LOGGER.Info("Restart delay is now set to " + this.restartDelayInMs + " ms");
+            
             this.start();
         }
 
@@ -767,10 +701,7 @@ namespace ProActiveAgent
         /// <param name="maxCpuUsage">The maximum cpu usage</param>
         public void setProcessBehaviour(ProcessPriorityClass processPriority, uint maxCpuUsage)
         {
-            if (LOGGER.IsDebugEnabled)
-            {
-                LOGGER.Debug("Setting process priority to " + processPriority + " and max cpu usage to " + maxCpuUsage + "%");
-            }
+            LOGGER.Info("Setting process priority to " + processPriority + " and max cpu usage to " + maxCpuUsage + "%");            
             this.jobObject.Limits.PriorityClass = processPriority;
             //// Apply the specified process priority to all processes inside the job
             //foreach (Process process in this.jobObject.ConstructAssignedProcessList())
