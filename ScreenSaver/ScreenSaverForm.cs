@@ -81,8 +81,12 @@ namespace ScreenSaver
         // screen saver GUI initialization
 
         private void ScreenSaverForm_Load(object sender, System.EventArgs e)
-        {
-            this.Bounds = Screen.PrimaryScreen.Bounds;
+        {                        
+            this.Bounds = new Rectangle(
+                0,
+                0,
+                SystemInformation.VirtualScreen.Width,
+                SystemInformation.VirtualScreen.Height);            
             VisibleRect = new Rectangle(0, 0, Bounds.Width - pictureBox.Width, Bounds.Height - pictureBox.Height);
             Cursor.Hide();
             TopMost = true;
