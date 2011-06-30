@@ -4,7 +4,7 @@
  */
 package Main;
 
-import GUI.GUIEditorWindows;
+import GUI.mainWindows;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -17,35 +17,27 @@ public class main {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] argv) {
+    public static void main(String[] args) {
         
     try {
 	// Set System L&F
         UIManager.setLookAndFeel(
             UIManager.getSystemLookAndFeelClassName());
-        } 
-        catch (UnsupportedLookAndFeelException e) {
-           // handle exception
-        }
-        catch (ClassNotFoundException e) {
-           // handle exception
-        }
-        catch (InstantiationException e) {
-           // handle exception
-        }
-        catch (IllegalAccessException e) {
-           // handle exception
-        }
+    } 
+    catch (UnsupportedLookAndFeelException e) {
+       // handle exception
+    }
+    catch (ClassNotFoundException e) {
+       // handle exception
+    }
+    catch (InstantiationException e) {
+       // handle exception
+    }
+    catch (IllegalAccessException e) {
+       // handle exception
+    }
         
-        System.out.println("size : " + argv.length);
-        GUIEditorWindows cEUI = null;
-        if(argv.length == 1) {
-            cEUI = new GUIEditorWindows(argv[0]);
-        } else {
-            cEUI = new GUIEditorWindows();
-        }
-    
-        
+        mainWindows cEUI = new mainWindows();
         cEUI.setVisible(true);
     }
 }
