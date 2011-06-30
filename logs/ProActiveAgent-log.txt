@@ -1,0 +1,6 @@
+[INFO 2011-06-17 13:59:20,015] [WindowsService] - Starting ProActive Agent service
+[RROR 2011-06-17 13:59:20,343] [WindowsService] - An exception occured when reading the classpath
+System.ApplicationException: Unable to read the classpath, the ProActive location is unknown
+   à ProActiveAgent.Utils.readClasspath(AgentConfigType config, String installLocation)
+   à ProActiveAgent.WindowsService.OnStart(String[] args)
+[EBUG 2011-06-17 13:59:20,359] [WindowsService] - Stopping ProActive Agent service
