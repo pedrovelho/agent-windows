@@ -6,11 +6,12 @@ package Model;
 
 import Connections.Connections;
 import GUI.GUIEditorWindows;
-import GUI.mainWindows;
 import Planning.Events;
+import Utils.ApplicationLauncher;
 import Utils.FileLocator;
 import Utils.XMLMaker;
 import Utils.XMLParser;
+import java.io.File;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
@@ -24,8 +25,8 @@ public class ModelManager {
     /**
      * The Configs Files by default : XML & XSD
      */
-    private static String XMLFileName = "PAAgent-config.xml";
-    private static String XSDFileName = "agent-windows.xsd";
+    private static String XMLFileName = "XML" + File.separatorChar + "PAAgent-config.xml";
+    private static String XSDFileName = "XML" + File.separatorChar + "agent-windows.xsd";
 
     /**
      * The XML builder and parser
@@ -67,6 +68,12 @@ public class ModelManager {
      */
     private static ArrayList<String> JVMOPTIONS = new ArrayList<String> ();
     
+    /**
+     * Tools
+     */
+    private static FileLocator fileLocator = new FileLocator();
+    private static ApplicationLauncher appLauncher = new ApplicationLauncher();
+    
     
     //GETTERS SETTERS
     public static String getJAVAHOME() { return JAVAHOME; }
@@ -97,18 +104,23 @@ public class ModelManager {
     public static void setListInterfaces(ArrayList<String> list) { ModelManager.NETWORKINTERFACESLIST = list; }
     public static ArrayList<String> getJVMOPTIONS() { return JVMOPTIONS; }
     public static void setJVMOPTIONS(ArrayList<String> JVMOPTIONS) { ModelManager.JVMOPTIONS = JVMOPTIONS; }
+    public static ApplicationLauncher getAppLauncher() {  return appLauncher; }
+    public static void setAppLauncher(ApplicationLauncher appLauncher) { ModelManager.appLauncher = appLauncher; }
+    public static FileLocator getFileLocator() { return fileLocator; }
+    public static void setFileLocator(FileLocator fileLocator) { ModelManager.fileLocator = fileLocator; }
+    
     
     /**
      * Try to locate default XML file at start
      */
     public static void init() {
-        ModelManager.setXMLFileName( new FileLocator().getPathOfFile( ModelManager.getXMLFileName() ));
+        ModelManager.setXSDFileName( new FileLocator().getPathOfFile( ModelManager.getXSDFileName() ));
     }
     
     /**
      * Load xml file with validation
      */
-    public static Boolean loadXML(mainWindows frame) {
+    public static Boolean loadXML(GUIEditorWindows frame) {
         
         setJVMOPTIONS(  new ArrayList<String>() );
         
