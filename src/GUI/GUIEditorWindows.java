@@ -62,7 +62,6 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             radioLocal.setSelected(true);
         }
         
-        System.out.println("size : " + ModelManager.getCONNECTIONS().getCustom().getArgs().size());
         for (String arg : ModelManager.getCONNECTIONS().getCustom().getArgs()) {
             setArgumentToTheArgumentList(arg);
         }

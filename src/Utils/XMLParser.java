@@ -139,9 +139,6 @@ public class XMLParser {
                ModelManager.setPROTOCOL(getChildText(nl.item(i)));
            }
            else if(nl.item(i).getNodeName().equals("portRange")) {
-               System.out.print("Noeud PortRange : ");
-               System.out.print("(first)" + nl.item(i).getAttributes().getNamedItem("first").getNodeValue());
-               System.out.println("(last)" + nl.item(i).getAttributes().getNamedItem("last").getNodeValue());
            }
            else if(nl.item(i).getNodeName().equals("onRuntimeExitScript")) {
                ModelManager.setSCRIPTONEXIT(getChildText(nl.item(i)));
