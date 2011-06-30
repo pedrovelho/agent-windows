@@ -21,7 +21,6 @@ import Model.ModelManager;
 import Utils.ExtensionFileFilter;
 import Utils.ListNetworkInterfaces;
 import java.io.File;
-import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -33,7 +32,7 @@ import javax.swing.filechooser.FileFilter;
  *
  * @author fifi
  */
-public class GUIEditorWindows extends javax.swing.JDialog {
+public class GUIEditorWindows extends javax.swing.JFrame {
 
     private void initConnections() {
         
@@ -50,20 +49,23 @@ public class GUIEditorWindows extends javax.swing.JDialog {
         //CUSTOM CONNECTION
         textStarterClass3.setText(conn.getCustom().getJavaStarterClass());
         
-        Boolean selected = false;
         if(conn.getSelected() == CONNTYPE.LOCAL) {
             radioLocal.setSelected(true);
-            selected = true;
         }
         else if(conn.getSelected() == CONNTYPE.RM) {
             radioResourceManager.setSelected(true);
-            selected = true;
         }
         else if(conn.getSelected() == CONNTYPE.CUSTOM) {
             radioCustom.setSelected(true);
-            selected = true;
+        } else {
+            radioLocal.setSelected(true);
         }
-        if(!selected) {radioLocal.setSelected(true);}
+        
+        System.out.println("size : " + ModelManager.getCONNECTIONS().getCustom().getArgs().size());
+        for (String arg : ModelManager.getCONNECTIONS().getCustom().getArgs()) {
+            setArgumentToTheArgumentList(arg);
+        }
+        
     }
     
     private void initPlanning() {
@@ -119,9 +121,22 @@ public class GUIEditorWindows extends javax.swing.JDialog {
         initConnections();
     }
     
+    public GUIEditorWindows(String XMLFile) {
+        initComponents();
+        
+        //Init Config
+        ModelManager.setXMLFileName(XMLFile);
+        if(ModelManager.loadXML(this)) {
+            System.out.println("open : " + ModelManager.getXMLFileName() + " [OK] ");
+        } else {
+            System.out.println("open : " + ModelManager.getXMLFileName() + " [FAIL] ");
+        }
+        initializeText();
+        setVisible(true);
+    }
+    
     /** Creates new form GUIEditorWindows */
-    public GUIEditorWindows(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+    public GUIEditorWindows() {
         initComponents();
     }
 
@@ -211,13 +226,13 @@ public class GUIEditorWindows extends javax.swing.JDialog {
         textStarterClass3 = new javax.swing.JTextField();
         panelCustom2 = new javax.swing.JPanel();
         labelArguments = new javax.swing.JLabel();
-        textAeraArguments = new javax.swing.JScrollPane();
-        textArguments = new javax.swing.JTextArea();
         buttonAdd = new javax.swing.JButton();
         buttonDelete = new javax.swing.JButton();
         buttonSaveArg = new javax.swing.JButton();
         labelArgument = new javax.swing.JLabel();
         textArgument = new javax.swing.JTextField();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        JlistArguments = new javax.swing.JList();
         PanelPlanning = new javax.swing.JPanel();
         panelWeeklyPlanning = new javax.swing.JPanel();
         buttonCreatePlan = new javax.swing.JButton();
@@ -261,7 +276,6 @@ public class GUIEditorWindows extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setLocationByPlatform(true);
-        setModal(true);
         setResizable(false);
 
         ButtonClose.setText("Close");
@@ -325,7 +339,7 @@ public class GUIEditorWindows extends javax.swing.JDialog {
         JListJVMOption.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         JListJVMOption.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                selectElement(evt);
+                selectJVMOption(evt);
             }
         });
         jScrollPane3.setViewportView(JListJVMOption);
@@ -904,28 +918,42 @@ public class GUIEditorWindows extends javax.swing.JDialog {
 
         labelArguments.setText("Arguments:");
 
-        textArguments.setColumns(20);
-        textArguments.setRows(5);
-        textAeraArguments.setViewportView(textArguments);
-
         buttonAdd.setText("Add");
+        buttonAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addArgumentToCustomConnexion(evt);
+            }
+        });
 
         buttonDelete.setText("Delete");
+        buttonDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeArgument(evt);
+            }
+        });
 
         buttonSaveArg.setText("Save Arg");
 
         labelArgument.setText("Argument:");
+
+        JlistArguments.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        JlistArguments.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                selectArgument(evt);
+            }
+        });
+        jScrollPane4.setViewportView(JlistArguments);
 
         org.jdesktop.layout.GroupLayout panelCustom2Layout = new org.jdesktop.layout.GroupLayout(panelCustom2);
         panelCustom2.setLayout(panelCustom2Layout);
         panelCustom2Layout.setHorizontalGroup(
             panelCustom2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(panelCustom2Layout.createSequentialGroup()
-                .addContainerGap()
+                .add(10, 10, 10)
                 .add(panelCustom2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(labelArguments)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, panelCustom2Layout.createSequentialGroup()
-                        .add(textAeraArguments, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 503, Short.MAX_VALUE)
+                        .add(jScrollPane4, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 503, Short.MAX_VALUE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(panelCustom2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(buttonSaveArg)
@@ -945,19 +973,19 @@ public class GUIEditorWindows extends javax.swing.JDialog {
             .add(panelCustom2Layout.createSequentialGroup()
                 .add(labelArguments)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelCustom2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                .add(panelCustom2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
                     .add(panelCustom2Layout.createSequentialGroup()
                         .add(buttonAdd)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(buttonDelete)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(buttonSaveArg))
-                    .add(textAeraArguments, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 96, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                    .add(jScrollPane4, 0, 0, Short.MAX_VALUE))
+                .add(21, 21, 21)
                 .add(panelCustom2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(labelArgument)
                     .add(textArgument, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(19, Short.MAX_VALUE))
         );
 
         org.jdesktop.layout.GroupLayout panelCustomLayout = new org.jdesktop.layout.GroupLayout(panelCustom);
@@ -976,7 +1004,7 @@ public class GUIEditorWindows extends javax.swing.JDialog {
             .add(org.jdesktop.layout.GroupLayout.TRAILING, panelCustomLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(panelCustom2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 75, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 67, Short.MAX_VALUE)
                 .add(PanelAdditionnalConf3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -1577,36 +1605,33 @@ public class GUIEditorWindows extends javax.swing.JDialog {
         } 
     }
     
-    private Connections saveConnections() {
+    private void saveConnections() {
         
-        Connections conn = new Connections();
         //LOCAL CONNECTION
-        conn.getLocal().setJavaStarterClass(textStarterClass4.getText());
-        conn.getLocal().setNodeName(textNodeName1.getText());
-        conn.getLocal().setRespawnIncrement(10);
+         ModelManager.getCONNECTIONS().getLocal().setJavaStarterClass(textStarterClass4.getText());
+         ModelManager.getCONNECTIONS().getLocal().setNodeName(textNodeName1.getText());
+         ModelManager.getCONNECTIONS().getLocal().setRespawnIncrement(10);
         //RM CONNECTION
-        conn.getRMConn().setJavaStarterClass(textStarterClass2.getText());
-        conn.getRMConn().setNodeName(textNodeName2.getText());
-        conn.getRMConn().setRespawnIncrement(10);
-        conn.getRMConn().setUrl(textRMURL.getText());
-        conn.getRMConn().setNodeSourceName(textNodeSourceName.getText());
-        conn.getRMConn().setCredential(textCredential.getText());
+         ModelManager.getCONNECTIONS().getRMConn().setJavaStarterClass(textStarterClass2.getText());
+         ModelManager.getCONNECTIONS().getRMConn().setNodeName(textNodeName2.getText());
+         ModelManager.getCONNECTIONS().getRMConn().setRespawnIncrement(10);
+         ModelManager.getCONNECTIONS().getRMConn().setUrl(textRMURL.getText());
+         ModelManager.getCONNECTIONS().getRMConn().setNodeSourceName(textNodeSourceName.getText());
+         ModelManager.getCONNECTIONS().getRMConn().setCredential(textCredential.getText());
         //CUSTOM CONNECTION
-        conn.getCustom().setJavaStarterClass(textStarterClass3.getText());
-        conn.getCustom().setNodeName("?");
-        conn.getCustom().setRespawnIncrement(10);
+         ModelManager.getCONNECTIONS().getCustom().setJavaStarterClass(textStarterClass3.getText());
+         ModelManager.getCONNECTIONS().getCustom().setNodeName("?");
+         ModelManager.getCONNECTIONS().getCustom().setRespawnIncrement(10);
         
         if(radioLocal.isSelected()) {
-            conn.setSelected(CONNTYPE.LOCAL);
+             ModelManager.getCONNECTIONS().setSelected(CONNTYPE.LOCAL);
         }
         else if(radioResourceManager.isSelected()) {
-            conn.setSelected(CONNTYPE.RM);
+             ModelManager.getCONNECTIONS().setSelected(CONNTYPE.RM);
         }
         else if(radioCustom.isSelected()) {
-            conn.setSelected(CONNTYPE.CUSTOM);
+             ModelManager.getCONNECTIONS().setSelected(CONNTYPE.CUSTOM);
         }
-        
-        return conn;
     }
     
     /**
@@ -1630,7 +1655,7 @@ public class GUIEditorWindows extends javax.swing.JDialog {
             }
         }
         
-        ModelManager.setCONNECTIONS( saveConnections() );
+        saveConnections();
         
         ModelManager.setSCRIPTONEXIT( textScriptLocation.getText() );
         ModelManager.setJAVAHOME(textJavaHome.getText());
@@ -1811,6 +1836,11 @@ public class GUIEditorWindows extends javax.swing.JDialog {
                                       JOptionPane.YES_NO_CANCEL_OPTION);
             
             if(answer == JOptionPane.YES_OPTION) {
+                
+                saveAsProperties(evt);
+                
+            }
+            if(answer == JOptionPane.YES_OPTION || answer == JOptionPane.NO_OPTION) {
                 ModelManager.getEVENTS().freeEventsList();
                 DefaultListModel listModel = new DefaultListModel();
                 listPlanning.setModel(listModel); 
@@ -1826,7 +1856,6 @@ public class GUIEditorWindows extends javax.swing.JDialog {
                 
                 buttonCreatePlan.setEnabled(false);
                 buttonDeletePlan.setEnabled(false);
-
             } else {
                 checkBoxAlwaysAvailable.setSelected(false);
             }
@@ -1959,7 +1988,7 @@ public class GUIEditorWindows extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_removeJVMOption
 
-    private void selectElement(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_selectElement
+    private void selectJVMOption(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_selectJVMOption
         
         int index;
         // EDIT MODE
@@ -1983,7 +2012,7 @@ public class GUIEditorWindows extends javax.swing.JDialog {
                 }
             }
         }
-    }//GEN-LAST:event_selectElement
+    }//GEN-LAST:event_selectJVMOption
 
     private void selectNetworkInterface(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_selectNetworkInterface
         int index;
@@ -2012,6 +2041,69 @@ public class GUIEditorWindows extends javax.swing.JDialog {
         ModelManager.getJVMOPTIONS().add(newOption);
     }//GEN-LAST:event_addJVMOption
 
+    private void setArgumentToTheArgumentList(String newArgument) {
+        
+        DefaultListModel listModel = new DefaultListModel();  
+        for(int i=0 ; i< JlistArguments.getModel().getSize() ; i++ ){  
+            listModel.addElement(JlistArguments.getModel().getElementAt(i));
+        }  
+
+        listModel.addElement(newArgument);
+        JlistArguments.setModel(listModel);
+    }
+    
+    private void addArgumentToCustomConnexion(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addArgumentToCustomConnexion
+        
+        String newArgument;
+        if(textArgument.getText().equals("")) {
+            newArgument = "-New argument";
+        } else {
+            newArgument = textArgument.getText();
+        }
+        setArgumentToTheArgumentList(newArgument);
+        ModelManager.getCONNECTIONS().getCustom().addArgs(newArgument);
+    }//GEN-LAST:event_addArgumentToCustomConnexion
+
+    private void removeArgument(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeArgument
+        int index;
+        if((index = JlistArguments.getSelectedIndex()) != -1) {
+            
+            DefaultListModel listModel = new DefaultListModel();  
+            for(int i=0 ; i< JlistArguments.getModel().getSize() ; i++ ){  
+                listModel.addElement(JlistArguments.getModel().getElementAt(i));  
+            }  
+            listModel.remove(index);
+            ModelManager.getCONNECTIONS().getCustom().removeArg(index);
+            
+            JlistArguments.setModel(listModel);
+        }
+    }//GEN-LAST:event_removeArgument
+
+    private void selectArgument(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_selectArgument
+        int index;
+        // EDIT MODE
+        if(evt.getClickCount() == 2) {
+            if((index = JlistArguments.getSelectedIndex()) != -1) {
+            
+                String message = "New value : ";
+                String newValue = JOptionPane.showInputDialog(
+                        message,JlistArguments.getSelectedValue() );
+                
+                if(newValue != null) {
+                
+                    DefaultListModel listModel = new DefaultListModel();  
+                    for(int i=0 ; i< JlistArguments.getModel().getSize() ; i++ ){  
+                        listModel.addElement(JlistArguments.getModel().getElementAt(i));  
+                    }  
+                    listModel.set(index,newValue);
+                    ModelManager.getCONNECTIONS().getCustom().setArg(index, newValue);
+                    
+                    JlistArguments.setModel(listModel);
+                }
+            }
+        }
+    }//GEN-LAST:event_selectArgument
+
     /**
      * @param args the command line arguments
      */
@@ -2019,7 +2111,7 @@ public class GUIEditorWindows extends javax.swing.JDialog {
         java.awt.EventQueue.invokeLater(new Runnable() {
 
             public void run() {
-                GUIEditorWindows dialog = new GUIEditorWindows(new javax.swing.JFrame(), true);
+                GUIEditorWindows dialog = new GUIEditorWindows();
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
 
                     public void windowClosing(java.awt.event.WindowEvent e) {
@@ -2042,6 +2134,7 @@ public class GUIEditorWindows extends javax.swing.JDialog {
     private javax.swing.JTabbedPane GlobalPanel;
     private javax.swing.JList JListInterfaces;
     private javax.swing.JList JListJVMOption;
+    private javax.swing.JList JlistArguments;
     private javax.swing.JPanel PanelANI;
     private javax.swing.JPanel PanelAdditionnalConf2;
     private javax.swing.JPanel PanelAdditionnalConf3;
@@ -2079,6 +2172,7 @@ public class GUIEditorWindows extends javax.swing.JDialog {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JLabel labelArgument;
     private javax.swing.JLabel labelArguments;
     private javax.swing.JLabel labelCPUs;
@@ -2137,9 +2231,7 @@ public class GUIEditorWindows extends javax.swing.JDialog {
     private javax.swing.JSpinner spinnerStartSecondes;
     private javax.swing.JSpinner splinMemoryLimit;
     private javax.swing.JScrollPane testAeraPlanning;
-    private javax.swing.JScrollPane textAeraArguments;
     private javax.swing.JTextField textArgument;
-    private javax.swing.JTextArea textArguments;
     private javax.swing.JLabel textCPUs;
     private javax.swing.JTextField textCredential;
     private javax.swing.JTextField textJavaHome;

@@ -338,7 +338,7 @@ public class XMLParser {
                 ModelManager.getCONNECTIONS().getCustom().setNodeName(
                         getChildText(nl.item(i)) );
             }
-            else if(nl.item(i).getNodeName().equals("nodename")) {
+            else if(nl.item(i).getNodeName().equals("args")) {
                 
                 //Configurations
                ArrayList<String> args = new ArrayList<String>();
@@ -350,7 +350,7 @@ public class XMLParser {
                         args.add( getChildText(nl2.item(j)) );
                     }
                 }
-               
+               System.out.println("size : " + args.size());
                ModelManager.getCONNECTIONS().getCustom().setArgs(args);
             }
         }

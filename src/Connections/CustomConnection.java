@@ -33,6 +33,22 @@ public class CustomConnection {
     public void setArgs(ArrayList<String> args) {
         this.args = args;
     }
+    
+    public void freeArgs() {
+        this.args = new ArrayList<String>();
+    }
+    
+    public void addArgs(String arg) {
+        this.args.add(arg);
+    }
+    
+    public void removeArg(int i) {
+        this.args.remove(i);
+    }
+    
+    public void setArg(int i , String value) {
+        this.args.set(i, value);
+    }
 
     public String getJavaStarterClass() {
         return javaStarterClass;
