@@ -69,7 +69,14 @@ public class XMLMaker {
         Attr attrXSD = doc.createAttribute("xmlns:xsd");
         attrXSD.setValue("http://www.w3.org/2001/XMLSchema");
         Attr attrXmlns = doc.createAttribute("xmlns");
-        attrXmlns.setValue("urn:proactive:agent:0.90:windows");
+        String os = System.getProperty("os.name").toLowerCase();
+        if(os.indexOf( "win" ) >= 0) {
+             attrXmlns.setValue("urn:proactive:agent:0.90:windows");
+        } else if (os.indexOf( "nix") >=0 || os.indexOf( "nux") >=0) {
+             attrXmlns.setValue("urn:proactive:agent:0.90:linux");
+        }
+        
+       
         
         rootElement.setAttributeNode(attrXSI);
         rootElement.setAttributeNode(attrXSD);
@@ -205,19 +212,16 @@ public class XMLMaker {
        Element config = doc.createElement( CONFIGNODENAME );
        parentElement.appendChild(config);
        
-       if(!ModelManager.getPROACTIVEHOME().equals("")){
-          //ProActive Home element
-	  Element proActiveHomeNode = doc.createElement("proactiveHome");
-          proActiveHomeNode.appendChild(doc.createTextNode(ModelManager.getPROACTIVEHOME()));
-	  config.appendChild(proActiveHomeNode);
-       }
-       if(!ModelManager.getJAVAHOME().equals("")){
-          //JAVAHOME element
-	  Element javaNode = doc.createElement("javaHome");
-          javaNode.appendChild(doc.createTextNode(ModelManager.getJAVAHOME()));
-	  config.appendChild(javaNode);
-       }
-       if(ModelManager.getJVMOPTIONS().size() >= 0){
+      //ProActive Home element
+      Element proActiveHomeNode = doc.createElement("proactiveHome");
+      proActiveHomeNode.appendChild(doc.createTextNode(ModelManager.getPROACTIVEHOME()));
+      config.appendChild(proActiveHomeNode);
+      //JAVAHOME element
+      Element javaNode = doc.createElement("javaHome");
+      javaNode.appendChild(doc.createTextNode(ModelManager.getJAVAHOME()));
+      config.appendChild(javaNode);
+       
+      if(ModelManager.getJVMOPTIONS().size() > 0){
           //JVM Options element
 	  Element jvmOptionLimit = doc.createElement("jvmParameters");
           
@@ -247,7 +251,6 @@ public class XMLMaker {
           protocolNode.appendChild(doc.createTextNode(ModelManager.getPROTOCOL()));
 	  config.appendChild(protocolNode);
        }
-       System.out.println("1: " + ModelManager.getPORTMIN() + " 2: " + ModelManager.getPORTMAX());
        if(ModelManager.getPORTMIN() >= 0 && ModelManager.getPORTMAX() >= 0){
           //Memory Limit element
 	  Element portRangeNode = doc.createElement("portRange");

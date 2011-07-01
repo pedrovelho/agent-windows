@@ -156,7 +156,17 @@ public class ModelManager {
      */
     public static Boolean saveXML(GUIEditorWindows frame) {
         if(xmlBuilder.saveDocument(XMLFileName)) {
-            if(xmlParser.checkValidation(XMLFileName, XMLFileName))
+            
+            String XSDFileName = "";
+            String os = System.getProperty("os.name").toLowerCase();
+           if(os.indexOf( "win" ) >= 0) {
+              XSDFileName = XSDFileName4Windows;
+           } else if (os.indexOf( "nix") >=0 || os.indexOf( "nux") >=0) {  
+               XSDFileName = XSDFileName4Linux;
+           }
+            
+            
+            if(xmlParser.checkValidation(XMLFileName, XSDFileName))
             {
                JOptionPane.showMessageDialog(frame, "The file \"" + XMLFileName + "\" was saved.");
                return true; 
@@ -176,7 +186,16 @@ public class ModelManager {
      */
     public static Boolean saveXML(GUIEditorWindows frame, String saveAsFile) {
         if(xmlBuilder.saveDocument(saveAsFile)) {
-            if(xmlParser.checkValidation(saveAsFile, XMLFileName))
+            String XSDFileName = "";
+            String os = System.getProperty("os.name").toLowerCase();
+           if(os.indexOf( "win" ) >= 0) {
+              XSDFileName = XSDFileName4Windows;
+           } else if (os.indexOf( "nix") >=0 || os.indexOf( "nux") >=0) {  
+               XSDFileName = XSDFileName4Linux;
+           }
+            
+            
+            if(xmlParser.checkValidation(XMLFileName, XSDFileName))
             {
                JOptionPane.showMessageDialog(frame,"The file \"" + saveAsFile + "\" was saved.");
                return true; 

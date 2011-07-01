@@ -23,7 +23,7 @@ public class Config {
     private int portRangeLast = 65534;
     private String processPriority = "";
     private int cpuUsage = 1;
-    private int classdata = 0;
+    private int classdata = 1;
 
     public int getClassdata() {
         return classdata;
