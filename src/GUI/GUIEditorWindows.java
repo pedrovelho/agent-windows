@@ -85,7 +85,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             spinnerClassData.setVisible(false);
         } else if (os.indexOf( "nix") >=0 || os.indexOf( "nux") >=0) {
             labelMaxCPUUsage.setText("nice:");
-            labelProcessPrioriry.setText("ionice");
+            labelProcessPrioriry.setText("ionice:");
             
             comboBoxPriority.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "none", "realtime", "bestEffort", "idle" }));
             comboBoxPriority.setSelectedIndex(0);
