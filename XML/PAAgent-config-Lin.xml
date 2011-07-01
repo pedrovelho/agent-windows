@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+
+<agent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:proactive:agent:0.90:linux">
+  <config>
+    <proactiveHome>set the proactive home</proactiveHome>
+    <javaHome>set the java home</javaHome>
+    <memoryLimit>0</memoryLimit>
+    <nbRuntimes>1</nbRuntimes>
+    <protocol>undefined</protocol>
+    <portRange first="0" last="65534" />
+    <nice>1</nice>
+    <ionice class="none" classdata="1" />
+  </config>
+  <events>
+    <event>
+      <start day="Monday" hour="0" minute="0" second="0" />
+      <duration days="0" hours="0" minutes="0" seconds="0" />
+      <config>
+        <proactiveHome>set the proactive home</proactiveHome>
+        <javaHome>set the java home</javaHome>
+        <memoryLimit>0</memoryLimit>
+        <nbRuntimes>1</nbRuntimes>
+        <protocol>undefined</protocol>
+        <portRange first="0" last="65534" />
+        <nice>1</nice>
+        <ionice class="none" classdata="1" />
+      </config>
+    </event>
+  </events>
+  <connections>
+    <localBind enabled="true">
+      <respawnIncrement>10</respawnIncrement>
+      <javaStarterClass>org.objectweb.proactive.core.util.winagent.PAAgentServiceRMIStarter</javaStarterClass>
+    </localBind>
+    <rmConnection enabled="false">
+      <respawnIncrement>10</respawnIncrement>
+      <javaStarterClass>org.ow2.proactive.resourcemanager.utils.RMNodeStarter</javaStarterClass>
+      <url>rmi://localhost:1099</url>
+    </rmConnection>
+    <customConnection enabled="false">
+      <respawnIncrement>10</respawnIncrement>
+      <javaStarterClass>user.Starter</javaStarterClass>
+    </customConnection>
+  </connections>
+</agent>
+
