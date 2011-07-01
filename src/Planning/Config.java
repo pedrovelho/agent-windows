@@ -22,7 +22,16 @@ public class Config {
     private int portRangeFirst = 0;
     private int portRangeLast = 65534;
     private String processPriority = "";
-    private int maxCpuUsage = 0;
+    private int cpuUsage = 0;
+    private int classdata = 0;
+
+    public int getClassdata() {
+        return classdata;
+    }
+
+    public void setClassdata(int classdata) {
+        this.classdata = classdata;
+    }
 
     public String getJVMParameters() {
         return JVMParameters;
@@ -56,12 +65,12 @@ public class Config {
         this.protocol = protocol;
     }
 
-    public int getMaxCpuUsage() {
-        return maxCpuUsage;
+    public int getCpuUsage() {
+        return cpuUsage;
     }
 
-    public void setMaxCpuUsage(int maxCpuUsage) {
-        this.maxCpuUsage = maxCpuUsage;
+    public void setCpuUsage(int maxCpuUsage) {
+        this.cpuUsage = maxCpuUsage;
     }
 
     public int getMemoryLimit() {

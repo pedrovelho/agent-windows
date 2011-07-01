@@ -138,15 +138,28 @@ public class XMLMaker {
           scriptOnExitNode.appendChild(doc.createTextNode(ModelManager.getSCRIPTONEXIT()));
 	  config.appendChild(scriptOnExitNode);
        }
-      //processPriority element
-      Element processPriorityNode = doc.createElement("processPriority");
-      processPriorityNode.appendChild(doc.createTextNode(conf.getProcessPriority()));
-      config.appendChild(processPriorityNode);
-      //maxCpuUsage element
-      Element maxCpuUsageNode = doc.createElement("maxCpuUsage");
-      maxCpuUsageNode.appendChild(doc.createTextNode(conf.getMaxCpuUsage() + ""));
-      config.appendChild(maxCpuUsageNode);
-       
+       //Specifics parameters for CPU
+       String os = System.getProperty("os.name").toLowerCase();
+       if(os.indexOf( "win" ) >= 0) {
+          //processPriority element
+          Element processPriorityNode = doc.createElement("processPriority");
+          processPriorityNode.appendChild(doc.createTextNode(conf.getProcessPriority()));
+          config.appendChild(processPriorityNode);
+          //CpuUsage element
+          Element maxCpuUsageNode = doc.createElement("maxCpuUsage");
+          maxCpuUsageNode.appendChild(doc.createTextNode(conf.getCpuUsage() + ""));
+          config.appendChild(maxCpuUsageNode);
+       } else if (os.indexOf( "nix") >=0 || os.indexOf( "nux") >=0) {  
+          //processPriority element
+          Element processPriorityNode = doc.createElement("nice");
+          processPriorityNode.appendChild(doc.createTextNode(conf.getCpuUsage() + ""));
+          config.appendChild(processPriorityNode);
+           //CpuUsage element
+	  Element portRangeNode = doc.createElement("ionice");
+          portRangeNode.setAttribute("class", conf.getProcessPriority());
+          portRangeNode.setAttribute("classdata", conf.getClassdata() + "");
+	  config.appendChild(portRangeNode);
+       }
         
         return doc;
     }
@@ -248,10 +261,10 @@ public class XMLMaker {
           processPriorityNode.appendChild(doc.createTextNode(ModelManager.getPROCESSPRIORITY()));
 	  config.appendChild(processPriorityNode);
        }
-       if(ModelManager.getMAXCPUUSAGE() >= 0 && ModelManager.getMAXCPUUSAGE() <= 100){
+       if(ModelManager.getCPUUSAGE() >= 0 && ModelManager.getCPUUSAGE() <= 100){
           //Script On Exit element
 	  Element maxCpuUsageNode = doc.createElement("maxCpuUsage");
-          maxCpuUsageNode.appendChild(doc.createTextNode(ModelManager.getMAXCPUUSAGE() + ""));
+          maxCpuUsageNode.appendChild(doc.createTextNode(ModelManager.getCPUUSAGE() + ""));
 	  config.appendChild(maxCpuUsageNode);
        }
        
