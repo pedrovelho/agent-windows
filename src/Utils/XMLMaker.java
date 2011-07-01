@@ -33,8 +33,6 @@ public class XMLMaker {
     
     public static void main(String[] av) throws IOException {
         
-        ModelManager.init();
-        
         XMLMaker dw = new XMLMaker();
         dw.saveDocument("text.txt");
   }
@@ -249,23 +247,42 @@ public class XMLMaker {
           protocolNode.appendChild(doc.createTextNode(ModelManager.getPROTOCOL()));
 	  config.appendChild(protocolNode);
        }
+       System.out.println("1: " + ModelManager.getPORTMIN() + " 2: " + ModelManager.getPORTMAX());
+       if(ModelManager.getPORTMIN() >= 0 && ModelManager.getPORTMAX() >= 0){
+          //Memory Limit element
+	  Element portRangeNode = doc.createElement("portRange");
+          portRangeNode.setAttribute("first", ModelManager.getPORTMIN() + "");
+          portRangeNode.setAttribute("last", ModelManager.getPORTMAX() + "");
+	  config.appendChild(portRangeNode);
+       }
        if(!ModelManager.getSCRIPTONEXIT().equals("")){
           //Script On Exit element
 	  Element scriptOnExitNode = doc.createElement("onRuntimeExitScript");
           scriptOnExitNode.appendChild(doc.createTextNode(ModelManager.getSCRIPTONEXIT()));
 	  config.appendChild(scriptOnExitNode);
        }
-       if(!ModelManager.getPROCESSPRIORITY().equals("")){
-          //Script On Exit element
-	  Element processPriorityNode = doc.createElement("processPriority");
+       //Specifics parameters for CPU
+       String os = System.getProperty("os.name").toLowerCase();
+       if(os.indexOf( "win" ) >= 0) {
+          //processPriority element
+           System.out.println("process : " + ModelManager.getPROCESSPRIORITY());
+          Element processPriorityNode = doc.createElement("processPriority");
           processPriorityNode.appendChild(doc.createTextNode(ModelManager.getPROCESSPRIORITY()));
-	  config.appendChild(processPriorityNode);
-       }
-       if(ModelManager.getCPUUSAGE() >= 0 && ModelManager.getCPUUSAGE() <= 100){
-          //Script On Exit element
-	  Element maxCpuUsageNode = doc.createElement("maxCpuUsage");
+          config.appendChild(processPriorityNode);
+          //CpuUsage element
+          Element maxCpuUsageNode = doc.createElement("maxCpuUsage");
           maxCpuUsageNode.appendChild(doc.createTextNode(ModelManager.getCPUUSAGE() + ""));
-	  config.appendChild(maxCpuUsageNode);
+          config.appendChild(maxCpuUsageNode);
+       } else if (os.indexOf( "nix") >=0 || os.indexOf( "nux") >=0) {  
+          //processPriority element
+          Element processPriorityNode = doc.createElement("nice");
+          processPriorityNode.appendChild(doc.createTextNode(ModelManager.getCPUUSAGE() + ""));
+          config.appendChild(processPriorityNode);
+           //CpuUsage element
+	  Element portRangeNode = doc.createElement("ionice");
+          portRangeNode.setAttribute("class", ModelManager.getPROCESSPRIORITY());
+          portRangeNode.setAttribute("classdata", ModelManager.getCLASSDATA() + "");
+	  config.appendChild(portRangeNode);
        }
        
        return doc;
@@ -359,12 +376,6 @@ public class XMLMaker {
           //ProActive Home element
 	  Element nodeName = doc.createElement("javaStarterClass");
           nodeName.appendChild(doc.createTextNode(ModelManager.getCONNECTIONS().getCustom().getJavaStarterClass()));
-	  parentElement.appendChild(nodeName);
-        }
-        if(!ModelManager.getCONNECTIONS().getCustom().getNodeName().equals("") ){
-          //ProActive Home element
-	  Element nodeName = doc.createElement("nodename");
-          nodeName.appendChild(doc.createTextNode(ModelManager.getCONNECTIONS().getCustom().getNodeName()));
 	  parentElement.appendChild(nodeName);
         }
         if(ModelManager.getCONNECTIONS().getCustom().getArgs().size() > 0) {

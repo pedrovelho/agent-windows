@@ -44,9 +44,11 @@ public class ModelManager {
     private static String PROTOCOL = "";
     private static int NBRUNTIMES = 0;
     private static int MEMORYLIMIT = 0;
-    private static int CPUUSAGE = 0;
+    private static int CPUUSAGE = 1;
     private static String PROCESSPRIORITY = "";
-    private static int CLASSDATA = 0;
+    private static int CLASSDATA = 1;
+    private static int PORTMIN = 0;
+    private static int PORTMAX = 65534;
     
     /**
      * List of NetworkInterfaces
@@ -112,12 +114,18 @@ public class ModelManager {
     public static void setFileLocator(FileLocator fileLocator) { ModelManager.fileLocator = fileLocator; }
     public static int getCLASSDATA() { return CLASSDATA; }
     public static void setCLASSDATA(int CLASSDATA) { ModelManager.CLASSDATA = CLASSDATA; }
-    
-    /**
-     * Try to locate default XML file at start
-     */
-    public static void init() {
-        ModelManager.setXSDFileName( new FileLocator().getPathOfFile( ModelManager.getXSDFileName() ));
+    public static int getPORTMIN() { return PORTMIN; }
+    public static void setPORTMIN(int PORTMIN) { ModelManager.PORTMIN = PORTMIN; }
+    public static int getPORTMAX() { return PORTMAX; }
+    public static void setPORTMAX(int PORTMAX) { ModelManager.PORTMAX = PORTMAX; }
+
+    static {
+        String os = System.getProperty("os.name").toLowerCase();
+        if(os.indexOf( "win" ) >= 0) {
+          PROCESSPRIORITY = "Idle";
+       } else if (os.indexOf( "nix") >=0 || os.indexOf( "nux") >=0) {  
+          PROCESSPRIORITY = "none";
+       }
     }
     
     /**
@@ -148,8 +156,14 @@ public class ModelManager {
      */
     public static Boolean saveXML(GUIEditorWindows frame) {
         if(xmlBuilder.saveDocument(XMLFileName)) {
-            JOptionPane.showMessageDialog(frame, "The file \"" + XMLFileName + "\" was saved.");
-            return true;
+            if(xmlParser.checkValidation(XMLFileName, XMLFileName))
+            {
+               JOptionPane.showMessageDialog(frame, "The file \"" + XMLFileName + "\" was saved.");
+               return true; 
+            } else {
+               JOptionPane.showMessageDialog(frame,"The file " + XMLFileName + " is not valid.");
+               return false;
+            }
         } else {
             JOptionPane.showMessageDialog(frame,"An error was encountered.");
             return false;
@@ -162,8 +176,14 @@ public class ModelManager {
      */
     public static Boolean saveXML(GUIEditorWindows frame, String saveAsFile) {
         if(xmlBuilder.saveDocument(saveAsFile)) {
-            JOptionPane.showMessageDialog(frame,"The file \"" + saveAsFile + "\" was saved.");
-            return true;
+            if(xmlParser.checkValidation(saveAsFile, XMLFileName))
+            {
+               JOptionPane.showMessageDialog(frame,"The file \"" + saveAsFile + "\" was saved.");
+               return true; 
+            } else {
+               JOptionPane.showMessageDialog(frame,"The file " + saveAsFile + " is not valid.");
+               return false;
+            }
         } else {
             JOptionPane.showMessageDialog(frame,"An error was encountered.");
             return false;
@@ -172,7 +192,6 @@ public class ModelManager {
     
     public static void main(String[] args)
     {
-        ModelManager.init();
         System.out.println("File name : " + XMLFileName);
         ModelManager.loadXML(null);
         System.out.println("ProActive : " + PROACTIVEHOME);

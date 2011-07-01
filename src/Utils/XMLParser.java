@@ -18,6 +18,8 @@ package Utils;
 //import org.xml.sax.SAXException;
 
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Validator;
 import Connections.Connections.CONNTYPE;
@@ -70,7 +72,7 @@ public class XMLParser {
         
         try
         {       //Parsing method with validation schema
-                doc = parserXML(new File( XMLFile ) , XSDFile);
+                doc = parserXML( XMLFile , XSDFile);
 
                 if(doc != null) {
                     System.out.println("validation of " + XSDFile + " [OK]");
@@ -446,6 +448,21 @@ public class XMLParser {
         return sf.newSchema(new File(XSDFileName));
     }
 
+    public Boolean checkValidation(String XMLFile , String XSDFile) {
+        try {
+            Schema schema = compileSchema(XSDFile);
+            Validator validator = schema.newValidator();
+            validator.validate(new StreamSource(new File(XMLFile)));
+        } catch (IOException ex) {
+            System.out.println( ex.getMessage() );
+            return false;
+        } catch (SAXException ex) {
+            System.out.println( ex.getMessage() );
+            return false;
+        }
+        return true;
+    }
+    
     /**
      * 
      * @param XMLFile : the XML file
@@ -455,27 +472,26 @@ public class XMLParser {
      * @throws IOException
      * @throws ParserConfigurationException 
      */
-    public Document parserXML(File XMLFile , String XSDFile) 
+    public Document parserXML(String XMLFile , String XSDFile) 
         throws SAXException, IOException, ParserConfigurationException
     {
-        Schema schema = compileSchema(XSDFile);
-        
         Document document = null;
         
-        try {
-            Validator validator = schema.newValidator();
-            validator.validate(new StreamSource(XMLFile));
+        if (checkValidation(XMLFile,XSDFile) ) {
             
+            try {
             // parse an XML document into a DOM tree
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance(); 
             DocumentBuilder parser = dbf.newDocumentBuilder();
-            document = parser.parse(XMLFile);
+            document = parser.parse(new File(XMLFile));
             
-        } catch (Exception ex) {
+            } catch (Exception ex) {
+              System.out.println("validation with ERRORS :");
+              System.out.println( ex.getMessage() );  
+            }
+        } else {
             System.out.println("validation with ERRORS :");
-            System.out.println( ex.getMessage() );
         }
-
         return document;
     }
 

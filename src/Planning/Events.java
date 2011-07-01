@@ -43,15 +43,22 @@ public class Events {
     }
     
     public Event getLastEvent() {
-        return listEvents.get( getSize() - 1 );
+        if(getSize() > 0) {
+            return listEvents.get( getSize() - 1 );
+        }
+        return null;
     }
     
     public void removeEventById(int id) {
-        listEvents.remove(id);
+        if(id >= 0 && id < getSize()) {
+            listEvents.remove(id);
+        }
     }
     
     public void setEventById(int id, Event ev) {
-        listEvents.set(id, ev);
+        if(id >= 0 && id < getSize()) {
+            listEvents.set(id, ev);
+        }
     }
     
 }

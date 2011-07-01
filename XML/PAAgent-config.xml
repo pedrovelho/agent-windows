@@ -2,40 +2,32 @@
 
 <agent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:proactive:agent:0.90:windows">
   <config>
-    <jvmParameters />
+    <proactiveHome>set the proactive home</proactiveHome>
+    <javaHome>set the java home</javaHome>
+    <jvmParameters>
+      <param>-Dproactive.net.interface=eth1</param>
+    </jvmParameters>
     <memoryLimit>0</memoryLimit>
-    <nbRuntimes>1</nbRuntimes>
-    <protocol>parm</protocol>
-    <processPriority>realtime</processPriority>
-    <maxCpuUsage>5</maxCpuUsage>
+    <nbRuntimes>0</nbRuntimes>
+    <protocol>undefined</protocol>
+    <portRange first="0" last="65534" />
+    <processPriority>Idle</processPriority>
+    <maxCpuUsage>1</maxCpuUsage>
   </config>
-  <events>
-    <event>
-      <start day="Wednesday" hour="0" minute="0" second="0" />
-      <duration days="2" hours="0" minutes="0" seconds="0" />
-      <config>
-        <memoryLimit>0</memoryLimit>
-        <nbRuntimes>1</nbRuntimes>
-        <protocol>parm</protocol>
-        <portRange first="0" last="65534" />
-        <nice>5</nice>
-        <ionice class="realtime" classdata="0" />
-      </config>
-    </event>
-  </events>
+  <events />
   <connections>
-    <localBind enabled="false">
+    <localBind enabled="true">
       <respawnIncrement>10</respawnIncrement>
       <javaStarterClass>org.objectweb.proactive.core.util.winagent.PAAgentServiceRMIStarter</javaStarterClass>
     </localBind>
     <rmConnection enabled="false">
       <respawnIncrement>10</respawnIncrement>
       <javaStarterClass>org.ow2.proactive.resourcemanager.utils.RMNodeStarter</javaStarterClass>
+      <url>rmi://localhost:1099</url>
     </rmConnection>
     <customConnection enabled="false">
       <respawnIncrement>10</respawnIncrement>
       <javaStarterClass>user.Starter</javaStarterClass>
-      <nodename>?</nodename>
     </customConnection>
   </connections>
 </agent>

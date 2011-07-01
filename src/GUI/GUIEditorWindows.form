@@ -243,8 +243,14 @@
                   </Events>
                 </Component>
                 <Component class="javax.swing.JTextField" name="textProActiveHome">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="set the proactive home"/>
+                  </Properties>
                 </Component>
                 <Component class="javax.swing.JTextField" name="textJavaHome">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="set the java home"/>
+                  </Properties>
                 </Component>
                 <Component class="javax.swing.JCheckBox" name="checkBoxJavaHome">
                   <Properties>
@@ -307,7 +313,7 @@
                       <Group type="102" alignment="1" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="1" attributes="0">
-                              <Component id="jScrollPane1" alignment="0" pref="240" max="32767" attributes="0"/>
+                              <Component id="jScrollPane1" alignment="0" pref="265" max="32767" attributes="0"/>
                               <Group type="102" alignment="1" attributes="0">
                                   <Component id="buttonUse" linkSize="12" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -321,7 +327,7 @@
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <Component id="jScrollPane1" pref="166" max="32767" attributes="0"/>
+                          <Component id="jScrollPane1" pref="185" max="32767" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="buttonUse" min="-2" max="-2" attributes="0"/>
@@ -525,7 +531,7 @@
                           </Group>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Component id="checkBoxCPUs" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace pref="24" max="32767" attributes="0"/>
+                          <EmptySpace pref="28" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -626,7 +632,7 @@
                   <Group type="102" alignment="1" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="1" attributes="0">
-                          <Component id="panelMultipleConnections" alignment="0" pref="807" max="32767" attributes="1"/>
+                          <Component id="panelMultipleConnections" alignment="0" pref="814" max="32767" attributes="1"/>
                           <Group type="102" alignment="1" attributes="0">
                               <Component id="panelEnableConnection" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
@@ -735,7 +741,7 @@
                           <Component id="labelProtocol" min="-2" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                           <Component id="comboBoxProtocol" min="-2" pref="72" max="-2" attributes="0"/>
-                          <EmptySpace pref="57" max="32767" attributes="0"/>
+                          <EmptySpace pref="174" max="32767" attributes="0"/>
                           <Component id="labelPortInitialValue" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="spinPortInitialValue" min="-2" pref="61" max="-2" attributes="0"/>
@@ -770,12 +776,11 @@
                         <StringItem index="0" value="undefined"/>
                         <StringItem index="1" value="rmi"/>
                         <StringItem index="2" value="http"/>
-                        <StringItem index="3" value="parm"/>
+                        <StringItem index="3" value="pamr"/>
                         <StringItem index="4" value="pnp"/>
                         <StringItem index="5" value="pnps"/>
                       </StringArray>
                     </Property>
-                    <Property name="selectedIndex" type="int" value="3"/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="comboBoxProtocolActionPerformed"/>
@@ -824,7 +829,7 @@
                           <Group type="102" alignment="1" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="panelLocalRegistration" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="202" max="32767" attributes="0"/>
+                              <EmptySpace pref="213" max="32767" attributes="0"/>
                               <Component id="PanelAdditionnalConf4" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -848,7 +853,7 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="labelNodeName1" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="textNodeName1" pref="434" max="32767" attributes="0"/>
+                                  <Component id="textNodeName1" pref="523" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -892,7 +897,7 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="labelStarterClass4" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="textStarterClass4" pref="392" max="32767" attributes="0"/>
+                                  <Component id="textStarterClass4" pref="476" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -937,7 +942,7 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="PanelAdditionnalConf2" max="32767" attributes="0"/>
-                                  <Component id="panelRMRegistration" alignment="0" pref="563" max="32767" attributes="0"/>
+                                  <Component id="panelRMRegistration" alignment="0" pref="622" max="32767" attributes="0"/>
                                   <Component id="panelAuthCredential" alignment="1" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
@@ -951,7 +956,7 @@
                               <Component id="panelRMRegistration" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="panelAuthCredential" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="64" max="32767" attributes="0"/>
+                              <EmptySpace pref="89" max="32767" attributes="0"/>
                               <Component id="PanelAdditionnalConf2" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -1017,6 +1022,9 @@
                           </Properties>
                         </Component>
                         <Component class="javax.swing.JTextField" name="textRMURL">
+                          <Properties>
+                            <Property name="text" type="java.lang.String" value="rmi://localhost:1099"/>
+                          </Properties>
                         </Component>
                         <Component class="javax.swing.JLabel" name="labelNodeName2">
                           <Properties>
@@ -1049,7 +1057,7 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="buttonBrowseLocation" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="textCredential" pref="417" max="32767" attributes="0"/>
+                                  <Component id="textCredential" pref="479" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -1093,7 +1101,7 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="labelStarterClass2" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="textStarterClass2" pref="392" max="32767" attributes="0"/>
+                                  <Component id="textStarterClass2" pref="476" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -1149,7 +1157,7 @@
                           <Group type="102" alignment="1" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="panelCustom2" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="64" max="32767" attributes="0"/>
+                              <EmptySpace pref="94" max="32767" attributes="0"/>
                               <Component id="PanelAdditionnalConf3" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -1173,7 +1181,7 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="labelStarterClass3" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="textStarterClass3" pref="392" max="32767" attributes="0"/>
+                                  <Component id="textStarterClass3" pref="476" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -1217,7 +1225,7 @@
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="labelArguments" alignment="0" min="-2" max="-2" attributes="0"/>
                                       <Group type="102" alignment="1" attributes="0">
-                                          <Component id="jScrollPane4" pref="451" max="32767" attributes="0"/>
+                                          <Component id="jScrollPane4" pref="501" max="32767" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="0" attributes="0">
                                               <Component id="buttonSaveArg" linkSize="2" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -1228,7 +1236,7 @@
                                       <Group type="102" alignment="0" attributes="0">
                                           <Component id="labelArgument" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="textArgument" pref="447" max="32767" attributes="0"/>
+                                          <Component id="textArgument" pref="529" max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -1357,7 +1365,7 @@
                               <Component id="panelPlanEditor" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="panelProcessManagement" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="99" max="32767" attributes="0"/>
+                              <EmptySpace pref="115" max="32767" attributes="0"/>
                               <Component id="checkBoxAlwaysAvailable" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -1382,13 +1390,13 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="-2" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="testAeraPlanning" alignment="0" pref="203" max="32767" attributes="0"/>
+                              <Component id="testAeraPlanning" alignment="0" pref="273" max="32767" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
-                                  <Component id="buttonCreatePlan" pref="73" max="32767" attributes="0"/>
+                                  <Component id="buttonCreatePlan" pref="96" max="32767" attributes="0"/>
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
-                                  <Component id="buttonDeletePlan" pref="61" max="32767" attributes="0"/>
+                                  <Component id="buttonDeletePlan" pref="84" max="32767" attributes="0"/>
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
-                                  <Component id="buttonShowPlan" pref="57" max="32767" attributes="0"/>
+                                  <Component id="buttonShowPlan" pref="81" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
@@ -1399,7 +1407,7 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="testAeraPlanning" pref="330" max="32767" attributes="0"/>
+                          <Component id="testAeraPlanning" pref="335" max="32767" attributes="0"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="buttonCreatePlan" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -1468,7 +1476,7 @@
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <EmptySpace max="32767" attributes="0"/>
+                          <EmptySpace pref="32" max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
                               <Component id="panelStartTime" alignment="1" max="32767" attributes="1"/>
                               <Component id="panelDuration" alignment="1" max="32767" attributes="1"/>
@@ -1818,7 +1826,7 @@
                 <Component class="javax.swing.JSpinner" name="spinnerMaxCPUUsage">
                   <Properties>
                     <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-                      <SpinnerModel initial="0" maximum="100" minimum="0" numberType="java.lang.Integer" stepSize="1" type="number"/>
+                      <SpinnerModel initial="1" maximum="100" minimum="1" numberType="java.lang.Integer" stepSize="1" type="number"/>
                     </Property>
                   </Properties>
                   <Events>
