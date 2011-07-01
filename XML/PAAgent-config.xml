@@ -2,19 +2,31 @@
 
 <agent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:proactive:agent:0.90:windows">
   <config>
-    <proactiveHome>set the proactive home</proactiveHome>
-    <javaHome>set the java home</javaHome>
-    <jvmParameters>
-      <param>-Dproactive.net.interface=eth1</param>
-    </jvmParameters>
+    <proactiveHome>E:\Documents and Settings\pgouttef\Bureau\Stage\ProActiveProgramming-5.0.3_core</proactiveHome>
+    <javaHome>E:\Documents and Settings\pgouttef\Bureau\Stage\JDK1.5\jdk\jre</javaHome>
     <memoryLimit>0</memoryLimit>
-    <nbRuntimes>0</nbRuntimes>
+    <nbRuntimes>2</nbRuntimes>
     <protocol>undefined</protocol>
     <portRange first="0" last="65534" />
-    <processPriority>Idle</processPriority>
+    <processPriority>Normal</processPriority>
     <maxCpuUsage>1</maxCpuUsage>
   </config>
-  <events />
+  <events>
+    <event>
+      <start day="Monday" hour="0" minute="0" second="0" />
+      <duration days="0" hours="0" minutes="0" seconds="0" />
+      <config>
+        <proactiveHome>E:\Documents and Settings\pgouttef\Bureau\Stage\ProActiveProgramming-5.0.3_core</proactiveHome>
+        <javaHome>E:\Documents and Settings\pgouttef\Bureau\Stage\JDK1.5\jdk\jre</javaHome>
+        <memoryLimit>0</memoryLimit>
+        <nbRuntimes>2</nbRuntimes>
+        <protocol>undefined</protocol>
+        <portRange first="0" last="65534" />
+        <processPriority>Normal</processPriority>
+        <maxCpuUsage>1</maxCpuUsage>
+      </config>
+    </event>
+  </events>
   <connections>
     <localBind enabled="true">
       <respawnIncrement>10</respawnIncrement>
