@@ -82,9 +82,11 @@ public class ShowApplet extends JApplet {
     }
     
     private void drawEvents(Graphics2D g) {
+        decalDay = 5;
         debug = (debug+1)%2;
         if(evList != null && debug==0) {
             for (Event ev : evList.getListEvents()) {
+                decalDay++;
                 int startDay = ModelManager.convertDayToInt(ev.getStartTime().getDay());
                 drawTime(g,startDay, ev.getStartTime().getHour(), ev.getStartTime().getMinute(),
                         ev.getDuration().getDay(), ev.getDuration().getHour(), ev.getDuration().getMinute());
@@ -138,7 +140,6 @@ public class ShowApplet extends JApplet {
             currentDay = (currentDay+1)%7;
             nbMinutesRemaining -= (minuteMax-minuteMin);
             minuteMin = 0;
-            decalDay++;
         }
         
     }
