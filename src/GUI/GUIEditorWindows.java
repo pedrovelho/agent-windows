@@ -111,6 +111,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                     changeMaxCpuUsage(evt);
                 }
             });
+            spinnerMaxCPUUsage.setToolTipText( "specifies the nice property of the Runtimes process and its chlidren processes during this plan." );
             
             labelForCent.setVisible(false);
         }
@@ -354,24 +355,27 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         setLocationByPlatform(true);
         setResizable(false);
 
-        ButtonClose.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        ButtonClose.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         ButtonClose.setText("Close");
+        ButtonClose.setToolTipText("closes this windows.");
         ButtonClose.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 close(evt);
             }
         });
 
-        ButtonSave.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        ButtonSave.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         ButtonSave.setText("Save");
+        ButtonSave.setToolTipText("saves modifications.");
         ButtonSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveProperties(evt);
             }
         });
 
-        ButtonSaveAs.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        ButtonSaveAs.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         ButtonSaveAs.setText("Save As");
+        ButtonSaveAs.setToolTipText("saves thecurrent configuration under the user specified filename. ");
         ButtonSaveAs.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveAsProperties(evt);
@@ -399,14 +403,17 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             }
         });
 
-        textProActiveHome.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        textProActiveHome.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         textProActiveHome.setText("set the proactive home");
+        textProActiveHome.setToolTipText("location of the ProActive or Scheduler home.");
 
-        textJavaHome.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        textJavaHome.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         textJavaHome.setText("set the java home");
+        textJavaHome.setToolTipText("Java home location.");
 
-        checkBoxJavaHome.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        checkBoxJavaHome.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         checkBoxJavaHome.setText("Use system-wide Java Home");
+        checkBoxJavaHome.setToolTipText("use JVM location specified by the JAVA_HOME environnement variable.");
         checkBoxJavaHome.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 JavaHomeSystemChooser(evt);
@@ -429,8 +436,9 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             }
         });
 
-        JListJVMOption.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        JListJVMOption.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         JListJVMOption.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        JListJVMOption.setToolTipText("if the parameter contain ${rank} it will be automatically replaced by the Runtime rank. ");
         JListJVMOption.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 selectJVMOption(evt);
@@ -502,8 +510,9 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             }
         });
 
-        JListInterfaces.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        JListInterfaces.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         JListInterfaces.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        JListInterfaces.setToolTipText("the list of available network interface.");
         JListInterfaces.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 selectNetworkInterface(evt);
@@ -621,8 +630,9 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         spinNbRuntimes.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         spinNbRuntimes.setModel(new javax.swing.SpinnerNumberModel(0, 0, 32, 1));
 
-        checkBoxCPUs.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        checkBoxCPUs.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         checkBoxCPUs.setText("Use all available CPUs");
+        checkBoxCPUs.setToolTipText("Will spawn as many Runtimes as available CPUs. The number of CPUs is detected automatically.");
         checkBoxCPUs.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 CPUsChooser(evt);
@@ -676,7 +686,8 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             }
         });
 
-        textScriptLocation.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        textScriptLocation.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        textScriptLocation.setToolTipText("location of the script executed  after a Runtime termitates.");
 
         org.jdesktop.layout.GroupLayout PanelORELayout = new org.jdesktop.layout.GroupLayout(PanelORE);
         PanelORE.setLayout(PanelORELayout);
@@ -704,8 +715,9 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         labelProtocol1.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelProtocol1.setText("Protocol:");
 
-        comboBoxProtocol.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        comboBoxProtocol.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         comboBoxProtocol.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "undefined", "rmi", "http", "pamr", "pnp", "pnps" }));
+        comboBoxProtocol.setToolTipText("defines the protocol to used by the Runtime.");
         comboBoxProtocol.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 comboBoxProtocolActionPerformed(evt);
@@ -715,7 +727,8 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         labelPortInitialValue1.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelPortInitialValue1.setText("Port Initial Value:");
 
-        spinPortInitialValue.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        spinPortInitialValue.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        spinPortInitialValue.setToolTipText("defines the value of the \"Dproactive.SELECTED_PROTOCOL.port\" protperty. This value will always be increased by 1 or more if there is more than one Runtime.  ");
 
         org.jdesktop.layout.GroupLayout panelRuntimeIncomingProtocol1Layout = new org.jdesktop.layout.GroupLayout(panelRuntimeIncomingProtocol1);
         panelRuntimeIncomingProtocol1.setLayout(panelRuntimeIncomingProtocol1Layout);
@@ -792,7 +805,8 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         labelNodeName1.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelNodeName1.setText("Node Name:");
 
-        textNodeName1.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        textNodeName1.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        textNodeName1.setToolTipText("defines the name of the node. The node will be register under url like URL://IP_OR_HOSTNAME:PORT/NODE_NAME ");
 
         org.jdesktop.layout.GroupLayout panelLocalRegistrationLayout = new org.jdesktop.layout.GroupLayout(panelLocalRegistration);
         panelLocalRegistration.setLayout(panelLocalRegistrationLayout);
@@ -821,8 +835,9 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         labelStarterClass4.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelStarterClass4.setText("Java Starter Class:");
 
-        textStarterClass4.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        textStarterClass4.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         textStarterClass4.setText("org.objectweb.proactive.core.util.winagent.PAAgentServiceRMIStarter");
+        textStarterClass4.setToolTipText("defines the java class to run.");
 
         org.jdesktop.layout.GroupLayout PanelAdditionnalConf4Layout = new org.jdesktop.layout.GroupLayout(PanelAdditionnalConf4);
         PanelAdditionnalConf4.setLayout(PanelAdditionnalConf4Layout);
@@ -870,18 +885,21 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         labelRMURL.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelRMURL.setText("Resource Manager URL:");
 
-        textRMURL.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        textRMURL.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         textRMURL.setText("rmi://localhost:1099");
+        textRMURL.setToolTipText("example : URL://IP_OR_HOSTNAME:PORT/");
 
         labelNodeName2.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelNodeName2.setText("Node Name:");
 
-        textNodeName2.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        textNodeName2.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        textNodeName2.setToolTipText("the name of the node without whitespaces.");
 
         labelNodeSourceName.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelNodeSourceName.setText("Node Source Name:");
 
-        textNodeSourceName.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        textNodeSourceName.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        textNodeSourceName.setToolTipText("the name of the node source without whitespaces.");
 
         org.jdesktop.layout.GroupLayout panelRMRegistrationLayout = new org.jdesktop.layout.GroupLayout(panelRMRegistration);
         panelRMRegistration.setLayout(panelRMRegistrationLayout);
@@ -921,7 +939,8 @@ public class GUIEditorWindows extends javax.swing.JFrame {
 
         panelAuthCredential.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Resource Manager Registration", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("TakaoPGothic", 0, 11))); // NOI18N
 
-        textCredential.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        textCredential.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        textCredential.setToolTipText("the location of the file contains the credentials.");
 
         buttonBrowseLocation.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         buttonBrowseLocation.setText("Browse Location");
@@ -956,8 +975,9 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         labelStarterClass2.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelStarterClass2.setText("Java Starter Class:");
 
-        textStarterClass2.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        textStarterClass2.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         textStarterClass2.setText("org.ow2.proactive.resourcemanager.utils.RMNodeStarter");
+        textStarterClass2.setToolTipText("defines the java class ton run.");
 
         org.jdesktop.layout.GroupLayout PanelAdditionnalConf2Layout = new org.jdesktop.layout.GroupLayout(PanelAdditionnalConf2);
         PanelAdditionnalConf2.setLayout(PanelAdditionnalConf2Layout);
@@ -1008,8 +1028,9 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         labelStarterClass3.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelStarterClass3.setText("Java Starter Class:");
 
-        textStarterClass3.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        textStarterClass3.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         textStarterClass3.setText("user.Starter");
+        textStarterClass3.setToolTipText("defines the java class to run.");
 
         org.jdesktop.layout.GroupLayout PanelAdditionnalConf3Layout = new org.jdesktop.layout.GroupLayout(PanelAdditionnalConf3);
         PanelAdditionnalConf3.setLayout(PanelAdditionnalConf3Layout);
@@ -1056,10 +1077,12 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         labelArgument.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelArgument.setText("Argument:");
 
-        textArgument.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        textArgument.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        textArgument.setToolTipText("enter an arguments without whitespaces.");
 
-        JlistArguments.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        JlistArguments.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         JlistArguments.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        JlistArguments.setToolTipText("a list od arguments will be passed as parameters to the Java Starter Class. ");
         JlistArguments.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 selectArgument(evt);
@@ -1181,32 +1204,36 @@ public class GUIEditorWindows extends javax.swing.JFrame {
 
         panelWeeklyPlanning.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Weekly Planning", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("TakaoPGothic", 0, 11))); // NOI18N
 
-        buttonCreatePlan.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
-        buttonCreatePlan.setText("Add plan");
+        buttonCreatePlan.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        buttonCreatePlan.setText("Create plan");
+        buttonCreatePlan.setToolTipText("creates a new plan.");
         buttonCreatePlan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 createPlan(evt);
             }
         });
 
-        buttonDeletePlan.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        buttonDeletePlan.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         buttonDeletePlan.setText("Delete");
+        buttonDeletePlan.setToolTipText("deletes the selected plan.");
         buttonDeletePlan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 deletePlan(evt);
             }
         });
 
-        buttonShowPlan.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        buttonShowPlan.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         buttonShowPlan.setText("Show");
+        buttonShowPlan.setToolTipText("shows the charts that represents the weekly planning.");
         buttonShowPlan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 showGraphic(evt);
             }
         });
 
-        listPlanning.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        listPlanning.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         listPlanning.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        listPlanning.setToolTipText("the list of weekly plans.");
         listPlanning.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
                 SelectElement(evt);
@@ -1250,8 +1277,9 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         labelStartDay.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelStartDay.setText("Day:");
 
-        comboBoxStartDay.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        comboBoxStartDay.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         comboBoxStartDay.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" }));
+        comboBoxStartDay.setToolTipText("specific the start day of the week.");
         comboBoxStartDay.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 changeDay(evt);
@@ -1261,8 +1289,9 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         labelStartHours.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelStartHours.setText("Hours:");
 
-        spinnerStartHours.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        spinnerStartHours.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         spinnerStartHours.setModel(new javax.swing.SpinnerNumberModel(0, 0, 23, 1));
+        spinnerStartHours.setToolTipText("specific the start hour.");
         spinnerStartHours.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 changeHour(evt);
@@ -1272,8 +1301,9 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         labelStartMinutes.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelStartMinutes.setText("Minutes");
 
-        spinnerStartMinutes.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        spinnerStartMinutes.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         spinnerStartMinutes.setModel(new javax.swing.SpinnerNumberModel(0, 0, 59, 1));
+        spinnerStartMinutes.setToolTipText("specific the start minute.");
         spinnerStartMinutes.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 changeMinutes(evt);
@@ -1283,8 +1313,9 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         labelStartSecondes.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelStartSecondes.setText("Seconds");
 
-        spinnerStartSecondes.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        spinnerStartSecondes.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         spinnerStartSecondes.setModel(new javax.swing.SpinnerNumberModel(0, 0, 59, 1));
+        spinnerStartSecondes.setToolTipText("specific the start second.");
         spinnerStartSecondes.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 changeSeconds(evt);
@@ -1334,8 +1365,9 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         labelDurationDays.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelDurationDays.setText("Days:");
 
-        spinnerDurationDays.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        spinnerDurationDays.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         spinnerDurationDays.setModel(new javax.swing.SpinnerNumberModel(0, 0, 6, 1));
+        spinnerDurationDays.setToolTipText("the number of duration days.");
         spinnerDurationDays.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 changeDurationDay(evt);
@@ -1345,8 +1377,9 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         labelDurationHours.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelDurationHours.setText("Hours:");
 
-        spinnerDurationHours.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        spinnerDurationHours.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         spinnerDurationHours.setModel(new javax.swing.SpinnerNumberModel(0, 0, 23, 1));
+        spinnerDurationHours.setToolTipText("the number of duration hours.");
         spinnerDurationHours.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 changeDurationHour(evt);
@@ -1356,8 +1389,9 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         labelDurationMinutes.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelDurationMinutes.setText("Minutes");
 
-        spinnerDurationMinutes.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        spinnerDurationMinutes.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         spinnerDurationMinutes.setModel(new javax.swing.SpinnerNumberModel(0, 0, 59, 1));
+        spinnerDurationMinutes.setToolTipText("the number of duration minutes.");
         spinnerDurationMinutes.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 changeDurationMinutes(evt);
@@ -1367,8 +1401,9 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         labelDurationSecondes.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelDurationSecondes.setText("Seconds");
 
-        spinnerDurationSecondes.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        spinnerDurationSecondes.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         spinnerDurationSecondes.setModel(new javax.swing.SpinnerNumberModel(0, 0, 59, 1));
+        spinnerDurationSecondes.setToolTipText("the number of duration seconds.");
         spinnerDurationSecondes.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 changeDurationSecond(evt);
@@ -1445,9 +1480,10 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         labelProcessPrioriry.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelProcessPrioriry.setText("Process Priority:");
 
-        comboBoxPriority.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        comboBoxPriority.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         comboBoxPriority.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Idle", "BelowNormal", "Normal", "AboveNormal", "High", "Realtime" }));
         comboBoxPriority.setSelectedIndex(2);
+        comboBoxPriority.setToolTipText("specifies the priority of the Runtimes process and its chlidren processes during this plan.");
         comboBoxPriority.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 changePriority(evt);
@@ -1457,8 +1493,9 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         labelMaxCPUUsage.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelMaxCPUUsage.setText("Max CPU Usage:");
 
-        spinnerMaxCPUUsage.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        spinnerMaxCPUUsage.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         spinnerMaxCPUUsage.setModel(new javax.swing.SpinnerNumberModel(1, 1, 100, 1));
+        spinnerMaxCPUUsage.setToolTipText("specifies the maximum allowed CPU usage of a Runtime process and its childrens process during this plan.");
         spinnerMaxCPUUsage.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 changeMaxCpuUsage(evt);
@@ -1470,8 +1507,9 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         labelClassData.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelClassData.setText("ClassData:");
 
-        spinnerClassData.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        spinnerClassData.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         spinnerClassData.setModel(new javax.swing.SpinnerNumberModel(1, 1, 7, 1));
+        spinnerClassData.setToolTipText("specifies the classData of the Runtimes process and its chlidren processes during this plan.");
 
         org.jdesktop.layout.GroupLayout panelProcessManagementLayout = new org.jdesktop.layout.GroupLayout(panelProcessManagement);
         panelProcessManagement.setLayout(panelProcessManagementLayout);
@@ -1511,8 +1549,9 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        checkBoxAlwaysAvailable.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        checkBoxAlwaysAvailable.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         checkBoxAlwaysAvailable.setText("Always available");
+        checkBoxAlwaysAvailable.setToolTipText("no weekly planning, the ProActive Agent will be always available.");
         checkBoxAlwaysAvailable.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 alwaysAvailableChooser(evt);

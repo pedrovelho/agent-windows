@@ -93,6 +93,7 @@
           <Font name="TakaoPGothic" size="11" style="0"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Close"/>
+        <Property name="toolTipText" type="java.lang.String" value="closes this windows."/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="close"/>
@@ -104,6 +105,7 @@
           <Font name="TakaoPGothic" size="11" style="0"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Save"/>
+        <Property name="toolTipText" type="java.lang.String" value="saves modifications."/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveProperties"/>
@@ -115,6 +117,7 @@
           <Font name="TakaoPGothic" size="11" style="0"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Save As"/>
+        <Property name="toolTipText" type="java.lang.String" value="saves thecurrent configuration under the user specified filename. "/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveAsProperties"/>
@@ -280,6 +283,7 @@
                       <Font name="TakaoPGothic" size="11" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="set the proactive home"/>
+                    <Property name="toolTipText" type="java.lang.String" value="location of the ProActive or Scheduler home."/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JTextField" name="textJavaHome">
@@ -288,6 +292,7 @@
                       <Font name="TakaoPGothic" size="11" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="set the java home"/>
+                    <Property name="toolTipText" type="java.lang.String" value="Java home location."/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JCheckBox" name="checkBoxJavaHome">
@@ -296,6 +301,7 @@
                       <Font name="TakaoPGothic" size="11" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Use system-wide Java Home"/>
+                    <Property name="toolTipText" type="java.lang.String" value="use JVM location specified by the JAVA_HOME environnement variable."/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="JavaHomeSystemChooser"/>
@@ -339,6 +345,7 @@
                           <StringArray count="0"/>
                         </Property>
                         <Property name="selectionMode" type="int" value="0"/>
+                        <Property name="toolTipText" type="java.lang.String" value="if the parameter contain ${rank} it will be automatically replaced by the Runtime rank. "/>
                       </Properties>
                       <Events>
                         <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="selectJVMOption"/>
@@ -432,6 +439,7 @@
                           <StringArray count="0"/>
                         </Property>
                         <Property name="selectionMode" type="int" value="0"/>
+                        <Property name="toolTipText" type="java.lang.String" value="the list of available network interface."/>
                       </Properties>
                       <Events>
                         <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="selectNetworkInterface"/>
@@ -669,6 +677,7 @@
                       <Font name="TakaoPGothic" size="11" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Use all available CPUs"/>
+                    <Property name="toolTipText" type="java.lang.String" value="Will spawn as many Runtimes as available CPUs. The number of CPUs is detected automatically."/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="CPUsChooser"/>
@@ -731,6 +740,7 @@
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="TakaoPGothic" size="11" style="0"/>
                     </Property>
+                    <Property name="toolTipText" type="java.lang.String" value="location of the script executed  after a Runtime termitates."/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -803,6 +813,7 @@
                         <StringItem index="5" value="pnps"/>
                       </StringArray>
                     </Property>
+                    <Property name="toolTipText" type="java.lang.String" value="defines the protocol to used by the Runtime."/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="comboBoxProtocolActionPerformed"/>
@@ -821,6 +832,7 @@
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="TakaoPGothic" size="11" style="0"/>
                     </Property>
+                    <Property name="toolTipText" type="java.lang.String" value="defines the value of the &quot;Dproactive.SELECTED_PROTOCOL.port&quot; protperty. This value will always be increased by 1 or more if there is more than one Runtime.  "/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -970,6 +982,7 @@
                             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                               <Font name="TakaoPGothic" size="11" style="0"/>
                             </Property>
+                            <Property name="toolTipText" type="java.lang.String" value="defines the name of the node. The node will be register under url like URL://IP_OR_HOSTNAME:PORT/NODE_NAME "/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -1024,6 +1037,7 @@
                               <Font name="TakaoPGothic" size="11" style="0"/>
                             </Property>
                             <Property name="text" type="java.lang.String" value="org.objectweb.proactive.core.util.winagent.PAAgentServiceRMIStarter"/>
+                            <Property name="toolTipText" type="java.lang.String" value="defines the java class to run."/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -1136,6 +1150,7 @@
                               <Font name="TakaoPGothic" size="11" style="0"/>
                             </Property>
                             <Property name="text" type="java.lang.String" value="rmi://localhost:1099"/>
+                            <Property name="toolTipText" type="java.lang.String" value="example : URL://IP_OR_HOSTNAME:PORT/"/>
                           </Properties>
                         </Component>
                         <Component class="javax.swing.JLabel" name="labelNodeName2">
@@ -1151,6 +1166,7 @@
                             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                               <Font name="TakaoPGothic" size="11" style="0"/>
                             </Property>
+                            <Property name="toolTipText" type="java.lang.String" value="the name of the node without whitespaces."/>
                           </Properties>
                         </Component>
                         <Component class="javax.swing.JLabel" name="labelNodeSourceName">
@@ -1166,6 +1182,7 @@
                             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                               <Font name="TakaoPGothic" size="11" style="0"/>
                             </Property>
+                            <Property name="toolTipText" type="java.lang.String" value="the name of the node source without whitespaces."/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -1211,6 +1228,7 @@
                             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                               <Font name="TakaoPGothic" size="11" style="0"/>
                             </Property>
+                            <Property name="toolTipText" type="java.lang.String" value="the location of the file contains the credentials."/>
                           </Properties>
                         </Component>
                         <Component class="javax.swing.JButton" name="buttonBrowseLocation">
@@ -1273,6 +1291,7 @@
                               <Font name="TakaoPGothic" size="11" style="0"/>
                             </Property>
                             <Property name="text" type="java.lang.String" value="org.ow2.proactive.resourcemanager.utils.RMNodeStarter"/>
+                            <Property name="toolTipText" type="java.lang.String" value="defines the java class ton run."/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -1361,6 +1380,7 @@
                               <Font name="TakaoPGothic" size="11" style="0"/>
                             </Property>
                             <Property name="text" type="java.lang.String" value="user.Starter"/>
+                            <Property name="toolTipText" type="java.lang.String" value="defines the java class to run."/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -1479,6 +1499,7 @@
                             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                               <Font name="TakaoPGothic" size="11" style="0"/>
                             </Property>
+                            <Property name="toolTipText" type="java.lang.String" value="enter an arguments without whitespaces."/>
                           </Properties>
                         </Component>
                         <Container class="javax.swing.JScrollPane" name="jScrollPane4">
@@ -1497,6 +1518,7 @@
                                   <StringArray count="0"/>
                                 </Property>
                                 <Property name="selectionMode" type="int" value="0"/>
+                                <Property name="toolTipText" type="java.lang.String" value="a list od arguments will be passed as parameters to the Java Starter Class. "/>
                               </Properties>
                               <Events>
                                 <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="selectArgument"/>
@@ -1636,7 +1658,8 @@
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="TakaoPGothic" size="11" style="0"/>
                     </Property>
-                    <Property name="text" type="java.lang.String" value="Add plan"/>
+                    <Property name="text" type="java.lang.String" value="Create plan"/>
+                    <Property name="toolTipText" type="java.lang.String" value="creates a new plan."/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="createPlan"/>
@@ -1648,6 +1671,7 @@
                       <Font name="TakaoPGothic" size="11" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Delete"/>
+                    <Property name="toolTipText" type="java.lang.String" value="deletes the selected plan."/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="deletePlan"/>
@@ -1659,6 +1683,7 @@
                       <Font name="TakaoPGothic" size="11" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Show"/>
+                    <Property name="toolTipText" type="java.lang.String" value="shows the charts that represents the weekly planning."/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="showGraphic"/>
@@ -1680,6 +1705,7 @@
                           <StringArray count="0"/>
                         </Property>
                         <Property name="selectionMode" type="int" value="0"/>
+                        <Property name="toolTipText" type="java.lang.String" value="the list of weekly plans."/>
                       </Properties>
                       <Events>
                         <EventHandler event="valueChanged" listener="javax.swing.event.ListSelectionListener" parameters="javax.swing.event.ListSelectionEvent" handler="SelectElement"/>
@@ -1803,6 +1829,7 @@
                             <StringItem index="6" value="Saturday"/>
                           </StringArray>
                         </Property>
+                        <Property name="toolTipText" type="java.lang.String" value="specific the start day of the week."/>
                       </Properties>
                       <Events>
                         <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="changeDay"/>
@@ -1824,6 +1851,7 @@
                         <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
                           <SpinnerModel initial="0" maximum="23" minimum="0" numberType="java.lang.Integer" stepSize="1" type="number"/>
                         </Property>
+                        <Property name="toolTipText" type="java.lang.String" value="specific the start hour."/>
                       </Properties>
                       <Events>
                         <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="changeHour"/>
@@ -1845,6 +1873,7 @@
                         <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
                           <SpinnerModel initial="0" maximum="59" minimum="0" numberType="java.lang.Integer" stepSize="1" type="number"/>
                         </Property>
+                        <Property name="toolTipText" type="java.lang.String" value="specific the start minute."/>
                       </Properties>
                       <Events>
                         <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="changeMinutes"/>
@@ -1866,6 +1895,7 @@
                         <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
                           <SpinnerModel initial="0" maximum="59" minimum="0" numberType="java.lang.Integer" stepSize="1" type="number"/>
                         </Property>
+                        <Property name="toolTipText" type="java.lang.String" value="specific the start second."/>
                       </Properties>
                       <Events>
                         <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="changeSeconds"/>
@@ -1947,6 +1977,7 @@
                         <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
                           <SpinnerModel initial="0" maximum="6" minimum="0" numberType="java.lang.Integer" stepSize="1" type="number"/>
                         </Property>
+                        <Property name="toolTipText" type="java.lang.String" value="the number of duration days."/>
                       </Properties>
                       <Events>
                         <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="changeDurationDay"/>
@@ -1968,6 +1999,7 @@
                         <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
                           <SpinnerModel initial="0" maximum="23" minimum="0" numberType="java.lang.Integer" stepSize="1" type="number"/>
                         </Property>
+                        <Property name="toolTipText" type="java.lang.String" value="the number of duration hours."/>
                       </Properties>
                       <Events>
                         <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="changeDurationHour"/>
@@ -1989,6 +2021,7 @@
                         <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
                           <SpinnerModel initial="0" maximum="59" minimum="0" numberType="java.lang.Integer" stepSize="1" type="number"/>
                         </Property>
+                        <Property name="toolTipText" type="java.lang.String" value="the number of duration minutes."/>
                       </Properties>
                       <Events>
                         <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="changeDurationMinutes"/>
@@ -2010,6 +2043,7 @@
                         <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
                           <SpinnerModel initial="0" maximum="59" minimum="0" numberType="java.lang.Integer" stepSize="1" type="number"/>
                         </Property>
+                        <Property name="toolTipText" type="java.lang.String" value="the number of duration seconds."/>
                       </Properties>
                       <Events>
                         <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="changeDurationSecond"/>
@@ -2100,6 +2134,7 @@
                       </StringArray>
                     </Property>
                     <Property name="selectedIndex" type="int" value="2"/>
+                    <Property name="toolTipText" type="java.lang.String" value="specifies the priority of the Runtimes process and its chlidren processes during this plan."/>
                   </Properties>
                   <Events>
                     <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="changePriority"/>
@@ -2121,6 +2156,7 @@
                     <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
                       <SpinnerModel initial="1" maximum="100" minimum="1" numberType="java.lang.Integer" stepSize="1" type="number"/>
                     </Property>
+                    <Property name="toolTipText" type="java.lang.String" value="specifies the maximum allowed CPU usage of a Runtime process and its childrens process during this plan."/>
                   </Properties>
                   <Events>
                     <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="changeMaxCpuUsage"/>
@@ -2147,6 +2183,7 @@
                     <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
                       <SpinnerModel initial="1" maximum="7" minimum="1" numberType="java.lang.Integer" stepSize="1" type="number"/>
                     </Property>
+                    <Property name="toolTipText" type="java.lang.String" value="specifies the classData of the Runtimes process and its chlidren processes during this plan."/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -2157,6 +2194,7 @@
                   <Font name="TakaoPGothic" size="11" style="0"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Always available"/>
+                <Property name="toolTipText" type="java.lang.String" value="no weekly planning, the ProActive Agent will be always available."/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="alwaysAvailableChooser"/>
