@@ -21,10 +21,17 @@ import Model.ModelManager;
 import Utils.ExtensionFileFilter;
 import Utils.ListNetworkInterfaces;
 import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import javax.imageio.ImageIO;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -81,7 +88,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         }
     }
     
-    private void initProcessParameters() {
+    private void initCustomParameters() {
         String os = System.getProperty("os.name").toLowerCase();
         if(os.indexOf( "win" ) >= 0) {
             labelClassData.setVisible(false);
@@ -106,9 +113,15 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             });
             
             labelForCent.setVisible(false);
-            
-            
         }
+        System.out.println("icon : " + icon);
+        BufferedImage images = null;
+        try {
+            images = ImageIO.read(this.getClass().getResource( icon ));
+        } catch (IOException es) {
+            es.printStackTrace();
+        }
+        this.setIconImage(images);
     }
     
     public void initializeText() {
@@ -162,7 +175,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         }
         
         //Initialize Process Parameters
-        initProcessParameters();
+        initCustomParameters();
         
         //Initialize data
         initializeText();
@@ -182,7 +195,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         }
         
         //Initialize Process Parameters
-        initProcessParameters();
+        initCustomParameters();
         
         //Initialize data
         initializeText();
@@ -195,7 +208,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         initComponents();
         
         //Initialize Process Parameters
-        initProcessParameters();
+        initCustomParameters();
         radioLocal.setSelected(true);
     }
 
@@ -335,7 +348,8 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         jScrollPane2.setViewportView(jList1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setFont(new java.awt.Font("DejaVu Serif", 0, 12));
+        setTitle("GUI Editor");
+        setFont(new java.awt.Font("DejaVu Serif", 0, 12)); // NOI18N
         setLocationByPlatform(true);
         setResizable(false);
 
@@ -1277,12 +1291,12 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         panelStartTime.setLayout(panelStartTimeLayout);
         panelStartTimeLayout.setHorizontalGroup(
             panelStartTimeLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelStartTimeLayout.createSequentialGroup()
-                .addContainerGap(52, Short.MAX_VALUE)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelStartTimeLayout.createSequentialGroup()
+                .addContainerGap()
                 .add(labelStartDay)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(comboBoxStartDay, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 90, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 46, Short.MAX_VALUE)
                 .add(labelStartHours)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(spinnerStartHours, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 37, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
@@ -1300,14 +1314,14 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             .add(panelStartTimeLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(panelStartTimeLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(comboBoxStartDay, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(labelStartDay)
                     .add(spinnerStartSecondes, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(labelStartSecondes)
                     .add(spinnerStartHours, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(labelStartHours)
                     .add(spinnerStartMinutes, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(labelStartMinutes))
+                    .add(labelStartMinutes)
+                    .add(comboBoxStartDay, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(labelStartDay))
                 .addContainerGap(17, Short.MAX_VALUE))
         );
 
@@ -1361,12 +1375,12 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         panelDuration.setLayout(panelDurationLayout);
         panelDurationLayout.setHorizontalGroup(
             panelDurationLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelDurationLayout.createSequentialGroup()
-                .addContainerGap(45, Short.MAX_VALUE)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelDurationLayout.createSequentialGroup()
+                .addContainerGap()
                 .add(labelDurationDays)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(spinnerDurationDays, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 77, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(18, 18, 18)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 53, Short.MAX_VALUE)
                 .add(labelDurationHours)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(spinnerDurationHours, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 37, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
@@ -1384,6 +1398,8 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             .add(panelDurationLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(panelDurationLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(spinnerDurationDays, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(labelDurationDays)
                     .add(panelDurationLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                         .add(spinnerDurationHours, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .add(labelDurationHours)
@@ -1391,9 +1407,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                         .add(labelDurationMinutes))
                     .add(panelDurationLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                         .add(spinnerDurationSecondes, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .add(labelDurationSecondes))
-                    .add(spinnerDurationDays, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(labelDurationDays))
+                        .add(labelDurationSecondes)))
                 .addContainerGap(17, Short.MAX_VALUE))
         );
 
@@ -2335,6 +2349,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
     private Boolean LockPlanning = false;
     private int MAX_RANGE_PORT = 65534;
     private ShowApplet showApplet = new ShowApplet();
+    private String icon = "icon.JPG";
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ButtonClose;

@@ -29,6 +29,7 @@
   </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="2"/>
+    <Property name="title" type="java.lang.String" value="GUI Editor"/>
     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
       <Font name="DejaVu Serif" size="12" style="0"/>
     </Property>
@@ -1735,12 +1736,12 @@
                   <Layout>
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace pref="52" max="32767" attributes="0"/>
+                          <Group type="102" alignment="1" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
                               <Component id="labelStartDay" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="comboBoxStartDay" min="-2" pref="90" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
+                              <EmptySpace pref="46" max="32767" attributes="0"/>
                               <Component id="labelStartHours" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="spinnerStartHours" min="-2" pref="37" max="-2" attributes="0"/>
@@ -1760,14 +1761,14 @@
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="comboBoxStartDay" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="labelStartDay" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="spinnerStartSecondes" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="labelStartSecondes" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="spinnerStartHours" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="labelStartHours" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="spinnerStartMinutes" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="labelStartMinutes" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="comboBoxStartDay" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="labelStartDay" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace pref="17" max="32767" attributes="0"/>
                           </Group>
@@ -1883,12 +1884,12 @@
                   <Layout>
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace pref="45" max="32767" attributes="0"/>
+                          <Group type="102" alignment="1" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
                               <Component id="labelDurationDays" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="spinnerDurationDays" min="-2" pref="77" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <EmptySpace pref="53" max="32767" attributes="0"/>
                               <Component id="labelDurationHours" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="spinnerDurationHours" min="-2" pref="37" max="-2" attributes="0"/>
@@ -1908,6 +1909,8 @@
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="spinnerDurationDays" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="labelDurationDays" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Group type="103" alignment="0" groupAlignment="3" attributes="0">
                                       <Component id="spinnerDurationHours" alignment="3" min="-2" max="-2" attributes="0"/>
                                       <Component id="labelDurationHours" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -1918,8 +1921,6 @@
                                       <Component id="spinnerDurationSecondes" alignment="3" min="-2" max="-2" attributes="0"/>
                                       <Component id="labelDurationSecondes" alignment="3" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <Component id="spinnerDurationDays" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="labelDurationDays" alignment="0" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace pref="17" max="32767" attributes="0"/>
                           </Group>
