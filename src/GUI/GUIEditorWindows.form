@@ -147,13 +147,13 @@
                           <Component id="PanelConfig" alignment="0" max="32767" attributes="1"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="PanelORE" alignment="1" max="32767" attributes="1"/>
-                                  <Group type="102" alignment="1" attributes="1">
-                                      <Component id="PanelRML" max="32767" attributes="0"/>
+                                  <Component id="PanelORE" alignment="0" max="32767" attributes="1"/>
+                                  <Component id="panelRuntimeIncomingProtocol1" alignment="0" max="32767" attributes="1"/>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="PanelRML" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="PanelMR" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <Component id="panelRuntimeIncomingProtocol1" alignment="1" max="32767" attributes="1"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="PanelANI" max="32767" attributes="0"/>
@@ -173,8 +173,8 @@
                               <Component id="PanelORE" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="PanelRML" max="32767" attributes="1"/>
-                                  <Component id="PanelMR" alignment="0" max="32767" attributes="1"/>
+                                  <Component id="PanelMR" max="32767" attributes="1"/>
+                                  <Component id="PanelRML" alignment="0" max="32767" attributes="1"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="panelRuntimeIncomingProtocol1" min="-2" max="-2" attributes="1"/>
@@ -352,7 +352,7 @@
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="ProActive Configuration">
+                    <TitledBorder title="Available Network Interfaces">
                       <Font PropertyName="font" name="TakaoPGothic" size="11" style="0"/>
                     </TitledBorder>
                   </Border>
@@ -368,7 +368,7 @@
                       <Group type="102" alignment="1" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="1" attributes="0">
-                              <Component id="jScrollPane1" alignment="0" pref="235" max="32767" attributes="0"/>
+                              <Component id="jScrollPane1" alignment="0" pref="307" max="32767" attributes="0"/>
                               <Group type="102" alignment="1" attributes="0">
                                   <Component id="buttonUse" linkSize="12" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -382,7 +382,7 @@
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <Component id="jScrollPane1" pref="212" max="32767" attributes="0"/>
+                          <Component id="jScrollPane1" pref="217" max="32767" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="buttonUse" min="-2" max="-2" attributes="0"/>
@@ -445,7 +445,7 @@
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="ProActive Configuration">
+                    <TitledBorder title="Runtime Memory Limit (Mbytes)">
                       <Font PropertyName="font" name="TakaoPGothic" size="11" style="0"/>
                     </TitledBorder>
                   </Border>
@@ -461,7 +461,7 @@
                       <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" attributes="0">
-                                  <EmptySpace min="-2" pref="33" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="labelMemoryLimit" alignment="1" min="-2" max="-2" attributes="0"/>
                                       <Component id="labelMemory" alignment="1" min="-2" max="-2" attributes="0"/>
@@ -473,21 +473,21 @@
                                   </Group>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="19" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="1" max="-2" attributes="0">
                                       <Component id="notice1" alignment="0" max="32767" attributes="1"/>
                                       <Component id="notice2" alignment="0" min="-2" max="-2" attributes="1"/>
                                   </Group>
                               </Group>
                           </Group>
-                          <EmptySpace pref="49" max="32767" attributes="0"/>
+                          <EmptySpace pref="19" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="1" attributes="0">
-                          <EmptySpace max="32767" attributes="0"/>
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="labelMemory" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="textMemory" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -501,7 +501,7 @@
                           <Component id="notice1" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="notice2" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -572,7 +572,7 @@
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="ProActive Configuration">
+                    <TitledBorder title="Multi-Runtime">
                       <Font PropertyName="font" name="TakaoPGothic" size="11" style="0"/>
                     </TitledBorder>
                   </Border>
@@ -601,7 +601,7 @@
                               </Group>
                               <Component id="checkBoxCPUs" alignment="0" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace pref="29" max="32767" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -621,7 +621,7 @@
                                   <Component id="spinNbRuntimes" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
-                          <EmptySpace pref="21" max="32767" attributes="0"/>
+                          <EmptySpace pref="26" max="32767" attributes="0"/>
                           <Component id="checkBoxCPUs" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
@@ -680,7 +680,7 @@
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="ProActive Configuration">
+                    <TitledBorder title="On Runtime Exit">
                       <Font PropertyName="font" name="TakaoPGothic" size="11" style="0"/>
                     </TitledBorder>
                   </Border>
@@ -697,7 +697,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="buttonBrowseScriptLocation" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="textScriptLocation" pref="333" max="32767" attributes="0"/>
+                          <Component id="textScriptLocation" pref="261" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -739,7 +739,7 @@
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="ProActive Configuration">
+                    <TitledBorder title="Runtime Incoming Protocol">
                       <Font PropertyName="font" name="TakaoPGothic" size="11" style="0"/>
                     </TitledBorder>
                   </Border>
@@ -757,7 +757,7 @@
                           <Component id="labelProtocol1" min="-2" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                           <Component id="comboBoxProtocol" min="-2" pref="137" max="-2" attributes="0"/>
-                          <EmptySpace pref="149" max="32767" attributes="0"/>
+                          <EmptySpace pref="77" max="32767" attributes="0"/>
                           <Component id="labelPortInitialValue1" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="spinPortInitialValue" min="-2" pref="61" max="-2" attributes="0"/>

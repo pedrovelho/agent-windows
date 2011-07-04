@@ -482,8 +482,8 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        PanelANI.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "ProActive Configuration", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("TakaoPGothic", 0, 11))); // NOI18N
-        PanelANI.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        PanelANI.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Available Network Interfaces", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("TakaoPGothic", 0, 11))); // NOI18N
+        PanelANI.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
 
         buttonUse.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         buttonUse.setText("Use");
@@ -518,7 +518,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             .add(org.jdesktop.layout.GroupLayout.TRAILING, PanelANILayout.createSequentialGroup()
                 .addContainerGap()
                 .add(PanelANILayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 307, Short.MAX_VALUE)
                     .add(PanelANILayout.createSequentialGroup()
                         .add(buttonUse)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -531,15 +531,15 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         PanelANILayout.setVerticalGroup(
             PanelANILayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, PanelANILayout.createSequentialGroup()
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 212, Short.MAX_VALUE)
+                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 217, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(PanelANILayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(buttonUse)
                     .add(buttonRefresh)))
         );
 
-        PanelRML.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "ProActive Configuration", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("TakaoPGothic", 0, 11))); // NOI18N
-        PanelRML.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        PanelRML.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Runtime Memory Limit (Mbytes)", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("TakaoPGothic", 0, 11))); // NOI18N
+        PanelRML.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
 
         labelMemory.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelMemory.setText("Available Physical Memory :");
@@ -573,7 +573,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             .add(PanelRMLLayout.createSequentialGroup()
                 .add(PanelRMLLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(PanelRMLLayout.createSequentialGroup()
-                        .add(33, 33, 33)
+                        .addContainerGap()
                         .add(PanelRMLLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(org.jdesktop.layout.GroupLayout.TRAILING, labelMemoryLimit)
                             .add(org.jdesktop.layout.GroupLayout.TRAILING, labelMemory))
@@ -582,16 +582,16 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                             .add(splinMemoryLimit, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 67, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                             .add(textMemory)))
                     .add(PanelRMLLayout.createSequentialGroup()
-                        .addContainerGap()
+                        .add(19, 19, 19)
                         .add(PanelRMLLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
                             .add(org.jdesktop.layout.GroupLayout.LEADING, notice1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .add(org.jdesktop.layout.GroupLayout.LEADING, notice2))))
-                .addContainerGap(49, Short.MAX_VALUE))
+                .addContainerGap(19, Short.MAX_VALUE))
         );
         PanelRMLLayout.setVerticalGroup(
             PanelRMLLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, PanelRMLLayout.createSequentialGroup()
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .add(PanelRMLLayout.createSequentialGroup()
+                .addContainerGap()
                 .add(PanelRMLLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(labelMemory)
                     .add(textMemory))
@@ -603,11 +603,11 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                 .add(notice1)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(notice2)
-                .add(6, 6, 6))
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        PanelMR.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "ProActive Configuration", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("TakaoPGothic", 0, 11))); // NOI18N
-        PanelMR.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        PanelMR.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Multi-Runtime", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("TakaoPGothic", 0, 11))); // NOI18N
+        PanelMR.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
 
         labelCPUs.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelCPUs.setText("Available CPUs :");
@@ -645,7 +645,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                             .add(spinNbRuntimes, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 63, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                             .add(textCPUs)))
                     .add(checkBoxCPUs))
-                .addContainerGap(29, Short.MAX_VALUE))
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         PanelMRLayout.setVerticalGroup(
             PanelMRLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -660,13 +660,13 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                         .add(textCPUs)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(spinNbRuntimes, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 21, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 26, Short.MAX_VALUE)
                 .add(checkBoxCPUs)
                 .addContainerGap())
         );
 
-        PanelORE.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "ProActive Configuration", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("TakaoPGothic", 0, 11))); // NOI18N
-        PanelORE.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        PanelORE.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "On Runtime Exit", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("TakaoPGothic", 0, 11))); // NOI18N
+        PanelORE.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
 
         buttonBrowseScriptLocation.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         buttonBrowseScriptLocation.setText("Browse Script Location");
@@ -686,7 +686,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                 .addContainerGap()
                 .add(buttonBrowseScriptLocation)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(textScriptLocation, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 333, Short.MAX_VALUE)
+                .add(textScriptLocation, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 261, Short.MAX_VALUE)
                 .addContainerGap())
         );
         PanelORELayout.setVerticalGroup(
@@ -698,8 +698,8 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        panelRuntimeIncomingProtocol1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "ProActive Configuration", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("TakaoPGothic", 0, 11))); // NOI18N
-        panelRuntimeIncomingProtocol1.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
+        panelRuntimeIncomingProtocol1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Runtime Incoming Protocol", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("TakaoPGothic", 0, 11))); // NOI18N
+        panelRuntimeIncomingProtocol1.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
 
         labelProtocol1.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelProtocol1.setText("Protocol:");
@@ -726,7 +726,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                 .add(labelProtocol1)
                 .add(18, 18, 18)
                 .add(comboBoxProtocol, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 137, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 149, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 77, Short.MAX_VALUE)
                 .add(labelPortInitialValue1)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(spinPortInitialValue, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 61, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
@@ -753,12 +753,12 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                     .add(PanelConfig, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(PanelGeneralLayout.createSequentialGroup()
                         .add(PanelGeneralLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(org.jdesktop.layout.GroupLayout.TRAILING, PanelORE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .add(org.jdesktop.layout.GroupLayout.TRAILING, PanelGeneralLayout.createSequentialGroup()
-                                .add(PanelRML, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .add(PanelORE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .add(panelRuntimeIncomingProtocol1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .add(PanelGeneralLayout.createSequentialGroup()
+                                .add(PanelRML, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(PanelMR, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelRuntimeIncomingProtocol1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .add(PanelMR, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(PanelANI, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
@@ -773,8 +773,8 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                         .add(PanelORE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(PanelGeneralLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(PanelRML, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .add(PanelMR, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .add(PanelMR, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .add(PanelRML, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(panelRuntimeIncomingProtocol1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                     .add(PanelANI, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
