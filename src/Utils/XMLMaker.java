@@ -268,7 +268,6 @@ public class XMLMaker {
        String os = System.getProperty("os.name").toLowerCase();
        if(os.indexOf( "win" ) >= 0) {
           //processPriority element
-           System.out.println("process : " + ModelManager.getPROCESSPRIORITY());
           Element processPriorityNode = doc.createElement("processPriority");
           processPriorityNode.appendChild(doc.createTextNode(ModelManager.getPROCESSPRIORITY()));
           config.appendChild(processPriorityNode);

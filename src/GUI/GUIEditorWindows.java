@@ -1648,8 +1648,6 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             buttonBrowseJavaHome.setEnabled(true);
             textJavaHome.setEnabled(true);
         }
-        
-        System.out.println("JAVAHOME : " + ModelManager.getJAVAHOME());
     }//GEN-LAST:event_JavaHomeSystemChooser
 
     /**
