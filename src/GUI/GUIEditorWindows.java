@@ -114,7 +114,6 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             
             labelForCent.setVisible(false);
         }
-        System.out.println("icon : " + icon);
         BufferedImage images = null;
         try {
             images = ImageIO.read(this.getClass().getResource( icon ));
@@ -164,6 +163,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
     }
     
     public GUIEditorWindows(String XMLFile) {
+        System.out.println("Starting application...");
         initComponents();
         
         //Init Config
@@ -183,6 +183,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
     }
     
     public GUIEditorWindows(String XMLFile, String XSDFile) {
+        System.out.println("Starting application...");
         initComponents();
         
         //Init Config
