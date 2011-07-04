@@ -29,6 +29,9 @@
   </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="2"/>
+    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+      <Font name="DejaVu Serif" size="12" style="0"/>
+    </Property>
     <Property name="locationByPlatform" type="boolean" value="true"/>
     <Property name="resizable" type="boolean" value="false"/>
   </Properties>
@@ -70,7 +73,7 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="GlobalPanel" min="-2" pref="545" max="-2" attributes="0"/>
+              <Component id="GlobalPanel" min="-2" pref="504" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="ButtonClose" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -85,6 +88,9 @@
   <SubComponents>
     <Component class="javax.swing.JButton" name="ButtonClose">
       <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="TakaoPGothic" size="11" style="0"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="Close"/>
       </Properties>
       <Events>
@@ -93,6 +99,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="ButtonSave">
       <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="TakaoPGothic" size="11" style="0"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="Save"/>
       </Properties>
       <Events>
@@ -101,6 +110,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="ButtonSaveAs">
       <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="TakaoPGothic" size="11" style="0"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="Save As"/>
       </Properties>
       <Events>
@@ -108,6 +120,11 @@
       </Events>
     </Component>
     <Container class="javax.swing.JTabbedPane" name="GlobalPanel">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="TakaoPGothic" size="11" style="0"/>
+        </Property>
+      </Properties>
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
       <SubComponents>
@@ -129,13 +146,13 @@
                           <Component id="PanelConfig" alignment="0" max="32767" attributes="1"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" alignment="0" attributes="0">
+                                  <Component id="PanelORE" alignment="1" min="-2" max="-2" attributes="1"/>
+                                  <Component id="panelRuntimeIncomingProtocol1" alignment="1" min="-2" max="-2" attributes="1"/>
+                                  <Group type="102" alignment="1" attributes="0">
                                       <Component id="PanelRML" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="PanelMR" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <Component id="PanelORE" alignment="0" min="-2" max="-2" attributes="1"/>
-                                  <Component id="panelRuntimeIncomingProtocol1" min="-2" max="-2" attributes="1"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="PanelANI" max="32767" attributes="0"/>
@@ -156,10 +173,10 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="PanelMR" max="32767" attributes="1"/>
-                                  <Component id="PanelRML" alignment="0" min="-2" max="-2" attributes="1"/>
+                                  <Component id="PanelRML" alignment="0" max="32767" attributes="1"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="panelRuntimeIncomingProtocol1" min="-2" pref="60" max="-2" attributes="1"/>
+                              <Component id="panelRuntimeIncomingProtocol1" min="-2" max="-2" attributes="1"/>
                           </Group>
                           <Component id="PanelANI" max="32767" attributes="1"/>
                       </Group>
@@ -173,8 +190,13 @@
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="ProActive Configuration"/>
+                    <TitledBorder title="ProActive Configuration">
+                      <Font PropertyName="font" name="TakaoPGothic" size="11" style="0"/>
+                    </TitledBorder>
                   </Border>
+                </Property>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="TakaoPGothic" size="11" style="0"/>
                 </Property>
               </Properties>
 
@@ -191,10 +213,10 @@
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="jScrollPane3" pref="589" max="32767" attributes="1"/>
+                              <Component id="jScrollPane3" pref="619" max="32767" attributes="1"/>
                               <Component id="checkBoxJavaHome" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="textProActiveHome" alignment="0" pref="589" max="32767" attributes="1"/>
-                              <Component id="textJavaHome" alignment="0" pref="589" max="32767" attributes="1"/>
+                              <Component id="textProActiveHome" alignment="0" pref="619" max="32767" attributes="1"/>
+                              <Component id="textJavaHome" alignment="0" pref="619" max="32767" attributes="1"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
@@ -231,6 +253,9 @@
               <SubComponents>
                 <Component class="javax.swing.JButton" name="buttonBrowseProActiveHome">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="Browse ProActive Home"/>
                   </Properties>
                   <Events>
@@ -239,6 +264,9 @@
                 </Component>
                 <Component class="javax.swing.JButton" name="buttonBrowseJavaHome">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="Browse Java Home"/>
                   </Properties>
                   <Events>
@@ -247,16 +275,25 @@
                 </Component>
                 <Component class="javax.swing.JTextField" name="textProActiveHome">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="set the proactive home"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JTextField" name="textJavaHome">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="set the java home"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JCheckBox" name="checkBoxJavaHome">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="Use system-wide Java Home"/>
                   </Properties>
                   <Events>
@@ -265,6 +302,9 @@
                 </Component>
                 <Component class="javax.swing.JButton" name="buttonAddJVMOpt">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="Add JVM Option"/>
                   </Properties>
                   <Events>
@@ -273,6 +313,9 @@
                 </Component>
                 <Component class="javax.swing.JButton" name="buttonRemoveJVMOpt">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="Remove JVM Option"/>
                   </Properties>
                   <Events>
@@ -288,6 +331,9 @@
                   <SubComponents>
                     <Component class="javax.swing.JList" name="JListJVMOption">
                       <Properties>
+                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                          <Font name="TakaoPGothic" size="11" style="0"/>
+                        </Property>
                         <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.editors2.ListModelEditor">
                           <StringArray count="0"/>
                         </Property>
@@ -305,8 +351,13 @@
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="Available Network Interface"/>
+                    <TitledBorder title="ProActive Configuration">
+                      <Font PropertyName="font" name="TakaoPGothic" size="11" style="0"/>
+                    </TitledBorder>
                   </Border>
+                </Property>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="TakaoPGothic" size="11" style="0"/>
                 </Property>
               </Properties>
 
@@ -316,7 +367,7 @@
                       <Group type="102" alignment="1" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="1" attributes="0">
-                              <Component id="jScrollPane1" alignment="0" pref="191" max="32767" attributes="0"/>
+                              <Component id="jScrollPane1" alignment="0" pref="242" max="32767" attributes="0"/>
                               <Group type="102" alignment="1" attributes="0">
                                   <Component id="buttonUse" linkSize="12" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -330,7 +381,7 @@
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <Component id="jScrollPane1" pref="226" max="32767" attributes="0"/>
+                          <Component id="jScrollPane1" pref="194" max="32767" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="buttonUse" min="-2" max="-2" attributes="0"/>
@@ -343,6 +394,9 @@
               <SubComponents>
                 <Component class="javax.swing.JButton" name="buttonUse">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="Use"/>
                     <Property name="enabled" type="boolean" value="false"/>
                   </Properties>
@@ -352,6 +406,9 @@
                 </Component>
                 <Component class="javax.swing.JButton" name="buttonRefresh">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="Refresh"/>
                   </Properties>
                   <Events>
@@ -367,6 +424,9 @@
                   <SubComponents>
                     <Component class="javax.swing.JList" name="JListInterfaces">
                       <Properties>
+                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                          <Font name="TakaoPGothic" size="11" style="0"/>
+                        </Property>
                         <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.editors2.ListModelEditor">
                           <StringArray count="0"/>
                         </Property>
@@ -384,8 +444,13 @@
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="Runtime Memory Limit (MBytes)"/>
+                    <TitledBorder title="ProActive Configuration">
+                      <Font PropertyName="font" name="TakaoPGothic" size="11" style="0"/>
+                    </TitledBorder>
                   </Border>
+                </Property>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="TakaoPGothic" size="11" style="0"/>
                 </Property>
               </Properties>
 
@@ -395,13 +460,6 @@
                       <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" attributes="0">
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="notice1" alignment="0" pref="276" max="32767" attributes="0"/>
-                                      <Component id="notice2" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                              </Group>
-                              <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace min="-2" pref="33" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="labelMemoryLimit" alignment="1" min="-2" max="-2" attributes="0"/>
@@ -413,15 +471,22 @@
                                       <Component id="textMemory" alignment="0" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                      <Component id="notice1" alignment="0" max="32767" attributes="1"/>
+                                      <Component id="notice2" alignment="0" min="-2" max="-2" attributes="1"/>
+                                  </Group>
+                              </Group>
                           </Group>
-                          <EmptySpace max="-2" attributes="0"/>
+                          <EmptySpace pref="21" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <EmptySpace pref="26" max="32767" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="labelMemory" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="textMemory" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -431,10 +496,11 @@
                               <Component id="labelMemoryLimit" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="splinMemoryLimit" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Component id="notice1" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="notice2" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -442,21 +508,33 @@
               <SubComponents>
                 <Component class="javax.swing.JLabel" name="labelMemory">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="Available Physical Memory :"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JLabel" name="textMemory">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="951"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JLabel" name="labelMemoryLimit">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="Memory Limit :"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JSpinner" name="splinMemoryLimit">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
                       <SpinnerModel initial="0" minimum="0" numberType="java.lang.Integer" stepSize="1" type="number"/>
                     </Property>
@@ -493,8 +571,13 @@
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="Multi-Runtime"/>
+                    <TitledBorder title="ProActive Configuration">
+                      <Font PropertyName="font" name="TakaoPGothic" size="11" style="0"/>
+                    </TitledBorder>
                   </Border>
+                </Property>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="TakaoPGothic" size="11" style="0"/>
                 </Property>
               </Properties>
 
@@ -517,7 +600,7 @@
                               </Group>
                               <Component id="checkBoxCPUs" alignment="0" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace pref="37" max="32767" attributes="0"/>
+                          <EmptySpace pref="29" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -537,7 +620,7 @@
                                   <Component id="spinNbRuntimes" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
-                          <EmptySpace pref="33" max="32767" attributes="0"/>
+                          <EmptySpace pref="19" max="32767" attributes="0"/>
                           <Component id="checkBoxCPUs" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
@@ -547,21 +630,33 @@
               <SubComponents>
                 <Component class="javax.swing.JLabel" name="labelCPUs">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="Available CPUs :"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JLabel" name="textCPUs">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="4"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JLabel" name="labelNbRuntimes">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="Nb Runtimes :"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JSpinner" name="spinNbRuntimes">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
                       <SpinnerModel initial="0" maximum="32" minimum="0" numberType="java.lang.Integer" stepSize="1" type="number"/>
                     </Property>
@@ -569,6 +664,9 @@
                 </Component>
                 <Component class="javax.swing.JCheckBox" name="checkBoxCPUs">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="Use all available CPUs"/>
                   </Properties>
                   <Events>
@@ -581,8 +679,13 @@
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="On Runtime Exit"/>
+                    <TitledBorder title="ProActive Configuration">
+                      <Font PropertyName="font" name="TakaoPGothic" size="11" style="0"/>
+                    </TitledBorder>
                   </Border>
+                </Property>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="TakaoPGothic" size="11" style="0"/>
                 </Property>
               </Properties>
 
@@ -593,7 +696,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="buttonBrowseScriptLocation" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="textScriptLocation" pref="358" max="32767" attributes="0"/>
+                          <Component id="textScriptLocation" pref="333" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -613,6 +716,9 @@
               <SubComponents>
                 <Component class="javax.swing.JButton" name="buttonBrowseScriptLocation">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="Browse Script Location"/>
                   </Properties>
                   <Events>
@@ -620,6 +726,11 @@
                   </Events>
                 </Component>
                 <Component class="javax.swing.JTextField" name="textScriptLocation">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
+                  </Properties>
                 </Component>
               </SubComponents>
             </Container>
@@ -627,8 +738,13 @@
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="Runtime Incoming Protocol"/>
+                    <TitledBorder title="ProActive Configuration">
+                      <Font PropertyName="font" name="TakaoPGothic" size="11" style="0"/>
+                    </TitledBorder>
                   </Border>
+                </Property>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="TakaoPGothic" size="11" style="0"/>
                 </Property>
               </Properties>
 
@@ -640,7 +756,7 @@
                           <Component id="labelProtocol1" min="-2" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                           <Component id="comboBoxProtocol" min="-2" pref="137" max="-2" attributes="0"/>
-                          <EmptySpace pref="136" max="32767" attributes="0"/>
+                          <EmptySpace pref="109" max="32767" attributes="0"/>
                           <Component id="labelPortInitialValue1" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="spinPortInitialValue" min="-2" pref="61" max="-2" attributes="0"/>
@@ -657,7 +773,7 @@
                               <Component id="labelPortInitialValue1" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="spinPortInitialValue" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace pref="7" max="32767" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -665,11 +781,17 @@
               <SubComponents>
                 <Component class="javax.swing.JLabel" name="labelProtocol1">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="Protocol:"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JComboBox" name="comboBoxProtocol">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
                       <StringArray count="6">
                         <StringItem index="0" value="undefined"/>
@@ -687,10 +809,18 @@
                 </Component>
                 <Component class="javax.swing.JLabel" name="labelPortInitialValue1">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="Port Initial Value:"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JSpinner" name="spinPortInitialValue">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
+                  </Properties>
                 </Component>
               </SubComponents>
             </Container>
@@ -726,7 +856,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="panelMultipleConnections" alignment="0" pref="484" max="32767" attributes="0"/>
+                          <Component id="panelMultipleConnections" alignment="0" pref="448" max="32767" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="radioLocal" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
@@ -744,6 +874,9 @@
             <Container class="javax.swing.JTabbedPane" name="panelMultipleConnections">
               <Properties>
                 <Property name="tabPlacement" type="int" value="2"/>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="TakaoPGothic" size="11" style="0"/>
+                </Property>
               </Properties>
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
@@ -775,7 +908,7 @@
                           <Group type="102" alignment="1" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="panelLocalRegistration" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="324" max="32767" attributes="0"/>
+                              <EmptySpace pref="304" max="32767" attributes="0"/>
                               <Component id="PanelAdditionnalConf4" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -787,8 +920,13 @@
                       <Properties>
                         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                            <TitledBorder title="Local Registration"/>
+                            <TitledBorder title="Local Registration">
+                              <Font PropertyName="font" name="TakaoPGothic" size="11" style="0"/>
+                            </TitledBorder>
                           </Border>
+                        </Property>
+                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                          <Font name="TakaoPGothic" size="11" style="0"/>
                         </Property>
                       </Properties>
 
@@ -799,7 +937,7 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="labelNodeName1" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="textNodeName1" pref="398" max="32767" attributes="0"/>
+                                  <Component id="textNodeName1" pref="452" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -820,10 +958,18 @@
                       <SubComponents>
                         <Component class="javax.swing.JLabel" name="labelNodeName1">
                           <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="TakaoPGothic" size="11" style="0"/>
+                            </Property>
                             <Property name="text" type="java.lang.String" value="Node Name:"/>
                           </Properties>
                         </Component>
                         <Component class="javax.swing.JTextField" name="textNodeName1">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="TakaoPGothic" size="11" style="0"/>
+                            </Property>
+                          </Properties>
                         </Component>
                       </SubComponents>
                     </Container>
@@ -831,8 +977,13 @@
                       <Properties>
                         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                            <TitledBorder title="Additional Configuration"/>
+                            <TitledBorder title="Local Registration">
+                              <Font PropertyName="font" name="TakaoPGothic" size="11" style="0"/>
+                            </TitledBorder>
                           </Border>
+                        </Property>
+                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                          <Font name="TakaoPGothic" size="11" style="0"/>
                         </Property>
                       </Properties>
 
@@ -843,7 +994,7 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="labelStarterClass4" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="textStarterClass4" pref="356" max="32767" attributes="0"/>
+                                  <Component id="textStarterClass4" pref="419" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -860,11 +1011,17 @@
                       <SubComponents>
                         <Component class="javax.swing.JLabel" name="labelStarterClass4">
                           <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="TakaoPGothic" size="11" style="0"/>
+                            </Property>
                             <Property name="text" type="java.lang.String" value="Java Starter Class:"/>
                           </Properties>
                         </Component>
                         <Component class="javax.swing.JTextField" name="textStarterClass4">
                           <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="TakaoPGothic" size="11" style="0"/>
+                            </Property>
                             <Property name="text" type="java.lang.String" value="org.objectweb.proactive.core.util.winagent.PAAgentServiceRMIStarter"/>
                           </Properties>
                         </Component>
@@ -888,7 +1045,7 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="PanelAdditionnalConf2" max="32767" attributes="0"/>
-                                  <Component id="panelRMRegistration" alignment="0" pref="527" max="32767" attributes="0"/>
+                                  <Component id="panelRMRegistration" alignment="0" pref="565" max="32767" attributes="0"/>
                                   <Component id="panelAuthCredential" alignment="1" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
@@ -902,7 +1059,7 @@
                               <Component id="panelRMRegistration" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="panelAuthCredential" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="186" max="32767" attributes="0"/>
+                              <EmptySpace pref="184" max="32767" attributes="0"/>
                               <Component id="PanelAdditionnalConf2" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -914,7 +1071,9 @@
                       <Properties>
                         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                            <TitledBorder title="Resource Manager Registration"/>
+                            <TitledBorder title="Resource Manager Registration">
+                              <Font PropertyName="font" name="TakaoPGothic" size="11" style="0"/>
+                            </TitledBorder>
                           </Border>
                         </Property>
                       </Properties>
@@ -964,27 +1123,49 @@
                       <SubComponents>
                         <Component class="javax.swing.JLabel" name="labelRMURL">
                           <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="TakaoPGothic" size="11" style="0"/>
+                            </Property>
                             <Property name="text" type="java.lang.String" value="Resource Manager URL:"/>
                           </Properties>
                         </Component>
                         <Component class="javax.swing.JTextField" name="textRMURL">
                           <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="TakaoPGothic" size="11" style="0"/>
+                            </Property>
                             <Property name="text" type="java.lang.String" value="rmi://localhost:1099"/>
                           </Properties>
                         </Component>
                         <Component class="javax.swing.JLabel" name="labelNodeName2">
                           <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="TakaoPGothic" size="11" style="0"/>
+                            </Property>
                             <Property name="text" type="java.lang.String" value="Node Name:"/>
                           </Properties>
                         </Component>
                         <Component class="javax.swing.JTextField" name="textNodeName2">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="TakaoPGothic" size="11" style="0"/>
+                            </Property>
+                          </Properties>
                         </Component>
                         <Component class="javax.swing.JLabel" name="labelNodeSourceName">
                           <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="TakaoPGothic" size="11" style="0"/>
+                            </Property>
                             <Property name="text" type="java.lang.String" value="Node Source Name:"/>
                           </Properties>
                         </Component>
                         <Component class="javax.swing.JTextField" name="textNodeSourceName">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="TakaoPGothic" size="11" style="0"/>
+                            </Property>
+                          </Properties>
                         </Component>
                       </SubComponents>
                     </Container>
@@ -992,7 +1173,9 @@
                       <Properties>
                         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                            <TitledBorder title="Authentification Credential"/>
+                            <TitledBorder title="Resource Manager Registration">
+                              <Font PropertyName="font" name="TakaoPGothic" size="11" style="0"/>
+                            </TitledBorder>
                           </Border>
                         </Property>
                       </Properties>
@@ -1003,7 +1186,7 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="buttonBrowseLocation" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="textCredential" pref="381" max="32767" attributes="0"/>
+                                  <Component id="textCredential" pref="437" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -1023,9 +1206,17 @@
                       </Layout>
                       <SubComponents>
                         <Component class="javax.swing.JTextField" name="textCredential">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="TakaoPGothic" size="11" style="0"/>
+                            </Property>
+                          </Properties>
                         </Component>
                         <Component class="javax.swing.JButton" name="buttonBrowseLocation">
                           <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="TakaoPGothic" size="11" style="0"/>
+                            </Property>
                             <Property name="text" type="java.lang.String" value="Browse Location"/>
                           </Properties>
                           <Events>
@@ -1038,7 +1229,9 @@
                       <Properties>
                         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                            <TitledBorder title="Additional Configuration"/>
+                            <TitledBorder title="Resource Manager Registration">
+                              <Font PropertyName="font" name="TakaoPGothic" size="11" style="0"/>
+                            </TitledBorder>
                           </Border>
                         </Property>
                       </Properties>
@@ -1050,7 +1243,7 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="labelStarterClass2" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="textStarterClass2" pref="356" max="32767" attributes="0"/>
+                                  <Component id="textStarterClass2" pref="419" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -1067,11 +1260,17 @@
                       <SubComponents>
                         <Component class="javax.swing.JLabel" name="labelStarterClass2">
                           <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="TakaoPGothic" size="11" style="0"/>
+                            </Property>
                             <Property name="text" type="java.lang.String" value="Java Starter Class:"/>
                           </Properties>
                         </Component>
                         <Component class="javax.swing.JTextField" name="textStarterClass2">
                           <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="TakaoPGothic" size="11" style="0"/>
+                            </Property>
                             <Property name="text" type="java.lang.String" value="org.ow2.proactive.resourcemanager.utils.RMNodeStarter"/>
                           </Properties>
                         </Component>
@@ -1118,7 +1317,9 @@
                       <Properties>
                         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                            <TitledBorder title="Additional Configuration"/>
+                            <TitledBorder title="Custom">
+                              <Font PropertyName="font" name="TakaoPGothic" size="11" style="0"/>
+                            </TitledBorder>
                           </Border>
                         </Property>
                       </Properties>
@@ -1130,7 +1331,7 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="labelStarterClass3" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="textStarterClass3" pref="356" max="32767" attributes="0"/>
+                                  <Component id="textStarterClass3" pref="419" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -1147,11 +1348,17 @@
                       <SubComponents>
                         <Component class="javax.swing.JLabel" name="labelStarterClass3">
                           <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="TakaoPGothic" size="11" style="0"/>
+                            </Property>
                             <Property name="text" type="java.lang.String" value="Java Starter Class:"/>
                           </Properties>
                         </Component>
                         <Component class="javax.swing.JTextField" name="textStarterClass3">
                           <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="TakaoPGothic" size="11" style="0"/>
+                            </Property>
                             <Property name="text" type="java.lang.String" value="user.Starter"/>
                           </Properties>
                         </Component>
@@ -1161,7 +1368,9 @@
                       <Properties>
                         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                            <TitledBorder title="Custom"/>
+                            <TitledBorder title="Custom">
+                              <Font PropertyName="font" name="TakaoPGothic" size="11" style="0"/>
+                            </TitledBorder>
                           </Border>
                         </Property>
                       </Properties>
@@ -1174,7 +1383,7 @@
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="labelArguments" alignment="0" min="-2" max="-2" attributes="0"/>
                                       <Group type="102" alignment="1" attributes="0">
-                                          <Component id="jScrollPane4" pref="415" max="32767" attributes="0"/>
+                                          <Component id="jScrollPane4" pref="468" max="32767" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="0" attributes="0">
                                               <Component id="buttonSaveArg" linkSize="2" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -1185,7 +1394,7 @@
                                       <Group type="102" alignment="0" attributes="0">
                                           <Component id="labelArgument" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="textArgument" pref="411" max="32767" attributes="0"/>
+                                          <Component id="textArgument" pref="462" max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -1220,11 +1429,17 @@
                       <SubComponents>
                         <Component class="javax.swing.JLabel" name="labelArguments">
                           <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="TakaoPGothic" size="11" style="0"/>
+                            </Property>
                             <Property name="text" type="java.lang.String" value="Arguments:"/>
                           </Properties>
                         </Component>
                         <Component class="javax.swing.JButton" name="buttonAdd">
                           <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="TakaoPGothic" size="11" style="0"/>
+                            </Property>
                             <Property name="text" type="java.lang.String" value="Add"/>
                           </Properties>
                           <Events>
@@ -1233,6 +1448,9 @@
                         </Component>
                         <Component class="javax.swing.JButton" name="buttonDelete">
                           <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="TakaoPGothic" size="11" style="0"/>
+                            </Property>
                             <Property name="text" type="java.lang.String" value="Delete"/>
                           </Properties>
                           <Events>
@@ -1241,15 +1459,26 @@
                         </Component>
                         <Component class="javax.swing.JButton" name="buttonSaveArg">
                           <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="TakaoPGothic" size="11" style="0"/>
+                            </Property>
                             <Property name="text" type="java.lang.String" value="Save Arg"/>
                           </Properties>
                         </Component>
                         <Component class="javax.swing.JLabel" name="labelArgument">
                           <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="TakaoPGothic" size="11" style="0"/>
+                            </Property>
                             <Property name="text" type="java.lang.String" value="Argument:"/>
                           </Properties>
                         </Component>
                         <Component class="javax.swing.JTextField" name="textArgument">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="TakaoPGothic" size="11" style="0"/>
+                            </Property>
+                          </Properties>
                         </Component>
                         <Container class="javax.swing.JScrollPane" name="jScrollPane4">
                           <AuxValues>
@@ -1260,6 +1489,9 @@
                           <SubComponents>
                             <Component class="javax.swing.JList" name="JlistArguments">
                               <Properties>
+                                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                                  <Font name="TakaoPGothic" size="11" style="0"/>
+                                </Property>
                                 <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.editors2.ListModelEditor">
                                   <StringArray count="0"/>
                                 </Property>
@@ -1315,14 +1547,14 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
+                  <Group type="102" alignment="1" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="panelWeeklyPlanning" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Component id="checkBoxAlwaysAvailable" alignment="1" min="-2" max="-2" attributes="0"/>
                           <Component id="panelProcessManagement" alignment="1" max="32767" attributes="1"/>
-                          <Component id="panelPlanEditor" alignment="1" max="32767" attributes="1"/>
+                          <Component id="panelPlanEditor" alignment="1" min="0" pref="497" max="32767" attributes="1"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -1338,7 +1570,7 @@
                               <Component id="panelPlanEditor" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="panelProcessManagement" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="149" max="32767" attributes="0"/>
+                              <EmptySpace pref="139" max="32767" attributes="0"/>
                               <Component id="checkBoxAlwaysAvailable" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -1352,7 +1584,9 @@
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="Weekly Planning"/>
+                    <TitledBorder title="Weekly Planning">
+                      <Font PropertyName="font" name="TakaoPGothic" size="11" style="0"/>
+                    </TitledBorder>
                   </Border>
                 </Property>
               </Properties>
@@ -1363,13 +1597,13 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="-2" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="testAeraPlanning" alignment="0" pref="210" max="32767" attributes="0"/>
+                              <Component id="testAeraPlanning" alignment="0" pref="257" max="32767" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
-                                  <Component id="buttonCreatePlan" pref="78" max="32767" attributes="0"/>
+                                  <Component id="buttonCreatePlan" pref="93" max="32767" attributes="0"/>
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
-                                  <Component id="buttonDeletePlan" pref="64" max="32767" attributes="0"/>
+                                  <Component id="buttonDeletePlan" pref="79" max="32767" attributes="0"/>
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
-                                  <Component id="buttonShowPlan" pref="56" max="32767" attributes="0"/>
+                                  <Component id="buttonShowPlan" pref="73" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
@@ -1380,7 +1614,7 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="testAeraPlanning" pref="386" max="32767" attributes="0"/>
+                          <Component id="testAeraPlanning" pref="358" max="32767" attributes="0"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="buttonCreatePlan" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -1395,6 +1629,9 @@
               <SubComponents>
                 <Component class="javax.swing.JButton" name="buttonCreatePlan">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="Add plan"/>
                   </Properties>
                   <Events>
@@ -1403,6 +1640,9 @@
                 </Component>
                 <Component class="javax.swing.JButton" name="buttonDeletePlan">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="Delete"/>
                   </Properties>
                   <Events>
@@ -1411,6 +1651,9 @@
                 </Component>
                 <Component class="javax.swing.JButton" name="buttonShowPlan">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="Show"/>
                   </Properties>
                   <Events>
@@ -1426,6 +1669,9 @@
                   <SubComponents>
                     <Component class="javax.swing.JList" name="listPlanning">
                       <Properties>
+                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                          <Font name="TakaoPGothic" size="11" style="0"/>
+                        </Property>
                         <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.editors2.ListModelEditor">
                           <StringArray count="0"/>
                         </Property>
@@ -1443,7 +1689,9 @@
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="Plan Editor"/>
+                    <TitledBorder title="Weekly Planning">
+                      <Font PropertyName="font" name="TakaoPGothic" size="11" style="0"/>
+                    </TitledBorder>
                   </Border>
                 </Property>
               </Properties>
@@ -1451,13 +1699,13 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="panelDuration" alignment="0" min="-2" max="-2" attributes="1"/>
-                              <Component id="panelStartTime" alignment="0" min="-2" max="-2" attributes="1"/>
-                          </Group>
+                      <Group type="102" alignment="1" attributes="0">
                           <EmptySpace max="32767" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="panelStartTime" alignment="1" min="-2" max="-2" attributes="1"/>
+                              <Component id="panelDuration" alignment="1" min="-2" max="-2" attributes="1"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -1467,7 +1715,7 @@
                           <Component id="panelStartTime" linkSize="8" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="panelDuration" linkSize="8" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -1477,7 +1725,9 @@
                   <Properties>
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                        <TitledBorder title="Start Time"/>
+                        <TitledBorder title="Weekly Planning">
+                          <Font PropertyName="font" name="TakaoPGothic" size="11" style="0"/>
+                        </TitledBorder>
                       </Border>
                     </Property>
                   </Properties>
@@ -1519,7 +1769,7 @@
                                   <Component id="spinnerStartMinutes" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="labelStartMinutes" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace max="32767" attributes="0"/>
+                              <EmptySpace pref="17" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -1527,11 +1777,17 @@
                   <SubComponents>
                     <Component class="javax.swing.JLabel" name="labelStartDay">
                       <Properties>
+                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                          <Font name="TakaoPGothic" size="11" style="0"/>
+                        </Property>
                         <Property name="text" type="java.lang.String" value="Day:"/>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JComboBox" name="comboBoxStartDay">
                       <Properties>
+                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                          <Font name="TakaoPGothic" size="11" style="0"/>
+                        </Property>
                         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
                           <StringArray count="7">
                             <StringItem index="0" value="Sunday"/>
@@ -1550,11 +1806,17 @@
                     </Component>
                     <Component class="javax.swing.JLabel" name="labelStartHours">
                       <Properties>
+                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                          <Font name="TakaoPGothic" size="11" style="0"/>
+                        </Property>
                         <Property name="text" type="java.lang.String" value="Hours:"/>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JSpinner" name="spinnerStartHours">
                       <Properties>
+                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                          <Font name="TakaoPGothic" size="11" style="0"/>
+                        </Property>
                         <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
                           <SpinnerModel initial="0" maximum="23" minimum="0" numberType="java.lang.Integer" stepSize="1" type="number"/>
                         </Property>
@@ -1565,11 +1827,17 @@
                     </Component>
                     <Component class="javax.swing.JLabel" name="labelStartMinutes">
                       <Properties>
+                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                          <Font name="TakaoPGothic" size="11" style="0"/>
+                        </Property>
                         <Property name="text" type="java.lang.String" value="Minutes"/>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JSpinner" name="spinnerStartMinutes">
                       <Properties>
+                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                          <Font name="TakaoPGothic" size="11" style="0"/>
+                        </Property>
                         <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
                           <SpinnerModel initial="0" maximum="59" minimum="0" numberType="java.lang.Integer" stepSize="1" type="number"/>
                         </Property>
@@ -1580,11 +1848,17 @@
                     </Component>
                     <Component class="javax.swing.JLabel" name="labelStartSecondes">
                       <Properties>
+                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                          <Font name="TakaoPGothic" size="11" style="0"/>
+                        </Property>
                         <Property name="text" type="java.lang.String" value="Seconds"/>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JSpinner" name="spinnerStartSecondes">
                       <Properties>
+                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                          <Font name="TakaoPGothic" size="11" style="0"/>
+                        </Property>
                         <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
                           <SpinnerModel initial="0" maximum="59" minimum="0" numberType="java.lang.Integer" stepSize="1" type="number"/>
                         </Property>
@@ -1599,7 +1873,9 @@
                   <Properties>
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                        <TitledBorder title="Duration"/>
+                        <TitledBorder title="Weekly Planning">
+                          <Font PropertyName="font" name="TakaoPGothic" size="11" style="0"/>
+                        </TitledBorder>
                       </Border>
                     </Property>
                   </Properties>
@@ -1645,7 +1921,7 @@
                                   <Component id="spinnerDurationDays" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Component id="labelDurationDays" alignment="0" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace max="32767" attributes="0"/>
+                              <EmptySpace pref="17" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -1653,11 +1929,17 @@
                   <SubComponents>
                     <Component class="javax.swing.JLabel" name="labelDurationDays">
                       <Properties>
+                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                          <Font name="TakaoPGothic" size="11" style="0"/>
+                        </Property>
                         <Property name="text" type="java.lang.String" value="Days:"/>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JSpinner" name="spinnerDurationDays">
                       <Properties>
+                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                          <Font name="TakaoPGothic" size="11" style="0"/>
+                        </Property>
                         <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
                           <SpinnerModel initial="0" maximum="6" minimum="0" numberType="java.lang.Integer" stepSize="1" type="number"/>
                         </Property>
@@ -1668,11 +1950,17 @@
                     </Component>
                     <Component class="javax.swing.JLabel" name="labelDurationHours">
                       <Properties>
+                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                          <Font name="TakaoPGothic" size="11" style="0"/>
+                        </Property>
                         <Property name="text" type="java.lang.String" value="Hours:"/>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JSpinner" name="spinnerDurationHours">
                       <Properties>
+                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                          <Font name="TakaoPGothic" size="11" style="0"/>
+                        </Property>
                         <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
                           <SpinnerModel initial="0" maximum="23" minimum="0" numberType="java.lang.Integer" stepSize="1" type="number"/>
                         </Property>
@@ -1683,11 +1971,17 @@
                     </Component>
                     <Component class="javax.swing.JLabel" name="labelDurationMinutes">
                       <Properties>
+                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                          <Font name="TakaoPGothic" size="11" style="0"/>
+                        </Property>
                         <Property name="text" type="java.lang.String" value="Minutes"/>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JSpinner" name="spinnerDurationMinutes">
                       <Properties>
+                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                          <Font name="TakaoPGothic" size="11" style="0"/>
+                        </Property>
                         <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
                           <SpinnerModel initial="0" maximum="59" minimum="0" numberType="java.lang.Integer" stepSize="1" type="number"/>
                         </Property>
@@ -1698,11 +1992,17 @@
                     </Component>
                     <Component class="javax.swing.JLabel" name="labelDurationSecondes">
                       <Properties>
+                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                          <Font name="TakaoPGothic" size="11" style="0"/>
+                        </Property>
                         <Property name="text" type="java.lang.String" value="Seconds"/>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JSpinner" name="spinnerDurationSecondes">
                       <Properties>
+                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                          <Font name="TakaoPGothic" size="11" style="0"/>
+                        </Property>
                         <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
                           <SpinnerModel initial="0" maximum="59" minimum="0" numberType="java.lang.Integer" stepSize="1" type="number"/>
                         </Property>
@@ -1719,7 +2019,9 @@
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="Process Management"/>
+                    <TitledBorder title="Weekly Planning">
+                      <Font PropertyName="font" name="TakaoPGothic" size="11" style="0"/>
+                    </TitledBorder>
                   </Border>
                 </Property>
               </Properties>
@@ -1738,7 +2040,7 @@
                               <Component id="spinnerClassData" max="32767" attributes="1"/>
                               <Component id="comboBoxPriority" alignment="0" pref="115" max="32767" attributes="1"/>
                           </Group>
-                          <EmptySpace pref="81" max="32767" attributes="0"/>
+                          <EmptySpace pref="73" max="32767" attributes="0"/>
                           <Component id="labelMaxCPUUsage" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Component id="spinnerMaxCPUUsage" min="-2" pref="56" max="-2" attributes="0"/>
@@ -1772,11 +2074,17 @@
               <SubComponents>
                 <Component class="javax.swing.JLabel" name="labelProcessPrioriry">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="Process Priority:"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JComboBox" name="comboBoxPriority">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
                       <StringArray count="6">
                         <StringItem index="0" value="Idle"/>
@@ -1795,11 +2103,17 @@
                 </Component>
                 <Component class="javax.swing.JLabel" name="labelMaxCPUUsage">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="Max CPU Usage:"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JSpinner" name="spinnerMaxCPUUsage">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
                       <SpinnerModel initial="1" maximum="100" minimum="1" numberType="java.lang.Integer" stepSize="1" type="number"/>
                     </Property>
@@ -1815,11 +2129,17 @@
                 </Component>
                 <Component class="javax.swing.JLabel" name="labelClassData">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="ClassData:"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JSpinner" name="spinnerClassData">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="TakaoPGothic" size="11" style="0"/>
+                    </Property>
                     <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
                       <SpinnerModel initial="1" maximum="7" minimum="1" numberType="java.lang.Integer" stepSize="1" type="number"/>
                     </Property>
@@ -1829,6 +2149,9 @@
             </Container>
             <Component class="javax.swing.JCheckBox" name="checkBoxAlwaysAvailable">
               <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="TakaoPGothic" size="11" style="0"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Always available"/>
               </Properties>
               <Events>
