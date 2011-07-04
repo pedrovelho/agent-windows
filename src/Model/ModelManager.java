@@ -28,6 +28,7 @@ public class ModelManager {
     private static String XMLFileName = "XML" + File.separatorChar + "PAAgent-config.xml";
     private static String XSDFileName4Windows = "XML" + File.separatorChar + "agent-windows.xsd";
     private static String XSDFileName4Linux = "XML" + File.separatorChar + "agent-linux.xsd";
+    private static String XSDCustom = "";
     
     /**
      * The XML builder and parser
@@ -118,6 +119,8 @@ public class ModelManager {
     public static void setPORTMIN(int PORTMIN) { ModelManager.PORTMIN = PORTMIN; }
     public static int getPORTMAX() { return PORTMAX; }
     public static void setPORTMAX(int PORTMAX) { ModelManager.PORTMAX = PORTMAX; }
+    public static String getXSDCustom() { return XSDCustom; }
+    public static void setXSDCustom(String XSDCustom) { ModelManager.XSDCustom = XSDCustom; }
 
     static {
         String os = System.getProperty("os.name").toLowerCase();
@@ -135,13 +138,18 @@ public class ModelManager {
         
         setJVMOPTIONS(  new ArrayList<String>() );
         
-        String XSDFileName = "";
-        String os = System.getProperty("os.name").toLowerCase();
-       if(os.indexOf( "win" ) >= 0) {
-          XSDFileName = XSDFileName4Windows;
-       } else if (os.indexOf( "nix") >=0 || os.indexOf( "nux") >=0) {  
-           XSDFileName = XSDFileName4Linux;
-       }
+        String XSDFileName;
+        if(XSDCustom.equals("")) {
+            XSDFileName = "";
+            String os = System.getProperty("os.name").toLowerCase();
+           if(os.indexOf( "win" ) >= 0) {
+              XSDFileName = XSDFileName4Windows;
+           } else if (os.indexOf( "nix") >=0 || os.indexOf( "nux") >=0) {  
+               XSDFileName = XSDFileName4Linux;
+           }
+        } else {
+            XSDFileName = XSDCustom;
+        }
         
         if(xmlParser.loadDocument(XSDFileName,XMLFileName)) {
             return true;
@@ -218,28 +226,28 @@ public class ModelManager {
 
     public static int convertDayToInt(String day) {
         
-        if(day.equals("Monday")) { return 0; }
-        else if(day.equals("Tuesday")) { return 1; }
-        else if(day.equals("Wednesday")) { return 2; }
-        else if(day.equals("Thursday")) { return 3; }
-        else if(day.equals("Friday")) { return 4; }
-        else if(day.equals("Saturday")) { return 5; }
-        else if(day.equals("Sunday")) { return 6; }
+        if(day.equals("Sunday")) { return 0; }
+        else if(day.equals("Monday")) { return 1; }
+        else if(day.equals("Tuesday")) { return 2; }
+        else if(day.equals("Wednesday")) { return 3; }
+        else if(day.equals("Thursday")) { return 4; }
+        else if(day.equals("Friday")) { return 5; }
+        else if(day.equals("Saturday")) { return 6; }
         
         return 0;
     } 
     
     public static String convertIntToDay(int day) {
         
-        if(day == 0) { return "Monday"; }
-        else if(day == 1) { return "Tuesday"; }
-        else if(day == 2) { return "Wednesday"; }
-        else if(day == 3) { return "Thursday"; }
-        else if(day == 4) { return "Friday"; }
-        else if(day == 5) { return "Saturday"; }
-        else if(day == 6) { return "Sunday"; }
+        if(day == 0) { return "Sunday"; }
+        else if(day == 1) { return "Monday"; }
+        else if(day == 2) { return "Tuesday"; }
+        else if(day == 3) { return "Wednesday"; }
+        else if(day == 4) { return "Thursday"; }
+        else if(day == 5) { return "Friday"; }
+        else if(day == 6) { return "Saturday"; }
         
-        return "Monday";
+        return "Sunday";
     }
     
     public static int convertPriorityToInt(String priority) {

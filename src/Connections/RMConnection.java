@@ -13,10 +13,10 @@ public class RMConnection {
     private int respawnIncrement = 10;
     // Par defaut : 
     private String javaStarterClass = "org.ow2.proactive.resourcemanager.utils.RMNodeStarter";
-    private String nodeName;
-    private String nodeSourceName;
-    private String url;
-    private String credential;
+    private String nodeName = "";
+    private String nodeSourceName = "";
+    private String url = "";
+    private String credential = "";
 
     public String getCredential() {
         return credential;

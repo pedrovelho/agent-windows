@@ -40,6 +40,8 @@ public class main {
         GUIEditorWindows cEUI = null;
         if(argv.length == 1) {
             cEUI = new GUIEditorWindows(argv[0]);
+        } else if(argv.length == 2) {
+            cEUI = new GUIEditorWindows(argv[0], argv[1]);
         } else {
             cEUI = new GUIEditorWindows();
         }

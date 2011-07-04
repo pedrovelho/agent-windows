@@ -236,24 +236,22 @@ public class XMLParser {
                    //Specifics parameters for CPU
                    String os = System.getProperty("os.name").toLowerCase();
                    if(os.indexOf( "win" ) >= 0) {
-
-                       if(nl.item(i).getNodeName().equals("processPriority")) {
-                           conf.setProcessPriority(getChildText(nl.item(i)));
+                       if(nl2.item(j).getNodeName().equals("processPriority")) {
+                           conf.setProcessPriority(getChildText(nl2.item(j)));
                        }
-                       else if(nl.item(i).getNodeName().equals("maxCpuUsage")) {
-                           conf.setCpuUsage(Integer.parseInt(getChildText(nl.item(i))));
+                       else if(nl2.item(j).getNodeName().equals("maxCpuUsage")) {
+                           conf.setCpuUsage(Integer.parseInt(getChildText(nl2.item(j))));
                        }
 
                    } else if (os.indexOf( "nix") >=0 || os.indexOf( "nux") >=0) {  
-
-                       if(nl.item(i).getNodeName().equals("nice")) {
-                           conf.setCpuUsage(Integer.parseInt(getChildText(nl.item(i))));
+                       if(nl2.item(j).getNodeName().equals("nice")) {
+                           conf.setCpuUsage(Integer.parseInt(getChildText(nl2.item(j))));
                        }
-                       else if(nl.item(i).getNodeName().equals("ionice")) {
+                       else if(nl2.item(j).getNodeName().equals("ionice")) {
                            conf.setProcessPriority(
-                                   nl.item(i).getAttributes().getNamedItem("class").getNodeValue());
+                                   nl2.item(j).getAttributes().getNamedItem("class").getNodeValue());
                            conf.setClassdata(Integer.parseInt(
-                                   nl.item(i).getAttributes().getNamedItem("classdata").getNodeValue()));
+                                   nl2.item(j).getAttributes().getNamedItem("classdata").getNodeValue()));
                        }
 
                    } 

@@ -20,10 +20,13 @@ import Utils.TimeComputer;
 import Model.ModelManager;
 import Utils.ExtensionFileFilter;
 import Utils.ListNetworkInterfaces;
+import java.awt.Dimension;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
-import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
@@ -157,6 +160,26 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         
         //Init Config
         ModelManager.setXMLFileName(XMLFile);
+        if(ModelManager.loadXML(this)) {
+            System.out.println("open : " + ModelManager.getXMLFileName() + " [OK] ");
+        } else {
+            System.out.println("open : " + ModelManager.getXMLFileName() + " [FAIL] ");
+        }
+        
+        //Initialize Process Parameters
+        initProcessParameters();
+        
+        //Initialize data
+        initializeText();
+        setVisible(true);
+    }
+    
+    public GUIEditorWindows(String XMLFile, String XSDFile) {
+        initComponents();
+        
+        //Init Config
+        ModelManager.setXMLFileName(XMLFile);
+        ModelManager.setXSDCustom(XSDFile);
         if(ModelManager.loadXML(this)) {
             System.out.println("open : " + ModelManager.getXMLFileName() + " [OK] ");
         } else {
@@ -867,6 +890,11 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         panelAuthCredential.setBorder(javax.swing.BorderFactory.createTitledBorder("Authentification Credential"));
 
         buttonBrowseLocation.setText("Browse Location");
+        buttonBrowseLocation.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                browseCredential(evt);
+            }
+        });
 
         org.jdesktop.layout.GroupLayout panelAuthCredentialLayout = new org.jdesktop.layout.GroupLayout(panelAuthCredential);
         panelAuthCredential.setLayout(panelAuthCredentialLayout);
@@ -1104,6 +1132,11 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         });
 
         buttonShowPlan.setText("Show");
+        buttonShowPlan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                showGraphic(evt);
+            }
+        });
 
         listPlanning.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         listPlanning.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
@@ -1148,7 +1181,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
 
         labelStartDay.setText("Day:");
 
-        comboBoxStartDay.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" }));
+        comboBoxStartDay.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" }));
         comboBoxStartDay.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 changeDay(evt);
@@ -1503,6 +1536,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
        
         if(selFile != null) {
             textJavaHome.setText(selFile.getAbsolutePath());
+            ModelManager.setJAVAHOME(selFile.getAbsolutePath());
         }
     }//GEN-LAST:event_browseJavaHome
 
@@ -2170,6 +2204,39 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_selectArgument
 
+    private void browseCredential(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseCredential
+        FileFilter filter = new ExtensionFileFilter("Credentials .cred", new String[] { "CRED", "cred" });
+        
+        JFileChooser fc = new JFileChooser();
+        fc.setFileFilter(filter);
+        fc.setCurrentDirectory(new java.io.File("."));
+        fc.setDialogTitle("Select your properties file");
+        int actionDialog = fc.showSaveDialog(this);
+        
+        File selFile = fc.getSelectedFile();
+        
+        if(selFile != null) {
+            textCredential.setText(selFile.getAbsolutePath());
+            ModelManager.getCONNECTIONS().getRMConn().setCredential(selFile.getAbsolutePath());
+        }
+    }//GEN-LAST:event_browseCredential
+
+    private void showGraphic(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showGraphic
+        
+        showApplet.setEvList(ModelManager.getEVENTS());
+        
+        final JFrame f = new JFrame("Planning View");
+        f.addWindowListener(new WindowAdapter() {
+          public void windowClosing(WindowEvent e) {
+            f.setVisible(false);
+          }
+        });
+        f.getContentPane().add("Center", showApplet);
+        f.pack();
+        f.setSize(new Dimension(350, 350));
+        f.show();
+    }//GEN-LAST:event_showGraphic
+
     /**
      * @param args the command line arguments
      */
@@ -2192,6 +2259,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
     private final String TITLE_MAIN_FRAME = "GUI Editor";
     private Boolean LockPlanning = false;
     private int MAX_RANGE_PORT = 65534;
+    private ShowApplet showApplet = new ShowApplet();
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ButtonClose;
