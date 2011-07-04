@@ -5,48 +5,19 @@
     <proactiveHome>set the proactive home</proactiveHome>
     <javaHome>set the java home</javaHome>
     <memoryLimit>0</memoryLimit>
-    <nbRuntimes>2</nbRuntimes>
+    <nbRuntimes>0</nbRuntimes>
     <protocol>undefined</protocol>
     <portRange first="0" last="65534" />
-    <processPriority>Normal</processPriority>
+    <processPriority>Idle</processPriority>
     <maxCpuUsage>1</maxCpuUsage>
   </config>
-  <events>
-    <event>
-      <start day="Sunday" hour="23" minute="7" second="0" />
-      <duration days="4" hours="5" minutes="0" seconds="0" />
-      <config>
-        <proactiveHome>set the proactive home</proactiveHome>
-        <javaHome>set the java home</javaHome>
-        <memoryLimit>0</memoryLimit>
-        <nbRuntimes>2</nbRuntimes>
-        <protocol>undefined</protocol>
-        <portRange first="0" last="65534" />
-        <processPriority>Normal</processPriority>
-        <maxCpuUsage>1</maxCpuUsage>
-      </config>
-    </event>
-    <event>
-      <start day="Sunday" hour="18" minute="7" second="0" />
-      <duration days="4" hours="6" minutes="57" seconds="0" />
-      <config>
-        <proactiveHome>set the proactive home</proactiveHome>
-        <javaHome>set the java home</javaHome>
-        <memoryLimit>0</memoryLimit>
-        <nbRuntimes>2</nbRuntimes>
-        <protocol>undefined</protocol>
-        <portRange first="0" last="65534" />
-        <processPriority>Normal</processPriority>
-        <maxCpuUsage>1</maxCpuUsage>
-      </config>
-    </event>
-  </events>
+  <events />
   <connections>
-    <localBind enabled="true">
+    <localBind enabled="false">
       <respawnIncrement>10</respawnIncrement>
       <javaStarterClass>org.objectweb.proactive.core.util.winagent.PAAgentServiceRMIStarter</javaStarterClass>
     </localBind>
-    <rmConnection enabled="false">
+    <rmConnection enabled="true">
       <respawnIncrement>10</respawnIncrement>
       <javaStarterClass>org.ow2.proactive.resourcemanager.utils.RMNodeStarter</javaStarterClass>
       <url>rmi://localhost:1099</url>
