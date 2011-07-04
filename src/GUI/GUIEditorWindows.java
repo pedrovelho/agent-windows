@@ -335,11 +335,11 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         jScrollPane2.setViewportView(jList1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setFont(new java.awt.Font("DejaVu Serif", 0, 12)); // NOI18N
+        setFont(new java.awt.Font("DejaVu Serif", 0, 12));
         setLocationByPlatform(true);
         setResizable(false);
 
-        ButtonClose.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        ButtonClose.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         ButtonClose.setText("Close");
         ButtonClose.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -347,7 +347,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             }
         });
 
-        ButtonSave.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        ButtonSave.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         ButtonSave.setText("Save");
         ButtonSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -355,7 +355,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             }
         });
 
-        ButtonSaveAs.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        ButtonSaveAs.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         ButtonSaveAs.setText("Save As");
         ButtonSaveAs.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -363,12 +363,12 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             }
         });
 
-        GlobalPanel.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        GlobalPanel.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
 
         PanelConfig.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "ProActive Configuration", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("TakaoPGothic", 0, 11))); // NOI18N
-        PanelConfig.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        PanelConfig.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
 
-        buttonBrowseProActiveHome.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        buttonBrowseProActiveHome.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         buttonBrowseProActiveHome.setText("Browse ProActive Home");
         buttonBrowseProActiveHome.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -376,7 +376,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             }
         });
 
-        buttonBrowseJavaHome.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        buttonBrowseJavaHome.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         buttonBrowseJavaHome.setText("Browse Java Home");
         buttonBrowseJavaHome.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -384,13 +384,13 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             }
         });
 
-        textProActiveHome.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        textProActiveHome.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         textProActiveHome.setText("set the proactive home");
 
-        textJavaHome.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        textJavaHome.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         textJavaHome.setText("set the java home");
 
-        checkBoxJavaHome.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        checkBoxJavaHome.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         checkBoxJavaHome.setText("Use system-wide Java Home");
         checkBoxJavaHome.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -398,7 +398,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             }
         });
 
-        buttonAddJVMOpt.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        buttonAddJVMOpt.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         buttonAddJVMOpt.setText("Add JVM Option");
         buttonAddJVMOpt.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -406,7 +406,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             }
         });
 
-        buttonRemoveJVMOpt.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        buttonRemoveJVMOpt.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         buttonRemoveJVMOpt.setText("Remove JVM Option");
         buttonRemoveJVMOpt.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -414,7 +414,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             }
         });
 
-        JListJVMOption.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        JListJVMOption.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         JListJVMOption.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         JListJVMOption.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -436,10 +436,10 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, buttonRemoveJVMOpt))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(PanelConfigLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 619, Short.MAX_VALUE)
+                    .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 610, Short.MAX_VALUE)
                     .add(checkBoxJavaHome)
-                    .add(textProActiveHome, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 619, Short.MAX_VALUE)
-                    .add(textJavaHome, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 619, Short.MAX_VALUE))
+                    .add(textProActiveHome, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 610, Short.MAX_VALUE)
+                    .add(textJavaHome, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 610, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -468,9 +468,9 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         );
 
         PanelANI.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "ProActive Configuration", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("TakaoPGothic", 0, 11))); // NOI18N
-        PanelANI.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        PanelANI.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
 
-        buttonUse.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        buttonUse.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         buttonUse.setText("Use");
         buttonUse.setEnabled(false);
         buttonUse.addActionListener(new java.awt.event.ActionListener() {
@@ -479,7 +479,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             }
         });
 
-        buttonRefresh.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        buttonRefresh.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         buttonRefresh.setText("Refresh");
         buttonRefresh.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -487,7 +487,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             }
         });
 
-        JListInterfaces.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        JListInterfaces.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         JListInterfaces.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         JListInterfaces.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -503,7 +503,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             .add(org.jdesktop.layout.GroupLayout.TRAILING, PanelANILayout.createSequentialGroup()
                 .addContainerGap()
                 .add(PanelANILayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 242, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE)
                     .add(PanelANILayout.createSequentialGroup()
                         .add(buttonUse)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -516,7 +516,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         PanelANILayout.setVerticalGroup(
             PanelANILayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, PanelANILayout.createSequentialGroup()
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 194, Short.MAX_VALUE)
+                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 212, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(PanelANILayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(buttonUse)
@@ -524,18 +524,18 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         );
 
         PanelRML.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "ProActive Configuration", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("TakaoPGothic", 0, 11))); // NOI18N
-        PanelRML.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        PanelRML.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
 
-        labelMemory.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        labelMemory.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelMemory.setText("Available Physical Memory :");
 
-        textMemory.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        textMemory.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         textMemory.setText("951");
 
-        labelMemoryLimit.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        labelMemoryLimit.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelMemoryLimit.setText("Memory Limit :");
 
-        splinMemoryLimit.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        splinMemoryLimit.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         splinMemoryLimit.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
         splinMemoryLimit.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -571,7 +571,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                         .add(PanelRMLLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
                             .add(org.jdesktop.layout.GroupLayout.LEADING, notice1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .add(org.jdesktop.layout.GroupLayout.LEADING, notice2))))
-                .addContainerGap(21, Short.MAX_VALUE))
+                .addContainerGap(49, Short.MAX_VALUE))
         );
         PanelRMLLayout.setVerticalGroup(
             PanelRMLLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -592,21 +592,21 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         );
 
         PanelMR.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "ProActive Configuration", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("TakaoPGothic", 0, 11))); // NOI18N
-        PanelMR.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        PanelMR.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
 
-        labelCPUs.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        labelCPUs.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelCPUs.setText("Available CPUs :");
 
-        textCPUs.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        textCPUs.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         textCPUs.setText("4");
 
-        labelNbRuntimes.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        labelNbRuntimes.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelNbRuntimes.setText("Nb Runtimes :");
 
-        spinNbRuntimes.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        spinNbRuntimes.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         spinNbRuntimes.setModel(new javax.swing.SpinnerNumberModel(0, 0, 32, 1));
 
-        checkBoxCPUs.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        checkBoxCPUs.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         checkBoxCPUs.setText("Use all available CPUs");
         checkBoxCPUs.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -645,15 +645,15 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                         .add(textCPUs)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(spinNbRuntimes, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 19, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 21, Short.MAX_VALUE)
                 .add(checkBoxCPUs)
                 .addContainerGap())
         );
 
         PanelORE.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "ProActive Configuration", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("TakaoPGothic", 0, 11))); // NOI18N
-        PanelORE.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        PanelORE.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
 
-        buttonBrowseScriptLocation.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        buttonBrowseScriptLocation.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         buttonBrowseScriptLocation.setText("Browse Script Location");
         buttonBrowseScriptLocation.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -661,7 +661,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             }
         });
 
-        textScriptLocation.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        textScriptLocation.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
 
         org.jdesktop.layout.GroupLayout PanelORELayout = new org.jdesktop.layout.GroupLayout(PanelORE);
         PanelORE.setLayout(PanelORELayout);
@@ -684,12 +684,12 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         );
 
         panelRuntimeIncomingProtocol1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "ProActive Configuration", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("TakaoPGothic", 0, 11))); // NOI18N
-        panelRuntimeIncomingProtocol1.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        panelRuntimeIncomingProtocol1.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
 
-        labelProtocol1.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        labelProtocol1.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelProtocol1.setText("Protocol:");
 
-        comboBoxProtocol.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        comboBoxProtocol.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         comboBoxProtocol.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "undefined", "rmi", "http", "pamr", "pnp", "pnps" }));
         comboBoxProtocol.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -697,10 +697,10 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             }
         });
 
-        labelPortInitialValue1.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        labelPortInitialValue1.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelPortInitialValue1.setText("Port Initial Value:");
 
-        spinPortInitialValue.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        spinPortInitialValue.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
 
         org.jdesktop.layout.GroupLayout panelRuntimeIncomingProtocol1Layout = new org.jdesktop.layout.GroupLayout(panelRuntimeIncomingProtocol1);
         panelRuntimeIncomingProtocol1.setLayout(panelRuntimeIncomingProtocol1Layout);
@@ -711,7 +711,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                 .add(labelProtocol1)
                 .add(18, 18, 18)
                 .add(comboBoxProtocol, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 137, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 109, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 149, Short.MAX_VALUE)
                 .add(labelPortInitialValue1)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(spinPortInitialValue, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 61, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
@@ -738,12 +738,12 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                     .add(PanelConfig, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(PanelGeneralLayout.createSequentialGroup()
                         .add(PanelGeneralLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(org.jdesktop.layout.GroupLayout.TRAILING, PanelORE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelRuntimeIncomingProtocol1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                            .add(org.jdesktop.layout.GroupLayout.TRAILING, PanelORE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .add(org.jdesktop.layout.GroupLayout.TRAILING, PanelGeneralLayout.createSequentialGroup()
-                                .add(PanelRML, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .add(PanelRML, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(PanelMR, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                                .add(PanelMR, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelRuntimeIncomingProtocol1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(PanelANI, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
@@ -758,8 +758,8 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                         .add(PanelORE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(PanelGeneralLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(PanelMR, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .add(PanelRML, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .add(PanelRML, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .add(PanelMR, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(panelRuntimeIncomingProtocol1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                     .add(PanelANI, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -769,15 +769,15 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         GlobalPanel.addTab("General", PanelGeneral);
 
         panelMultipleConnections.setTabPlacement(javax.swing.JTabbedPane.LEFT);
-        panelMultipleConnections.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        panelMultipleConnections.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
 
         panelLocalRegistration.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Local Registration", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("TakaoPGothic", 0, 11))); // NOI18N
-        panelLocalRegistration.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        panelLocalRegistration.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
 
-        labelNodeName1.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        labelNodeName1.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelNodeName1.setText("Node Name:");
 
-        textNodeName1.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        textNodeName1.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
 
         org.jdesktop.layout.GroupLayout panelLocalRegistrationLayout = new org.jdesktop.layout.GroupLayout(panelLocalRegistration);
         panelLocalRegistration.setLayout(panelLocalRegistrationLayout);
@@ -787,7 +787,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                 .addContainerGap()
                 .add(labelNodeName1)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(textNodeName1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 452, Short.MAX_VALUE)
+                .add(textNodeName1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 493, Short.MAX_VALUE)
                 .addContainerGap())
         );
         panelLocalRegistrationLayout.setVerticalGroup(
@@ -801,12 +801,12 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         );
 
         PanelAdditionnalConf4.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Local Registration", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("TakaoPGothic", 0, 11))); // NOI18N
-        PanelAdditionnalConf4.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        PanelAdditionnalConf4.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
 
-        labelStarterClass4.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        labelStarterClass4.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelStarterClass4.setText("Java Starter Class:");
 
-        textStarterClass4.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        textStarterClass4.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         textStarterClass4.setText("org.objectweb.proactive.core.util.winagent.PAAgentServiceRMIStarter");
 
         org.jdesktop.layout.GroupLayout PanelAdditionnalConf4Layout = new org.jdesktop.layout.GroupLayout(PanelAdditionnalConf4);
@@ -817,7 +817,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                 .addContainerGap()
                 .add(labelStarterClass4)
                 .add(18, 18, 18)
-                .add(textStarterClass4, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 419, Short.MAX_VALUE)
+                .add(textStarterClass4, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 445, Short.MAX_VALUE)
                 .addContainerGap())
         );
         PanelAdditionnalConf4Layout.setVerticalGroup(
@@ -843,7 +843,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             .add(org.jdesktop.layout.GroupLayout.TRAILING, panelLocalLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(panelLocalRegistration, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 304, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 300, Short.MAX_VALUE)
                 .add(PanelAdditionnalConf4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -852,21 +852,21 @@ public class GUIEditorWindows extends javax.swing.JFrame {
 
         panelRMRegistration.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Resource Manager Registration", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("TakaoPGothic", 0, 11))); // NOI18N
 
-        labelRMURL.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        labelRMURL.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelRMURL.setText("Resource Manager URL:");
 
-        textRMURL.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        textRMURL.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         textRMURL.setText("rmi://localhost:1099");
 
-        labelNodeName2.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        labelNodeName2.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelNodeName2.setText("Node Name:");
 
-        textNodeName2.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        textNodeName2.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
 
-        labelNodeSourceName.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        labelNodeSourceName.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelNodeSourceName.setText("Node Source Name:");
 
-        textNodeSourceName.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        textNodeSourceName.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
 
         org.jdesktop.layout.GroupLayout panelRMRegistrationLayout = new org.jdesktop.layout.GroupLayout(panelRMRegistration);
         panelRMRegistration.setLayout(panelRMRegistrationLayout);
@@ -906,9 +906,9 @@ public class GUIEditorWindows extends javax.swing.JFrame {
 
         panelAuthCredential.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Resource Manager Registration", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("TakaoPGothic", 0, 11))); // NOI18N
 
-        textCredential.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        textCredential.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
 
-        buttonBrowseLocation.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        buttonBrowseLocation.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         buttonBrowseLocation.setText("Browse Location");
         buttonBrowseLocation.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -923,7 +923,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             .add(panelAuthCredentialLayout.createSequentialGroup()
                 .add(buttonBrowseLocation)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(textCredential, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 437, Short.MAX_VALUE)
+                .add(textCredential, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE)
                 .addContainerGap())
         );
         panelAuthCredentialLayout.setVerticalGroup(
@@ -938,10 +938,10 @@ public class GUIEditorWindows extends javax.swing.JFrame {
 
         PanelAdditionnalConf2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Resource Manager Registration", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("TakaoPGothic", 0, 11))); // NOI18N
 
-        labelStarterClass2.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        labelStarterClass2.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelStarterClass2.setText("Java Starter Class:");
 
-        textStarterClass2.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        textStarterClass2.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         textStarterClass2.setText("org.ow2.proactive.resourcemanager.utils.RMNodeStarter");
 
         org.jdesktop.layout.GroupLayout PanelAdditionnalConf2Layout = new org.jdesktop.layout.GroupLayout(PanelAdditionnalConf2);
@@ -952,7 +952,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                 .addContainerGap()
                 .add(labelStarterClass2)
                 .add(18, 18, 18)
-                .add(textStarterClass2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 419, Short.MAX_VALUE)
+                .add(textStarterClass2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 445, Short.MAX_VALUE)
                 .addContainerGap())
         );
         PanelAdditionnalConf2Layout.setVerticalGroup(
@@ -970,7 +970,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                 .addContainerGap()
                 .add(panelResourceManagerLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(PanelAdditionnalConf2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(panelRMRegistration, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 565, Short.MAX_VALUE)
+                    .add(panelRMRegistration, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 591, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, panelAuthCredential, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -981,7 +981,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                 .add(panelRMRegistration, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelAuthCredential, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 184, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 173, Short.MAX_VALUE)
                 .add(PanelAdditionnalConf2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -990,10 +990,10 @@ public class GUIEditorWindows extends javax.swing.JFrame {
 
         PanelAdditionnalConf3.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Custom", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("TakaoPGothic", 0, 11))); // NOI18N
 
-        labelStarterClass3.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        labelStarterClass3.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelStarterClass3.setText("Java Starter Class:");
 
-        textStarterClass3.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        textStarterClass3.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         textStarterClass3.setText("user.Starter");
 
         org.jdesktop.layout.GroupLayout PanelAdditionnalConf3Layout = new org.jdesktop.layout.GroupLayout(PanelAdditionnalConf3);
@@ -1004,7 +1004,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                 .addContainerGap()
                 .add(labelStarterClass3)
                 .add(18, 18, 18)
-                .add(textStarterClass3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 419, Short.MAX_VALUE)
+                .add(textStarterClass3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 445, Short.MAX_VALUE)
                 .addContainerGap())
         );
         PanelAdditionnalConf3Layout.setVerticalGroup(
@@ -1016,10 +1016,10 @@ public class GUIEditorWindows extends javax.swing.JFrame {
 
         panelCustom2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Custom", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("TakaoPGothic", 0, 11))); // NOI18N
 
-        labelArguments.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        labelArguments.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelArguments.setText("Arguments:");
 
-        buttonAdd.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        buttonAdd.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         buttonAdd.setText("Add");
         buttonAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1027,7 +1027,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             }
         });
 
-        buttonDelete.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        buttonDelete.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         buttonDelete.setText("Delete");
         buttonDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1035,15 +1035,15 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             }
         });
 
-        buttonSaveArg.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        buttonSaveArg.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         buttonSaveArg.setText("Save Arg");
 
-        labelArgument.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        labelArgument.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelArgument.setText("Argument:");
 
-        textArgument.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        textArgument.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
 
-        JlistArguments.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        JlistArguments.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         JlistArguments.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         JlistArguments.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -1061,7 +1061,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                 .add(panelCustom2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(labelArguments)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, panelCustom2Layout.createSequentialGroup()
-                        .add(jScrollPane4, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 468, Short.MAX_VALUE)
+                        .add(jScrollPane4, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(panelCustom2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(buttonSaveArg)
@@ -1070,7 +1070,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                     .add(panelCustom2Layout.createSequentialGroup()
                         .add(labelArgument)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(textArgument, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 462, Short.MAX_VALUE)))
+                        .add(textArgument, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 501, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -1112,7 +1112,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             .add(org.jdesktop.layout.GroupLayout.TRAILING, panelCustomLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(panelCustom2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 186, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 180, Short.MAX_VALUE)
                 .add(PanelAdditionnalConf3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -1141,7 +1141,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                     .add(radioResourceManager)
                     .add(radioCustom))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelMultipleConnections, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 771, Short.MAX_VALUE)
+                .add(panelMultipleConnections, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 784, Short.MAX_VALUE)
                 .addContainerGap())
         );
         PanelConnectionLayout.setVerticalGroup(
@@ -1149,7 +1149,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             .add(PanelConnectionLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(PanelConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(panelMultipleConnections, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
+                    .add(panelMultipleConnections, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 453, Short.MAX_VALUE)
                     .add(PanelConnectionLayout.createSequentialGroup()
                         .add(radioLocal)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -1163,7 +1163,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
 
         panelWeeklyPlanning.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Weekly Planning", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("TakaoPGothic", 0, 11))); // NOI18N
 
-        buttonCreatePlan.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        buttonCreatePlan.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         buttonCreatePlan.setText("Add plan");
         buttonCreatePlan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1171,7 +1171,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             }
         });
 
-        buttonDeletePlan.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        buttonDeletePlan.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         buttonDeletePlan.setText("Delete");
         buttonDeletePlan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1179,7 +1179,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             }
         });
 
-        buttonShowPlan.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        buttonShowPlan.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         buttonShowPlan.setText("Show");
         buttonShowPlan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1187,7 +1187,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             }
         });
 
-        listPlanning.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        listPlanning.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         listPlanning.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         listPlanning.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
@@ -1203,20 +1203,20 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             .add(panelWeeklyPlanningLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(panelWeeklyPlanningLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(testAeraPlanning, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
+                    .add(testAeraPlanning, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 264, Short.MAX_VALUE)
                     .add(panelWeeklyPlanningLayout.createSequentialGroup()
-                        .add(buttonCreatePlan, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 93, Short.MAX_VALUE)
+                        .add(buttonCreatePlan, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(buttonDeletePlan, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
+                        .add(buttonDeletePlan, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(buttonShowPlan, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 73, Short.MAX_VALUE)))
+                        .add(buttonShowPlan, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 76, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panelWeeklyPlanningLayout.setVerticalGroup(
             panelWeeklyPlanningLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, panelWeeklyPlanningLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(testAeraPlanning, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 358, Short.MAX_VALUE)
+                .add(testAeraPlanning, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 359, Short.MAX_VALUE)
                 .add(18, 18, 18)
                 .add(panelWeeklyPlanningLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(buttonCreatePlan)
@@ -1229,10 +1229,10 @@ public class GUIEditorWindows extends javax.swing.JFrame {
 
         panelStartTime.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Weekly Planning", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("TakaoPGothic", 0, 11))); // NOI18N
 
-        labelStartDay.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        labelStartDay.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelStartDay.setText("Day:");
 
-        comboBoxStartDay.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        comboBoxStartDay.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         comboBoxStartDay.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" }));
         comboBoxStartDay.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -1240,10 +1240,10 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             }
         });
 
-        labelStartHours.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        labelStartHours.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelStartHours.setText("Hours:");
 
-        spinnerStartHours.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        spinnerStartHours.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         spinnerStartHours.setModel(new javax.swing.SpinnerNumberModel(0, 0, 23, 1));
         spinnerStartHours.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -1251,10 +1251,10 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             }
         });
 
-        labelStartMinutes.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        labelStartMinutes.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelStartMinutes.setText("Minutes");
 
-        spinnerStartMinutes.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        spinnerStartMinutes.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         spinnerStartMinutes.setModel(new javax.swing.SpinnerNumberModel(0, 0, 59, 1));
         spinnerStartMinutes.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -1262,10 +1262,10 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             }
         });
 
-        labelStartSecondes.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        labelStartSecondes.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelStartSecondes.setText("Seconds");
 
-        spinnerStartSecondes.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        spinnerStartSecondes.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         spinnerStartSecondes.setModel(new javax.swing.SpinnerNumberModel(0, 0, 59, 1));
         spinnerStartSecondes.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -1278,7 +1278,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         panelStartTimeLayout.setHorizontalGroup(
             panelStartTimeLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(panelStartTimeLayout.createSequentialGroup()
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(52, Short.MAX_VALUE)
                 .add(labelStartDay)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(comboBoxStartDay, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 90, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
@@ -1313,10 +1313,10 @@ public class GUIEditorWindows extends javax.swing.JFrame {
 
         panelDuration.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Weekly Planning", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("TakaoPGothic", 0, 11))); // NOI18N
 
-        labelDurationDays.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        labelDurationDays.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelDurationDays.setText("Days:");
 
-        spinnerDurationDays.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        spinnerDurationDays.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         spinnerDurationDays.setModel(new javax.swing.SpinnerNumberModel(0, 0, 6, 1));
         spinnerDurationDays.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -1324,10 +1324,10 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             }
         });
 
-        labelDurationHours.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        labelDurationHours.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelDurationHours.setText("Hours:");
 
-        spinnerDurationHours.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        spinnerDurationHours.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         spinnerDurationHours.setModel(new javax.swing.SpinnerNumberModel(0, 0, 23, 1));
         spinnerDurationHours.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -1335,10 +1335,10 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             }
         });
 
-        labelDurationMinutes.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        labelDurationMinutes.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelDurationMinutes.setText("Minutes");
 
-        spinnerDurationMinutes.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        spinnerDurationMinutes.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         spinnerDurationMinutes.setModel(new javax.swing.SpinnerNumberModel(0, 0, 59, 1));
         spinnerDurationMinutes.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -1346,10 +1346,10 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             }
         });
 
-        labelDurationSecondes.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        labelDurationSecondes.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelDurationSecondes.setText("Seconds");
 
-        spinnerDurationSecondes.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        spinnerDurationSecondes.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         spinnerDurationSecondes.setModel(new javax.swing.SpinnerNumberModel(0, 0, 59, 1));
         spinnerDurationSecondes.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -1362,7 +1362,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         panelDurationLayout.setHorizontalGroup(
             panelDurationLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(panelDurationLayout.createSequentialGroup()
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(45, Short.MAX_VALUE)
                 .add(labelDurationDays)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(spinnerDurationDays, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 77, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
@@ -1402,12 +1402,15 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         panelPlanEditorLayout.setHorizontalGroup(
             panelPlanEditorLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, panelPlanEditorLayout.createSequentialGroup()
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap()
                 .add(panelPlanEditorLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, panelStartTime, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, panelDuration, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, panelStartTime, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, panelDuration, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
+
+        panelPlanEditorLayout.linkSize(new java.awt.Component[] {panelDuration, panelStartTime}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
+
         panelPlanEditorLayout.setVerticalGroup(
             panelPlanEditorLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(panelPlanEditorLayout.createSequentialGroup()
@@ -1421,10 +1424,10 @@ public class GUIEditorWindows extends javax.swing.JFrame {
 
         panelProcessManagement.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Weekly Planning", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("TakaoPGothic", 0, 11))); // NOI18N
 
-        labelProcessPrioriry.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        labelProcessPrioriry.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelProcessPrioriry.setText("Process Priority:");
 
-        comboBoxPriority.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        comboBoxPriority.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         comboBoxPriority.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Idle", "BelowNormal", "Normal", "AboveNormal", "High", "Realtime" }));
         comboBoxPriority.setSelectedIndex(2);
         comboBoxPriority.addItemListener(new java.awt.event.ItemListener() {
@@ -1433,10 +1436,10 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             }
         });
 
-        labelMaxCPUUsage.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        labelMaxCPUUsage.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelMaxCPUUsage.setText("Max CPU Usage:");
 
-        spinnerMaxCPUUsage.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        spinnerMaxCPUUsage.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         spinnerMaxCPUUsage.setModel(new javax.swing.SpinnerNumberModel(1, 1, 100, 1));
         spinnerMaxCPUUsage.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -1446,10 +1449,10 @@ public class GUIEditorWindows extends javax.swing.JFrame {
 
         labelForCent.setText("%");
 
-        labelClassData.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        labelClassData.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelClassData.setText("ClassData:");
 
-        spinnerClassData.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        spinnerClassData.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         spinnerClassData.setModel(new javax.swing.SpinnerNumberModel(1, 1, 7, 1));
 
         org.jdesktop.layout.GroupLayout panelProcessManagementLayout = new org.jdesktop.layout.GroupLayout(panelProcessManagement);
@@ -1465,7 +1468,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                 .add(panelProcessManagementLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
                     .add(spinnerClassData)
                     .add(comboBoxPriority, 0, 115, Short.MAX_VALUE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 73, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 96, Short.MAX_VALUE)
                 .add(labelMaxCPUUsage)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(spinnerMaxCPUUsage, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 56, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
@@ -1490,7 +1493,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        checkBoxAlwaysAvailable.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
+        checkBoxAlwaysAvailable.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         checkBoxAlwaysAvailable.setText("Always available");
         checkBoxAlwaysAvailable.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1509,7 +1512,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                 .add(PanelPlanningLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, checkBoxAlwaysAvailable)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, panelProcessManagement, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, panelPlanEditor, 0, 497, Short.MAX_VALUE))
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, panelPlanEditor, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         PanelPlanningLayout.setVerticalGroup(
@@ -1522,7 +1525,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                         .add(panelPlanEditor, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(panelProcessManagement, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 139, Short.MAX_VALUE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 111, Short.MAX_VALUE)
                         .add(checkBoxAlwaysAvailable)))
                 .addContainerGap())
         );
