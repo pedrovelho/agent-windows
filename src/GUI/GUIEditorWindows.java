@@ -421,10 +421,10 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, buttonRemoveJVMOpt))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(PanelConfigLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 589, Short.MAX_VALUE)
+                    .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 614, Short.MAX_VALUE)
                     .add(checkBoxJavaHome)
-                    .add(textProActiveHome, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 589, Short.MAX_VALUE)
-                    .add(textJavaHome, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 589, Short.MAX_VALUE))
+                    .add(textProActiveHome, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 614, Short.MAX_VALUE)
+                    .add(textJavaHome, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 614, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -484,7 +484,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             .add(org.jdesktop.layout.GroupLayout.TRAILING, PanelANILayout.createSequentialGroup()
                 .addContainerGap()
                 .add(PanelANILayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 244, Short.MAX_VALUE)
                     .add(PanelANILayout.createSequentialGroup()
                         .add(buttonUse)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -497,7 +497,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         PanelANILayout.setVerticalGroup(
             PanelANILayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, PanelANILayout.createSequentialGroup()
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
+                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(PanelANILayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(buttonUse)
@@ -532,24 +532,27 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         PanelRMLLayout.setHorizontalGroup(
             PanelRMLLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(PanelRMLLayout.createSequentialGroup()
-                .addContainerGap()
                 .add(PanelRMLLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(PanelRMLLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .add(PanelRMLLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(notice1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 255, Short.MAX_VALUE)
+                            .add(notice2)))
+                    .add(PanelRMLLayout.createSequentialGroup()
+                        .add(33, 33, 33)
                         .add(PanelRMLLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(org.jdesktop.layout.GroupLayout.TRAILING, labelMemoryLimit)
                             .add(org.jdesktop.layout.GroupLayout.TRAILING, labelMemory))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(PanelRMLLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(splinMemoryLimit, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 67, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(textMemory)))
-                    .add(notice1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 255, Short.MAX_VALUE)
-                    .add(notice2))
+                            .add(textMemory))))
                 .addContainerGap())
         );
         PanelRMLLayout.setVerticalGroup(
             PanelRMLLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(PanelRMLLayout.createSequentialGroup()
-                .addContainerGap(38, Short.MAX_VALUE)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, PanelRMLLayout.createSequentialGroup()
+                .addContainerGap(26, Short.MAX_VALUE)
                 .add(PanelRMLLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(labelMemory)
                     .add(textMemory))
@@ -557,7 +560,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                 .add(PanelRMLLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(labelMemoryLimit)
                     .add(splinMemoryLimit, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(18, 18, 18)
                 .add(notice1)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(notice2))
@@ -611,7 +614,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                         .add(textCPUs)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(spinNbRuntimes, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 33, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 37, Short.MAX_VALUE)
                 .add(checkBoxCPUs)
                 .addContainerGap())
         );
@@ -667,7 +670,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                 .add(labelProtocol1)
                 .add(18, 18, 18)
                 .add(comboBoxProtocol, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 137, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 108, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 136, Short.MAX_VALUE)
                 .add(labelPortInitialValue1)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(spinPortInitialValue, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 61, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
@@ -738,7 +741,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                 .addContainerGap()
                 .add(labelNodeName1)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(textNodeName1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
+                .add(textNodeName1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 493, Short.MAX_VALUE)
                 .addContainerGap())
         );
         panelLocalRegistrationLayout.setVerticalGroup(
@@ -765,7 +768,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                 .addContainerGap()
                 .add(labelStarterClass4)
                 .add(18, 18, 18)
-                .add(textStarterClass4, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 356, Short.MAX_VALUE)
+                .add(textStarterClass4, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE)
                 .addContainerGap())
         );
         PanelAdditionnalConf4Layout.setVerticalGroup(
@@ -791,7 +794,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             .add(org.jdesktop.layout.GroupLayout.TRAILING, panelLocalLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(panelLocalRegistration, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 330, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 315, Short.MAX_VALUE)
                 .add(PanelAdditionnalConf4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -860,7 +863,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             .add(panelAuthCredentialLayout.createSequentialGroup()
                 .add(buttonBrowseLocation)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(textCredential, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 381, Short.MAX_VALUE)
+                .add(textCredential, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 449, Short.MAX_VALUE)
                 .addContainerGap())
         );
         panelAuthCredentialLayout.setVerticalGroup(
@@ -887,7 +890,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                 .addContainerGap()
                 .add(labelStarterClass2)
                 .add(18, 18, 18)
-                .add(textStarterClass2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 356, Short.MAX_VALUE)
+                .add(textStarterClass2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE)
                 .addContainerGap())
         );
         PanelAdditionnalConf2Layout.setVerticalGroup(
@@ -905,7 +908,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                 .addContainerGap()
                 .add(panelResourceManagerLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(PanelAdditionnalConf2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(panelRMRegistration, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 527, Short.MAX_VALUE)
+                    .add(panelRMRegistration, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 592, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, panelAuthCredential, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -916,7 +919,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                 .add(panelRMRegistration, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelAuthCredential, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 192, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 191, Short.MAX_VALUE)
                 .add(PanelAdditionnalConf2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -937,7 +940,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                 .addContainerGap()
                 .add(labelStarterClass3)
                 .add(18, 18, 18)
-                .add(textStarterClass3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 356, Short.MAX_VALUE)
+                .add(textStarterClass3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE)
                 .addContainerGap())
         );
         PanelAdditionnalConf3Layout.setVerticalGroup(
@@ -986,7 +989,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                 .add(panelCustom2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(labelArguments)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, panelCustom2Layout.createSequentialGroup()
-                        .add(jScrollPane4, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 415, Short.MAX_VALUE)
+                        .add(jScrollPane4, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(panelCustom2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(buttonSaveArg)
@@ -995,7 +998,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                     .add(panelCustom2Layout.createSequentialGroup()
                         .add(labelArgument)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(textArgument, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 411, Short.MAX_VALUE)))
+                        .add(textArgument, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 501, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -1037,7 +1040,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             .add(org.jdesktop.layout.GroupLayout.TRAILING, panelCustomLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(panelCustom2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 192, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 196, Short.MAX_VALUE)
                 .add(PanelAdditionnalConf3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -1066,7 +1069,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                     .add(radioResourceManager)
                     .add(radioCustom))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelMultipleConnections, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 771, Short.MAX_VALUE)
+                .add(panelMultipleConnections, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 784, Short.MAX_VALUE)
                 .addContainerGap())
         );
         PanelConnectionLayout.setVerticalGroup(
@@ -1074,7 +1077,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             .add(PanelConnectionLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(PanelConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(panelMultipleConnections, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 490, Short.MAX_VALUE)
+                    .add(panelMultipleConnections, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE)
                     .add(PanelConnectionLayout.createSequentialGroup()
                         .add(radioLocal)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -1124,20 +1127,20 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             .add(panelWeeklyPlanningLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(panelWeeklyPlanningLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(testAeraPlanning, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 212, Short.MAX_VALUE)
+                    .add(testAeraPlanning, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
                     .add(panelWeeklyPlanningLayout.createSequentialGroup()
-                        .add(buttonCreatePlan, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
+                        .add(buttonCreatePlan, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(buttonDeletePlan, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 65, Short.MAX_VALUE)
+                        .add(buttonDeletePlan, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 67, Short.MAX_VALUE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(buttonShowPlan, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 56, Short.MAX_VALUE)))
+                        .add(buttonShowPlan, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panelWeeklyPlanningLayout.setVerticalGroup(
             panelWeeklyPlanningLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, panelWeeklyPlanningLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(testAeraPlanning, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 392, Short.MAX_VALUE)
+                .add(testAeraPlanning, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 371, Short.MAX_VALUE)
                 .add(18, 18, 18)
                 .add(panelWeeklyPlanningLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(buttonCreatePlan)
@@ -1207,7 +1210,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                 .add(labelStartSecondes)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(spinnerStartSecondes, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(89, Short.MAX_VALUE))
         );
         panelStartTimeLayout.setVerticalGroup(
             panelStartTimeLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -1284,7 +1287,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                 .add(labelDurationSecondes)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(spinnerDurationSecondes, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(83, Short.MAX_VALUE))
         );
         panelDurationLayout.setVerticalGroup(
             panelDurationLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -1366,7 +1369,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                 .add(panelProcessManagementLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
                     .add(spinnerClassData)
                     .add(comboBoxPriority, 0, 115, Short.MAX_VALUE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 79, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 142, Short.MAX_VALUE)
                 .add(labelMaxCPUUsage)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(spinnerMaxCPUUsage, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 56, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
@@ -1408,7 +1411,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(PanelPlanningLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, checkBoxAlwaysAvailable)
-                    .add(panelPlanEditor, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 542, Short.MAX_VALUE)
+                    .add(panelPlanEditor, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(panelProcessManagement, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -1422,7 +1425,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
                         .add(panelPlanEditor, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(panelProcessManagement, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 155, Short.MAX_VALUE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 146, Short.MAX_VALUE)
                         .add(checkBoxAlwaysAvailable)))
                 .addContainerGap())
         );
@@ -1436,26 +1439,26 @@ public class GUIEditorWindows extends javax.swing.JFrame {
             .add(layout.createSequentialGroup()
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, GlobalPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 828, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                         .add(ButtonSaveAs)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(ButtonSave)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(ButtonClose))
-                    .add(GlobalPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 828, Short.MAX_VALUE))
+                        .add(ButtonClose)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
+            .add(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(GlobalPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 551, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .add(GlobalPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 514, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(ButtonClose)
                     .add(ButtonSave)
                     .add(ButtonSaveAs))
-                .addContainerGap())
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
