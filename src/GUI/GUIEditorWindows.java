@@ -718,11 +718,6 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         comboBoxProtocol.setFont(new java.awt.Font("TakaoPGothic", 0, 11)); // NOI18N
         comboBoxProtocol.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "undefined", "rmi", "http", "pamr", "pnp", "pnps" }));
         comboBoxProtocol.setToolTipText("defines the protocol to used by the Runtime.");
-        comboBoxProtocol.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                comboBoxProtocolActionPerformed(evt);
-            }
-        });
 
         labelPortInitialValue1.setFont(new java.awt.Font("TakaoPGothic", 0, 11));
         labelPortInitialValue1.setText("Port Initial Value:");
@@ -1161,15 +1156,25 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         radioLocal.setToolTipText("enable Local Registration.");
         radioLocal.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                radioLocalActionPerformed(evt);
+                selectLocalPanel(evt);
             }
         });
 
         buttonGroup1.add(radioResourceManager);
         radioResourceManager.setToolTipText("enable Resource Manager Registration.");
+        radioResourceManager.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                selectRMPanel(evt);
+            }
+        });
 
         buttonGroup1.add(radioCustom);
         radioCustom.setToolTipText("enable a user defined connexion.");
+        radioCustom.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                selectCustomPanel(evt);
+            }
+        });
 
         org.jdesktop.layout.GroupLayout PanelConnectionLayout = new org.jdesktop.layout.GroupLayout(PanelConnection);
         PanelConnection.setLayout(PanelConnectionLayout);
@@ -2104,10 +2109,6 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_alwaysAvailableChooser
 
-    private void radioLocalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioLocalActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_radioLocalActionPerformed
-
     private void refreshInterfacesList(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshInterfacesList
         
         ModelManager.setListInterfaces(ListNetworkInterfaces.getNetworkInterfacesList());
@@ -2363,9 +2364,17 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         f.show();
     }//GEN-LAST:event_showGraphic
 
-    private void comboBoxProtocolActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBoxProtocolActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_comboBoxProtocolActionPerformed
+    private void selectLocalPanel(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectLocalPanel
+        panelMultipleConnections.setSelectedIndex(0);
+}//GEN-LAST:event_selectLocalPanel
+
+    private void selectRMPanel(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectRMPanel
+        panelMultipleConnections.setSelectedIndex(1);
+    }//GEN-LAST:event_selectRMPanel
+
+    private void selectCustomPanel(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectCustomPanel
+        panelMultipleConnections.setSelectedIndex(2);
+    }//GEN-LAST:event_selectCustomPanel
 
     /**
      * @param args the command line arguments

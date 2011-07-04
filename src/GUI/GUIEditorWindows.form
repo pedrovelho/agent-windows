@@ -815,9 +815,6 @@
                     </Property>
                     <Property name="toolTipText" type="java.lang.String" value="defines the protocol to used by the Runtime."/>
                   </Properties>
-                  <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="comboBoxProtocolActionPerformed"/>
-                  </Events>
                 </Component>
                 <Component class="javax.swing.JLabel" name="labelPortInitialValue1">
                   <Properties>
@@ -1540,7 +1537,7 @@
                 <Property name="toolTipText" type="java.lang.String" value="enable Local Registration."/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="radioLocalActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="selectLocalPanel"/>
               </Events>
             </Component>
             <Component class="javax.swing.JRadioButton" name="radioResourceManager">
@@ -1550,6 +1547,9 @@
                 </Property>
                 <Property name="toolTipText" type="java.lang.String" value="enable Resource Manager Registration."/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="selectRMPanel"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JRadioButton" name="radioCustom">
               <Properties>
@@ -1558,6 +1558,9 @@
                 </Property>
                 <Property name="toolTipText" type="java.lang.String" value="enable a user defined connexion."/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="selectCustomPanel"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>
