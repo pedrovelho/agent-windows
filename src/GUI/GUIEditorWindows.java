@@ -1134,6 +1134,7 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         panelMultipleConnections.addTab("Custom", panelCustom);
 
         buttonGroup1.add(radioLocal);
+        radioLocal.setToolTipText("enable Local Registration.");
         radioLocal.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 radioLocalActionPerformed(evt);
@@ -1141,8 +1142,10 @@ public class GUIEditorWindows extends javax.swing.JFrame {
         });
 
         buttonGroup1.add(radioResourceManager);
+        radioResourceManager.setToolTipText("enable Resource Manager Registration.");
 
         buttonGroup1.add(radioCustom);
+        radioCustom.setToolTipText("enable a user defined connexion.");
 
         org.jdesktop.layout.GroupLayout PanelConnectionLayout = new org.jdesktop.layout.GroupLayout(PanelConnection);
         PanelConnection.setLayout(PanelConnectionLayout);
