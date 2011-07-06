@@ -173,7 +173,7 @@ extern "C" {
 	 * @param outputDataInHex encrypted data in hex format
 	 * @return 0 if no errors
 	 */
-	DllExport int encryptDataStd(const std::string &inputData, std::string &outputDataInHex);	
+	DllExport int encryptDataStd(const std::wstring &inputData, std::wstring &outputDataInHex);	
 
 	/**
 	 * Decrypts previously encrypted data using Microsoft AES Cryptographic Service Provider
@@ -183,7 +183,7 @@ extern "C" {
 	 * @param outputData decrypted cstring
 	 * @return 0 if no errors
 	 */
-	DllExport int decryptDataStd(const std::string &inputDataInHex, std::string &outputData);
+	DllExport int decryptDataStd(const std::wstring &inputDataInHex, std::wstring &outputData);
 
 extern "C" {
 
@@ -195,7 +195,7 @@ extern "C" {
 	 * @param outputDataInHex encrypted data in hex format
 	 * @return 0 if no errors
 	 */
-	DllExport int encryptData(const char *inputData, char *outputDataInHex);
+	DllExport int encryptData(const wchar_t *inputData, wchar_t *outputDataInHex);
 
 	/**
 	 * Decrypts previously encrypted data using Microsoft AES Cryptographic Service Provider
@@ -205,6 +205,6 @@ extern "C" {
 	 * @param outputData decrypted cstring
 	 * @return 0 if no errors
 	 */
-	DllExport int decryptData(const char *inputDataInHex, char *outputData);
+	DllExport int decryptData(const wchar_t *inputDataInHex, wchar_t *outputData);
 
 }

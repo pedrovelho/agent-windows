@@ -759,7 +759,7 @@ const char* WinAES::ErrorToDefine( DWORD dwError )
 
 // Added by ActiveEon 2011
 
-void string_to_bytearray(const string &src, unsigned char* &dst, int& dstSize)
+void wstring_to_bytearray(const std::wstring &src, unsigned char* &dst, int& dstSize)
 {
 	int length = src.length();
 	// make sure the input string has an even digit numbers
@@ -773,10 +773,10 @@ void string_to_bytearray(const string &src, unsigned char* &dst, int& dstSize)
 	dst = new unsigned char[length/2];
 	dstSize = length/2;
 
-	std::stringstream sstr(src);
+	std::wstringstream sstr(src);
 	for(int i=0; i < dstSize; i++)
 	{
-		char ch1, ch2;
+		wchar_t ch1, ch2;
 		sstr >> ch1 >> ch2;
 		int dig1, dig2;
 		if(isdigit(ch1)) dig1 = ch1 - '0';
@@ -789,9 +789,9 @@ void string_to_bytearray(const string &src, unsigned char* &dst, int& dstSize)
 	}
 }
 
-void bytearray_to_string(string &dst, const unsigned char *src, const int srcLen)
+void bytearray_to_wstring(std::wstring &dst, const unsigned char *src, const int srcLen)
 {
-	ostringstream os;
+	std::wostringstream os;
 	for (int i = 0; i < srcLen; ++i) 
 	{	
 		os.width(2);
@@ -802,13 +802,13 @@ void bytearray_to_string(string &dst, const unsigned char *src, const int srcLen
 	dst.assign(os.str());
 }
 
-DllExport int encryptDataStd(const string &inputData, string &outputDataInHex){
+DllExport int encryptDataStd(const std::wstring &inputData, std::wstring &outputDataInHex){
 	WinAES aes;
 
 	byte key[ WinAES::KEYSIZE_128 ] = {0x49,0x91,0x6E,0xDC,0x49,0x91,0x6E,0xDC,0x49,0x91,0x6E,0xDC,0x49,0x91,0x6E,0xDC};
 	byte iv[ WinAES::BLOCKSIZE ] = {0x49,0x91,0x6E,0xDC,0x49,0x91,0x6E,0xDC,0x49,0x91,0x6E,0xDC,0x49,0x91,0x6E,0xDC};
 
-	const char *plaintext = inputData.c_str();
+	const wchar_t *plaintext = inputData.c_str();
 
 	byte *ciphertext = NULL;
 
@@ -819,7 +819,7 @@ DllExport int encryptDataStd(const string &inputData, string &outputDataInHex){
 		size_t psize=0, csize=0;
 
 		// Allocate space 			
-		psize = strlen( plaintext ) + 1;
+		psize = (wcslen( plaintext ) * sizeof(wchar_t)) + 1;
 		if( aes.MaxCipherTextSize( psize, csize ) ) {
 			ciphertext = new byte[ csize ];
 		}
@@ -830,7 +830,7 @@ DllExport int encryptDataStd(const string &inputData, string &outputDataInHex){
 		}						
 
 		// Convert encrypted data to hex string			
-		bytearray_to_string(outputDataInHex, ciphertext, csize);			
+		bytearray_to_wstring(outputDataInHex, ciphertext, csize);			
 	}
 	catch( const WinAESException& e )
 	{
@@ -845,7 +845,7 @@ DllExport int encryptDataStd(const string &inputData, string &outputDataInHex){
 	return 0;
 }
 
-DllExport int decryptDataStd(const string &inputDataInHex, string &outputData){
+DllExport int decryptDataStd(const std::wstring &inputDataInHex, std::wstring &outputData){
 	WinAES aes;		
 
 	byte key[ WinAES::KEYSIZE_128 ] = {0x49,0x91,0x6E,0xDC,0x49,0x91,0x6E,0xDC,0x49,0x91,0x6E,0xDC,0x49,0x91,0x6E,0xDC};
@@ -854,7 +854,7 @@ DllExport int decryptDataStd(const string &inputDataInHex, string &outputData){
 	byte *ciphertext = NULL, *recovered = NULL;			
 
 	int csize;
-	string_to_bytearray(inputDataInHex, ciphertext, csize);		
+	wstring_to_bytearray(inputDataInHex, ciphertext, csize);		
 	try
 	{
 		// Set the key and IV
@@ -868,10 +868,9 @@ DllExport int decryptDataStd(const string &inputDataInHex, string &outputData){
 
 		if( !aes.Decrypt( ciphertext, csize, recovered, rsize ) ) {
 			cerr << "Failed to decrypt cipher text" << endl;
-		}
-
+		}				
 		// Copy the decrypted data
-		outputData.assign((char*)recovered);						
+		outputData.assign((wchar_t*)recovered);		
 	}
 	catch( const WinAESException& e )
 	{
@@ -893,28 +892,28 @@ DllExport int decryptDataStd(const string &inputDataInHex, string &outputData){
 
 extern "C" {
 	
-	DllExport int encryptData(const char *inputData, char *outputDataInHex){
-		string input(inputData);
-		string output;
+	DllExport int encryptData(const wchar_t *inputData, wchar_t *outputDataInHex){
+		std::wstring input(inputData);
+		std::wstring output;
 
 		// Encrypt input data
 		const int res = encryptDataStd(input, output);
 
 		// Copy encrypted output into a cstring
-		strcpy_s(outputDataInHex, output.length()+1, output.c_str());
+		wcscpy_s(outputDataInHex, output.length()+1, output.c_str());
 
 		return res;
 	}
 
-	DllExport int decryptData(const char *inputDataInHex, char *outputData){
-		string input(inputDataInHex);
-		string output;
+	DllExport int decryptData(const wchar_t *inputDataInHex, wchar_t *outputData){
+		std::wstring input(inputDataInHex);
+		std::wstring output;
 
 		// Decrypt data
-		const int res = decryptDataStd(input, output);
+		const int res = decryptDataStd(input, output);		
 
-		// Copy  
-		strcpy_s(outputData, output.length()+1, output.c_str());		
+		// Copy the decrypted output into the c string
+		wcscpy_s(outputData, output.length()+1, output.c_str());		
 
 		return res;
 	}	
