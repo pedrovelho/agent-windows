@@ -1,39 +1,39 @@
 /*
- * ################################################################
- *
- * ProActive Parallel Suite(TM): The Java(TM) library for
- *    Parallel, Distributed, Multi-Core Computing for
- *    Enterprise Grids & Clouds
- *
- * Copyright (C) 1997-2011 INRIA/University of
- *                 Nice-Sophia Antipolis/ActiveEon
- * Contact: proactive@ow2.org or contact@activeeon.com
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Affero General Public License
- * as published by the Free Software Foundation; version 3 of
- * the License.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
- * USA
- *
- * If needed, contact us to obtain a release under GPL Version 2 or 3
- * or a different license than the AGPL.
- *
- *  Initial developer(s):               The ActiveEon Team
- *                        http://www.activeeon.com/
- *  Contributor(s):
- *
- * ################################################################
- * $$ACTIVEEON_INITIAL_DEV$$
- */
+* ################################################################
+*
+* ProActive Parallel Suite(TM): The Java(TM) library for
+*    Parallel, Distributed, Multi-Core Computing for
+*    Enterprise Grids & Clouds
+*
+* Copyright (C) 1997-2011 INRIA/University of
+*                 Nice-Sophia Antipolis/ActiveEon
+* Contact: proactive@ow2.org or contact@activeeon.com
+*
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Affero General Public License
+* as published by the Free Software Foundation; version 3 of
+* the License.
+*
+* This library is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+* Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this library; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+* USA
+*
+* If needed, contact us to obtain a release under GPL Version 2 or 3
+* or a different license than the AGPL.
+*
+*  Initial developer(s):               The ActiveEon Team
+*                        http://www.activeeon.com/
+*  Contributor(s):
+*
+* ################################################################
+* $$ACTIVEEON_INITIAL_DEV$$
+*/
 // parunas.cpp : Defines the entry point for the console application.
 // Wrapper for process creation under a specific local user, creates
 // a child process with a default environement, access rights to the 
@@ -66,8 +66,8 @@
 //#include <malloc.h>
 //#include <lmcons.h>
 
-#define LOG_ERROR(...) wprintf(L"%s errno=%d\n", __VA_ARGS__, GetLastError());
-#define LOG_INFO(...) if (bVerbose) wprintf(L"%s\n", __VA_ARGS__);
+#define LOG_ERROR(...) wprintf(L"%ws errno=%d\n", __VA_ARGS__, GetLastError());
+#define LOG_INFO(...) if (bVerbose) wprintf(L"%ws\n", __VA_ARGS__);
 #define LOG_NUM(...) if (bVerbose) wprintf(L"%u\n", __VA_ARGS__);
 
 static BOOL bVerbose = false;
@@ -91,7 +91,8 @@ static BOOL bVerbose = false;
 BOOL GetLogonSID(HANDLE hToken, PSID *ppsid);
 VOID FreeLogonSID (PSID *ppsid);
 int StartInteractiveClientProcess (
-	WCHAR* username,       // client to log on	
+	WCHAR* domain,         // client's domain
+	WCHAR* username,       // client log on
 	WCHAR* password,       // client's password
 	WCHAR* commandLine,      // command line to execute
 	WCHAR* workingDirectory  // working dir of the process
@@ -117,8 +118,9 @@ void echo( bool on = true )
 
 int wmain(int argc, WCHAR **argv)
 {	
-	// The user is a valid account on the local computer
-	WCHAR username[32]= L"";             // = L"forker"; // username	
+	// The user must be valid in the given domain
+	WCHAR domain[32]= L"";               // = L"."; // domain		
+	WCHAR username[32]= L"";             // = L"forker"; // username		
 	WCHAR password[32]= L"";             // = L"forker"; // password
 	WCHAR commandLine[32000] = L"";      // = L"C:\\Windows\\System32\\cmd.exe /c \"set & pause\"";
 	WCHAR workingDirectory[32000] = L""; // [1024] = L"C:\\Temp";
@@ -153,6 +155,12 @@ int wmain(int argc, WCHAR **argv)
 		//printf("value len : %d\n", wcslen(argp));
 
 		switch (argn[0]) {			
+		case 'd': // The domain of the account under which to run the program
+			if (len == 0) {
+				bShowHelp = TRUE;
+			}
+			swprintf_s(domain, L"%ws", argp);
+			break;
 		case 'u': // The name of the user account under which to run the program
 			if (len == 0) {				
 				bShowHelp = TRUE;
@@ -225,20 +233,28 @@ int wmain(int argc, WCHAR **argv)
 		returnStatus = RegOpenKeyEx(HKEY_LOCAL_MACHINE, keyName, 0L,  KEY_QUERY_VALUE|KEY_READ|KEY_WOW64_64KEY, &hKey);
 		if (returnStatus == ERROR_SUCCESS)
 		{
+			// reset this value before reuse since lpcbData is [in out]
+			dwSize = 255;
+			returnStatus = RegQueryValueEx(hKey, L"domain", NULL, &dwType,(LPBYTE)&domain, &dwSize);
+			if (returnStatus != ERROR_SUCCESS)
+			{
+				LOG_ERROR(L"Unable to read the account domain in registry!");
+				LOG_NUM(returnStatus);
+				return 1;
+			}
 			dwSize = 255;
 			returnStatus = RegQueryValueEx(hKey, L"username", NULL, &dwType,(LPBYTE)&username, &dwSize);			
 			if (returnStatus != ERROR_SUCCESS)
 			{
-				LOG_ERROR(L"Unable to access creds value1 in registry!");
+				LOG_ERROR(L"Unable to read the account username in registry!");
 				LOG_NUM(returnStatus);
 				return 1;
-			}
-			// reset this value since lpcbData is in out
+			}			
 			dwSize = 255;
 			returnStatus = RegQueryValueEx(hKey, L"password", NULL, &dwType,(LPBYTE)&password, &dwSize);		
 			if (returnStatus != ERROR_SUCCESS)
 			{
-				LOG_ERROR(L"Unable to access creds value2 in registry!");
+				LOG_ERROR(L"Unable to read the account password in registry!");
 				LOG_NUM(returnStatus);
 				return 1;
 			}
@@ -254,11 +270,12 @@ int wmain(int argc, WCHAR **argv)
 
 	// The command line is the last argument
 	WCHAR **w = CommandLineToArgvW(GetCommandLineW(), &argc);	
-	swprintf_s(commandLine, L"%ws", w[argc-1]);	
+	swprintf_s(commandLine, L"%ws", w[argc-1]);
 
 	// Call StartInteractiveClientProcess()
 	int exitCode = StartInteractiveClientProcess (
-		username,      // client to log on		
+		domain,        // client's domain
+		username,      // client to log on
 		password,      // client's password
 		commandLine,     // command line to execute
 		workingDirectory // working directory
@@ -360,8 +377,9 @@ VOID FreeLogonSID (PSID *ppsid)
 }
 
 int StartInteractiveClientProcess(
-	WCHAR* username,        // client to log on	
-	WCHAR* password,        // client's password
+	WCHAR* domain,            // client's domain
+	WCHAR* username,          // client's to log on	
+	WCHAR* password,          // client's password
 	WCHAR* commandLine,       // command line to execute
 	WCHAR* workingDirectory   // working directory
 	)
@@ -380,14 +398,14 @@ int StartInteractiveClientProcess(
 	// Log the client on to the local computer.
 	if (!LogonUser(
 		username,
-		L".", // always local domain (local computer)
+		domain,
 		password,
 		LOGON32_LOGON_INTERACTIVE,
 		LOGON32_PROVIDER_DEFAULT,&hToken)) {
 			LOG_ERROR(L"LogonUser() failed!");
 			goto Cleanup;
 	}
-	
+
 	// Save a handle to the caller's current window station.
 	LOG_INFO(L"Saving current window station...");
 	if ((hwinstaSave = GetProcessWindowStation()) == NULL) {
@@ -528,7 +546,7 @@ int StartInteractiveClientProcess(
 	HANDLE              hSessionToken = INVALID_HANDLE_VALUE;
 
 	// Get a token of the user of the currently logged on session to redirect
-    // the GUI of the job to this window station and desktop.
+	// the GUI of the job to this window station and desktop.
 	// LOG_INFO(L"--------------");
 	//   hSessionToken = GetInteractiveUserToken();
 	//   if (hSessionToken == NULL) {     
@@ -536,11 +554,11 @@ int StartInteractiveClientProcess(
 	//  goto Cleanup;
 	// }
 
-    // Impersonate client to ensure access to executable file.
-    // if(!ImpersonateLoggedOnUser(hSessionToken))  {       
+	// Impersonate client to ensure access to executable file.
+	// if(!ImpersonateLoggedOnUser(hSessionToken))  {       
 	// LOG_ERROR(L"ImpersonateLoggedOnUser (DesktopUser) failed: ");
-    //   goto Cleanup;
-    // }
+	//   goto Cleanup;
+	// }
 
 	PROCESS_INFORMATION pi;
 	// Launch the process in the client's logon session.	
@@ -875,215 +893,215 @@ static BOOL AddAceToWindowStation(HWINSTA hWinsta, PSID pSid)
 	////}
 	//return bRet;
 
-     ACCESS_ALLOWED_ACE   *pace;
-      ACL_SIZE_INFORMATION aclSizeInfo;
-      BOOL                 bDaclExist;
-      BOOL                 bDaclPresent;
-      BOOL                 bSuccess = FALSE;
-      DWORD            dwNewAclSize;
-      DWORD            dwSidSize = 0;
-      DWORD            dwSdSizeNeeded;
-      PACL                 pacl;
-      PACL                 pNewAcl;
-      PSECURITY_DESCRIPTOR psd = NULL;
-      PSECURITY_DESCRIPTOR psdNew = NULL;
-      PVOID                pTempAce;
-      SECURITY_INFORMATION si = DACL_SECURITY_INFORMATION;
-      unsigned int         i;
-     
-      LOG_INFO(L"Adding ACE to WindowStation...\n");
- 
-      __try
-      {
-            // Obtain the DACL for the window station.
-            if (!GetUserObjectSecurity(hWinsta,&si,psd,dwSidSize,&dwSdSizeNeeded))
-                  if (GetLastError() == ERROR_INSUFFICIENT_BUFFER)
-                  {
-                        psd = (PSECURITY_DESCRIPTOR)HeapAlloc(GetProcessHeap(),HEAP_ZERO_MEMORY,dwSdSizeNeeded);
-                       
-                        if (psd == NULL)
-                              __leave;
-                        //else
-                        //      wprintf(L"Heap allocated for psd!\n");
-                       
-                        psdNew = (PSECURITY_DESCRIPTOR)HeapAlloc(GetProcessHeap(),HEAP_ZERO_MEMORY,dwSdSizeNeeded);
-                        if (psdNew == NULL)
-                              __leave;
-                        //else
-                        //      wprintf(L"Heap allocated for psdNew!\n");
-                       
-                        dwSidSize = dwSdSizeNeeded;
-                        if (!GetUserObjectSecurity(hWinsta,&si,psd,dwSidSize,&dwSdSizeNeeded))
-                        {                              
-							  LOG_ERROR(L"GetUserObjectSecurity() failed!");
-                              __leave;
-                        }
-                        //else
-                        //      wprintf(L"GetUserObjectSecurity() is working!\n");
-                  }
-                  else
-                        __leave;
-           
-            // Create a new DACL.
-            if (!InitializeSecurityDescriptor(psdNew,SECURITY_DESCRIPTOR_REVISION))
-            {                  
-				  LOG_ERROR(L"InitializeSecurityDescriptor() failed!");
-                  __leave;
-            }
-            //else
-            //      wprintf(L"InitializeSecurityDescriptor() is working!\n");
-           
-            // Get the DACL from the security descriptor.
-            if (!GetSecurityDescriptorDacl(psd,&bDaclPresent,&pacl,&bDaclExist))
-            {                  
-				  LOG_ERROR(L"GetSecurityDescriptorDacl() failed!");
-                  __leave;
-            }
-            //else
-            //      wprintf(L"GetSecurityDescriptorDacl() is working!\n");
-           
-            // Initialize the ACL
-            SecureZeroMemory(&aclSizeInfo, sizeof(ACL_SIZE_INFORMATION));
-            aclSizeInfo.AclBytesInUse = sizeof(ACL);           
-            // Call only if the DACL is not NULL
-            if (pacl != NULL)
-            {
-                  // get the file ACL size info
-                  if (!GetAclInformation(pacl,(LPVOID)&aclSizeInfo,sizeof(ACL_SIZE_INFORMATION),AclSizeInformation))
-                  {                        
-						LOG_ERROR(L"GetAclInformation() failed!");
-                        __leave;
-                  }
-                  //else
-                  //      wprintf(L"GetAclInformation() is working!\n");
-            }
-           
-            // Compute the size of the new ACL
-            dwNewAclSize = aclSizeInfo.AclBytesInUse + (2*sizeof(ACCESS_ALLOWED_ACE)) + (2*GetLengthSid(pSid)) - (2*sizeof(DWORD));           
-            // Allocate memory for the new ACL
-            pNewAcl = (PACL)HeapAlloc(GetProcessHeap(),HEAP_ZERO_MEMORY,dwNewAclSize);
-           
-            if (pNewAcl == NULL)
-                  __leave;
-            //else
-            //      wprintf(L"Heap allocated for pNewAcl!\n");
-           
-            // Initialize the new DACL
-            if (!InitializeAcl(pNewAcl, dwNewAclSize, ACL_REVISION))
-            {                  
-				  LOG_ERROR(L"InitializeAcl() failed!");
-                  __leave;
-            }
-            //else
-            //      wprintf(L"InitializeAcl() is working!\n");
- 
-            // If DACL is present, copy it to a new DACL
-            if (bDaclPresent)
-            {
-                  // Copy the ACEs to the new ACL.
-                  if (aclSizeInfo.AceCount)
-                  {
-					  LOG_INFO(L"Ace count: ");
-					  LOG_NUM(aclSizeInfo.AceCount);
+	ACCESS_ALLOWED_ACE   *pace;
+	ACL_SIZE_INFORMATION aclSizeInfo;
+	BOOL                 bDaclExist;
+	BOOL                 bDaclPresent;
+	BOOL                 bSuccess = FALSE;
+	DWORD            dwNewAclSize;
+	DWORD            dwSidSize = 0;
+	DWORD            dwSdSizeNeeded;
+	PACL                 pacl;
+	PACL                 pNewAcl;
+	PSECURITY_DESCRIPTOR psd = NULL;
+	PSECURITY_DESCRIPTOR psdNew = NULL;
+	PVOID                pTempAce;
+	SECURITY_INFORMATION si = DACL_SECURITY_INFORMATION;
+	unsigned int         i;
 
-                      for (i=0; i < aclSizeInfo.AceCount; i++)
-                        {
-                              // Get an ACE.
-                              if (!GetAce(pacl, i, &pTempAce))
-                              {                                    
-									LOG_ERROR(L"GetAce() failed!");
-                                    __leave;
-                              }
-                              //else
-                              //      wprintf(L"GetAce() is working! (iter=%u)\n",i);
- 
-                              // Add the ACE to the new ACL.
-                              if (!AddAce(pNewAcl,ACL_REVISION,MAXDWORD,pTempAce,((PACE_HEADER)pTempAce)->AceSize))
-                              {                                    
-									LOG_ERROR(L"AddAce() failed!");
-                                    __leave;
-                              }
-                              //else
-                              //      wprintf(L"AddAce() is working!\n");
-                        }
-                  }
-            }
-           
-            // Add the first ACE to the window station
-            pace = (ACCESS_ALLOWED_ACE *)HeapAlloc(GetProcessHeap(),HEAP_ZERO_MEMORY, sizeof(ACCESS_ALLOWED_ACE) + GetLengthSid(pSid) -  sizeof(DWORD));
-           
-            if (pace == NULL)
-                  __leave;
-            //else
-            //      wprintf(L"Heap allocated for pace!\n");
-           
-            pace->Header.AceType  = ACCESS_ALLOWED_ACE_TYPE;
-            pace->Header.AceFlags = CONTAINER_INHERIT_ACE | INHERIT_ONLY_ACE | OBJECT_INHERIT_ACE;
-            pace->Header.AceSize  = (WORD)(sizeof(ACCESS_ALLOWED_ACE) + GetLengthSid(pSid) - sizeof(DWORD));
-            pace->Mask            = GENERIC_ACCESS;
-           
-            if (!CopySid(GetLengthSid(pSid), &pace->SidStart, pSid))
-            {                  
-				  LOG_ERROR(L"CopySid() failed!");
-                  __leave;
-            }
-            //else
-            //      wprintf(L"CopySid() is working!\n");
-           
-            if (!AddAce(pNewAcl,ACL_REVISION,MAXDWORD,(LPVOID)pace,pace->Header.AceSize))
-            {                  
-				  LOG_ERROR(L"AddAce() failed!");
-                  __leave;
-            }
-            //else
-            //      wprintf(L"AddAce() 1 is working!\n");
-           
-            // Add the second ACE to the window station
-            pace->Header.AceFlags = NO_PROPAGATE_INHERIT_ACE;
-            pace->Mask            = WINSTA_ALL;
-           
-            if (!AddAce(pNewAcl,ACL_REVISION,MAXDWORD,(LPVOID)pace,pace->Header.AceSize))
-            {                  
-				  LOG_ERROR(L"AddAce() failed!");
-                  __leave;
-            }
-            //else
-            //      wprintf(L"AddAce() 2 is working!\n");
-           
-            // Set a new DACL for the security descriptor
-            if (!SetSecurityDescriptorDacl(psdNew,TRUE,pNewAcl,FALSE))
-            {
-				  LOG_ERROR(L"SetSecurityDescriptorDacl() failed!");
-                  __leave;
-            }
-            //else
-            //      wprintf(L"SetSecurityDescriptorDacl() is working!\n");
- 
-            // Set the new security descriptor for the window station
-            if (!SetUserObjectSecurity(hWinsta, &si, psdNew))
-            {                  
-				  LOG_ERROR(L"SetUserObjectSecurity() failed!");
-                  __leave;
-            }
-            //else
-            //      wprintf(L"SetUserObjectSecurity() is working!\n");
- 
-            // Indicate success
-            bSuccess = TRUE;
-}
-__finally
-{
-      // Free the allocated buffers
-      if (pace != NULL)
-            HeapFree(GetProcessHeap(), 0, (LPVOID)pace);
-      if (pNewAcl != NULL)
-            HeapFree(GetProcessHeap(), 0, (LPVOID)pNewAcl);
-      if (psd != NULL)
-            HeapFree(GetProcessHeap(), 0, (LPVOID)psd);
-      if (psdNew != NULL)
-            HeapFree(GetProcessHeap(), 0, (LPVOID)psdNew);
-}
-return bSuccess;
+	LOG_INFO(L"Adding ACE to WindowStation...\n");
+
+	__try
+	{
+		// Obtain the DACL for the window station.
+		if (!GetUserObjectSecurity(hWinsta,&si,psd,dwSidSize,&dwSdSizeNeeded))
+			if (GetLastError() == ERROR_INSUFFICIENT_BUFFER)
+			{
+				psd = (PSECURITY_DESCRIPTOR)HeapAlloc(GetProcessHeap(),HEAP_ZERO_MEMORY,dwSdSizeNeeded);
+
+				if (psd == NULL)
+					__leave;
+				//else
+				//      wprintf(L"Heap allocated for psd!\n");
+
+				psdNew = (PSECURITY_DESCRIPTOR)HeapAlloc(GetProcessHeap(),HEAP_ZERO_MEMORY,dwSdSizeNeeded);
+				if (psdNew == NULL)
+					__leave;
+				//else
+				//      wprintf(L"Heap allocated for psdNew!\n");
+
+				dwSidSize = dwSdSizeNeeded;
+				if (!GetUserObjectSecurity(hWinsta,&si,psd,dwSidSize,&dwSdSizeNeeded))
+				{                              
+					LOG_ERROR(L"GetUserObjectSecurity() failed!");
+					__leave;
+				}
+				//else
+				//      wprintf(L"GetUserObjectSecurity() is working!\n");
+			}
+			else
+				__leave;
+
+		// Create a new DACL.
+		if (!InitializeSecurityDescriptor(psdNew,SECURITY_DESCRIPTOR_REVISION))
+		{                  
+			LOG_ERROR(L"InitializeSecurityDescriptor() failed!");
+			__leave;
+		}
+		//else
+		//      wprintf(L"InitializeSecurityDescriptor() is working!\n");
+
+		// Get the DACL from the security descriptor.
+		if (!GetSecurityDescriptorDacl(psd,&bDaclPresent,&pacl,&bDaclExist))
+		{                  
+			LOG_ERROR(L"GetSecurityDescriptorDacl() failed!");
+			__leave;
+		}
+		//else
+		//      wprintf(L"GetSecurityDescriptorDacl() is working!\n");
+
+		// Initialize the ACL
+		SecureZeroMemory(&aclSizeInfo, sizeof(ACL_SIZE_INFORMATION));
+		aclSizeInfo.AclBytesInUse = sizeof(ACL);           
+		// Call only if the DACL is not NULL
+		if (pacl != NULL)
+		{
+			// get the file ACL size info
+			if (!GetAclInformation(pacl,(LPVOID)&aclSizeInfo,sizeof(ACL_SIZE_INFORMATION),AclSizeInformation))
+			{                        
+				LOG_ERROR(L"GetAclInformation() failed!");
+				__leave;
+			}
+			//else
+			//      wprintf(L"GetAclInformation() is working!\n");
+		}
+
+		// Compute the size of the new ACL
+		dwNewAclSize = aclSizeInfo.AclBytesInUse + (2*sizeof(ACCESS_ALLOWED_ACE)) + (2*GetLengthSid(pSid)) - (2*sizeof(DWORD));           
+		// Allocate memory for the new ACL
+		pNewAcl = (PACL)HeapAlloc(GetProcessHeap(),HEAP_ZERO_MEMORY,dwNewAclSize);
+
+		if (pNewAcl == NULL)
+			__leave;
+		//else
+		//      wprintf(L"Heap allocated for pNewAcl!\n");
+
+		// Initialize the new DACL
+		if (!InitializeAcl(pNewAcl, dwNewAclSize, ACL_REVISION))
+		{                  
+			LOG_ERROR(L"InitializeAcl() failed!");
+			__leave;
+		}
+		//else
+		//      wprintf(L"InitializeAcl() is working!\n");
+
+		// If DACL is present, copy it to a new DACL
+		if (bDaclPresent)
+		{
+			// Copy the ACEs to the new ACL.
+			if (aclSizeInfo.AceCount)
+			{
+				LOG_INFO(L"Ace count: ");
+				LOG_NUM(aclSizeInfo.AceCount);
+
+				for (i=0; i < aclSizeInfo.AceCount; i++)
+				{
+					// Get an ACE.
+					if (!GetAce(pacl, i, &pTempAce))
+					{                                    
+						LOG_ERROR(L"GetAce() failed!");
+						__leave;
+					}
+					//else
+					//      wprintf(L"GetAce() is working! (iter=%u)\n",i);
+
+					// Add the ACE to the new ACL.
+					if (!AddAce(pNewAcl,ACL_REVISION,MAXDWORD,pTempAce,((PACE_HEADER)pTempAce)->AceSize))
+					{                                    
+						LOG_ERROR(L"AddAce() failed!");
+						__leave;
+					}
+					//else
+					//      wprintf(L"AddAce() is working!\n");
+				}
+			}
+		}
+
+		// Add the first ACE to the window station
+		pace = (ACCESS_ALLOWED_ACE *)HeapAlloc(GetProcessHeap(),HEAP_ZERO_MEMORY, sizeof(ACCESS_ALLOWED_ACE) + GetLengthSid(pSid) -  sizeof(DWORD));
+
+		if (pace == NULL)
+			__leave;
+		//else
+		//      wprintf(L"Heap allocated for pace!\n");
+
+		pace->Header.AceType  = ACCESS_ALLOWED_ACE_TYPE;
+		pace->Header.AceFlags = CONTAINER_INHERIT_ACE | INHERIT_ONLY_ACE | OBJECT_INHERIT_ACE;
+		pace->Header.AceSize  = (WORD)(sizeof(ACCESS_ALLOWED_ACE) + GetLengthSid(pSid) - sizeof(DWORD));
+		pace->Mask            = GENERIC_ACCESS;
+
+		if (!CopySid(GetLengthSid(pSid), &pace->SidStart, pSid))
+		{                  
+			LOG_ERROR(L"CopySid() failed!");
+			__leave;
+		}
+		//else
+		//      wprintf(L"CopySid() is working!\n");
+
+		if (!AddAce(pNewAcl,ACL_REVISION,MAXDWORD,(LPVOID)pace,pace->Header.AceSize))
+		{                  
+			LOG_ERROR(L"AddAce() failed!");
+			__leave;
+		}
+		//else
+		//      wprintf(L"AddAce() 1 is working!\n");
+
+		// Add the second ACE to the window station
+		pace->Header.AceFlags = NO_PROPAGATE_INHERIT_ACE;
+		pace->Mask            = WINSTA_ALL;
+
+		if (!AddAce(pNewAcl,ACL_REVISION,MAXDWORD,(LPVOID)pace,pace->Header.AceSize))
+		{                  
+			LOG_ERROR(L"AddAce() failed!");
+			__leave;
+		}
+		//else
+		//      wprintf(L"AddAce() 2 is working!\n");
+
+		// Set a new DACL for the security descriptor
+		if (!SetSecurityDescriptorDacl(psdNew,TRUE,pNewAcl,FALSE))
+		{
+			LOG_ERROR(L"SetSecurityDescriptorDacl() failed!");
+			__leave;
+		}
+		//else
+		//      wprintf(L"SetSecurityDescriptorDacl() is working!\n");
+
+		// Set the new security descriptor for the window station
+		if (!SetUserObjectSecurity(hWinsta, &si, psdNew))
+		{                  
+			LOG_ERROR(L"SetUserObjectSecurity() failed!");
+			__leave;
+		}
+		//else
+		//      wprintf(L"SetUserObjectSecurity() is working!\n");
+
+		// Indicate success
+		bSuccess = TRUE;
+	}
+	__finally
+	{
+		// Free the allocated buffers
+		if (pace != NULL)
+			HeapFree(GetProcessHeap(), 0, (LPVOID)pace);
+		if (pNewAcl != NULL)
+			HeapFree(GetProcessHeap(), 0, (LPVOID)pNewAcl);
+		if (psd != NULL)
+			HeapFree(GetProcessHeap(), 0, (LPVOID)psd);
+		if (psdNew != NULL)
+			HeapFree(GetProcessHeap(), 0, (LPVOID)psdNew);
+	}
+	return bSuccess;
 }
 
 /****** AddAceToDesktop() ******************************************************
