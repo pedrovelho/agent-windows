@@ -65,6 +65,8 @@
 //#include <stdio.h>
 //#include <malloc.h>
 //#include <lmcons.h>
+// Required by decryptPassword
+#include "..\..\pacrypt\WinAES.h"
 
 #define LOG_ERROR(...) wprintf(L"%ws errno=%d\n", __VA_ARGS__, GetLastError());
 #define LOG_INFO(...) if (bVerbose) wprintf(L"%ws\n", __VA_ARGS__);
@@ -251,11 +253,20 @@ int wmain(int argc, WCHAR **argv)
 				return 1;
 			}			
 			dwSize = 255;
-			returnStatus = RegQueryValueEx(hKey, L"password", NULL, &dwType,(LPBYTE)&password, &dwSize);		
+			WCHAR cryptedPassword[255];
+			returnStatus = RegQueryValueEx(hKey, L"password", NULL, &dwType,(LPBYTE)&cryptedPassword, &dwSize);		
 			if (returnStatus != ERROR_SUCCESS)
 			{
 				LOG_ERROR(L"Unable to read the account password in registry!");
 				LOG_NUM(returnStatus);
+				return 1;
+			}
+			// Decrypt the password
+			int res = decryptData(cryptedPassword, password);
+			if (res != ERROR_SUCCESS)
+			{
+				LOG_ERROR(L"Unable to decrypt the password!");
+				LOG_NUM(res);
 				return 1;
 			}
 		} else {
