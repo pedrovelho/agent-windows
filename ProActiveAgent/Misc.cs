@@ -144,6 +144,11 @@ namespace ProActiveAgent
     /// A static class that contains several utilitary methods</summary>
     public static class Utils
     {
+        [DllImport("pacrypt.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern int decryptData(
+            string inputData,
+            StringBuilder outputData);
+
         /// <summary>
         /// Returns a decimal value of the available physical memory in mbytes of this computer.
         /// </summary> 
@@ -212,23 +217,32 @@ namespace ProActiveAgent
                 else
                 {
                     username = (string)confKey.GetValue("username");
-                    domain = (string)confKey.GetValue("domain");
-                    password = (string)confKey.GetValue("password");
+                    domain = (string)confKey.GetValue("domain");                    
+                    // The password is encrypted, decryption is needed
+                    string encryptedPassword = (string)confKey.GetValue("password");
                     confKey.Close();
-                }                
 
+                    // To decrypt the password call the decryptData using pinvoke
+                    StringBuilder decryptedPassword = new StringBuilder();                    
+                    int res = decryptData(encryptedPassword, decryptedPassword);
+                    password = decryptedPassword.ToString();                    
+                    if (res != 0) {
+                        throw new ApplicationException("Problem username: " + username + " password: " + password);
+                    }
+                }
+                
                 // Impersonate the forker (get its access rights) in his context UNC paths are accepted
                 using (new Impersonator(username, domain, password))
-                {
-                    // First check if the directory exists
-                    if (!Directory.Exists(config.javaHome))
                     {
-                        throw new ApplicationException("Unable to read the classpath, the Java Home directory " + config.javaHome + " does not exist");
-                    }
+                        // First check if the directory exists
+                        if (!Directory.Exists(config.javaHome))
+                        {
+                            throw new ApplicationException("Unable to read the classpath, the Java Home directory " + config.javaHome + " does not exist");
+                        }
 
-                    // Get the initScript 
-                    initScript = findInitScriptInternal(config.proactiveHome);                    
-                }
+                        // Get the initScript 
+                        initScript = findInitScriptInternal(config.proactiveHome);
+                 }
 
                 config.classpath = VariableEchoer.echoVariableAsForker(
                     config.javaHome,                      // the Java install dir
