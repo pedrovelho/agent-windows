@@ -391,10 +391,12 @@ Function MyCustomLeave
     # Perform user login (domain, username, password)
     !insertmacro DoLogonUser $R5 $R3 $R4
     
-    # The user is logged it means
+    # The user is logged it means the password is correct
 
     # Logoff user
+    StrCpy $0 $R5
     !insertmacro DoLogoffUser $R0
+    StrCpy $R5 $0
 
     # Check for SE_INCREASE_QUOTA_NAME and SE_ASSIGNPRIMARYTOKEN_NAME privilege
     UserMgr::HasPrivilege $R3 ${SE_INCREASE_QUOTA_NAME}
@@ -477,6 +479,7 @@ Function MyCustomLeave
       StrCpy $R6 "1"
 
     checkGroupMember:
+    
     # Check if the account is part of 'Performace Monitor Group' of SID "S-1-5-32-558"
     # The function UserMgr::IsMemberOfGroup does not work.
     # Instead we use the UserMgr::GetUserNameFromSID to check if the group exists if so
@@ -506,13 +509,35 @@ Function MyCustomLeave
       MessageBox MB_OK "Unable to install as service. To install manually use sc.exe command"
     ${EndIf}
     
-    # Ince the service is installed write auth data into a restricted acces key
-    WriteRegStr HKLM "Software\ProActiveAgent\Creds" "username" $R3
-    WriteRegStr HKLM "Software\ProActiveAgent\Creds" "password" $R4
+    # Once the service is installed write auth data into a restricted acces key
     WriteRegStr HKLM "Software\ProActiveAgent\Creds" "domain" $R5
+    WriteRegStr HKLM "Software\ProActiveAgent\Creds" "username" $R3
     
-    # Using the regini shell command we need to restrict the access to the HKEY_LOCAL_MACHINE\SOFTWARE\ProActiveAgent\Creds key
-    # The command uses well known SIDs to restrict permissions only for SYSTEM (ie LocalSystem), Creator and Administrators group
+    #######################################
+    # Encrypt the password, see AGENT-154 #
+    #######################################
+    
+    # Set current dir to the location of pacrypt.dll
+    SetOutPath $INSTDIR
+    # C-Signature: int encryptData(wchar_t *input, wchar_t *output)
+    StrCpy $0 $R4 # copy register to stack
+    System::Call "pacrypt::encryptData(w, w) i(r0., .r1).r2"
+    ${If} $2 != 0
+      DetailPrint "Unable to encrypt the password (too long ?). Error $2"
+      MessageBox MB_OK "Unable to encrypt the password (too long ?). Error $2"
+      Abort
+    ${EndIf}
+    #MessageBox MB_OK "---> $0 , $1 , $2"
+    #System::Call "pacrypt::decryptData(w, w) i(r1., .r4).r0"
+    #MessageBox MB_OK "---> $0 , $1 , $4"
+    
+    # Write encrypted password in registry
+    WriteRegStr HKLM "Software\ProActiveAgent\Creds" "password" $1
+    
+    ###############################################################################################################################
+    # Using the regini shell command we need to restrict the access to the HKEY_LOCAL_MACHINE\SOFTWARE\ProActiveAgent\Creds key   #
+    # The command uses well known SIDs to restrict permissions only for SYSTEM (ie LocalSystem), Creator and Administrators group #
+    ###############################################################################################################################
 
     ExecWait 'cmd.exe /C regini.exe "$INSTDIR"\restrict.dat'
 
@@ -646,10 +671,11 @@ Section "ProActive Agent"
         File "bin\Release\ConfigParser.dll"
         File "bin\Release\ConfigParserOLD.dll"
         File "bin\Release\ProActiveAgent.exe"
+        File "bin\Release\parunas.exe"
+        File "bin\Release\pacrypt.dll"
         File "utils\icon.ico"
         File "utils\ListNetworkInterfaces.class"
         File "utils\restrict.dat"
-        File "utils\parunas\Release\parunas.exe"
         File "ProActiveAgent\log4net.config"
         File "ProActiveAgent\lib\log4net.dll"
         File "ProActiveAgent\lib\InJobProcessCreator.exe"
