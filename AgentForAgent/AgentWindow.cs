@@ -54,7 +54,7 @@ namespace AgentForAgent
     {
         public const string AGENT_AUTO_RUN_SUBKEY = "Software\\Microsoft\\Windows\\CurrentVersion\\Run";
 
-        private ConfigurationEditor configEditor;
+        //private ConfigurationEditor configEditor;
 
         private readonly string agentLocation;
         private readonly string configFileLocation;
@@ -409,13 +409,35 @@ namespace AgentForAgent
             try
             {
                 AgentType conf = ConfigurationParser.parseXml(configFileLocationTextBox.Text, agentLocation);
-                configEditor = new ConfigurationEditor(conf, configFileLocationTextBox.Text, agentLocation, this);
+                ConfigurationEditor configEditor = new ConfigurationEditor(conf, configFileLocationTextBox.Text, agentLocation, this);
                 configEditor.ShowDialog();
             }
             catch (Exception ex)
             {
                 MessageBox.Show("The configuration file is broken. " + ex.ToString(), "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        // !! Event !!
+        private void changeAccountButton_Click(object sender, EventArgs e)
+        {
+            // Check if the service is in stopped state
+            if (this.sc.Status != ServiceControllerStatus.Stopped)
+            {
+                MessageBox.Show("The ProActive Agent must stopped.", "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return;
+            }
+
+            try
+            {
+                ChangeAccount changeAccount = new ChangeAccount();
+                changeAccount.loadFromRegistry();
+                changeAccount.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to change account " + ex.ToString(), "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }            
         }
 
         // !! Event !!

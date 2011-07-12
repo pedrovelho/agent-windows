@@ -145,7 +145,12 @@ namespace ProActiveAgent
     public static class Utils
     {
         [DllImport("pacrypt.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern int decryptData(
+        public static extern int encryptData(
+            string inputData,
+            StringBuilder outputData);
+
+        [DllImport("pacrypt.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern int decryptData(
             string inputData,
             StringBuilder outputData);
 
@@ -227,7 +232,7 @@ namespace ProActiveAgent
                     int res = decryptData(encryptedPassword, decryptedPassword);
                     password = decryptedPassword.ToString();                    
                     if (res != 0) {
-                        throw new ApplicationException("Problem username: " + username + " password: " + password);
+                        throw new ApplicationException("Problem " + res);
                     }
                 }
                 

@@ -62,6 +62,7 @@
             this.viewLogsWithExplorerButton = new System.Windows.Forms.Button();
             this.activeeonLinkLabel = new System.Windows.Forms.LinkLabel();
             this.label1 = new System.Windows.Forms.Label();
+            this.changeAccountButton = new System.Windows.Forms.Button();
             this.configurationGroupBox.SuspendLayout();
             this.infoGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.proActiveLogoPictureBox)).BeginInit();
@@ -101,6 +102,7 @@
             // 
             // configurationGroupBox
             // 
+            this.configurationGroupBox.Controls.Add(this.changeAccountButton);
             this.configurationGroupBox.Controls.Add(this.guiEditButton);
             this.configurationGroupBox.Controls.Add(this.configFileLocationTextBox);
             this.configurationGroupBox.Controls.Add(this.textEditConfig);
@@ -384,6 +386,16 @@
             this.label1.TabIndex = 14;
             this.label1.Text = "Nice-Sophia Antipolis/ActiveEon ";
             // 
+            // changeAccountButton
+            // 
+            this.changeAccountButton.Location = new System.Drawing.Point(9, 48);
+            this.changeAccountButton.Name = "changeAccountButton";
+            this.changeAccountButton.Size = new System.Drawing.Size(99, 23);
+            this.changeAccountButton.TabIndex = 4;
+            this.changeAccountButton.Text = "Change Account";
+            this.changeAccountButton.UseVisualStyleBackColor = true;
+            this.changeAccountButton.Click += new System.EventHandler(this.changeAccountButton_Click);
+            // 
             // AgentWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -405,8 +417,8 @@
             this.Name = "AgentWindow";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "ProActive Agent Control";
-            this.Load += new System.EventHandler(this.AgentWindow_Load);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ConfigurationDialog_FormClosing);
+            this.Load += new System.EventHandler(this.AgentWindow_Load);
             this.Resize += new System.EventHandler(this.ConfigurationDialog_Resize);
             this.configurationGroupBox.ResumeLayout(false);
             this.configurationGroupBox.PerformLayout();
@@ -455,7 +467,8 @@
         private System.Windows.Forms.LinkLabel viewLogsLinkLabel;
         private System.Windows.Forms.Button viewLogsWithNotepadButton;
         private System.Windows.Forms.LinkLabel activeeonLinkLabel;
-        private System.Windows.Forms.Label label1;       
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button changeAccountButton;       
     }
 }
 
