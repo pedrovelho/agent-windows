@@ -1,25 +1,41 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * ################################################################
+ *
+ * ProActive Parallel Suite(TM): The Java(TM) library for
+ *    Parallel, Distributed, Multi-Core Computing for
+ *    Enterprise Grids & Clouds
+ *
+ * Copyright (C) 1997-2011 INRIA/University of
+ *                 Nice-Sophia Antipolis/ActiveEon
+ * Contact: proactive@ow2.org or contact@activeeon.com
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License
+ * as published by the Free Software Foundation; version 3 of
+ * the License.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+ * USA
+ *
+ * If needed, contact us to obtain a release under GPL Version 2 or 3
+ * or a different license than the AGPL.
+ *
+ *  Initial developer(s):               The ActiveEon Team
+ *                        http://www.activeeon.com/
+ *  Contributor(s):
+ *
+ * ################################################################ 
+ * $$ACTIVEEON_CONTRIBUTOR$$
  */
 package Utils;
 
-//import javax.xml.validation.SchemaFactory;
-//import javax.xml.XMLConstants;
-//import javax.xml.parsers.DocumentBuilder;
-//import javax.xml.validation.Schema;
-//import java.io.File;
-//import java.io.IOException;
-//import javax.xml.parsers.DocumentBuilderFactory;
-//import javax.xml.parsers.ParserConfigurationException;
-//import org.w3c.dom.Document;
-//import org.w3c.dom.Node;
-//import org.w3c.dom.NodeList;
-//import org.xml.sax.SAXException;
-
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Validator;
 import Connections.Connections.CONNTYPE;
@@ -42,21 +58,12 @@ import javax.xml.validation.Schema;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 
-import static org.w3c.dom.Node.ATTRIBUTE_NODE;
-import static org.w3c.dom.Node.CDATA_SECTION_NODE;
-import static org.w3c.dom.Node.COMMENT_NODE;
-import static org.w3c.dom.Node.DOCUMENT_TYPE_NODE;
 import static org.w3c.dom.Node.ELEMENT_NODE;
-import static org.w3c.dom.Node.ENTITY_NODE;
-import static org.w3c.dom.Node.ENTITY_REFERENCE_NODE;
-import static org.w3c.dom.Node.NOTATION_NODE;
-import static org.w3c.dom.Node.PROCESSING_INSTRUCTION_NODE;
-import static org.w3c.dom.Node.TEXT_NODE;
 
 
 /**
  *
- * @author pgouttef
+ * @author philippe Gouttefarde
  */
 public class XMLParser {
     

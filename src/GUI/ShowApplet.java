@@ -1,6 +1,38 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * ################################################################
+ *
+ * ProActive Parallel Suite(TM): The Java(TM) library for
+ *    Parallel, Distributed, Multi-Core Computing for
+ *    Enterprise Grids & Clouds
+ *
+ * Copyright (C) 1997-2011 INRIA/University of
+ *                 Nice-Sophia Antipolis/ActiveEon
+ * Contact: proactive@ow2.org or contact@activeeon.com
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License
+ * as published by the Free Software Foundation; version 3 of
+ * the License.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+ * USA
+ *
+ * If needed, contact us to obtain a release under GPL Version 2 or 3
+ * or a different license than the AGPL.
+ *
+ *  Initial developer(s):               The ActiveEon Team
+ *                        http://www.activeeon.com/
+ *  Contributor(s):
+ *
+ * ################################################################ 
+ * $$ACTIVEEON_CONTRIBUTOR$$
  */
 package GUI;
 
@@ -21,13 +53,16 @@ import javax.swing.JFrame;
 
 /**
  *
- * @author pgouttef
+ * @author philippe Gouttefarde
  */
 public class ShowApplet extends JApplet {
 
+    /*
+     * The chart. Display the events list on the screen. All coordonate are generated dynamically.
+     */
+    
     private Events evList = null;
-    
-    
+
     private int GRAPHIC_LENGTH = 350;
     private int GRAPHIC_HEIGHT = 350 - 35; // Windows - The header of the frame [-] [ ] [X]
     private int BORDER = 30;
@@ -59,11 +94,17 @@ public class ShowApplet extends JApplet {
     private int decalDay = 5;
     private int debug = 0;
 
+    /*
+     * Constructor
+     */
     public ShowApplet() throws HeadlessException {
         setBackground(colorBackground);
         setForeground(colorBackground);
     }
 
+    /*
+     * getters / setters
+     */
     public Events getEvList() {
         return evList;
     }
@@ -72,6 +113,9 @@ public class ShowApplet extends JApplet {
         this.evList = evList;
     }
     
+    /*
+     * get the next color 
+     */
     private Color nextColor() {
         currentColor = (currentColor + 1)%colorBlock.length;
         return colorBlock[currentColor];
@@ -81,6 +125,10 @@ public class ShowApplet extends JApplet {
         return colorBlock[currentColor];
     }
     
+    /*
+     * draw the events list.
+     * debug stopped the second generation of double buffering picture
+     */
     private void drawEvents(Graphics2D g) {
         decalDay = 5;
         debug = (debug+1)%2;
@@ -93,6 +141,7 @@ public class ShowApplet extends JApplet {
             }
         }
     }
+    
     
     private void drawAxis(Graphics2D g) {
         g.setStroke(new BasicStroke(3));
@@ -117,6 +166,9 @@ public class ShowApplet extends JApplet {
         }
     }
     
+    /*
+     * Draw a single event
+     */
     private void drawTime(Graphics2D g , int startDay , int startH , int startM , int durationD , int durationH , int durationM ) {
         
         int nbMinutesRemaining = durationM + 60 * durationH + 24*60*durationD;

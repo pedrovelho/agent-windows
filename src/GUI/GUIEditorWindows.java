@@ -1,12 +1,38 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
- * GUIEditorWindows.java
+ * ################################################################
  *
- * Created on 16 juin 2011, 16:01:56
+ * ProActive Parallel Suite(TM): The Java(TM) library for
+ *    Parallel, Distributed, Multi-Core Computing for
+ *    Enterprise Grids & Clouds
+ *
+ * Copyright (C) 1997-2011 INRIA/University of
+ *                 Nice-Sophia Antipolis/ActiveEon
+ * Contact: proactive@ow2.org or contact@activeeon.com
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License
+ * as published by the Free Software Foundation; version 3 of
+ * the License.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+ * USA
+ *
+ * If needed, contact us to obtain a release under GPL Version 2 or 3
+ * or a different license than the AGPL.
+ *
+ *  Initial developer(s):               The ActiveEon Team
+ *                        http://www.activeeon.com/
+ *  Contributor(s):
+ *
+ * ################################################################ 
+ * $$ACTIVEEON_CONTRIBUTOR$$
  */
 package GUI;
 
@@ -21,17 +47,13 @@ import Model.ModelManager;
 import Utils.ExtensionFileFilter;
 import Utils.ListNetworkInterfaces;
 import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -41,10 +63,15 @@ import javax.swing.filechooser.FileFilter;
 
 /**
  *
- * @author fifi
+ * @author philippe Gouttefarde
  */
 public class GUIEditorWindows extends javax.swing.JFrame {
 
+    /*
+     * The main class of the graphical Editor.
+     * It's getting all listener to user interaction and an instance of ShowApplets()
+     */
+    
     private void initConnections() {
         
         Connections conn = ModelManager.getCONNECTIONS();
