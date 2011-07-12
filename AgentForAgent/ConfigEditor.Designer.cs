@@ -56,7 +56,6 @@ namespace AgentForAgent
             this.scriptLocationButton = new System.Windows.Forms.Button();
             this.scriptLocationTextBox = new System.Windows.Forms.TextBox();
             this.multiRuntimeGroupBox = new System.Windows.Forms.GroupBox();
-            this.useAllAvailableCPUsCheckBox = new System.Windows.Forms.CheckBox();
             this.nbRuntimesLabel = new System.Windows.Forms.Label();
             this.availableCPUsValue = new System.Windows.Forms.Label();
             this.availableCPUsLabel = new System.Windows.Forms.Label();
@@ -66,18 +65,11 @@ namespace AgentForAgent
             this.networkInterfacesListBox = new System.Windows.Forms.ListBox();
             this.refreshNetworkInterfacesButton = new System.Windows.Forms.Button();
             this.memoryLimitGroupBox = new System.Windows.Forms.GroupBox();
-            this.memoryLimitNotice2Label = new System.Windows.Forms.Label();
-            this.memoryLimitNoticeLabel = new System.Windows.Forms.Label();
             this.memoryLimitNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.memoryLimitLabel = new System.Windows.Forms.Label();
             this.availablePhysicalMemoryValue = new System.Windows.Forms.Label();
             this.availablePhysicalMemoryLabel = new System.Windows.Forms.Label();
             this.connectionTabPage = new System.Windows.Forms.TabPage();
-            this.runtimeIncomingProtocolGroupBox = new System.Windows.Forms.GroupBox();
-            this.protocolComboBox = new System.Windows.Forms.ComboBox();
-            this.protocolLabel = new System.Windows.Forms.Label();
-            this.portInitialValue = new System.Windows.Forms.Label();
-            this.portInitialValueNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.enabledConnectionGroupBox = new System.Windows.Forms.GroupBox();
             this.resourceManagerRegistrationRadioButton = new System.Windows.Forms.RadioButton();
             this.localRegistrationRadioButton = new System.Windows.Forms.RadioButton();
@@ -159,6 +151,11 @@ namespace AgentForAgent
             this.scriptLocationOpenDialog = new System.Windows.Forms.OpenFileDialog();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.credentialLocationOpenDialog = new System.Windows.Forms.OpenFileDialog();
+            this.runtimeIncomingProtocolGroupBox = new System.Windows.Forms.GroupBox();
+            this.protocolComboBox = new System.Windows.Forms.ComboBox();
+            this.protocolLabel = new System.Windows.Forms.Label();
+            this.portInitialValue = new System.Windows.Forms.Label();
+            this.portInitialValueNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.generalTabPage.SuspendLayout();
@@ -169,8 +166,6 @@ namespace AgentForAgent
             this.memoryLimitGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.memoryLimitNumericUpDown)).BeginInit();
             this.connectionTabPage.SuspendLayout();
-            this.runtimeIncomingProtocolGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.portInitialValueNumericUpDown)).BeginInit();
             this.enabledConnectionGroupBox.SuspendLayout();
             this.connectionTypeTabControl.SuspendLayout();
             this.localRegistrationTabPage.SuspendLayout();
@@ -197,6 +192,8 @@ namespace AgentForAgent
             ((System.ComponentModel.ISupportInitialize)(this.minutesDuration)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.hoursDuration)).BeginInit();
             this.planningGroupBox.SuspendLayout();
+            this.runtimeIncomingProtocolGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.portInitialValueNumericUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -311,6 +308,7 @@ namespace AgentForAgent
             // 
             // generalTabPage
             // 
+            this.generalTabPage.Controls.Add(this.runtimeIncomingProtocolGroupBox);
             this.generalTabPage.Controls.Add(this.onRuntimeExitGroupBox);
             this.generalTabPage.Controls.Add(this.multiRuntimeGroupBox);
             this.generalTabPage.Controls.Add(this.networkInterfaceListGroupBox);
@@ -356,40 +354,25 @@ namespace AgentForAgent
             // 
             // multiRuntimeGroupBox
             // 
-            this.multiRuntimeGroupBox.Controls.Add(this.useAllAvailableCPUsCheckBox);
             this.multiRuntimeGroupBox.Controls.Add(this.nbRuntimesLabel);
             this.multiRuntimeGroupBox.Controls.Add(this.availableCPUsValue);
             this.multiRuntimeGroupBox.Controls.Add(this.availableCPUsLabel);
             this.multiRuntimeGroupBox.Controls.Add(this.nbRuntimesNumericUpDown);
-            this.multiRuntimeGroupBox.Location = new System.Drawing.Point(235, 257);
+            this.multiRuntimeGroupBox.Location = new System.Drawing.Point(235, 239);
             this.multiRuntimeGroupBox.Name = "multiRuntimeGroupBox";
-            this.multiRuntimeGroupBox.Size = new System.Drawing.Size(153, 111);
+            this.multiRuntimeGroupBox.Size = new System.Drawing.Size(153, 73);
             this.multiRuntimeGroupBox.TabIndex = 4;
             this.multiRuntimeGroupBox.TabStop = false;
             this.multiRuntimeGroupBox.Text = "Multi-Runtime";
             // 
-            // useAllAvailableCPUsCheckBox
-            // 
-            this.useAllAvailableCPUsCheckBox.AutoSize = true;
-            this.useAllAvailableCPUsCheckBox.Location = new System.Drawing.Point(9, 89);
-            this.useAllAvailableCPUsCheckBox.Name = "useAllAvailableCPUsCheckBox";
-            this.useAllAvailableCPUsCheckBox.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.useAllAvailableCPUsCheckBox.Size = new System.Drawing.Size(133, 17);
-            this.useAllAvailableCPUsCheckBox.TabIndex = 4;
-            this.useAllAvailableCPUsCheckBox.Text = "Use all available CPUs";
-            this.toolTip.SetToolTip(this.useAllAvailableCPUsCheckBox, "Will spawn as many Runtimes as available CPUs. The number of CPUs is detected dyn" +
-                    "amically.");
-            this.useAllAvailableCPUsCheckBox.UseVisualStyleBackColor = true;
-            this.useAllAvailableCPUsCheckBox.CheckedChanged += new System.EventHandler(this.useAllAvailableCPUsCheckBox_CheckedChanged);
-            // 
             // nbRuntimesLabel
             // 
             this.nbRuntimesLabel.AutoSize = true;
-            this.nbRuntimesLabel.Location = new System.Drawing.Point(20, 45);
+            this.nbRuntimesLabel.Location = new System.Drawing.Point(37, 45);
             this.nbRuntimesLabel.Name = "nbRuntimesLabel";
-            this.nbRuntimesLabel.Size = new System.Drawing.Size(71, 13);
+            this.nbRuntimesLabel.Size = new System.Drawing.Size(54, 13);
             this.nbRuntimesLabel.TabIndex = 3;
-            this.nbRuntimesLabel.Text = "Nb Runtimes:";
+            this.nbRuntimesLabel.Text = "Runtimes:";
             // 
             // availableCPUsValue
             // 
@@ -475,57 +458,35 @@ namespace AgentForAgent
             // 
             // memoryLimitGroupBox
             // 
-            this.memoryLimitGroupBox.Controls.Add(this.memoryLimitNotice2Label);
-            this.memoryLimitGroupBox.Controls.Add(this.memoryLimitNoticeLabel);
             this.memoryLimitGroupBox.Controls.Add(this.memoryLimitNumericUpDown);
             this.memoryLimitGroupBox.Controls.Add(this.memoryLimitLabel);
             this.memoryLimitGroupBox.Controls.Add(this.availablePhysicalMemoryValue);
             this.memoryLimitGroupBox.Controls.Add(this.availablePhysicalMemoryLabel);
             this.memoryLimitGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.memoryLimitGroupBox.Location = new System.Drawing.Point(3, 257);
+            this.memoryLimitGroupBox.Location = new System.Drawing.Point(3, 239);
             this.memoryLimitGroupBox.Name = "memoryLimitGroupBox";
-            this.memoryLimitGroupBox.Size = new System.Drawing.Size(226, 111);
+            this.memoryLimitGroupBox.Size = new System.Drawing.Size(226, 73);
             this.memoryLimitGroupBox.TabIndex = 1;
             this.memoryLimitGroupBox.TabStop = false;
             this.memoryLimitGroupBox.Text = "Runtime Memory Limit (Mbytes)";
             // 
-            // memoryLimitNotice2Label
-            // 
-            this.memoryLimitNotice2Label.AutoSize = true;
-            this.memoryLimitNotice2Label.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.memoryLimitNotice2Label.Location = new System.Drawing.Point(44, 85);
-            this.memoryLimitNotice2Label.Name = "memoryLimitNotice2Label";
-            this.memoryLimitNotice2Label.Size = new System.Drawing.Size(170, 13);
-            this.memoryLimitNotice2Label.TabIndex = 7;
-            this.memoryLimitNotice2Label.Text = "is required for a ProActive Runtime";
-            // 
-            // memoryLimitNoticeLabel
-            // 
-            this.memoryLimitNoticeLabel.AutoSize = true;
-            this.memoryLimitNoticeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.memoryLimitNoticeLabel.Location = new System.Drawing.Point(7, 67);
-            this.memoryLimitNoticeLabel.Name = "memoryLimitNoticeLabel";
-            this.memoryLimitNoticeLabel.Size = new System.Drawing.Size(200, 13);
-            this.memoryLimitNoticeLabel.TabIndex = 6;
-            this.memoryLimitNoticeLabel.Text = "Notice: 0 means no memory limit and 128";
-            // 
             // memoryLimitNumericUpDown
             // 
-            this.memoryLimitNumericUpDown.Location = new System.Drawing.Point(152, 43);
+            this.memoryLimitNumericUpDown.Location = new System.Drawing.Point(145, 43);
             this.memoryLimitNumericUpDown.Maximum = new decimal(new int[] {
             0,
             0,
             0,
             0});
             this.memoryLimitNumericUpDown.Name = "memoryLimitNumericUpDown";
-            this.memoryLimitNumericUpDown.Size = new System.Drawing.Size(67, 20);
+            this.memoryLimitNumericUpDown.Size = new System.Drawing.Size(74, 20);
             this.memoryLimitNumericUpDown.TabIndex = 5;
             this.memoryLimitNumericUpDown.ValueChanged += new System.EventHandler(this.memoryLimitNumericUpDown_ValueChanged);
             // 
             // memoryLimitLabel
             // 
             this.memoryLimitLabel.AutoSize = true;
-            this.memoryLimitLabel.Location = new System.Drawing.Point(74, 45);
+            this.memoryLimitLabel.Location = new System.Drawing.Point(68, 45);
             this.memoryLimitLabel.Name = "memoryLimitLabel";
             this.memoryLimitLabel.Size = new System.Drawing.Size(71, 13);
             this.memoryLimitLabel.TabIndex = 4;
@@ -534,7 +495,7 @@ namespace AgentForAgent
             // availablePhysicalMemoryValue
             // 
             this.availablePhysicalMemoryValue.AutoSize = true;
-            this.availablePhysicalMemoryValue.Location = new System.Drawing.Point(151, 21);
+            this.availablePhysicalMemoryValue.Location = new System.Drawing.Point(147, 21);
             this.availablePhysicalMemoryValue.Name = "availablePhysicalMemoryValue";
             this.availablePhysicalMemoryValue.Size = new System.Drawing.Size(13, 13);
             this.availablePhysicalMemoryValue.TabIndex = 3;
@@ -543,7 +504,7 @@ namespace AgentForAgent
             // availablePhysicalMemoryLabel
             // 
             this.availablePhysicalMemoryLabel.AutoSize = true;
-            this.availablePhysicalMemoryLabel.Location = new System.Drawing.Point(10, 21);
+            this.availablePhysicalMemoryLabel.Location = new System.Drawing.Point(4, 21);
             this.availablePhysicalMemoryLabel.Name = "availablePhysicalMemoryLabel";
             this.availablePhysicalMemoryLabel.Size = new System.Drawing.Size(135, 13);
             this.availablePhysicalMemoryLabel.TabIndex = 2;
@@ -551,7 +512,6 @@ namespace AgentForAgent
             // 
             // connectionTabPage
             // 
-            this.connectionTabPage.Controls.Add(this.runtimeIncomingProtocolGroupBox);
             this.connectionTabPage.Controls.Add(this.enabledConnectionGroupBox);
             this.connectionTabPage.Controls.Add(this.connectionTypeTabControl);
             this.connectionTabPage.Location = new System.Drawing.Point(4, 22);
@@ -560,80 +520,6 @@ namespace AgentForAgent
             this.connectionTabPage.TabIndex = 3;
             this.connectionTabPage.Text = "Connection";
             this.connectionTabPage.UseVisualStyleBackColor = true;
-            // 
-            // runtimeIncomingProtocolGroupBox
-            // 
-            this.runtimeIncomingProtocolGroupBox.Controls.Add(this.protocolComboBox);
-            this.runtimeIncomingProtocolGroupBox.Controls.Add(this.protocolLabel);
-            this.runtimeIncomingProtocolGroupBox.Controls.Add(this.portInitialValue);
-            this.runtimeIncomingProtocolGroupBox.Controls.Add(this.portInitialValueNumericUpDown);
-            this.runtimeIncomingProtocolGroupBox.Location = new System.Drawing.Point(366, 3);
-            this.runtimeIncomingProtocolGroupBox.Name = "runtimeIncomingProtocolGroupBox";
-            this.runtimeIncomingProtocolGroupBox.Size = new System.Drawing.Size(305, 45);
-            this.runtimeIncomingProtocolGroupBox.TabIndex = 5;
-            this.runtimeIncomingProtocolGroupBox.TabStop = false;
-            this.runtimeIncomingProtocolGroupBox.Text = "Runtime Incoming Protocol";
-            // 
-            // protocolComboBox
-            // 
-            this.protocolComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.protocolComboBox.FormattingEnabled = true;
-            this.protocolComboBox.Items.AddRange(new object[] {
-            "undefined",
-            "rmi",
-            "http",
-            "pamr",
-            "pnp",
-            "pnps"});
-            this.protocolComboBox.Location = new System.Drawing.Point(61, 18);
-            this.protocolComboBox.Name = "protocolComboBox";
-            this.protocolComboBox.Size = new System.Drawing.Size(74, 21);
-            this.protocolComboBox.TabIndex = 3;
-            this.toolTip.SetToolTip(this.protocolComboBox, "Defines the protocol to be used by the Runtime.");
-            this.protocolComboBox.SelectedIndexChanged += new System.EventHandler(this.protocolComboBox_SelectedIndexChanged);
-            // 
-            // protocolLabel
-            // 
-            this.protocolLabel.AutoSize = true;
-            this.protocolLabel.Location = new System.Drawing.Point(6, 21);
-            this.protocolLabel.Name = "protocolLabel";
-            this.protocolLabel.Size = new System.Drawing.Size(49, 13);
-            this.protocolLabel.TabIndex = 2;
-            this.protocolLabel.Text = "Protocol:";
-            // 
-            // portInitialValue
-            // 
-            this.portInitialValue.AutoSize = true;
-            this.portInitialValue.Location = new System.Drawing.Point(150, 21);
-            this.portInitialValue.Name = "portInitialValue";
-            this.portInitialValue.Size = new System.Drawing.Size(86, 13);
-            this.portInitialValue.TabIndex = 1;
-            this.portInitialValue.Text = "Port Initial Value:";
-            // 
-            // portInitialValueNumericUpDown
-            // 
-            this.portInitialValueNumericUpDown.Location = new System.Drawing.Point(242, 19);
-            this.portInitialValueNumericUpDown.Maximum = new decimal(new int[] {
-            65534,
-            0,
-            0,
-            0});
-            this.portInitialValueNumericUpDown.Minimum = new decimal(new int[] {
-            1099,
-            0,
-            0,
-            0});
-            this.portInitialValueNumericUpDown.Name = "portInitialValueNumericUpDown";
-            this.portInitialValueNumericUpDown.Size = new System.Drawing.Size(57, 20);
-            this.portInitialValueNumericUpDown.TabIndex = 0;
-            this.toolTip.SetToolTip(this.portInitialValueNumericUpDown, "Defines the value of the \"-Dproactive.SELECTED_PROTOCOL.port\" property. This valu" +
-                    "e will always be increased by 1 or more if there is more than one Runtime.");
-            this.portInitialValueNumericUpDown.Value = new decimal(new int[] {
-            1099,
-            0,
-            0,
-            0});
-            this.portInitialValueNumericUpDown.ValueChanged += new System.EventHandler(this.initialValueNumericUpDown_ValueChanged);
             // 
             // enabledConnectionGroupBox
             // 
@@ -1507,6 +1393,78 @@ namespace AgentForAgent
             this.credentialLocationOpenDialog.DefaultExt = "cred";
             this.credentialLocationOpenDialog.Filter = "Credentials .cred|*.cred";
             // 
+            // runtimeIncomingProtocolGroupBox
+            // 
+            this.runtimeIncomingProtocolGroupBox.Controls.Add(this.protocolComboBox);
+            this.runtimeIncomingProtocolGroupBox.Controls.Add(this.protocolLabel);
+            this.runtimeIncomingProtocolGroupBox.Controls.Add(this.portInitialValue);
+            this.runtimeIncomingProtocolGroupBox.Controls.Add(this.portInitialValueNumericUpDown);
+            this.runtimeIncomingProtocolGroupBox.Location = new System.Drawing.Point(3, 318);
+            this.runtimeIncomingProtocolGroupBox.Name = "runtimeIncomingProtocolGroupBox";
+            this.runtimeIncomingProtocolGroupBox.Size = new System.Drawing.Size(385, 50);
+            this.runtimeIncomingProtocolGroupBox.TabIndex = 6;
+            this.runtimeIncomingProtocolGroupBox.TabStop = false;
+            this.runtimeIncomingProtocolGroupBox.Text = "Runtime Incoming Protocol";
+            // 
+            // protocolComboBox
+            // 
+            this.protocolComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.protocolComboBox.FormattingEnabled = true;
+            this.protocolComboBox.Items.AddRange(new object[] {
+            "undefined",
+            "rmi",
+            "http",
+            "pamr",
+            "pnp",
+            "pnps"});
+            this.protocolComboBox.Location = new System.Drawing.Point(145, 19);
+            this.protocolComboBox.Name = "protocolComboBox";
+            this.protocolComboBox.Size = new System.Drawing.Size(74, 21);
+            this.protocolComboBox.TabIndex = 3;
+            this.toolTip.SetToolTip(this.protocolComboBox, "Defines the protocol to be used by the Runtime.");
+            // 
+            // protocolLabel
+            // 
+            this.protocolLabel.AutoSize = true;
+            this.protocolLabel.Location = new System.Drawing.Point(90, 22);
+            this.protocolLabel.Name = "protocolLabel";
+            this.protocolLabel.Size = new System.Drawing.Size(49, 13);
+            this.protocolLabel.TabIndex = 2;
+            this.protocolLabel.Text = "Protocol:";
+            // 
+            // portInitialValue
+            // 
+            this.portInitialValue.AutoSize = true;
+            this.portInitialValue.Location = new System.Drawing.Point(230, 22);
+            this.portInitialValue.Name = "portInitialValue";
+            this.portInitialValue.Size = new System.Drawing.Size(86, 13);
+            this.portInitialValue.TabIndex = 1;
+            this.portInitialValue.Text = "Port Initial Value:";
+            // 
+            // portInitialValueNumericUpDown
+            // 
+            this.portInitialValueNumericUpDown.Location = new System.Drawing.Point(320, 20);
+            this.portInitialValueNumericUpDown.Maximum = new decimal(new int[] {
+            65534,
+            0,
+            0,
+            0});
+            this.portInitialValueNumericUpDown.Minimum = new decimal(new int[] {
+            1099,
+            0,
+            0,
+            0});
+            this.portInitialValueNumericUpDown.Name = "portInitialValueNumericUpDown";
+            this.portInitialValueNumericUpDown.Size = new System.Drawing.Size(57, 20);
+            this.portInitialValueNumericUpDown.TabIndex = 0;
+            this.toolTip.SetToolTip(this.portInitialValueNumericUpDown, "Defines the value of the \"-Dproactive.SELECTED_PROTOCOL.port\" property. This valu" +
+                    "e will always be increased by 1 or more if there is more than one Runtime.");
+            this.portInitialValueNumericUpDown.Value = new decimal(new int[] {
+            1099,
+            0,
+            0,
+            0});
+            // 
             // ConfigurationEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1522,8 +1480,8 @@ namespace AgentForAgent
             this.Name = "ConfigurationEditor";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Configuration Editor";
-            this.Load += new System.EventHandler(this.ConfigEditor_Load);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ConfigEditor_FormClosing);
+            this.Load += new System.EventHandler(this.ConfigEditor_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.tabControl1.ResumeLayout(false);
@@ -1538,9 +1496,6 @@ namespace AgentForAgent
             this.memoryLimitGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.memoryLimitNumericUpDown)).EndInit();
             this.connectionTabPage.ResumeLayout(false);
-            this.runtimeIncomingProtocolGroupBox.ResumeLayout(false);
-            this.runtimeIncomingProtocolGroupBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.portInitialValueNumericUpDown)).EndInit();
             this.enabledConnectionGroupBox.ResumeLayout(false);
             this.enabledConnectionGroupBox.PerformLayout();
             this.connectionTypeTabControl.ResumeLayout(false);
@@ -1579,6 +1534,9 @@ namespace AgentForAgent
             ((System.ComponentModel.ISupportInitialize)(this.minutesDuration)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.hoursDuration)).EndInit();
             this.planningGroupBox.ResumeLayout(false);
+            this.runtimeIncomingProtocolGroupBox.ResumeLayout(false);
+            this.runtimeIncomingProtocolGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.portInitialValueNumericUpDown)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1681,17 +1639,11 @@ namespace AgentForAgent
         private System.Windows.Forms.Label availableCPUsLabel;
         private System.Windows.Forms.NumericUpDown nbRuntimesNumericUpDown;
         private System.Windows.Forms.Label nbRuntimesLabel;
-        private System.Windows.Forms.CheckBox useAllAvailableCPUsCheckBox;
-        private System.Windows.Forms.GroupBox runtimeIncomingProtocolGroupBox;
-        private System.Windows.Forms.NumericUpDown portInitialValueNumericUpDown;
-        private System.Windows.Forms.Label portInitialValue;
         private System.Windows.Forms.GroupBox onRuntimeExitGroupBox;
         private System.Windows.Forms.TextBox scriptLocationTextBox;
         private System.Windows.Forms.Button scriptLocationButton;
         private System.Windows.Forms.OpenFileDialog scriptLocationOpenDialog;
         private System.Windows.Forms.ToolTip toolTip;
-        private System.Windows.Forms.Label protocolLabel;
-        private System.Windows.Forms.ComboBox protocolComboBox;
         private System.Windows.Forms.GroupBox authenticationCredentialGroupBox;
         private System.Windows.Forms.TextBox nodeSourceNameTextBox;
         private System.Windows.Forms.Label nodeSourceNameLabel;
@@ -1700,9 +1652,12 @@ namespace AgentForAgent
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Button credentialBrowseLocationButton;
         private System.Windows.Forms.OpenFileDialog credentialLocationOpenDialog;
-        private System.Windows.Forms.Label memoryLimitNoticeLabel;
-        private System.Windows.Forms.Label memoryLimitNotice2Label;
         private System.Windows.Forms.Label localbindNodeNameLabel;
+        private System.Windows.Forms.GroupBox runtimeIncomingProtocolGroupBox;
+        private System.Windows.Forms.ComboBox protocolComboBox;
+        private System.Windows.Forms.Label protocolLabel;
+        private System.Windows.Forms.Label portInitialValue;
+        private System.Windows.Forms.NumericUpDown portInitialValueNumericUpDown;
     }
 
 

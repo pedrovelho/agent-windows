@@ -117,8 +117,7 @@ namespace AgentForAgent
             this.availableCPUsValue.Text = "" + Environment.ProcessorCount;
 
             if (conf.config.nbRuntimes == 0)
-            {
-                this.useAllAvailableCPUsCheckBox.Checked = true;
+            {                
                 this.nbRuntimesNumericUpDown.Value = Environment.ProcessorCount;
             }
             else
@@ -347,14 +346,8 @@ namespace AgentForAgent
                 this.configuration.config.memoryLimit = memoryLimit;
             }
             // Save multi process related config
-            if (this.useAllAvailableCPUsCheckBox.Checked)
-            {
-                this.configuration.config.nbRuntimes = 0;
-            }
-            else
-            {
-                this.configuration.config.nbRuntimes = Convert.ToUInt16(this.nbRuntimesNumericUpDown.Value);
-            }
+            this.configuration.config.nbRuntimes = Convert.ToUInt16(this.nbRuntimesNumericUpDown.Value);
+            
             //--Events list                        
             this.internalCopyEventsList();
             // Save ProActive Communication Protocol and Port initial value
@@ -1097,13 +1090,6 @@ namespace AgentForAgent
 
         private void nbRuntimesNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            this.saveConfig.Enabled = true;
-        }
-
-        private void useAllAvailableCPUsCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            this.nbRuntimesNumericUpDown.Value = 0;
-            this.nbRuntimesNumericUpDown.Enabled = !this.useAllAvailableCPUsCheckBox.Checked;
             this.saveConfig.Enabled = true;
         }
 
