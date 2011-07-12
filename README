@@ -1,0 +1,35 @@
+ProActive Windows Agent 2.2
+
+The suite get 6 folders
+
+XML
+======================
+This folder contains:
+    - The XSD files (Linux and Windows)
+    - Some XML configuration files
+
+
+build - nbproject
+======================
+Development files (with .class).
+
+
+dist
+======================
+The folder contains:
+    - The program.jar
+    - The libraries
+    - The XML files
+
+
+logs
+======================
+Text file wich receive log informations
+
+
+src
+======================
+The Java files
+
+
+
