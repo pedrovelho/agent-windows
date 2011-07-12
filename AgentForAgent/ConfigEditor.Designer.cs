@@ -52,6 +52,11 @@ namespace AgentForAgent
             this.proactiveDirectory = new System.Windows.Forms.TextBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.generalTabPage = new System.Windows.Forms.TabPage();
+            this.runtimeIncomingProtocolGroupBox = new System.Windows.Forms.GroupBox();
+            this.protocolComboBox = new System.Windows.Forms.ComboBox();
+            this.protocolLabel = new System.Windows.Forms.Label();
+            this.portInitialValue = new System.Windows.Forms.Label();
+            this.portInitialValueNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.onRuntimeExitGroupBox = new System.Windows.Forms.GroupBox();
             this.scriptLocationButton = new System.Windows.Forms.Button();
             this.scriptLocationTextBox = new System.Windows.Forms.TextBox();
@@ -70,7 +75,6 @@ namespace AgentForAgent
             this.availablePhysicalMemoryValue = new System.Windows.Forms.Label();
             this.availablePhysicalMemoryLabel = new System.Windows.Forms.Label();
             this.connectionTabPage = new System.Windows.Forms.TabPage();
-            this.enabledConnectionGroupBox = new System.Windows.Forms.GroupBox();
             this.resourceManagerRegistrationRadioButton = new System.Windows.Forms.RadioButton();
             this.localRegistrationRadioButton = new System.Windows.Forms.RadioButton();
             this.customRadioButton = new System.Windows.Forms.RadioButton();
@@ -141,7 +145,6 @@ namespace AgentForAgent
             this.showButton = new System.Windows.Forms.Button();
             this.createEventButton = new System.Windows.Forms.Button();
             this.deleteEventButton = new System.Windows.Forms.Button();
-            this.eventsList = new AgentForAgent.RefreshingListBox();
             this.saveConfig = new System.Windows.Forms.Button();
             this.closeConfig = new System.Windows.Forms.Button();
             this.proActiveLocationBrowser = new System.Windows.Forms.FolderBrowserDialog();
@@ -151,14 +154,12 @@ namespace AgentForAgent
             this.scriptLocationOpenDialog = new System.Windows.Forms.OpenFileDialog();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.credentialLocationOpenDialog = new System.Windows.Forms.OpenFileDialog();
-            this.runtimeIncomingProtocolGroupBox = new System.Windows.Forms.GroupBox();
-            this.protocolComboBox = new System.Windows.Forms.ComboBox();
-            this.protocolLabel = new System.Windows.Forms.Label();
-            this.portInitialValue = new System.Windows.Forms.Label();
-            this.portInitialValueNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.eventsList = new AgentForAgent.RefreshingListBox();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.generalTabPage.SuspendLayout();
+            this.runtimeIncomingProtocolGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.portInitialValueNumericUpDown)).BeginInit();
             this.onRuntimeExitGroupBox.SuspendLayout();
             this.multiRuntimeGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nbRuntimesNumericUpDown)).BeginInit();
@@ -166,7 +167,6 @@ namespace AgentForAgent
             this.memoryLimitGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.memoryLimitNumericUpDown)).BeginInit();
             this.connectionTabPage.SuspendLayout();
-            this.enabledConnectionGroupBox.SuspendLayout();
             this.connectionTypeTabControl.SuspendLayout();
             this.localRegistrationTabPage.SuspendLayout();
             this.rmiRegistrationAdditionalConfigurationGroupBox.SuspendLayout();
@@ -192,8 +192,6 @@ namespace AgentForAgent
             ((System.ComponentModel.ISupportInitialize)(this.minutesDuration)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.hoursDuration)).BeginInit();
             this.planningGroupBox.SuspendLayout();
-            this.runtimeIncomingProtocolGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.portInitialValueNumericUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -321,6 +319,80 @@ namespace AgentForAgent
             this.generalTabPage.TabIndex = 0;
             this.generalTabPage.Text = "General";
             this.generalTabPage.UseVisualStyleBackColor = true;
+            // 
+            // runtimeIncomingProtocolGroupBox
+            // 
+            this.runtimeIncomingProtocolGroupBox.Controls.Add(this.protocolComboBox);
+            this.runtimeIncomingProtocolGroupBox.Controls.Add(this.protocolLabel);
+            this.runtimeIncomingProtocolGroupBox.Controls.Add(this.portInitialValue);
+            this.runtimeIncomingProtocolGroupBox.Controls.Add(this.portInitialValueNumericUpDown);
+            this.runtimeIncomingProtocolGroupBox.Location = new System.Drawing.Point(3, 318);
+            this.runtimeIncomingProtocolGroupBox.Name = "runtimeIncomingProtocolGroupBox";
+            this.runtimeIncomingProtocolGroupBox.Size = new System.Drawing.Size(385, 50);
+            this.runtimeIncomingProtocolGroupBox.TabIndex = 6;
+            this.runtimeIncomingProtocolGroupBox.TabStop = false;
+            this.runtimeIncomingProtocolGroupBox.Text = "Runtime Incoming Protocol";
+            // 
+            // protocolComboBox
+            // 
+            this.protocolComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.protocolComboBox.FormattingEnabled = true;
+            this.protocolComboBox.Items.AddRange(new object[] {
+            "undefined",
+            "rmi",
+            "http",
+            "pamr",
+            "pnp",
+            "pnps"});
+            this.protocolComboBox.Location = new System.Drawing.Point(145, 19);
+            this.protocolComboBox.Name = "protocolComboBox";
+            this.protocolComboBox.Size = new System.Drawing.Size(74, 21);
+            this.protocolComboBox.TabIndex = 3;
+            this.toolTip.SetToolTip(this.protocolComboBox, "Defines the protocol to be used by the Runtime.");
+            this.protocolComboBox.SelectedIndexChanged += new System.EventHandler(this.protocolComboBox_SelectedIndexChanged);
+            // 
+            // protocolLabel
+            // 
+            this.protocolLabel.AutoSize = true;
+            this.protocolLabel.Location = new System.Drawing.Point(90, 22);
+            this.protocolLabel.Name = "protocolLabel";
+            this.protocolLabel.Size = new System.Drawing.Size(49, 13);
+            this.protocolLabel.TabIndex = 2;
+            this.protocolLabel.Text = "Protocol:";
+            // 
+            // portInitialValue
+            // 
+            this.portInitialValue.AutoSize = true;
+            this.portInitialValue.Location = new System.Drawing.Point(230, 22);
+            this.portInitialValue.Name = "portInitialValue";
+            this.portInitialValue.Size = new System.Drawing.Size(86, 13);
+            this.portInitialValue.TabIndex = 1;
+            this.portInitialValue.Text = "Port Initial Value:";
+            // 
+            // portInitialValueNumericUpDown
+            // 
+            this.portInitialValueNumericUpDown.Location = new System.Drawing.Point(320, 20);
+            this.portInitialValueNumericUpDown.Maximum = new decimal(new int[] {
+            65534,
+            0,
+            0,
+            0});
+            this.portInitialValueNumericUpDown.Minimum = new decimal(new int[] {
+            1099,
+            0,
+            0,
+            0});
+            this.portInitialValueNumericUpDown.Name = "portInitialValueNumericUpDown";
+            this.portInitialValueNumericUpDown.Size = new System.Drawing.Size(57, 20);
+            this.portInitialValueNumericUpDown.TabIndex = 0;
+            this.toolTip.SetToolTip(this.portInitialValueNumericUpDown, "Defines the value of the \"-Dproactive.SELECTED_PROTOCOL.port\" property. This valu" +
+                    "e will always be increased by 1 or more if there is more than one Runtime.");
+            this.portInitialValueNumericUpDown.Value = new decimal(new int[] {
+            1099,
+            0,
+            0,
+            0});
+            this.portInitialValueNumericUpDown.ValueChanged += new System.EventHandler(this.initialValueNumericUpDown_ValueChanged);
             // 
             // onRuntimeExitGroupBox
             // 
@@ -481,6 +553,7 @@ namespace AgentForAgent
             this.memoryLimitNumericUpDown.Name = "memoryLimitNumericUpDown";
             this.memoryLimitNumericUpDown.Size = new System.Drawing.Size(74, 20);
             this.memoryLimitNumericUpDown.TabIndex = 5;
+            this.toolTip.SetToolTip(this.memoryLimitNumericUpDown, "0 means no memory limit and at least 128 is required for a ProActive Runtime.");
             this.memoryLimitNumericUpDown.ValueChanged += new System.EventHandler(this.memoryLimitNumericUpDown_ValueChanged);
             // 
             // memoryLimitLabel
@@ -512,7 +585,9 @@ namespace AgentForAgent
             // 
             // connectionTabPage
             // 
-            this.connectionTabPage.Controls.Add(this.enabledConnectionGroupBox);
+            this.connectionTabPage.Controls.Add(this.customRadioButton);
+            this.connectionTabPage.Controls.Add(this.resourceManagerRegistrationRadioButton);
+            this.connectionTabPage.Controls.Add(this.localRegistrationRadioButton);
             this.connectionTabPage.Controls.Add(this.connectionTypeTabControl);
             this.connectionTabPage.Location = new System.Drawing.Point(4, 22);
             this.connectionTabPage.Name = "connectionTabPage";
@@ -521,27 +596,14 @@ namespace AgentForAgent
             this.connectionTabPage.Text = "Connection";
             this.connectionTabPage.UseVisualStyleBackColor = true;
             // 
-            // enabledConnectionGroupBox
-            // 
-            this.enabledConnectionGroupBox.Controls.Add(this.resourceManagerRegistrationRadioButton);
-            this.enabledConnectionGroupBox.Controls.Add(this.localRegistrationRadioButton);
-            this.enabledConnectionGroupBox.Controls.Add(this.customRadioButton);
-            this.enabledConnectionGroupBox.Location = new System.Drawing.Point(3, 3);
-            this.enabledConnectionGroupBox.Name = "enabledConnectionGroupBox";
-            this.enabledConnectionGroupBox.Size = new System.Drawing.Size(359, 45);
-            this.enabledConnectionGroupBox.TabIndex = 4;
-            this.enabledConnectionGroupBox.TabStop = false;
-            this.enabledConnectionGroupBox.Text = "Enabled Connection";
-            // 
             // resourceManagerRegistrationRadioButton
             // 
             this.resourceManagerRegistrationRadioButton.AutoSize = true;
-            this.resourceManagerRegistrationRadioButton.Location = new System.Drawing.Point(119, 19);
+            this.resourceManagerRegistrationRadioButton.Location = new System.Drawing.Point(3, 27);
             this.resourceManagerRegistrationRadioButton.Name = "resourceManagerRegistrationRadioButton";
-            this.resourceManagerRegistrationRadioButton.Size = new System.Drawing.Size(175, 17);
+            this.resourceManagerRegistrationRadioButton.Size = new System.Drawing.Size(14, 13);
             this.resourceManagerRegistrationRadioButton.TabIndex = 2;
             this.resourceManagerRegistrationRadioButton.TabStop = true;
-            this.resourceManagerRegistrationRadioButton.Text = "Resource Manager Registration";
             this.toolTip.SetToolTip(this.resourceManagerRegistrationRadioButton, "Enables the Resource Manager Registration. The Runtime will try to registrate to " +
                     "the specified Resource Manager.");
             this.resourceManagerRegistrationRadioButton.UseVisualStyleBackColor = true;
@@ -550,12 +612,11 @@ namespace AgentForAgent
             // localRegistrationRadioButton
             // 
             this.localRegistrationRadioButton.AutoSize = true;
-            this.localRegistrationRadioButton.Location = new System.Drawing.Point(6, 19);
+            this.localRegistrationRadioButton.Location = new System.Drawing.Point(3, 7);
             this.localRegistrationRadioButton.Name = "localRegistrationRadioButton";
-            this.localRegistrationRadioButton.Size = new System.Drawing.Size(110, 17);
+            this.localRegistrationRadioButton.Size = new System.Drawing.Size(14, 13);
             this.localRegistrationRadioButton.TabIndex = 1;
             this.localRegistrationRadioButton.TabStop = true;
-            this.localRegistrationRadioButton.Text = "Local Registration";
             this.toolTip.SetToolTip(this.localRegistrationRadioButton, "Enables the Local Registration.The runtime will be registred locally.");
             this.localRegistrationRadioButton.UseVisualStyleBackColor = true;
             this.localRegistrationRadioButton.CheckedChanged += new System.EventHandler(this.rmiRegistrationRadioButton_CheckedChanged);
@@ -563,12 +624,11 @@ namespace AgentForAgent
             // customRadioButton
             // 
             this.customRadioButton.AutoSize = true;
-            this.customRadioButton.Location = new System.Drawing.Point(297, 19);
+            this.customRadioButton.Location = new System.Drawing.Point(3, 47);
             this.customRadioButton.Name = "customRadioButton";
-            this.customRadioButton.Size = new System.Drawing.Size(60, 17);
+            this.customRadioButton.Size = new System.Drawing.Size(14, 13);
             this.customRadioButton.TabIndex = 3;
             this.customRadioButton.TabStop = true;
-            this.customRadioButton.Text = "Custom";
             this.toolTip.SetToolTip(this.customRadioButton, "Enables a user defined connection. See the \"Custom\" tab below.");
             this.customRadioButton.UseVisualStyleBackColor = true;
             this.customRadioButton.CheckedChanged += new System.EventHandler(this.customRadioButton_CheckedChanged);
@@ -582,11 +642,11 @@ namespace AgentForAgent
             this.connectionTypeTabControl.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             this.connectionTypeTabControl.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.connectionTypeTabControl.ItemSize = new System.Drawing.Size(19, 175);
-            this.connectionTypeTabControl.Location = new System.Drawing.Point(3, 57);
+            this.connectionTypeTabControl.Location = new System.Drawing.Point(23, 3);
             this.connectionTypeTabControl.Multiline = true;
             this.connectionTypeTabControl.Name = "connectionTypeTabControl";
             this.connectionTypeTabControl.SelectedIndex = 0;
-            this.connectionTypeTabControl.Size = new System.Drawing.Size(668, 314);
+            this.connectionTypeTabControl.Size = new System.Drawing.Size(648, 368);
             this.connectionTypeTabControl.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.connectionTypeTabControl.TabIndex = 0;
             this.connectionTypeTabControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.actionTypeTabControl_DrawItem);
@@ -598,7 +658,7 @@ namespace AgentForAgent
             this.localRegistrationTabPage.Location = new System.Drawing.Point(179, 4);
             this.localRegistrationTabPage.Name = "localRegistrationTabPage";
             this.localRegistrationTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.localRegistrationTabPage.Size = new System.Drawing.Size(485, 306);
+            this.localRegistrationTabPage.Size = new System.Drawing.Size(465, 360);
             this.localRegistrationTabPage.TabIndex = 0;
             this.localRegistrationTabPage.Text = "Local Registration";
             this.localRegistrationTabPage.UseVisualStyleBackColor = true;
@@ -607,9 +667,9 @@ namespace AgentForAgent
             // 
             this.rmiRegistrationAdditionalConfigurationGroupBox.Controls.Add(this.rmiRegistrationJavaActionClassTextBox);
             this.rmiRegistrationAdditionalConfigurationGroupBox.Controls.Add(this.label13);
-            this.rmiRegistrationAdditionalConfigurationGroupBox.Location = new System.Drawing.Point(6, 252);
+            this.rmiRegistrationAdditionalConfigurationGroupBox.Location = new System.Drawing.Point(6, 306);
             this.rmiRegistrationAdditionalConfigurationGroupBox.Name = "rmiRegistrationAdditionalConfigurationGroupBox";
-            this.rmiRegistrationAdditionalConfigurationGroupBox.Size = new System.Drawing.Size(473, 48);
+            this.rmiRegistrationAdditionalConfigurationGroupBox.Size = new System.Drawing.Size(453, 48);
             this.rmiRegistrationAdditionalConfigurationGroupBox.TabIndex = 2;
             this.rmiRegistrationAdditionalConfigurationGroupBox.TabStop = false;
             this.rmiRegistrationAdditionalConfigurationGroupBox.Text = "Additional Configuration";
@@ -618,7 +678,7 @@ namespace AgentForAgent
             // 
             this.rmiRegistrationJavaActionClassTextBox.Location = new System.Drawing.Point(106, 19);
             this.rmiRegistrationJavaActionClassTextBox.Name = "rmiRegistrationJavaActionClassTextBox";
-            this.rmiRegistrationJavaActionClassTextBox.Size = new System.Drawing.Size(361, 20);
+            this.rmiRegistrationJavaActionClassTextBox.Size = new System.Drawing.Size(341, 20);
             this.rmiRegistrationJavaActionClassTextBox.TabIndex = 1;
             this.toolTip.SetToolTip(this.rmiRegistrationJavaActionClassTextBox, "Defines the Java class to run.");
             // 
@@ -637,7 +697,7 @@ namespace AgentForAgent
             this.localRegistrationGroupBox.Controls.Add(this.localRegistrationNodeName);
             this.localRegistrationGroupBox.Location = new System.Drawing.Point(6, 6);
             this.localRegistrationGroupBox.Name = "localRegistrationGroupBox";
-            this.localRegistrationGroupBox.Size = new System.Drawing.Size(473, 53);
+            this.localRegistrationGroupBox.Size = new System.Drawing.Size(453, 53);
             this.localRegistrationGroupBox.TabIndex = 1;
             this.localRegistrationGroupBox.TabStop = false;
             this.localRegistrationGroupBox.Text = "Local Registration";
@@ -655,7 +715,7 @@ namespace AgentForAgent
             // 
             this.localRegistrationNodeName.Location = new System.Drawing.Point(79, 19);
             this.localRegistrationNodeName.Name = "localRegistrationNodeName";
-            this.localRegistrationNodeName.Size = new System.Drawing.Size(388, 20);
+            this.localRegistrationNodeName.Size = new System.Drawing.Size(368, 20);
             this.localRegistrationNodeName.TabIndex = 1;
             this.toolTip.SetToolTip(this.localRegistrationNodeName, "Defines the name of the node. The node will be registered under url like URL://IP" +
                     "_OR_HOSTNAME:PORT/NODE_NAME");
@@ -669,7 +729,7 @@ namespace AgentForAgent
             this.resourceManagerRegistrationTabPage.Location = new System.Drawing.Point(179, 4);
             this.resourceManagerRegistrationTabPage.Name = "resourceManagerRegistrationTabPage";
             this.resourceManagerRegistrationTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.resourceManagerRegistrationTabPage.Size = new System.Drawing.Size(485, 306);
+            this.resourceManagerRegistrationTabPage.Size = new System.Drawing.Size(465, 360);
             this.resourceManagerRegistrationTabPage.TabIndex = 1;
             this.resourceManagerRegistrationTabPage.Text = "Resource Manager Registration";
             this.resourceManagerRegistrationTabPage.UseVisualStyleBackColor = true;
@@ -678,9 +738,9 @@ namespace AgentForAgent
             // 
             this.resourceManagerRegistrationAdditionalConfigurationGroupBox.Controls.Add(this.resourceManagerRegistrationJavaActionClassTextBox);
             this.resourceManagerRegistrationAdditionalConfigurationGroupBox.Controls.Add(this.label18);
-            this.resourceManagerRegistrationAdditionalConfigurationGroupBox.Location = new System.Drawing.Point(6, 252);
+            this.resourceManagerRegistrationAdditionalConfigurationGroupBox.Location = new System.Drawing.Point(6, 306);
             this.resourceManagerRegistrationAdditionalConfigurationGroupBox.Name = "resourceManagerRegistrationAdditionalConfigurationGroupBox";
-            this.resourceManagerRegistrationAdditionalConfigurationGroupBox.Size = new System.Drawing.Size(473, 48);
+            this.resourceManagerRegistrationAdditionalConfigurationGroupBox.Size = new System.Drawing.Size(453, 48);
             this.resourceManagerRegistrationAdditionalConfigurationGroupBox.TabIndex = 4;
             this.resourceManagerRegistrationAdditionalConfigurationGroupBox.TabStop = false;
             this.resourceManagerRegistrationAdditionalConfigurationGroupBox.Text = "Additional Configuration";
@@ -689,7 +749,7 @@ namespace AgentForAgent
             // 
             this.resourceManagerRegistrationJavaActionClassTextBox.Location = new System.Drawing.Point(106, 19);
             this.resourceManagerRegistrationJavaActionClassTextBox.Name = "resourceManagerRegistrationJavaActionClassTextBox";
-            this.resourceManagerRegistrationJavaActionClassTextBox.Size = new System.Drawing.Size(361, 20);
+            this.resourceManagerRegistrationJavaActionClassTextBox.Size = new System.Drawing.Size(341, 20);
             this.resourceManagerRegistrationJavaActionClassTextBox.TabIndex = 1;
             this.toolTip.SetToolTip(this.resourceManagerRegistrationJavaActionClassTextBox, "Defines the Java class to run.");
             // 
@@ -712,7 +772,7 @@ namespace AgentForAgent
             this.rmActionGroup.Controls.Add(this.resourceManagerUrlLabel);
             this.rmActionGroup.Location = new System.Drawing.Point(6, 6);
             this.rmActionGroup.Name = "rmActionGroup";
-            this.rmActionGroup.Size = new System.Drawing.Size(473, 100);
+            this.rmActionGroup.Size = new System.Drawing.Size(453, 100);
             this.rmActionGroup.TabIndex = 3;
             this.rmActionGroup.TabStop = false;
             this.rmActionGroup.Text = "Resource Manager Registration";
@@ -730,7 +790,7 @@ namespace AgentForAgent
             // 
             this.nodeSourceNameTextBox.Location = new System.Drawing.Point(138, 72);
             this.nodeSourceNameTextBox.Name = "nodeSourceNameTextBox";
-            this.nodeSourceNameTextBox.Size = new System.Drawing.Size(329, 20);
+            this.nodeSourceNameTextBox.Size = new System.Drawing.Size(309, 20);
             this.nodeSourceNameTextBox.TabIndex = 10;
             this.toolTip.SetToolTip(this.nodeSourceNameTextBox, "The name of the node source without whitespaces.");
             this.nodeSourceNameTextBox.TextChanged += new System.EventHandler(this.nodeSourceNameTextBox_TextChanged);
@@ -739,7 +799,7 @@ namespace AgentForAgent
             // 
             this.nodeNameTextBox.Location = new System.Drawing.Point(138, 45);
             this.nodeNameTextBox.Name = "nodeNameTextBox";
-            this.nodeNameTextBox.Size = new System.Drawing.Size(329, 20);
+            this.nodeNameTextBox.Size = new System.Drawing.Size(309, 20);
             this.nodeNameTextBox.TabIndex = 3;
             this.toolTip.SetToolTip(this.nodeNameTextBox, "The name of the node without whitespaces.");
             this.nodeNameTextBox.TextChanged += new System.EventHandler(this.rmNodeName_TextChanged);
@@ -757,7 +817,7 @@ namespace AgentForAgent
             // 
             this.rmUrl.Location = new System.Drawing.Point(138, 19);
             this.rmUrl.Name = "rmUrl";
-            this.rmUrl.Size = new System.Drawing.Size(329, 20);
+            this.rmUrl.Size = new System.Drawing.Size(309, 20);
             this.rmUrl.TabIndex = 1;
             this.toolTip.SetToolTip(this.rmUrl, "Example: PROTOCOL://HOSTNAME_OR_IP_ADDRESS:PORT");
             this.rmUrl.TextChanged += new System.EventHandler(this.rmUrl_TextChanged);
@@ -779,7 +839,7 @@ namespace AgentForAgent
             this.authenticationCredentialGroupBox.Controls.Add(this.credentialLocationTextBox);
             this.authenticationCredentialGroupBox.Location = new System.Drawing.Point(6, 112);
             this.authenticationCredentialGroupBox.Name = "authenticationCredentialGroupBox";
-            this.authenticationCredentialGroupBox.Size = new System.Drawing.Size(473, 50);
+            this.authenticationCredentialGroupBox.Size = new System.Drawing.Size(453, 50);
             this.authenticationCredentialGroupBox.TabIndex = 9;
             this.authenticationCredentialGroupBox.TabStop = false;
             this.authenticationCredentialGroupBox.Text = "Authentication Credential";
@@ -814,7 +874,7 @@ namespace AgentForAgent
             // 
             this.credentialLocationTextBox.Location = new System.Drawing.Point(138, 20);
             this.credentialLocationTextBox.Name = "credentialLocationTextBox";
-            this.credentialLocationTextBox.Size = new System.Drawing.Size(329, 20);
+            this.credentialLocationTextBox.Size = new System.Drawing.Size(309, 20);
             this.credentialLocationTextBox.TabIndex = 0;
             this.toolTip.SetToolTip(this.credentialLocationTextBox, "Location of the file that contains the credential.");
             this.credentialLocationTextBox.TextChanged += new System.EventHandler(this.credentialLocationTextBox_TextChanged);
@@ -826,7 +886,7 @@ namespace AgentForAgent
             this.customTabPage.Location = new System.Drawing.Point(179, 4);
             this.customTabPage.Name = "customTabPage";
             this.customTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.customTabPage.Size = new System.Drawing.Size(485, 306);
+            this.customTabPage.Size = new System.Drawing.Size(465, 360);
             this.customTabPage.TabIndex = 2;
             this.customTabPage.Text = "Custom";
             this.customTabPage.UseVisualStyleBackColor = true;
@@ -835,9 +895,9 @@ namespace AgentForAgent
             // 
             this.customAdditionalConfigurationGroupBox.Controls.Add(this.customJavaActionClassTextBox);
             this.customAdditionalConfigurationGroupBox.Controls.Add(this.label19);
-            this.customAdditionalConfigurationGroupBox.Location = new System.Drawing.Point(6, 252);
+            this.customAdditionalConfigurationGroupBox.Location = new System.Drawing.Point(6, 306);
             this.customAdditionalConfigurationGroupBox.Name = "customAdditionalConfigurationGroupBox";
-            this.customAdditionalConfigurationGroupBox.Size = new System.Drawing.Size(473, 48);
+            this.customAdditionalConfigurationGroupBox.Size = new System.Drawing.Size(453, 48);
             this.customAdditionalConfigurationGroupBox.TabIndex = 5;
             this.customAdditionalConfigurationGroupBox.TabStop = false;
             this.customAdditionalConfigurationGroupBox.Text = "Additional Configuration";
@@ -846,7 +906,7 @@ namespace AgentForAgent
             // 
             this.customJavaActionClassTextBox.Location = new System.Drawing.Point(106, 19);
             this.customJavaActionClassTextBox.Name = "customJavaActionClassTextBox";
-            this.customJavaActionClassTextBox.Size = new System.Drawing.Size(361, 20);
+            this.customJavaActionClassTextBox.Size = new System.Drawing.Size(341, 20);
             this.customJavaActionClassTextBox.TabIndex = 1;
             this.toolTip.SetToolTip(this.customJavaActionClassTextBox, "Defines the Java class to run.");
             // 
@@ -870,7 +930,7 @@ namespace AgentForAgent
             this.customActionGroup.Controls.Add(this.label14);
             this.customActionGroup.Location = new System.Drawing.Point(6, 6);
             this.customActionGroup.Name = "customActionGroup";
-            this.customActionGroup.Size = new System.Drawing.Size(473, 151);
+            this.customActionGroup.Size = new System.Drawing.Size(453, 151);
             this.customActionGroup.TabIndex = 3;
             this.customActionGroup.TabStop = false;
             this.customActionGroup.Text = "Custom";
@@ -878,7 +938,7 @@ namespace AgentForAgent
             // customSaveArgumentButton
             // 
             this.customSaveArgumentButton.Enabled = false;
-            this.customSaveArgumentButton.Location = new System.Drawing.Point(392, 93);
+            this.customSaveArgumentButton.Location = new System.Drawing.Point(372, 93);
             this.customSaveArgumentButton.Name = "customSaveArgumentButton";
             this.customSaveArgumentButton.Size = new System.Drawing.Size(75, 23);
             this.customSaveArgumentButton.TabIndex = 6;
@@ -891,7 +951,7 @@ namespace AgentForAgent
             // 
             this.customArgumentTextBox.Location = new System.Drawing.Point(69, 122);
             this.customArgumentTextBox.Name = "customArgumentTextBox";
-            this.customArgumentTextBox.Size = new System.Drawing.Size(398, 20);
+            this.customArgumentTextBox.Size = new System.Drawing.Size(378, 20);
             this.customArgumentTextBox.TabIndex = 5;
             this.toolTip.SetToolTip(this.customArgumentTextBox, "Enter an argument without whitespaces.");
             // 
@@ -906,7 +966,7 @@ namespace AgentForAgent
             // 
             // customDeleteButton
             // 
-            this.customDeleteButton.Location = new System.Drawing.Point(392, 63);
+            this.customDeleteButton.Location = new System.Drawing.Point(372, 63);
             this.customDeleteButton.Name = "customDeleteButton";
             this.customDeleteButton.Size = new System.Drawing.Size(75, 23);
             this.customDeleteButton.TabIndex = 3;
@@ -917,7 +977,7 @@ namespace AgentForAgent
             // 
             // customAddButton
             // 
-            this.customAddButton.Location = new System.Drawing.Point(392, 34);
+            this.customAddButton.Location = new System.Drawing.Point(372, 34);
             this.customAddButton.Name = "customAddButton";
             this.customAddButton.Size = new System.Drawing.Size(75, 23);
             this.customAddButton.TabIndex = 2;
@@ -931,7 +991,7 @@ namespace AgentForAgent
             this.customArgumentsListBox.FormattingEnabled = true;
             this.customArgumentsListBox.Location = new System.Drawing.Point(9, 34);
             this.customArgumentsListBox.Name = "customArgumentsListBox";
-            this.customArgumentsListBox.Size = new System.Drawing.Size(377, 82);
+            this.customArgumentsListBox.Size = new System.Drawing.Size(357, 82);
             this.customArgumentsListBox.TabIndex = 1;
             this.toolTip.SetToolTip(this.customArgumentsListBox, "A list of arguments that will be passed as parameters of the Java Starter Class.");
             this.customArgumentsListBox.SelectedIndexChanged += new System.EventHandler(this.customArgumentsListBox_SelectedIndexChanged);
@@ -1331,16 +1391,6 @@ namespace AgentForAgent
             this.deleteEventButton.UseVisualStyleBackColor = true;
             this.deleteEventButton.Click += new System.EventHandler(this.deleteEventButton_Click);
             // 
-            // eventsList
-            // 
-            this.eventsList.FormattingEnabled = true;
-            this.eventsList.Location = new System.Drawing.Point(6, 19);
-            this.eventsList.Name = "eventsList";
-            this.eventsList.Size = new System.Drawing.Size(235, 303);
-            this.eventsList.TabIndex = 0;
-            this.toolTip.SetToolTip(this.eventsList, "The list of weekly plans.");
-            this.eventsList.SelectedIndexChanged += new System.EventHandler(this.eventsList_SelectedIndexChanged);
-            // 
             // saveConfig
             // 
             this.saveConfig.Enabled = false;
@@ -1393,77 +1443,15 @@ namespace AgentForAgent
             this.credentialLocationOpenDialog.DefaultExt = "cred";
             this.credentialLocationOpenDialog.Filter = "Credentials .cred|*.cred";
             // 
-            // runtimeIncomingProtocolGroupBox
+            // eventsList
             // 
-            this.runtimeIncomingProtocolGroupBox.Controls.Add(this.protocolComboBox);
-            this.runtimeIncomingProtocolGroupBox.Controls.Add(this.protocolLabel);
-            this.runtimeIncomingProtocolGroupBox.Controls.Add(this.portInitialValue);
-            this.runtimeIncomingProtocolGroupBox.Controls.Add(this.portInitialValueNumericUpDown);
-            this.runtimeIncomingProtocolGroupBox.Location = new System.Drawing.Point(3, 318);
-            this.runtimeIncomingProtocolGroupBox.Name = "runtimeIncomingProtocolGroupBox";
-            this.runtimeIncomingProtocolGroupBox.Size = new System.Drawing.Size(385, 50);
-            this.runtimeIncomingProtocolGroupBox.TabIndex = 6;
-            this.runtimeIncomingProtocolGroupBox.TabStop = false;
-            this.runtimeIncomingProtocolGroupBox.Text = "Runtime Incoming Protocol";
-            // 
-            // protocolComboBox
-            // 
-            this.protocolComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.protocolComboBox.FormattingEnabled = true;
-            this.protocolComboBox.Items.AddRange(new object[] {
-            "undefined",
-            "rmi",
-            "http",
-            "pamr",
-            "pnp",
-            "pnps"});
-            this.protocolComboBox.Location = new System.Drawing.Point(145, 19);
-            this.protocolComboBox.Name = "protocolComboBox";
-            this.protocolComboBox.Size = new System.Drawing.Size(74, 21);
-            this.protocolComboBox.TabIndex = 3;
-            this.toolTip.SetToolTip(this.protocolComboBox, "Defines the protocol to be used by the Runtime.");
-            // 
-            // protocolLabel
-            // 
-            this.protocolLabel.AutoSize = true;
-            this.protocolLabel.Location = new System.Drawing.Point(90, 22);
-            this.protocolLabel.Name = "protocolLabel";
-            this.protocolLabel.Size = new System.Drawing.Size(49, 13);
-            this.protocolLabel.TabIndex = 2;
-            this.protocolLabel.Text = "Protocol:";
-            // 
-            // portInitialValue
-            // 
-            this.portInitialValue.AutoSize = true;
-            this.portInitialValue.Location = new System.Drawing.Point(230, 22);
-            this.portInitialValue.Name = "portInitialValue";
-            this.portInitialValue.Size = new System.Drawing.Size(86, 13);
-            this.portInitialValue.TabIndex = 1;
-            this.portInitialValue.Text = "Port Initial Value:";
-            // 
-            // portInitialValueNumericUpDown
-            // 
-            this.portInitialValueNumericUpDown.Location = new System.Drawing.Point(320, 20);
-            this.portInitialValueNumericUpDown.Maximum = new decimal(new int[] {
-            65534,
-            0,
-            0,
-            0});
-            this.portInitialValueNumericUpDown.Minimum = new decimal(new int[] {
-            1099,
-            0,
-            0,
-            0});
-            this.portInitialValueNumericUpDown.Name = "portInitialValueNumericUpDown";
-            this.portInitialValueNumericUpDown.Size = new System.Drawing.Size(57, 20);
-            this.portInitialValueNumericUpDown.TabIndex = 0;
-            this.toolTip.SetToolTip(this.portInitialValueNumericUpDown, "Defines the value of the \"-Dproactive.SELECTED_PROTOCOL.port\" property. This valu" +
-                    "e will always be increased by 1 or more if there is more than one Runtime.");
-            this.portInitialValueNumericUpDown.Value = new decimal(new int[] {
-            1099,
-            0,
-            0,
-            0});
+            this.eventsList.FormattingEnabled = true;
+            this.eventsList.Location = new System.Drawing.Point(6, 19);
+            this.eventsList.Name = "eventsList";
+            this.eventsList.Size = new System.Drawing.Size(235, 303);
+            this.eventsList.TabIndex = 0;
+            this.toolTip.SetToolTip(this.eventsList, "The list of weekly plans.");
+            this.eventsList.SelectedIndexChanged += new System.EventHandler(this.eventsList_SelectedIndexChanged);
             // 
             // ConfigurationEditor
             // 
@@ -1486,6 +1474,9 @@ namespace AgentForAgent
             this.groupBox1.PerformLayout();
             this.tabControl1.ResumeLayout(false);
             this.generalTabPage.ResumeLayout(false);
+            this.runtimeIncomingProtocolGroupBox.ResumeLayout(false);
+            this.runtimeIncomingProtocolGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.portInitialValueNumericUpDown)).EndInit();
             this.onRuntimeExitGroupBox.ResumeLayout(false);
             this.onRuntimeExitGroupBox.PerformLayout();
             this.multiRuntimeGroupBox.ResumeLayout(false);
@@ -1496,8 +1487,7 @@ namespace AgentForAgent
             this.memoryLimitGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.memoryLimitNumericUpDown)).EndInit();
             this.connectionTabPage.ResumeLayout(false);
-            this.enabledConnectionGroupBox.ResumeLayout(false);
-            this.enabledConnectionGroupBox.PerformLayout();
+            this.connectionTabPage.PerformLayout();
             this.connectionTypeTabControl.ResumeLayout(false);
             this.localRegistrationTabPage.ResumeLayout(false);
             this.rmiRegistrationAdditionalConfigurationGroupBox.ResumeLayout(false);
@@ -1534,9 +1524,6 @@ namespace AgentForAgent
             ((System.ComponentModel.ISupportInitialize)(this.minutesDuration)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.hoursDuration)).EndInit();
             this.planningGroupBox.ResumeLayout(false);
-            this.runtimeIncomingProtocolGroupBox.ResumeLayout(false);
-            this.runtimeIncomingProtocolGroupBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.portInitialValueNumericUpDown)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1626,7 +1613,6 @@ namespace AgentForAgent
         private System.Windows.Forms.GroupBox customAdditionalConfigurationGroupBox;
         private System.Windows.Forms.TextBox customJavaActionClassTextBox;
         private System.Windows.Forms.Label label19;
-        private System.Windows.Forms.GroupBox enabledConnectionGroupBox;
         private System.Windows.Forms.Label maxCpuUsageLabel;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.NumericUpDown maxCpuUsageNumericUpDown;
