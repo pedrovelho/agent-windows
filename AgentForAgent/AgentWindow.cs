@@ -85,6 +85,8 @@ namespace AgentForAgent
             if (!principal.IsInRole(WindowsBuiltInRole.Administrator))
             {
                 this.browseConfigFileLocation.Enabled = false;
+                this.changeAccountButton.Enabled = false;
+                this.changeAccountButton.Visible = false;
             }
 
             // Update the status 
@@ -428,16 +430,8 @@ namespace AgentForAgent
                 return;
             }
 
-            try
-            {
-                ChangeAccount changeAccount = new ChangeAccount();
-                changeAccount.loadFromRegistry();
-                changeAccount.ShowDialog();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Unable to change account " + ex.ToString(), "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }            
+            // The following will show the account change dialog
+            ChangeAccount.createChangeAccountAndShow();          
         }
 
         // !! Event !!

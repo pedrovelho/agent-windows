@@ -154,6 +154,47 @@ namespace ProActiveAgent
             string inputData,
             StringBuilder outputData);
 
+
+        /// <summary>
+        /// Encrypts the password given as param then stores all creds into the registry.
+        /// Later we should use SecureString here ...
+        /// </summary> 
+        /// <param name="domain">The account domain</param>
+        /// <param name="username">The account username</param>
+        /// <param name="password">The account password</param>
+        public static void storeRuntimeAccount(string domain, string username, string password)
+        {
+
+            // 1 - Try to encrypt the password            
+            StringBuilder encryptedPass = new StringBuilder(512);
+            int res = Utils.encryptData(password, encryptedPass);
+            if (res != 0)
+            {
+                throw new ApplicationException("Problem " + res);
+            }
+
+            // 2 - Store the credentials into the registry
+            RegistryKey confKey = null;
+            try
+            {
+                confKey = Registry.LocalMachine.OpenSubKey(Constants.REG_CREDS_SUBKEY, true);
+
+                if (confKey == null)                
+                    throw new ApplicationException("Unable to open credentials sub key");                
+
+                confKey.SetValue("domain", domain);
+                confKey.SetValue("username", username);
+                confKey.SetValue("password", encryptedPass.ToString());
+
+                confKey.Close();
+            }
+            finally
+            {
+                if (confKey != null)
+                    confKey.Close();
+            }            
+        }
+
         /// <summary>
         /// Returns a decimal value of the available physical memory in mbytes of this computer.
         /// </summary> 
