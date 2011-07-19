@@ -1,12 +1,14 @@
 #include "StdAfx.h"
 
 #include "WinAES.h"
+#include <fstream>
 #include <sstream>
 #include "assert.h"
 #include <exception>
 #include <vector>
 
 using std::ostringstream;
+using std::fstream;
 
 WinAES::WinAES( const wchar_t* lpszContainer, int nFlags )
 	: m_hProvider(NULL), m_hAesKey(NULL), m_bHaveIv(false),
@@ -759,6 +761,9 @@ const char* WinAES::ErrorToDefine( DWORD dwError )
 
 // Added by ActiveEon 2011
 
+// The key filename
+static const char filename[] = "restrict.dat";
+
 void wstring_to_bytearray(const std::wstring &src, unsigned char* &dst, int& dstSize)
 {
 	int length = src.length();
@@ -802,15 +807,38 @@ void bytearray_to_wstring(std::wstring &dst, const unsigned char *src, const int
 	dst.assign(os.str());
 }
 
-DllExport int encryptDataStd(const std::wstring &inputData, std::wstring &outputDataInHex){
-	int status = 0;
+DllExport int encryptDataStd(const std::wstring &inputData, std::wstring &outputDataInHex)
+{
+	int status = 0;	
 	WinAES aes;
 
-	byte key[ WinAES::KEYSIZE_128 ] = {0x49,0x91,0x6E,0xDC,0x49,0x91,0x6E,0xDC,0x49,0x91,0x6E,0xDC,0x49,0x91,0x6E,0xDC};
-	byte iv[ WinAES::BLOCKSIZE ] = {0x49,0x91,0x6E,0xDC,0x49,0x91,0x6E,0xDC,0x49,0x91,0x6E,0xDC,0x49,0x91,0x6E,0xDC};
+	// If no keyfile then the generated key is written into the file
+	byte key[ WinAES::KEYSIZE_128 ];
+	byte iv[ WinAES::BLOCKSIZE ] = {0x49,0x91,0x6E,0xDC,0x49,0x91,0x6E,0xDC,0x49,0x91,0x6E,0xDC,0x49,0x91,0x6E,0xDC};	
 
-	const wchar_t *plaintext = inputData.c_str();
+	// Open for read
+	fstream keyFile(filename, std::ios::in | std::ios::binary);	
+	// If the file exist Check for the key file 
+	if (keyFile.good()) {
+		// If file exist read it and load the key
+		keyFile.read((char *)key, sizeof(key));
+	} else {
+		// Open for write
+		keyFile.open(filename, std::ios::out | std::ios::binary);
 
+		// If cannot open for write exit
+		if (!keyFile.is_open()) {
+			cout << "Unable to open the keyfile" << endl;
+			status = 2;
+		}
+		// If not exist generate a new key and store it
+		aes.GenerateRandom(key, sizeof(key));
+		keyFile.write((const char*)&key, sizeof(key));
+	}
+
+	keyFile.close();
+	
+	const wchar_t *plaintext = inputData.c_str();	
 	byte *ciphertext = NULL;
 
 	try
@@ -843,19 +871,33 @@ DllExport int encryptDataStd(const std::wstring &inputData, std::wstring &output
 	if( NULL != ciphertext ) {
 		delete[] ciphertext;
 		ciphertext = NULL;
-	}
+	}	
 
 	return status;
 }
 
-DllExport int decryptDataStd(const std::wstring &inputDataInHex, std::wstring &outputData){
+DllExport int decryptDataStd(const std::wstring &inputDataInHex, std::wstring &outputData)
+{
 	int status = 0;
 	WinAES aes;		
 
-	byte key[ WinAES::KEYSIZE_128 ] = {0x49,0x91,0x6E,0xDC,0x49,0x91,0x6E,0xDC,0x49,0x91,0x6E,0xDC,0x49,0x91,0x6E,0xDC};
+	byte key[ WinAES::KEYSIZE_128 ];
 	byte iv[ WinAES::BLOCKSIZE ] = {0x49,0x91,0x6E,0xDC,0x49,0x91,0x6E,0xDC,0x49,0x91,0x6E,0xDC,0x49,0x91,0x6E,0xDC};
 
-	byte *ciphertext = NULL, *recovered = NULL;			
+	// Read the key from file
+	fstream keyFile(filename, std::ios::in | std::ios::binary);	
+	// Check for the key file 
+	if (keyFile.good()) {
+		// If file exist read it and load the key
+		keyFile.read((char *)key, sizeof(key));
+	} else {
+		cout << "Unable to open the keyfile" << endl;
+		status = 2;
+	}
+
+	keyFile.close();
+
+	byte *ciphertext = NULL, *recovered = NULL;
 
 	int csize;
 	wstring_to_bytearray(inputDataInHex, ciphertext, csize);		

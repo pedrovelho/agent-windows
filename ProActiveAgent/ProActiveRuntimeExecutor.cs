@@ -302,6 +302,7 @@ namespace ProActiveAgent
                 info.Arguments = "\"" + unescapedCommand.Replace("\"", "\\\"") + "\"";
 
                 // Configure runtime specifics
+                info.WorkingDirectory = this.commonStartInfo.configuration.agentInstallLocation;
                 info.UseShellExecute = false; // needed to redirect output
                 info.CreateNoWindow = true;
                 info.RedirectStandardOutput = true;

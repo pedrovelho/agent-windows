@@ -499,7 +499,7 @@ namespace ProActiveAgent
 
         public static String echoVariableAsForker(string javaHome, string installLocation, string workingdir, string scriptFilename, string variableToEcho)
         {
-            ProcessStartInfo info = new ProcessStartInfo();
+            ProcessStartInfo info = new ProcessStartInfo();            
             // Prepare to create a process that will run the script            
             info.FileName = installLocation + "\\parunas.exe";
             // /V:ON is equivalent to setlocal enabledelayedexpansion
@@ -507,7 +507,8 @@ namespace ProActiveAgent
             // The cmd.exe does not support UNC path as working dir therefore the CD is injected to get the correct
             // The initScript will be surrounded with \" (escaped quotes)
             info.Arguments = "\"cmd.exe /V:ON /K set JAVA_HOME="+javaHome+"&& set CD="+workingdir+"&& \\\"" + scriptFilename + "\\\"\"";
-            
+
+            info.WorkingDirectory = installLocation;
             info.UseShellExecute = false;
             info.CreateNoWindow = true;
             info.RedirectStandardInput = true;
