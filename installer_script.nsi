@@ -539,7 +539,7 @@ Function MyCustomLeave
     # The command uses well known SIDs to restrict permissions only for SYSTEM (ie LocalSystem), Creator and Administrators group #
     ###############################################################################################################################
 
-    ExecWait 'cmd.exe /C regini.exe "$INSTDIR"\restrict.dat'
+    ExecWait 'cmd.exe /C regini.exe "$INSTDIR"\acl.dat'
 
   writeToRegistryLABEL:
   ${If} $R7 == "1"
@@ -675,7 +675,7 @@ Section "ProActive Agent"
         File "bin\Release\pacrypt.dll"
         File "utils\icon.ico"
         File "utils\ListNetworkInterfaces.class"
-        File "utils\restrict.dat"
+        File "utils\acl.dat"
         File "ProActiveAgent\log4net.config"
         File "ProActiveAgent\lib\log4net.dll"
         File "ProActiveAgent\lib\InJobProcessCreator.exe"
@@ -830,7 +830,7 @@ Section "Uninstall"
         Delete "InJobProcessCreator.exe"
         Delete "JobManagement.dll"
         Delete "icon.ico"
-        Delete "restrict.dat"
+        Delete "acl.dat"
         Delete "ListNetworkInterfaces.class"
         Delete "LICENSE.txt"
         Delete "configuration.ini"
