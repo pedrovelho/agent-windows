@@ -23,6 +23,7 @@
 !define SUBINACL_DIR "$PROGRAMFILES\Windows Resource Kits\Tools"
 !define SUBINACL_PATH "${SUBINACL_DIR}\subinacl.exe"
 !define SUBINACL_URL "http://download.microsoft.com/download/1/7/d/17d82b72-bc6a-4dc8-bfaa-98b37b22b367/subinacl.msi"
+!define SUBINACL_MANUAL_PERMISSIONS "The permissions must be restricted manually, $INSTDIR\restrict.dat must be readable only by Administrators and Local System"
 !define SUBINACL_MANUAL_INSTALL "Please download SubInAcl.msi and install it manually then run the command: subinacl.exe /service ${SERVICE_NAME} /grant=S-1-1-0=TO"
 
 # Privileges
@@ -534,6 +535,38 @@ Function MyCustomLeave
     # Write encrypted password in registry
     WriteRegStr HKLM "Software\ProActiveAgent\Creds" "password" $1
     
+    #########################################################################
+    # HERE WE CHECK for SubInACL tool before continue                       #
+    # In order to restrict access to the registry key we need SubInAcl tool #
+    #########################################################################
+
+    # Check if already installed
+    IfFileExists "${SUBINACL_PATH}" existLABEL notExistLABEL
+    notExistLABEL:
+    # Ask the user if he wants to download the tool
+    MessageBox MB_YESNO "The installation requires a Microsoft Resource Kit is needed (SubInACL tool). Do you want to download it automatically from ${SUBINACL_URL} ? $\nNote that during the installation the default install path is required." IDYES downloadToolLABEL
+      Abort
+    downloadToolLABEL:
+    # Automatic download of SubInAcl
+    NSISdl::download ${SUBINACL_URL} $INSTDIR\SubInACL.msi
+    # Check for downloaded msi file, if it does not exist report to user then finish installation
+    IfFileExists "$INSTDIR\SubInACL.msi" downloadedLABEL problemLABEL
+    problemLABEL:
+    MessageBox MB_OK "Unable to download ${SUBINACL_URL} $\n${SUBINACL_MANUAL_PERMISSIONS}"
+      Abort
+    downloadedLABEL:
+    # Run the installer
+    ExecWait 'cmd.exe /C "$INSTDIR\SubInACL.msi"'
+    # Check if correctly installed
+    IfFileExists "${SUBINACL_PATH}" existLABEL incorrectLABEL
+    incorrectLABEL:
+    MessageBox MB_OK "Unable to find ${SUBINACL_PATH} $\n${SUBINACL_MANUAL_PERMISSIONS}"
+    existLABEL:
+    
+    # Run the command in a console view to allow the user to see output
+    # The command revokes permissions for Guests, Users and Power Users
+    ExecWait 'cmd.exe /C cd "${SUBINACL_DIR}" & subinacl.exe /verbose=1 /file "$INSTDIR\restrict.dat" /revoke=S-1-5-32-545 /revoke=S-1-5-32-546 /revoke=S-1-5-32-547 & pause'
+    
     ###############################################################################################################################
     # Using the regini shell command we need to restrict the access to the HKEY_LOCAL_MACHINE\SOFTWARE\ProActiveAgent\Creds key   #
     # The command uses well known SIDs to restrict permissions only for SYSTEM (ie LocalSystem), Creator and Administrators group #
@@ -596,35 +629,13 @@ Function MyCustomLeave
   # If "Allow everyone to start/stop" is selected check for subinacl
   !insertmacro MUI_INSTALLOPTIONS_READ $R0 ${PAGE_FILE} "${CHK_ALLOWANY}" State
   ${If} $R0 == "1"
-    # HERE WE CHECK for SubInACL tool before continue
-
-    # In order to restrict access to the registry key we need SubInAcl tool
-    # Check if already installed
-    IfFileExists "${SUBINACL_PATH}" existLABEL notExistLABEL
-    notExistLABEL:
-    # Ask the user if he wants to download the tool
-    MessageBox MB_YESNO "The installation requires a Microsoft Resource Kit is needed (SubInACL tool). Do you want to download it automatically from ${SUBINACL_URL} ? $\nNote that during the installation the default install path is required." IDYES downloadToolLABEL
-      Abort
-    downloadToolLABEL:
-    # Automatic download of SubInAcl
-    NSISdl::download ${SUBINACL_URL} $INSTDIR\SubInACL.msi
-    # Check for downloaded msi file, if it does not exist report to user then finish installation
-    IfFileExists "$INSTDIR\SubInACL.msi" downloadedLABEL problemLABEL
-    problemLABEL:
-    MessageBox MB_OK "Unable to download ${SUBINACL_URL} $\n${SUBINACL_MANUAL_INSTALL}"
-      Abort
-    downloadedLABEL:
-    # Run the installer
-    ExecWait 'cmd.exe /C "$INSTDIR\SubInACL.msi"'
-    # Check if correctly installed
-    IfFileExists "${SUBINACL_PATH}" existLABEL incorrectLABEL
-    incorrectLABEL:
+    # Check if subinacl tool exist
+    IfFileExists "${SUBINACL_PATH}" runCmdLABEL unableLABEL
+    unableLABEL:
     MessageBox MB_OK "Unable to find ${SUBINACL_PATH} $\n${SUBINACL_MANUAL_INSTALL}"
       Abort
 
-    existLABEL:
-  
-  
+    runCmdLABEL:
   
     # Run the command in a console view to allow the user to see output
     # The first command allows control of the service by ALL USERS group
