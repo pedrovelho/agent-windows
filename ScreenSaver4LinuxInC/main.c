@@ -5,6 +5,7 @@
 #include <unistd.h> 
 #include <signal.h>
 
+#include "vroot.h"
 #include "BMP.h"
 
 /*
