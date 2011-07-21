@@ -22,14 +22,17 @@ void handler(int signum){
 
 int main() 
 { 
-        printf(system("pwd"));
+	system("java -jar /home/pgouttef/Stage/workspace/FullScreenSaver/dist/FullScreenSaver.jar");
+	sleep(2);
+	
 	//Send "startJVM" signal to the daemon
-	system("python /usr/bin/PAAgent/client_daemon.py startJVM");
+	system("python /tmp/test.png");
 	signal( SIGTERM, handler );
 	
 	/* Read file */
 	int i,k;
-	char *fileName = "/usr/bin/PAAgent/Image/ActiveEon.png";
+	//char *fileName = "/usr/bin/PAAgent/Image/ActiveEon.png";
+    char *fileName = "/tmp/test.png";
 	sImageHeader sImHead = readImage(fileName);
 	
 	/* The picture DATA */
@@ -100,10 +103,23 @@ int main()
 
 	while(1)
 	{ 
-
 		// Display it on the screen
 		XPutImage (display, pixmap, gc, image, 0, 0, 0,0, image_width, image_height); 
-		XCopyArea (display, pixmap, win, gc, 0,0, image_width, image_height, 50 , 200); 
+		XCopyArea (display, pixmap, win, gc, 0,0, image_width, image_height, 50 , 200);
+		
+		system("java -jar /home/pgouttef/Stage/workspace/FullScreenSaver/dist/FullScreenSaver.jar");
+		sleep(1);
+		
+		/* load BMP file */
+		loadMatric(fileName , image_data , sImHead.nCols , sImHead.nRows , 3 , sImHead.rasterOffset);
+		/* ************* */
+		
+		/* draw on the pixmap */
+		for(k = 0 ; k < sImHead.nRows ; ++k) {
+			for (i = 0 ; i < sImHead.nCols ; ++i) {
+				XPutPixel( image , i , k , image_data[k][i]);
+			}
+		}
 	} 
 
 	
