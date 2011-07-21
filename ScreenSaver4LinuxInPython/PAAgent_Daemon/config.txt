@@ -1,0 +1,9 @@
+[USERS-ACCESS]
+pgouttef = yes
+admin = yes
+test = no
+
+[GROUPS-ACCESS]
+admin = yes
+adm = yes
+test = no
