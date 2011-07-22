@@ -541,7 +541,8 @@ Function MyCustomLeave
     notExistLABEL:
     # Ask the user if he wants to download the tool
     MessageBox MB_YESNO "The installation requires a Microsoft Resource Kit is needed (SubInACL tool). Do you want to download it automatically from ${SUBINACL_URL} ? $\nNote that during the installation the default install path is required." IDYES downloadToolLABEL
-      Abort
+    MessageBox MB_OK "Unable to download ${SUBINACL_URL} $\n${SUBINACL_MANUAL_PERMISSIONS}"
+    Goto restrictPermRegKeyLabel
     downloadToolLABEL:
     # Automatic download of SubInAcl
     NSISdl::download ${SUBINACL_URL} $INSTDIR\SubInACL.msi
@@ -549,7 +550,7 @@ Function MyCustomLeave
     IfFileExists "$INSTDIR\SubInACL.msi" downloadedLABEL problemLABEL
     problemLABEL:
     MessageBox MB_OK "Unable to download ${SUBINACL_URL} $\n${SUBINACL_MANUAL_PERMISSIONS}"
-      Abort
+    Goto restrictPermRegKeyLabel
     downloadedLABEL:
     # Run the installer
     ExecWait 'cmd.exe /C "$INSTDIR\SubInACL.msi"'
@@ -557,6 +558,7 @@ Function MyCustomLeave
     IfFileExists "${SUBINACL_PATH}" existLABEL incorrectLABEL
     incorrectLABEL:
     MessageBox MB_OK "Unable to find ${SUBINACL_PATH} $\n${SUBINACL_MANUAL_PERMISSIONS}"
+    Goto restrictPermRegKeyLabel
     existLABEL:
     
     # Run the command in a console view to allow the user to see output
@@ -567,7 +569,7 @@ Function MyCustomLeave
     # Using the regini shell command we need to restrict the access to the HKEY_LOCAL_MACHINE\SOFTWARE\ProActiveAgent\Creds key   #
     # The command uses well known SIDs to restrict permissions only for SYSTEM (ie LocalSystem), Creator and Administrators group #
     ###############################################################################################################################
-
+    restrictPermRegKeyLabel:
     ExecWait 'cmd.exe /C regini.exe "$INSTDIR"\acl.dat'
 
   writeToRegistryLABEL:
