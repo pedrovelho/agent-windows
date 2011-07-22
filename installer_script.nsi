@@ -230,25 +230,21 @@ Function .onInit
         ${EndIf}
 
         #-----------------------------------------------------------------------------------
-        # Check if VC++ redist 2008 is installed
+        # Check if VC++ redist 2010 is installed
         #-----------------------------------------------------------------------------------
-        ReadRegDWORD $0 HKLM Software\Microsoft\DevDiv\VC\Servicing\9.0\RED\1033 Install
+        ReadRegDWORD $0 HKLM Software\Microsoft\DevDiv\VC\Servicing\10.0\RED\1033 Install
         # If the redistributable package is not installed run the installer
         StrCmp $0 '1' continueInstall 0
-          MessageBox MB_OK 'You must install the Visual C++ 2008 Redistributable Package to use ProActive Agent.$\nPress OK to begin installation.'
+          MessageBox MB_OK 'You must install the Visual C++ 2010 Redistributable Package to use ProActive Agent.$\nPress OK to begin installation.'
           # Prepare to copy the redistributable package
           SetOutPath $TEMP
-          # Copy the architecture dependant installer
+          # Copy the architecture dependant installer then run the architecture dependant installer
           ${If} ${RunningX64}
-          File "utils\x64\vcredist_x64_2008.exe"
+            File "utils\x64\vcredist_x64.exe"
+            ExecWait "$TEMP\vcredist_x64.exe" $0
           ${Else}
-          File "utils\x86\vcredist_x86_2008.exe"
-          ${EndIf}
-          # Run the architecture dependant installer
-          ${If} ${RunningX64}
-            ExecWait "$TEMP\vcredist_x64_2008.exe" $0
-          ${Else}
-            ExecWait "$TEMP\vcredist_x86_2008.exe" $0
+            File "utils\x86\vcredist_x86.exe"
+            ExecWait "$TEMP\vcredist_x86.exe" $0
           ${EndIf}
           StrCmp $0 '0' +3 0
             MessageBox MB_YESNO "It appears that redistributable package might not have been installed properly. If you are sure everything is allright hit YES.$\nDo you want to continue the installation ?" IDYES +2
