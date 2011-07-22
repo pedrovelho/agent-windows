@@ -256,44 +256,52 @@ namespace ProActiveAgent
 
                 // Get forker credentials from registry
                 RegistryKey confKey = Registry.LocalMachine.OpenSubKey(Constants.REG_CREDS_SUBKEY);
-                if (confKey == null)
-                {                    
-                    throw new ApplicationException("Unable to read credentials from registry");
-                }
-                else
-                {
-                    username = (string)confKey.GetValue("username");
-                    domain = (string)confKey.GetValue("domain");                    
-                    // The password is encrypted, decryption is needed
-                    string encryptedPassword = (string)confKey.GetValue("password");
-                    confKey.Close();
 
-                    // To decrypt the password call the decryptData using pinvoke
-                    StringBuilder decryptedPassword = new StringBuilder();                    
+                if (confKey == null)
+                    throw new ApplicationException("Unable to read credentials from registry");
+
+                username = (string)confKey.GetValue("username");
+                domain = (string)confKey.GetValue("domain");
+                // The password is encrypted, decryption is needed
+                string encryptedPassword = (string)confKey.GetValue("password");
+                confKey.Close();
+
+                // To decrypt the password call the decryptData using pinvoke
+                StringBuilder decryptedPassword = new StringBuilder(32); // suppose passwords are 32 chars max
+
+                {
+                    // Save current dir
+                    string cd = Directory.GetCurrentDirectory();
+
+                    // Current dir must be the location of the agent
+                    Directory.SetCurrentDirectory(installLocation);
+
+                    // Decrypt the password
                     int res = decryptData(encryptedPassword, decryptedPassword);
-                    password = decryptedPassword.ToString();                    
-                    if (res != 0) {
+                    password = decryptedPassword.ToString();
+
+                    if (res != 0)
                         throw new ApplicationException("Problem " + res);
-                    }
+
+                    // Restore current dir                    
+                    Directory.SetCurrentDirectory(cd);
                 }
-                
+
                 // Impersonate the forker (get its access rights) in his context UNC paths are accepted
                 using (new Impersonator(username, domain, password))
-                    {
-                        // First check if the directory exists
-                        if (!Directory.Exists(config.javaHome))
-                        {
-                            throw new ApplicationException("Unable to read the classpath, the Java Home directory " + config.javaHome + " does not exist");
-                        }
+                {
+                    // First check if the directory exists
+                    if (!Directory.Exists(config.javaHome))
+                        throw new ApplicationException("Unable to read the classpath, the Java Home directory " + config.javaHome + " does not exist");
 
-                        // Get the initScript 
-                        initScript = findInitScriptInternal(config.proactiveHome);
-                 }
+                    // Get the initScript 
+                    initScript = findInitScriptInternal(config.proactiveHome);
+                }
 
                 config.classpath = VariableEchoer.echoVariableAsForker(
                     config.javaHome,                      // the Java install dir
                     installLocation,                      // the ProActive Agent install dir
-                    config.proactiveHome+@"\bin\windows", // the current directory where to run the initScript
+                    config.proactiveHome + @"\bin\windows", // the current directory where to run the initScript
                     initScript,                           // the full path of the initScript
                     Constants.CLASSPATH);                 // the name of the variable to echo                
             }
