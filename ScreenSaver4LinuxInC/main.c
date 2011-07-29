@@ -14,6 +14,9 @@
 void handler(int signum){
     printf("sigterm catched\n");
     
+    remove("/tmp/ScreenSaverData.txt");
+    remove("/tmp/test.png");
+    
     //Send "stopJVM" signal to the daemon
     system("python /usr/bin/PAAgent/client_daemon.py stopJVM");
     exit(0);
@@ -22,17 +25,27 @@ void handler(int signum){
 
 int main() 
 { 
-	system("java -jar /home/pgouttef/Stage/workspace/FullScreenSaver/dist/FullScreenSaver.jar");
-	sleep(2);
+        FILE *f;
+
+        if (f = fopen( "/tmp/test.png" ,"r")) {
+
+            remove("/tmp/test.png");
+        }
+        if (f = fopen( "/tmp/ScreenSaverData.txt" ,"r")) {
+
+            remove("/tmp/ScreenSaverData.txt");
+        }
+
+	system("java -jar /home/pgouttef/Stage/workspace/FullScreenSaver/dist/FullScreenSaver.jar /tmp/test.png /tmp/ScreenSaverData.txt /home/pgouttef/Stage/Images/picture/ScreenSaverTemplate.bmp");
 	
 	//Send "startJVM" signal to the daemon
-	system("python /tmp/test.png");
+        system("python /usr/bin/PAAgent/client_daemon.py startJVM");
 	signal( SIGTERM, handler );
 	
 	/* Read file */
 	int i,k;
 	//char *fileName = "/usr/bin/PAAgent/Image/ActiveEon.png";
-    char *fileName = "/tmp/test.png";
+        char *fileName = "/tmp/test.png";
 	sImageHeader sImHead = readImage(fileName);
 	
 	/* The picture DATA */
@@ -100,15 +113,18 @@ int main()
 			XPutPixel( image , i , k , image_data[k][i]);
 		}
 	}
+	
+	int posImageX = (DisplayWidth(display , 0) - image_width)/2;
+	int posImageY = (DisplayHeight(display , 0) - image_height)/2;
 
 	while(1)
 	{ 
 		// Display it on the screen
 		XPutImage (display, pixmap, gc, image, 0, 0, 0,0, image_width, image_height); 
-		XCopyArea (display, pixmap, win, gc, 0,0, image_width, image_height, 50 , 200);
+		XCopyArea (display, pixmap, win, gc, 0,0, image_width, image_height, posImageX , posImageY);
 		
 		system("java -jar /home/pgouttef/Stage/workspace/FullScreenSaver/dist/FullScreenSaver.jar");
-		sleep(1);
+		//sleep(1);
 		
 		/* load BMP file */
 		loadMatric(fileName , image_data , sImHead.nCols , sImHead.nRows , 3 , sImHead.rasterOffset);
