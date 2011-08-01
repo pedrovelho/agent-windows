@@ -65,7 +65,7 @@ if __name__ == "__main__":
                         daemon.launchScreenSaver()
                 elif 'startJVM' == sys.argv[1]:
                         daemon.startJVM()
-				elif 'stopJVM' == sys.argv[1]:
+		elif 'stopJVM' == sys.argv[1]:
                         daemon.stopJVM()
                 else:
                         print "Unknown command"
