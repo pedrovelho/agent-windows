@@ -36,8 +36,10 @@ int main()
             remove("/tmp/ScreenSaverData.txt");
         }
 
-	system("java -jar /home/pgouttef/Stage/workspace/FullScreenSaver/dist/FullScreenSaver.jar /tmp/test.png /tmp/ScreenSaverData.txt /home/pgouttef/Stage/Images/picture/ScreenSaverTemplate.bmp");
-	
+	//system("java -jar /home/pgouttef/Stage/workspace/FullScreenSaver/dist/FullScreenSaver.jar /tmp/test.png /tmp/ScreenSaverData.txt /home/pgouttef/Stage/Images/picture/ScreenSaverTemplate.bmp");
+	system("java -jar /usr/bin/PAAgent/FullScreenSaver.jar /tmp/ScreenSaver.png /tmp/ScreenSaverData.txt /usr/bin/PAAgent/ScreenSaverTemplate.bmp");
+        
+
 	//Send "startJVM" signal to the daemon
         system("python /usr/bin/PAAgent/client_daemon.py startJVM");
 	signal( SIGTERM, handler );
@@ -123,7 +125,7 @@ int main()
 		XPutImage (display, pixmap, gc, image, 0, 0, 0,0, image_width, image_height); 
 		XCopyArea (display, pixmap, win, gc, 0,0, image_width, image_height, posImageX , posImageY);
 		
-		system("java -jar /home/pgouttef/Stage/workspace/FullScreenSaver/dist/FullScreenSaver.jar");
+		system("java -jar /home/pgouttef/Stage/workspace/Common/ScreenSaver/dist/FullScreenSaver.jar");
 		//sleep(1);
 		
 		/* load BMP file */
