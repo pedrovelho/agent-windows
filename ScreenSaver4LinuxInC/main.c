@@ -27,9 +27,9 @@ int main()
 { 
         FILE *f;
 
-        if (f = fopen( "/tmp/test.png" ,"r")) {
+        if (f = fopen( "/tmp/ScreenSaver.png" ,"r")) {
 
-            remove("/tmp/test.png");
+            remove("/tmp/ScreenSaver.png");
         }
         if (f = fopen( "/tmp/ScreenSaverData.txt" ,"r")) {
 
@@ -46,8 +46,7 @@ int main()
 	
 	/* Read file */
 	int i,k;
-	//char *fileName = "/usr/bin/PAAgent/Image/ActiveEon.png";
-        char *fileName = "/tmp/test.png";
+        char *fileName = "/tmp/ScreenSaver.png";
 	sImageHeader sImHead = readImage(fileName);
 	
 	/* The picture DATA */
