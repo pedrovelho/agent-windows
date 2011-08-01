@@ -283,6 +283,8 @@ Function MyCustomPage
   !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "${TXT_CONF}" State "$INSTDIR\config"
   # Set default location for logs directory
   !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "${TXT_LOGSDIR}" State "$INSTDIR\logs"
+  # Set env var COMPUTERNAME as default user domain
+  !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "${TXT_DOMAIN}" State "$%COMPUTERNAME%"
   # Disable "Use service account home"
   # !insertmacro GROUPCONTROLS "${PAGE_FILE}" "${SEL_INSTLOC}" "${CHK_LOGSHOME}|" "1"
   # Display the custom page
@@ -306,7 +308,6 @@ Function MyCustomLeave
  #     Abort
   ${EndSwitch}
 
-
   #-----------------------------------------------------------------------------------
   # !! CHECK LOCATIONS !!
   #-----------------------------------------------------------------------------------
@@ -314,7 +315,6 @@ Function MyCustomLeave
   # Check "Use service account home" for logs location stored in R7
   !insertmacro MUI_INSTALLOPTIONS_READ $R7 ${PAGE_FILE} "${CHK_LOGSHOME}" State
   ${If} $R7 == "1"
-    #MessageBox MB_OK "--------------> "
     Goto skipLocationsLABEL
   ${EndIf}
 
@@ -417,9 +417,10 @@ Function MyCustomLeave
       MessageBox MB_OK "The account $R3 must have 'Adjust memory quotas for a process' and 'Replace a process-level token' privileges. In the 'Administrative Tools' of the 'Control Panel' open the 'Local Security Policy'. In 'Security Settings', select 'Local Policies' then select 'User Rights Assignments'. Finally, in the list of policies open the corresponding properties and add the account $R3."
         Abort # Go back to page.
     
-    # Treat specific error ... the account does not exist
+    # The account does not exist if the specified domain is local computer the account can be created
     createNewAccount:
       ${If} $R5 == "."
+      ${OrIf} $R5 == "$%COPMUTERNAME%"
          DetailPrint "The account $R3 does not exist ... asking user if he wants to create a new account"
          # Ask the user if he wants to create a new account
          MessageBox MB_YESNO "The account $R3 does not exist, would you like to create it ?" IDYES createAccount
