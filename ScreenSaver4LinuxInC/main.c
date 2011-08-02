@@ -121,7 +121,7 @@ int main()
         strcat(tmp , h);
         strcat(command , tmp);
         printf("test4\n");
-        system(command);
+        printf(" sys : %d\n", system(command) );
         printf("test5\n");
 
         /* Read file */
@@ -173,7 +173,7 @@ int main()
 		XPutImage (display, pixmap, gc, image, 0, 0, 0,0, image_width, image_height); 
 		XCopyArea (display, pixmap, win, gc, 0,0, image_width, image_height, posImageX , posImageY);
 		
-		system(command);
+		printf(" sys : %d\n", system(command) );
 		//sleep(1);
 		
 		/* load BMP file */
