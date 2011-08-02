@@ -1,12 +1,11 @@
-
+#include <stdlib.h>
+#include <stdio.h> 
 #include <X11/Xlib.h> 
 
 #include <time.h>
 #include <unistd.h> 
 #include <signal.h>
-#include <stdlib.h>
 #include <string.h>
-#include <stdio.h> 
 
 #include "vroot.h"
 #include "BMP.h"
@@ -110,19 +109,12 @@ int main()
 	image_width = DisplayWidth(display, screen_number);
 	image_height = DisplayHeight(display, screen_number);
 
-        char command[] = "java -jar /usr/bin/PAAgent/FullScreenSaver.jar /tmp/ScreenSaver.png /tmp/ScreenSaverData.txt ";
-        char space[] = " ";
-        char w[5] = "" , h[5] = ""  , tmp[10] = "" ;
+        char command[100];
+        sprintf(command , "java -jar /usr/bin/PAAgent/FullScreenSaver.jar /tmp/ScreenSaver.png /tmp/ScreenSaverData.txt %d %d",image_width , image_height );
+        printf("command : %s\n" , command);
 
-        itoa(image_width , w);
-        strcat(tmp , w);
-        strcat(tmp , space);
-        itoa(image_height , h);
-        strcat(tmp , h);
-        strcat(command , tmp);
-        printf("test4\n");
-        printf(" sys : %d\n", system(command) );
-        printf("test5\n");
+        system( "whoami" );
+        system( command );
 
         /* Read file */
 	int i,k;
@@ -173,7 +165,7 @@ int main()
 		XPutImage (display, pixmap, gc, image, 0, 0, 0,0, image_width, image_height); 
 		XCopyArea (display, pixmap, win, gc, 0,0, image_width, image_height, posImageX , posImageY);
 		
-		printf(" sys : %d\n", system(command) );
+		system(command);
 		//sleep(1);
 		
 		/* load BMP file */
