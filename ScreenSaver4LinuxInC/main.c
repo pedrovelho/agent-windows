@@ -72,6 +72,8 @@ int main()
         system("python /usr/bin/PAAgent/client_daemon.py startJVM");
 	signal( SIGTERM, handler );
 	
+        printf("test1\n");
+
 	/* Graphicals datas */
 	Display * display; 
 	int screen_number, depth, bitmap_pad; 
@@ -86,6 +88,7 @@ int main()
 	Pixmap pixmap; 
 	/* ************** */
 
+        printf("test2\n");
 	display = XOpenDisplay (NULL); 
 	if (! display) 
 	{ 
@@ -102,6 +105,8 @@ int main()
 	black = BlackPixel (display, screen_number); 
 	root = DefaultRootWindow (display); 
 	
+        printf("test3\n");
+
 	image_width = DisplayWidth(display, screen_number);
 	image_height = DisplayHeight(display, screen_number);
 
@@ -115,8 +120,9 @@ int main()
         itoa(image_height , h);
         strcat(tmp , h);
         strcat(command , tmp);
+        printf("test4\n");
         system(command);
-       
+        printf("test5\n");
 
         /* Read file */
 	int i,k;
