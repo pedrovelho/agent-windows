@@ -1,12 +1,43 @@
-#include <stdio.h> 
+
 #include <X11/Xlib.h> 
-#include <stdlib.h>
+
 #include <time.h>
 #include <unistd.h> 
 #include <signal.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h> 
 
 #include "vroot.h"
 #include "BMP.h"
+
+void reverse(char s[])
+ {
+     int i, j;
+     char c;
+ 
+     for (i = 0, j = strlen(s)-1; i<j; i++, j--) {
+         c = s[i];
+         s[i] = s[j];
+         s[j] = c;
+     }
+ }
+
+void itoa(int n, char s[])
+ {
+     int i, sign;
+ 
+     if ((sign = n) < 0)  /* record sign */
+         n = -n;          /* make n positive */
+     i = 0;
+     do {       /* generate digits in reverse order */
+         s[i++] = n % 10 + '0';   /* get next digit */
+     } while ((n /= 10) > 0);     /* delete it */
+     if (sign < 0)
+         s[i++] = '-';
+     s[i] = '\0';
+     reverse(s);
+ }
 
 /*
  * Handler to detect end of screensaver ; catch SIGTERM
@@ -36,27 +67,10 @@ int main()
             remove("/tmp/ScreenSaverData.txt");
         }
 
-	//system("java -jar /home/pgouttef/Stage/workspace/FullScreenSaver/dist/FullScreenSaver.jar /tmp/test.png /tmp/ScreenSaverData.txt /home/pgouttef/Stage/Images/picture/ScreenSaverTemplate.bmp");
-	system("java -jar /usr/bin/PAAgent/FullScreenSaver.jar /tmp/ScreenSaver.png /tmp/ScreenSaverData.txt /usr/bin/PAAgent/ScreenSaverTemplate.bmp");
-        
 
 	//Send "startJVM" signal to the daemon
         system("python /usr/bin/PAAgent/client_daemon.py startJVM");
 	signal( SIGTERM, handler );
-	
-	/* Read file */
-	int i,k;
-        char *fileName = "/tmp/ScreenSaver.png";
-	sImageHeader sImHead = readImage(fileName);
-	
-	/* The picture DATA */
-	unsigned long **image_data = (unsigned long **) malloc (sImHead.nRows * sizeof(unsigned long *) );
-	for(i=0 ; i < sImHead.nRows ; ++i) {
-		image_data[i] = (unsigned long *) malloc (sImHead.nCols * sizeof(unsigned long) );
-	}
-	/* load BMP file */
-	loadMatric(fileName , image_data , sImHead.nCols , sImHead.nRows , 3 , sImHead.rasterOffset);
-	/* ************* */
 	
 	/* Graphicals datas */
 	Display * display; 
@@ -88,8 +102,37 @@ int main()
 	black = BlackPixel (display, screen_number); 
 	root = DefaultRootWindow (display); 
 	
-	image_width = sImHead.nCols;
-	image_height = sImHead.nRows;
+	image_width = DisplayWidth(display, screen_number);
+	image_height = DisplayHeight(display, screen_number);
+
+        char command[] = "java -jar /usr/bin/PAAgent/FullScreenSaver.jar /tmp/ScreenSaver.png /tmp/ScreenSaverData.txt ";
+        char space[] = " ";
+        char w[5] = "" , h[5] = ""  , tmp[10] = "" ;
+
+        itoa(image_width , w);
+        strcat(tmp , w);
+        strcat(tmp , space);
+        itoa(image_height , h);
+        strcat(tmp , h);
+        strcat(command , tmp);
+        system(command);
+       
+
+        /* Read file */
+	int i,k;
+        char *fileName = "/tmp/ScreenSaver.png";
+	sImageHeader sImHead = readImage(fileName);
+	
+	/* The picture DATA */
+	unsigned long **image_data = (unsigned long **) malloc (sImHead.nRows * sizeof(unsigned long *) );
+	for(i=0 ; i < sImHead.nRows ; ++i) {
+		image_data[i] = (unsigned long *) malloc (sImHead.nCols * sizeof(unsigned long) );
+	}
+	/* load BMP file */
+	loadMatric(fileName , image_data , sImHead.nCols , sImHead.nRows , 3 , sImHead.rasterOffset);
+	/* ************* */
+
+        
 
 	/* Create simple window to receive picture */
 	win = XCreateSimpleWindow (display, 
@@ -124,7 +167,7 @@ int main()
 		XPutImage (display, pixmap, gc, image, 0, 0, 0,0, image_width, image_height); 
 		XCopyArea (display, pixmap, win, gc, 0,0, image_width, image_height, posImageX , posImageY);
 		
-		system("java -jar /home/pgouttef/Stage/workspace/Common/ScreenSaver/dist/FullScreenSaver.jar");
+		system(command);
 		//sleep(1);
 		
 		/* load BMP file */
