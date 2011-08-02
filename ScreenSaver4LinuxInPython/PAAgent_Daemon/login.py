@@ -64,13 +64,15 @@ class Login:
 		    # user[NAME,RIGHTS]
 		    if group_l[1] == 'yes' and group_l[0] == group_u:
 		        right = True
+                    if group_l[1] == 'no' and group_l[0] == group_u:
+		        right = False
 
 	# Tests for user name
 	for user_l in items_users: 
 	    # user[NAME,RIGHTS]
 	    if user_l[1] == 'yes' and user_l[0] == username:
-	        right = True
+	        return True
             if user_l[1] == 'no' and user_l[0] == username:
-	        right = False
+	        return False
             
         return right
