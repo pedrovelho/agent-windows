@@ -34,6 +34,7 @@
             this.configFileLocationTextBox = new System.Windows.Forms.TextBox();
             this.browseConfigFileLocation = new System.Windows.Forms.Button();
             this.configurationGroupBox = new System.Windows.Forms.GroupBox();
+            this.changeAccountButton = new System.Windows.Forms.Button();
             this.guiEditButton = new System.Windows.Forms.Button();
             this.textEditConfig = new System.Windows.Forms.Button();
             this.infoGroupBox = new System.Windows.Forms.GroupBox();
@@ -62,7 +63,6 @@
             this.viewLogsWithExplorerButton = new System.Windows.Forms.Button();
             this.activeeonLinkLabel = new System.Windows.Forms.LinkLabel();
             this.label1 = new System.Windows.Forms.Label();
-            this.changeAccountButton = new System.Windows.Forms.Button();
             this.configurationGroupBox.SuspendLayout();
             this.infoGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.proActiveLogoPictureBox)).BeginInit();
@@ -114,6 +114,16 @@
             this.configurationGroupBox.TabIndex = 3;
             this.configurationGroupBox.TabStop = false;
             this.configurationGroupBox.Text = "Configuration";
+            // 
+            // changeAccountButton
+            // 
+            this.changeAccountButton.Location = new System.Drawing.Point(9, 48);
+            this.changeAccountButton.Name = "changeAccountButton";
+            this.changeAccountButton.Size = new System.Drawing.Size(99, 23);
+            this.changeAccountButton.TabIndex = 4;
+            this.changeAccountButton.Text = "Change Account";
+            this.changeAccountButton.UseVisualStyleBackColor = true;
+            this.changeAccountButton.Click += new System.EventHandler(this.changeAccountButton_Click);
             // 
             // guiEditButton
             // 
@@ -385,16 +395,6 @@
             this.label1.Size = new System.Drawing.Size(164, 13);
             this.label1.TabIndex = 14;
             this.label1.Text = "Nice-Sophia Antipolis/ActiveEon ";
-            // 
-            // changeAccountButton
-            // 
-            this.changeAccountButton.Location = new System.Drawing.Point(9, 48);
-            this.changeAccountButton.Name = "changeAccountButton";
-            this.changeAccountButton.Size = new System.Drawing.Size(99, 23);
-            this.changeAccountButton.TabIndex = 4;
-            this.changeAccountButton.Text = "Change Account";
-            this.changeAccountButton.UseVisualStyleBackColor = true;
-            this.changeAccountButton.Click += new System.EventHandler(this.changeAccountButton_Click);
             // 
             // AgentWindow
             // 
