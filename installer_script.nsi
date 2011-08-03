@@ -14,19 +14,30 @@
 !include WinVer.nsh
 
 #################################################################
+# !! TARGET_ARCH !! can be x86 or x64
+#################################################################
+!define TARGET_ARCH "x86"
+
+#################################################################
 # Some constants definitions like service name, version, etc ...
 #################################################################
 !define SERVICE_NAME "ProActiveAgent"
 !define SERVICE_DESC "The ProActive Agent enables desktop computers as an important source of computational power"
 !define VERSION "2.3.2"
 !define PAGE_FILE "serviceInstallPage.ini"
+
+#################################################################
+# SubInAcl tool related variables
+#################################################################
 !define SUBINACL_DIR "$PROGRAMFILES\Windows Resource Kits\Tools"
 !define SUBINACL_PATH "${SUBINACL_DIR}\subinacl.exe"
 !define SUBINACL_URL "http://download.microsoft.com/download/1/7/d/17d82b72-bc6a-4dc8-bfaa-98b37b22b367/subinacl.msi"
 !define SUBINACL_MANUAL_PERMISSIONS "The permissions must be restricted manually, $INSTDIR\restrict.dat must be readable only by Administrators and Local System"
 !define SUBINACL_MANUAL_INSTALL "Please download SubInAcl.msi and install it manually then run the command: subinacl.exe /service ${SERVICE_NAME} /grant=S-1-1-0=TO"
 
-# Privileges
+#################################################################
+# Privileges required by the ProActive Runtime Account
+#################################################################
 !define SERVICE_LOGON_RIGHT 'SeServiceLogonRight'
 !define SE_INCREASE_QUOTA_NAME 'SeIncreaseQuotaPrivilege'
 !define SE_ASSIGNPRIMARYTOKEN_NAME 'SeAssignPrimaryTokenPrivilege'
@@ -46,7 +57,7 @@ Var tmp
 CRCCheck on
 
 Name "ProActive Agent ${VERSION}"
-OutFile ProActiveAgent-setup-${VERSION}.exe
+OutFile ProActiveAgent-${VERSION}RC2-setup.exe
 
 LicenseText "This program is Licensed under the GNU General Public License (GPL)."
 LicenseData "LICENSE.txt"
@@ -198,10 +209,14 @@ Page Custom MyCustomPage MyCustomLeave
 # On init peforms the following checks:
 # - admin rights
 # - Microsoft .NET Framework 3.5
-# - VC++ redist 2008
 # - Previous version of the unistaller
 ########################################
 Function .onInit
+
+        #-----------------------------------------------------------------------------------
+        # Read hostname
+        #-----------------------------------------------------------------------------------
+        !insertmacro GetServerName $Hostname
 
         #-----------------------------------------------------------------------------------
         # Check user admin rights
@@ -217,9 +232,9 @@ Function .onInit
         #-----------------------------------------------------------------------------------
         # On x64 we have to explicitely set the registery view
         #-----------------------------------------------------------------------------------
-        ${If} ${RunningX64}
-          SetRegView 64
-        ${EndIf}
+        #${If} ${RunningX64}
+        #  SetRegView 64
+        #${EndIf}
 
         #-----------------------------------------------------------------------------------
         # Check if .NET framework 3.5 is installed
@@ -232,6 +247,7 @@ Function .onInit
         #-----------------------------------------------------------------------------------
         # Check if VC++ redist 2010 is installed
         #-----------------------------------------------------------------------------------
+        /*
         ReadRegDWORD $0 HKLM Software\Microsoft\DevDiv\VC\Servicing\10.0\RED\1033 Install
         # If the redistributable package is not installed run the installer
         StrCmp $0 '1' continueInstall 0
@@ -250,6 +266,7 @@ Function .onInit
             MessageBox MB_YESNO "It appears that redistributable package might not have been installed properly. If you are sure everything is allright hit YES.$\nDo you want to continue the installation ?" IDYES +2
             Abort
         continueInstall:
+        */
         
         #-----------------------------------------------------------------------------------
         # Check if User Account Protection is Activated (Windows Vista)
@@ -283,8 +300,8 @@ Function MyCustomPage
   !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "${TXT_CONF}" State "$INSTDIR\config"
   # Set default location for logs directory
   !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "${TXT_LOGSDIR}" State "$INSTDIR\logs"
-  # Set env var COMPUTERNAME as default user domain
-  !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "${TXT_DOMAIN}" State "$%COMPUTERNAME%"
+  # Set default user domain
+  !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "${TXT_DOMAIN}" State $Hostname
   # Disable "Use service account home"
   # !insertmacro GROUPCONTROLS "${PAGE_FILE}" "${SEL_INSTLOC}" "${CHK_LOGSHOME}|" "1"
   # Display the custom page
@@ -419,8 +436,7 @@ Function MyCustomLeave
     
     # The account does not exist if the specified domain is local computer the account can be created
     createNewAccount:
-      ${If} $R5 == "."
-      ${OrIf} $R5 == "$%COPMUTERNAME%"
+      ${If} $R5 == $Hostname
          DetailPrint "The account $R3 does not exist ... asking user if he wants to create a new account"
          # Ask the user if he wants to create a new account
          MessageBox MB_YESNO "The account $R3 does not exist, would you like to create it ?" IDYES createAccount
@@ -491,7 +507,6 @@ Function MyCustomLeave
       # If a new account was created no need to ask to add the user to the group
       ${If} $R6 == "1"
         # The function UserMgr::AddToGroup does not work
-        !insertmacro GetServerName $Hostname
         !insertmacro AddUserToGroup1 $Hostname $R3 "558"
       ${EndIf}
     ${EndIf}
@@ -506,6 +521,13 @@ Function MyCustomLeave
       DetailPrint "Unable to install as service."
       MessageBox MB_OK "Unable to install as service. To install manually use sc.exe command"
     ${EndIf}
+    
+    #-----------------------------------------------------------------------------------
+    # On x64 we have to explicitely set the registery view
+    #-----------------------------------------------------------------------------------
+    #${If} ${RunningX64}
+    #  SetRegView 64
+    #${EndIf}
     
     # Once the service is installed write auth data into a restricted acces key
     WriteRegStr HKLM "Software\ProActiveAgent\Creds" "domain" $R5
@@ -689,11 +711,7 @@ Section "ProActive Agent"
         File "ProActiveAgent\log4net.config"
         File "ProActiveAgent\lib\log4net.dll"
         File "ProActiveAgent\lib\InJobProcessCreator.exe"
-        ${If} ${RunningX64}
-          File "ProActiveAgent\lib\x64\JobManagement.dll"
-        ${Else}
-          File "ProActiveAgent\lib\x86\JobManagement.dll"
-        ${EndIf}
+        File "ProActiveAgent\lib\${TARGET_ARCH}\JobManagement.dll"
 
         IfFileExists $INSTDIR\config\PAAgent-config.xml 0 defaultFileNotExistLabel
 
@@ -791,9 +809,9 @@ Section "Uninstall"
 	#-----------------------------------------------------------------------------------
         # On x64 we have to explicitely set the registery view
         #-----------------------------------------------------------------------------------
-        ${If} ${RunningX64}
-          SetRegView 64
-        ${EndIf}
+        #${If} ${RunningX64}
+        #  SetRegView 64
+        #${EndIf}
         
 	#-----------------------------------------------------------------------------------
         # Close the ProActive Agent Control
