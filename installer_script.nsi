@@ -57,7 +57,7 @@ Var tmp
 CRCCheck on
 
 Name "ProActive Agent ${VERSION}"
-OutFile ProActiveAgent-${VERSION}RC2-setup.exe
+OutFile ProActiveAgent-${VERSION}RC4-setup.exe
 
 LicenseText "This program is Licensed under the GNU General Public License (GPL)."
 LicenseData "LICENSE.txt"
