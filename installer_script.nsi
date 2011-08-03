@@ -586,7 +586,7 @@ Function MyCustomLeave
     
     # Run the command in a console view to allow the user to see output
     # The command revokes permissions for Guests, Users and Power Users
-    ExecWait 'cmd.exe /C cd "${SUBINACL_DIR}" & subinacl.exe /verbose=1 /file "$INSTDIR\restrict.dat" /revoke=S-1-5-32-545 /revoke=S-1-5-32-546 /revoke=S-1-5-32-547 & pause'
+    ExecWait 'cmd.exe /C echo Restricting keyfile access ... & cd "${SUBINACL_DIR}" & subinacl.exe /verbose=1 /file "$INSTDIR\restrict.dat" /revoke=S-1-5-32-545 /revoke=S-1-5-32-546 /revoke=S-1-5-32-547 & pause'
     
     ###############################################################################################################################
     # Using the regini shell command we need to restrict the access to the HKEY_LOCAL_MACHINE\SOFTWARE\ProActiveAgent\Creds key   #
