@@ -57,7 +57,7 @@ Var tmp
 CRCCheck on
 
 Name "ProActive Agent ${VERSION}"
-OutFile ProActiveAgent-${VERSION}RC4-setup.exe
+OutFile ProActiveAgent-${VERSION}RC5-setup.exe
 
 LicenseText "This program is Licensed under the GNU General Public License (GPL)."
 LicenseData "LICENSE.txt"
@@ -230,51 +230,12 @@ Function .onInit
           Abort
 
         #-----------------------------------------------------------------------------------
-        # On x64 we have to explicitely set the registery view
-        #-----------------------------------------------------------------------------------
-        #${If} ${RunningX64}
-        #  SetRegView 64
-        #${EndIf}
-
-        #-----------------------------------------------------------------------------------
         # Check if .NET framework 3.5 is installed
         #-----------------------------------------------------------------------------------
         ${IfNot} ${HasDotNet3.5}
             MessageBox MB_OK "Microsoft .NET Framework 3.5 is required."
             Abort
         ${EndIf}
-
-        #-----------------------------------------------------------------------------------
-        # Check if VC++ redist 2010 is installed
-        #-----------------------------------------------------------------------------------
-        /*
-        ReadRegDWORD $0 HKLM Software\Microsoft\DevDiv\VC\Servicing\10.0\RED\1033 Install
-        # If the redistributable package is not installed run the installer
-        StrCmp $0 '1' continueInstall 0
-          MessageBox MB_OK 'You must install the Visual C++ 2010 Redistributable Package to use ProActive Agent.$\nPress OK to begin installation.'
-          # Prepare to copy the redistributable package
-          SetOutPath $TEMP
-          # Copy the architecture dependant installer then run the architecture dependant installer
-          ${If} ${RunningX64}
-            File "utils\x64\vcredist_x64.exe"
-            ExecWait "$TEMP\vcredist_x64.exe" $0
-          ${Else}
-            File "utils\x86\vcredist_x86.exe"
-            ExecWait "$TEMP\vcredist_x86.exe" $0
-          ${EndIf}
-          StrCmp $0 '0' +3 0
-            MessageBox MB_YESNO "It appears that redistributable package might not have been installed properly. If you are sure everything is allright hit YES.$\nDo you want to continue the installation ?" IDYES +2
-            Abort
-        continueInstall:
-        */
-        
-        #-----------------------------------------------------------------------------------
-        # Check if User Account Protection is Activated (Windows Vista)
-        #-----------------------------------------------------------------------------------
-        ## ReadRegDWORD $1 HKLM Software\Microsoft\Windows\CurrentVersion\Policies\System EnableLUA
-        ## StrCmp $1 '1' 0 +3
-        ##  MessageBox MB_OK "It appears that the User Account Control (UAC) feature is enabled. The installation cannot continue. Please disable the UAC feature and restart the installation. To disable the UAC feature: Go to the User Accounts part in the Control Panel and click on the 'Turn User Account Control on or off' Next, uncheck the 'Use User Account' check box to disable and reboot."
-        ##    Abort
 
         #-----------------------------------------------------------------------------------
         # Check if a previous version of the unistaller is available
@@ -514,10 +475,13 @@ Function MyCustomLeave
     createServiceLABEL:
     
     # Create the service under the Local System and store the user and password in the restricted registry key
-    !insertmacro SERVICE "create" ${SERVICE_NAME} 'path="$INSTDIR\ProActiveAgent.exe";autostart=1;interact=1;display=${SERVICE_NAME};description=${SERVICE_DESC};' ""
+    #!insertmacro SERVICE "create" ${SERVICE_NAME} 'path="$INSTDIR\ProActiveAgent.exe";autostart=1;interact=1;display=${SERVICE_NAME};description=${SERVICE_DESC};' ""
+    ExecWait 'cmd.exe /C echo Installing "$INSTDIR\ProActiveAgent.exe" as service ... & sc create ${SERVICE_NAME} binPath= "$INSTDIR\ProActiveAgent.exe" DisplayName= "${SERVICE_NAME}" start= auto type= interact type= own & sc description ${SERVICE_NAME} "${SERVICE_DESC}" & pause'
+
+    # Check if the service was correctly installed
+    !insertmacro SERVICE "status" ${SERVICE_NAME} '' ""
     Pop $0
-    # Means the service is not installed !
-    ${If} $0 != "true"
+    ${If} $0 != "stopped"
       DetailPrint "Unable to install as service."
       MessageBox MB_OK "Unable to install as service. To install manually use sc.exe command"
     ${EndIf}
@@ -584,9 +548,15 @@ Function MyCustomLeave
     Goto restrictPermRegKeyLabel
     existLABEL:
     
+
+    UserMgr::GetSIDFromUserName $R5 $R3
+    Pop $0
+
     # Run the command in a console view to allow the user to see output
     # The command revokes permissions for Guests, Users and Power Users
+    # Then the command grants BUILTIN\Administrators permission to control the ProActiveAgent service
     ExecWait 'cmd.exe /C echo Restricting keyfile access ... & cd "${SUBINACL_DIR}" & subinacl.exe /verbose=1 /file "$INSTDIR\restrict.dat" /revoke=S-1-5-32-545 /revoke=S-1-5-32-546 /revoke=S-1-5-32-547 & pause'
+    # & cls & echo Allowing Administrators to control the ProActiveAgent service ... & subinacl.exe /service ${SERVICE_NAME} /grant=$0=F & pause'
     
     ###############################################################################################################################
     # Using the regini shell command we need to restrict the access to the HKEY_LOCAL_MACHINE\SOFTWARE\ProActiveAgent\Creds key   #
