@@ -6,12 +6,11 @@
 # - UserManagement.nsh contains GetServerName and AddUserToGroup1 from http://nsis.sourceforge.net/User_Management_using_API_calls#Add_User_to_a_group
 ############################################################################################################################
 !include x64.nsh
-!include "DotNetVer.nsh"
-!include "MUI.nsh"
-!include "servicelib.nsh"
-!include "NTProfiles.nsh"
-!include "UserManagement.nsh"
+!include MUI.nsh
 !include WinVer.nsh
+!include "DotNetVer.nsh"
+!include "servicelib.nsh"
+!include "UserManagement.nsh"
 
 #################################################################
 # !! TARGET_ARCH !! can be x86 or x64
@@ -23,7 +22,7 @@
 #################################################################
 !define SERVICE_NAME "ProActiveAgent"
 !define SERVICE_DESC "The ProActive Agent enables desktop computers as an important source of computational power"
-!define VERSION "2.3.2"
+!define VERSION "2.3.3-beta"
 !define PAGE_FILE "serviceInstallPage.ini"
 
 #################################################################
@@ -171,8 +170,6 @@ Page Custom MyCustomPage MyCustomLeave
 !define LOGON32_PROVIDER_DEFAULT 0
 !endif
 
-!define DEBUG
-
 !ifmacrondef DoLogonUser
   ;Logs on a user, and returns their login token in $R0
   !macro DoLogonUser Domain Username Password
@@ -181,12 +178,9 @@ Page Custom MyCustomPage MyCustomLeave
     goto logOnDone
     logOnErr:
       MessageBox MB_OK "Invalid username or password"
-      Abort
     logOnDone:
-    !ifdef DEBUG
       DetailPrint "Return token: $R0"
       DetailPrint "Call return: $R8"
-    !endif
   !macroend
 !endif
 
@@ -199,9 +193,7 @@ Page Custom MyCustomPage MyCustomLeave
     logOffErr:
       DetailPrint "Error: Logging user off (Token: '${Token}')"
     logOffDone:
-    !ifdef DEBUG
       DetailPrint "Close return: $R5"
-    !endif
   !macroend
 !endif
 
@@ -363,10 +355,17 @@ Function MyCustomLeave
   # !! SELECTED: Specify an account !!
   #-----------------------------------------------------------------------------------
 
-    # Perform user login (domain, username, password)
+    checkAccount:
+    
     !insertmacro DoLogonUser $R5 $R3 $R4
+    StrCmp $R8 0 unableToLog
+    Goto logged
+    unableToLog:
+    Goto createNewAccount
+    logged:
     
     # The user is logged it means the password is correct
+    MessageBox MB_OK "Sucessfully logged on as $R3, logging off"
 
     # Logoff user
     StrCpy $0 $R5
@@ -404,7 +403,7 @@ Function MyCustomLeave
            Abort
       ${Else}
          # The  domain is not local so the account cannot be created
-         MessageBox MB_OK "The account $R3 does not exist, since the Domain is not local the account cannot be created, please specify an existing Domain account."
+         MessageBox MB_OK "The account $R3 does not exist, since the Domain is not local the account cannot be created."
            Abort
       ${EndIf}
       DetailPrint "The account $R3 does not exist ... asking user if he wants to create a new account"
@@ -452,6 +451,7 @@ Function MyCustomLeave
       ${EndIf}
       # Here set R6 1 to know that a new account was created
       StrCpy $R6 "1"
+      Goto checkAccount
 
     checkGroupMember:
     
@@ -475,7 +475,6 @@ Function MyCustomLeave
     createServiceLABEL:
     
     # Create the service under the Local System and store the user and password in the restricted registry key
-    #!insertmacro SERVICE "create" ${SERVICE_NAME} 'path="$INSTDIR\ProActiveAgent.exe";autostart=1;interact=1;display=${SERVICE_NAME};description=${SERVICE_DESC};' ""
     ExecWait 'cmd.exe /C echo Installing "$INSTDIR\ProActiveAgent.exe" as service ... & sc create ${SERVICE_NAME} binPath= "$INSTDIR\ProActiveAgent.exe" DisplayName= "${SERVICE_NAME}" start= auto type= interact type= own & sc description ${SERVICE_NAME} "${SERVICE_DESC}" & pause'
 
     # Check if the service was correctly installed
@@ -565,7 +564,6 @@ Function MyCustomLeave
     restrictPermRegKeyLabel:
     ExecWait 'cmd.exe /C regini.exe "$INSTDIR"\acl.dat'
 
-  writeToRegistryLABEL:
   ${If} $R7 == "1"
     # The goal is to read the path of AppData folder
     
@@ -633,7 +631,6 @@ Function MyCustomLeave
     # The second command allows full control of the configuration file by ALL USERS group
     ExecWait 'cmd.exe /C cd "${SUBINACL_DIR}" & subinacl.exe /service ${SERVICE_NAME} /grant=S-1-1-0=TO & subinacl.exe /file "$R1" /grant=S-1-1-0=F & pause'
   ${EndIf}
-  runGuiLABEL:
   # Run the Agent GUI
   Exec "$INSTDIR\AgentForAgent.exe"
 FunctionEnd
