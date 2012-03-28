@@ -75,9 +75,9 @@ namespace AgentForAgent
             this.availablePhysicalMemoryValue = new System.Windows.Forms.Label();
             this.availablePhysicalMemoryLabel = new System.Windows.Forms.Label();
             this.connectionTabPage = new System.Windows.Forms.TabPage();
+            this.customRadioButton = new System.Windows.Forms.RadioButton();
             this.resourceManagerRegistrationRadioButton = new System.Windows.Forms.RadioButton();
             this.localRegistrationRadioButton = new System.Windows.Forms.RadioButton();
-            this.customRadioButton = new System.Windows.Forms.RadioButton();
             this.connectionTypeTabControl = new System.Windows.Forms.TabControl();
             this.localRegistrationTabPage = new System.Windows.Forms.TabPage();
             this.rmiRegistrationAdditionalConfigurationGroupBox = new System.Windows.Forms.GroupBox();
@@ -596,6 +596,18 @@ namespace AgentForAgent
             this.connectionTabPage.Text = "Connection";
             this.connectionTabPage.UseVisualStyleBackColor = true;
             // 
+            // customRadioButton
+            // 
+            this.customRadioButton.AutoSize = true;
+            this.customRadioButton.Location = new System.Drawing.Point(3, 47);
+            this.customRadioButton.Name = "customRadioButton";
+            this.customRadioButton.Size = new System.Drawing.Size(14, 13);
+            this.customRadioButton.TabIndex = 3;
+            this.customRadioButton.TabStop = true;
+            this.toolTip.SetToolTip(this.customRadioButton, "Enables a user defined connection. See the \"Custom\" tab below.");
+            this.customRadioButton.UseVisualStyleBackColor = true;
+            this.customRadioButton.CheckedChanged += new System.EventHandler(this.customRadioButton_CheckedChanged);
+            // 
             // resourceManagerRegistrationRadioButton
             // 
             this.resourceManagerRegistrationRadioButton.AutoSize = true;
@@ -620,18 +632,6 @@ namespace AgentForAgent
             this.toolTip.SetToolTip(this.localRegistrationRadioButton, "Enables the Local Registration.The runtime will be registred locally.");
             this.localRegistrationRadioButton.UseVisualStyleBackColor = true;
             this.localRegistrationRadioButton.CheckedChanged += new System.EventHandler(this.rmiRegistrationRadioButton_CheckedChanged);
-            // 
-            // customRadioButton
-            // 
-            this.customRadioButton.AutoSize = true;
-            this.customRadioButton.Location = new System.Drawing.Point(3, 47);
-            this.customRadioButton.Name = "customRadioButton";
-            this.customRadioButton.Size = new System.Drawing.Size(14, 13);
-            this.customRadioButton.TabIndex = 3;
-            this.customRadioButton.TabStop = true;
-            this.toolTip.SetToolTip(this.customRadioButton, "Enables a user defined connection. See the \"Custom\" tab below.");
-            this.customRadioButton.UseVisualStyleBackColor = true;
-            this.customRadioButton.CheckedChanged += new System.EventHandler(this.customRadioButton_CheckedChanged);
             // 
             // connectionTypeTabControl
             // 
@@ -681,6 +681,7 @@ namespace AgentForAgent
             this.rmiRegistrationJavaActionClassTextBox.Size = new System.Drawing.Size(341, 20);
             this.rmiRegistrationJavaActionClassTextBox.TabIndex = 1;
             this.toolTip.SetToolTip(this.rmiRegistrationJavaActionClassTextBox, "Defines the Java class to run.");
+            this.rmiRegistrationJavaActionClassTextBox.TextChanged += new System.EventHandler(this.rmiRegistrationJavaActionClassTextBox_TextChanged);
             // 
             // label13
             // 
@@ -752,6 +753,7 @@ namespace AgentForAgent
             this.resourceManagerRegistrationJavaActionClassTextBox.Size = new System.Drawing.Size(341, 20);
             this.resourceManagerRegistrationJavaActionClassTextBox.TabIndex = 1;
             this.toolTip.SetToolTip(this.resourceManagerRegistrationJavaActionClassTextBox, "Defines the Java class to run.");
+            this.resourceManagerRegistrationJavaActionClassTextBox.TextChanged += new System.EventHandler(this.resourceManagerRegistrationJavaActionClassTextBox_TextChanged);
             // 
             // label18
             // 
@@ -909,6 +911,7 @@ namespace AgentForAgent
             this.customJavaActionClassTextBox.Size = new System.Drawing.Size(341, 20);
             this.customJavaActionClassTextBox.TabIndex = 1;
             this.toolTip.SetToolTip(this.customJavaActionClassTextBox, "Defines the Java class to run.");
+            this.customJavaActionClassTextBox.TextChanged += new System.EventHandler(this.customJavaActionClassTextBox_TextChanged);
             // 
             // label19
             // 

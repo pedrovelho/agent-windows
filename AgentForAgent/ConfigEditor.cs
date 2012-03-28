@@ -117,7 +117,7 @@ namespace AgentForAgent
             this.availableCPUsValue.Text = "" + Environment.ProcessorCount;
 
             if (conf.config.nbRuntimes == 0)
-            {                
+            {
                 this.nbRuntimesNumericUpDown.Value = Environment.ProcessorCount;
             }
             else
@@ -136,7 +136,7 @@ namespace AgentForAgent
             if (this.configuration.events.Length == 0)
             {
                 this.alwaysAvailableCheckBox.Checked = true;
-                this.processPriorityComboBox.SelectedItem = Enum.GetName(typeof(ProcessPriorityClass), configuration.config.processPriority);                
+                this.processPriorityComboBox.SelectedItem = Enum.GetName(typeof(ProcessPriorityClass), configuration.config.processPriority);
                 this.maxCpuUsageNumericUpDown.Value = configuration.config.maxCpuUsage;
             }
             else
@@ -347,7 +347,7 @@ namespace AgentForAgent
             }
             // Save multi process related config
             this.configuration.config.nbRuntimes = Convert.ToUInt16(this.nbRuntimesNumericUpDown.Value);
-            
+
             //--Events list                        
             this.internalCopyEventsList();
             // Save ProActive Communication Protocol and Port initial value
@@ -760,7 +760,7 @@ namespace AgentForAgent
         private void processPriorityComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (this.alwaysAvailableCheckBox.Checked)
-            {                
+            {
                 this.configuration.config.processPriority = (ProcessPriorityClass)Enum.Parse(typeof(ProcessPriorityClass), (string)this.processPriorityComboBox.SelectedItem);
             }
             else
@@ -799,9 +799,9 @@ namespace AgentForAgent
 
         //--Behaviour of the "Always" Checkbox
         private void alwaysAvailableCheckBox_CheckStateChanged(object sender, EventArgs e)
-        {            
+        {
             if (alwaysAvailableCheckBox.Checked)
-            {               
+            {
                 // Always available means no events                                
 
                 // 1. Check if there are user defined events and ask the user to save them 
@@ -813,7 +813,7 @@ namespace AgentForAgent
                     if (res == DialogResult.Yes)
                     {
                         this.saveConfigAs_Click(sender, e);
-                    }                    
+                    }
                 }
 
                 // 2. Remove all events
@@ -872,6 +872,11 @@ namespace AgentForAgent
             this.saveConfig.Enabled = true;
         }
 
+        private void rmiRegistrationJavaActionClassTextBox_TextChanged(object sender, EventArgs e)
+        {
+            this.saveConfig.Enabled = true;
+        }
+
         /*************************************************************************/
         /** RM ACTION TYPE - resource manager registration gui handling methods **/
         /*************************************************************************/
@@ -898,6 +903,11 @@ namespace AgentForAgent
         }
 
         private void credentialLocationTextBox_TextChanged(object sender, EventArgs e)
+        {
+            this.saveConfig.Enabled = true;
+        }
+
+        private void resourceManagerRegistrationJavaActionClassTextBox_TextChanged(object sender, EventArgs e)
         {
             this.saveConfig.Enabled = true;
         }
@@ -968,6 +978,11 @@ namespace AgentForAgent
                 this.customArgumentsListBox.Items[selectedIndex] = this.customArgumentTextBox.Text;
                 this.saveConfig.Enabled = true;
             }
+        }
+
+        private void customJavaActionClassTextBox_TextChanged(object sender, EventArgs e)
+        {
+            this.saveConfig.Enabled = true;
         }
 
         /****************************************************/
