@@ -183,7 +183,8 @@ namespace ProActiveAgent
             // See the bug AGENT-148 (https://bugs.activeeon.com/browse/AGENT-149)
             // Sometimes when starting multiple java.exe (multi-runtimes) a concurrent registry access can occur.
             // To avoid such behavior the runtimes are started progressively, each runtime will wait a fixed delay in milliseconds.
-            if (this.commonStartInfo.isRuntimeStartDelayEnabled && this.rank != 0) {
+            if (this.commonStartInfo.isRuntimeStartDelayEnabled && this.rank != 0)
+            {
                 Thread.Sleep(this.commonStartInfo.runtimeStartDelayInMs);
             }
 
@@ -504,7 +505,7 @@ namespace ProActiveAgent
 
             if (disabledRestarting)
             {
-                LOGGER.Info("Aborting restart ...");                
+                LOGGER.Info("Aborting restart ...");
                 return;
             }
 
@@ -521,7 +522,7 @@ namespace ProActiveAgent
             else
             {
                 LOGGER.Info("Aborting restart, beacause it would happen outside the allocated time. [delayDateTime: " + delayDateTime.ToString(Constants.DATE_FORMAT) + " and barrier: " + this.restartBarrierDateTime.ToString(Constants.DATE_FORMAT) + "]");
-            }                     
+            }
         }
 
         // this method has to be synchronized as it is dealing with a process object
@@ -606,11 +607,9 @@ namespace ProActiveAgent
                 string scriptOutput = ScriptExecutor.executeScript(
                     this.commonStartInfo.configuration.agentInstallLocation, // The agent install location
                     scriptAbsolutePath, // The script to execute absolute path 
-                    "" + paRuntimeJavaProcessPid); // The arguments of the script
-                if (LOGGER.IsDebugEnabled)
-                {
-                    LOGGER.Debug(scriptOutput);
-                }
+                    new string[] { paRuntimeJavaProcessPid.ToString(), this.rank.ToString() }); // The arguments of the script
+
+                this.processLogger.Info(scriptOutput);
             }
             catch (Exception e)
             {
@@ -623,9 +622,9 @@ namespace ProActiveAgent
         // and calls internal methods
 
         public void sendStartAction(ApplicationType appType)
-        {            
+        {
             LOGGER.Info("Received start action request from " + appType.ToString());
-            
+
             if (callersState.ContainsKey(appType))
             {
                 callersState[appType]++;
@@ -677,7 +676,7 @@ namespace ProActiveAgent
             }
 
             LOGGER.Info("Restart delay is now set to " + this.restartDelayInMs + " ms");
-            
+
             this.start();
         }
 
@@ -702,7 +701,7 @@ namespace ProActiveAgent
         /// <param name="maxCpuUsage">The maximum cpu usage</param>
         public void setProcessBehaviour(ProcessPriorityClass processPriority, uint maxCpuUsage)
         {
-            LOGGER.Info("Setting process priority to " + processPriority + " and max cpu usage to " + maxCpuUsage + "%");            
+            LOGGER.Info("Setting process priority to " + processPriority + " and max cpu usage to " + maxCpuUsage + "%");
             this.jobObject.Limits.PriorityClass = processPriority;
             //// Apply the specified process priority to all processes inside the job
             //foreach (Process process in this.jobObject.ConstructAssignedProcessList())

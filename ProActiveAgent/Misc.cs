@@ -179,8 +179,8 @@ namespace ProActiveAgent
             {
                 confKey = Registry.LocalMachine.OpenSubKey(Constants.REG_CREDS_SUBKEY, true);
 
-                if (confKey == null)                
-                    throw new ApplicationException("Unable to open credentials sub key");                
+                if (confKey == null)
+                    throw new ApplicationException("Unable to open credentials sub key");
 
                 confKey.SetValue("domain", domain);
                 confKey.SetValue("username", username);
@@ -192,7 +192,7 @@ namespace ProActiveAgent
             {
                 if (confKey != null)
                     confKey.Close();
-            }            
+            }
         }
 
         /// <summary>
@@ -217,18 +217,18 @@ namespace ProActiveAgent
             result = Convert.ToDecimal(ramCounter.NextValue());
             return result;
         }
-        
+
         /// <summary>
         /// Reads the value of the CLASSPATH variable defined in a script and stores it into the configuration.
         /// This method checks if the provided ProActive location contains \bin\windows\init.bat script.        
         /// </summary>
         /// <param name="config">The user defined configuration.</param>
         public static void readClasspath(ConfigParser.AgentConfigType config, string installLocation)
-        {            
+        {
             if (config.proactiveHome == null || config.proactiveHome.Equals(""))
             {
                 throw new ApplicationException("Unable to read the classpath, the ProActive location is unknown");
-            }            
+            }
 
             // 1) Use the java location if it's specified in the configuration
             // 2) If not specified use JAVA_HOME variable
@@ -245,7 +245,7 @@ namespace ProActiveAgent
                 }
             }
 
-            string initScript = null;            
+            string initScript = null;
 
             // First check if the proactiveHome or javaHome path are in UNC format
             if (config.proactiveHome.StartsWith(@"\\") || config.javaHome.StartsWith(@"\\"))
@@ -317,15 +317,15 @@ namespace ProActiveAgent
 
                 // Get the initScript
                 initScript = findInitScriptInternal(config.proactiveHome);
-                
+
                 ProcessStartInfo info = new ProcessStartInfo();
                 info.EnvironmentVariables["PA_SCHEDULER"] = config.proactiveHome;
-                info.EnvironmentVariables["PROACTIVE"] = config.proactiveHome;                
+                info.EnvironmentVariables["PROACTIVE"] = config.proactiveHome;
                 info.EnvironmentVariables[Constants.JAVA_HOME] = config.javaHome;
-                
+
                 // Run initScript and get the value of the CLASSPATH variable
                 config.classpath = VariableEchoer.echoVariable(initScript, Constants.CLASSPATH, info);
-            }            
+            }
         }
 
         // !! This method can be executed in impersonated context !!
@@ -354,7 +354,7 @@ namespace ProActiveAgent
                 }
             }
             return initScript;
-        } 
+        }
 
         /// <summary>        
         /// This method checks if a tcp port is available. 
@@ -436,7 +436,7 @@ namespace ProActiveAgent
     /// <summary>
     /// A static class that spawns a process in order to echo a variable defined in the specified script.</summary>
     public static class VariableEchoer
-    {        
+    {
         private static readonly string PROMPT = ">";
 
         private static StringBuilder initializerOutput;
@@ -450,7 +450,7 @@ namespace ProActiveAgent
             info.UseShellExecute = false;
             info.CreateNoWindow = true;
             info.RedirectStandardInput = true;
-            info.RedirectStandardOutput = true;            
+            info.RedirectStandardOutput = true;
 
             // Create new process 
             Process p = new Process();
@@ -468,7 +468,7 @@ namespace ProActiveAgent
                 if (!p.Start())
                 {
                     throw new ApplicationException("Unable to run the script " + scriptFilename);
-                }                
+                }
 
                 // Use a stream writer to synchronously write the sort input.
                 System.IO.StreamWriter streamWriter = p.StandardInput;
@@ -507,20 +507,20 @@ namespace ProActiveAgent
 
         public static String echoVariableAsForker(string javaHome, string installLocation, string workingdir, string scriptFilename, string variableToEcho)
         {
-            ProcessStartInfo info = new ProcessStartInfo();            
+            ProcessStartInfo info = new ProcessStartInfo();
             // Prepare to create a process that will run the script            
             info.FileName = installLocation + "\\parunas.exe";
             // /V:ON is equivalent to setlocal enabledelayedexpansion
             // The JAVA_HOME is injected since its is required by the initScript
             // The cmd.exe does not support UNC path as working dir therefore the CD is injected to get the correct
             // The initScript will be surrounded with \" (escaped quotes)
-            info.Arguments = "\"cmd.exe /V:ON /K set JAVA_HOME="+javaHome+"&& set CD="+workingdir+"&& \\\"" + scriptFilename + "\\\"\"";
+            info.Arguments = "\"cmd.exe /V:ON /K set JAVA_HOME=" + javaHome + "&& set CD=" + workingdir + "&& \\\"" + scriptFilename + "\\\"\"";
 
             info.WorkingDirectory = installLocation;
             info.UseShellExecute = false;
             info.CreateNoWindow = true;
             info.RedirectStandardInput = true;
-            info.RedirectStandardOutput = true;            
+            info.RedirectStandardOutput = true;
 
             // Create new process 
             Process p = new Process();
@@ -538,7 +538,7 @@ namespace ProActiveAgent
                 if (!p.Start())
                 {
                     throw new ApplicationException("Unable to run the script " + scriptFilename);
-                }             
+                }
 
                 // Use a stream writer to synchronously write the sort input.
                 System.IO.StreamWriter streamWriter = p.StandardInput;
@@ -574,7 +574,7 @@ namespace ProActiveAgent
         }
 
         private static void OutputHandler(object sendingProcess, System.Diagnostics.DataReceivedEventArgs outLine)
-        {                        
+        {
             if (outLine.Data == null || outLine.Data.Equals("") || outLine.Data.Contains(PROMPT))
             {
                 return;
@@ -588,17 +588,17 @@ namespace ProActiveAgent
     /// A static class that spawns a process in order to execute a specified script.</summary>
     public static class ScriptExecutor
     {
-        public static string executeScript(string installLocation, string scriptAbsolutePath, string scriptArguments)
+        public static string executeScript(string installLocation, string scriptAbsolutePath, string[] scriptParams)
         {
             ProcessStartInfo info = new ProcessStartInfo();
 
             // Prepare to create a process that will run the specified script
             info.FileName = installLocation + "\\parunas.exe";
-            info.Arguments = "\"" + scriptAbsolutePath + " " + scriptArguments + "\"";
+            info.Arguments = "\"" + scriptAbsolutePath + " " + string.Join(" ", scriptParams) + "\"";
+            info.WorkingDirectory = installLocation;
             info.UseShellExecute = false;
             info.CreateNoWindow = true;
             info.RedirectStandardOutput = true;
-
             // Create new process 
             Process p = new Process();
             p.StartInfo = info;
