@@ -22,7 +22,7 @@
 #################################################################
 !define SERVICE_NAME "ProActiveAgent"
 !define SERVICE_DESC "The ProActive Agent enables desktop computers as an important source of computational power"
-!define VERSION "2.3.3-beta"
+!define VERSION "2.3.3"
 !define PAGE_FILE "serviceInstallPage.ini"
 
 #################################################################
@@ -56,7 +56,7 @@ Var tmp
 CRCCheck on
 
 Name "ProActive Agent ${VERSION}"
-OutFile ProActiveAgent-${VERSION}RC5-setup.exe
+OutFile ProActiveAgent-${VERSION}-setup.exe
 
 LicenseText "This program is Licensed under the GNU General Public License (GPL)."
 LicenseData "LICENSE.txt"
