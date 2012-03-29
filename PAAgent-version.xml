@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PAAgent>
+<version>1.2.0.0</version>
+?
+<url>
+http://www.activeeon.com/public_content/releases/ProActive/Agent/0.9/ProActiveWindowsAgent-0.9.zip
+</url>
+?
+<features>
+- Multi runtime
+<br/>
+- test
+</features>
+</PAAgent>

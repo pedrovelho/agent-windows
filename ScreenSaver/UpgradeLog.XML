@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="ScreenSaver">
+</Property><Property Name="Solution File" Value="C:\Documents and Settings\tdobek\Mes documents\Screen Saver\ScreenSaver\ScreenSaver.sln">
+</Property><Property Name="User Options File" Value="C:\Documents and Settings\tdobek\Mes documents\Screen Saver\ScreenSaver\ScreenSaver.suo">
+</Property><Property Name="Date" Value="mardi 15 avril 2008">
+</Property><Property Name="Time" Value="14:38">
+</Property></Properties><Event ErrorLevel="0" Project="" Source="ScreenSaver.sln" Description="File successfully backed up as C:\Documents and Settings\tdobek\Mes documents\Screen Saver\ScreenSaver\Backup\ScreenSaver.sln">
+</Event><Event ErrorLevel="0" Project="" Source="ScreenSaver.suo" Description="File successfully backed up as C:\Documents and Settings\tdobek\Mes documents\Screen Saver\ScreenSaver\Backup\ScreenSaver.suo">
+</Event><Event ErrorLevel="0" Project="ScreenSaver" Source="ScreenSaver.csproj" Description="Project file successfully backed up as C:\Documents and Settings\tdobek\Mes documents\Screen Saver\ScreenSaver\Backup\ScreenSaver.csproj">
+</Event><Event ErrorLevel="0" Project="ScreenSaver" Source="ScreenSaver.csproj.user" Description="Project user file successfully backed up as C:\Documents and Settings\tdobek\Mes documents\Screen Saver\ScreenSaver\Backup\ScreenSaver.csproj.user">
+</Event><Event ErrorLevel="0" Project="ScreenSaver" Source="AssemblyInfo.cs" Description="File successfully backed up as C:\Documents and Settings\tdobek\Mes documents\Screen Saver\ScreenSaver\Backup\AssemblyInfo.cs">
+</Event><Event ErrorLevel="0" Project="ScreenSaver" Source="ScreenSaver.cs" Description="File successfully backed up as C:\Documents and Settings\tdobek\Mes documents\Screen Saver\ScreenSaver\Backup\ScreenSaver.cs">
+</Event><Event ErrorLevel="0" Project="ScreenSaver" Source="ScreenSaverForm.cs" Description="File successfully backed up as C:\Documents and Settings\tdobek\Mes documents\Screen Saver\ScreenSaver\Backup\ScreenSaverForm.cs">
+</Event><Event ErrorLevel="0" Project="ScreenSaver" Source="App.ico" Description="File successfully backed up as C:\Documents and Settings\tdobek\Mes documents\Screen Saver\ScreenSaver\Backup\App.ico">
+</Event><Event ErrorLevel="0" Project="ScreenSaver" Source="ScreenSaverForm.resx" Description="File successfully backed up as C:\Documents and Settings\tdobek\Mes documents\Screen Saver\ScreenSaver\Backup\ScreenSaverForm.resx">
+</Event><Event ErrorLevel="0" Project="ScreenSaver" Source="ScreenSaver.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="ScreenSaver" Source="ScreenSaver.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="" Source="ScreenSaver.sln" Description="Solution converted successfully">
+</Event><Event ErrorLevel="3" Project="" Source="ScreenSaver.sln" Description="Converted">
+</Event><Event ErrorLevel="0" Project="ScreenSaver" Source="ScreenSaver.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event></UpgradeLog>
