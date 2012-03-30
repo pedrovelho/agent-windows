@@ -1,0 +1,22 @@
+
+# /
+/*.suo
+/PAAgent_Setup.exe
+/ProActiveAgent-setup-v1.0.1rc.exe
+/Thumbs.db
+/bin
+
+# /AgentForAgent/
+/AgentForAgent/obj
+
+# /AgentForAgent/Resources/
+/AgentForAgent/Resources/Thumbs.db
+
+# /ConfigParser/
+/ConfigParser/obj
+
+# /ProActiveAgent/
+/ProActiveAgent/obj
+
+# /ScreenSaver/
+/ScreenSaver/obj
