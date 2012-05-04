@@ -22,17 +22,8 @@
 #################################################################
 !define SERVICE_NAME "ProActiveAgent"
 !define SERVICE_DESC "The ProActive Agent enables desktop computers as an important source of computational power"
-!define VERSION "2.3.3"
+!define VERSION "2.3.5"
 !define PAGE_FILE "serviceInstallPage.ini"
-
-#################################################################
-# SubInAcl tool related variables
-#################################################################
-!define SUBINACL_DIR "$PROGRAMFILES\Windows Resource Kits\Tools"
-!define SUBINACL_PATH "${SUBINACL_DIR}\subinacl.exe"
-!define SUBINACL_URL "http://download.microsoft.com/download/1/7/d/17d82b72-bc6a-4dc8-bfaa-98b37b22b367/subinacl.msi"
-!define SUBINACL_MANUAL_PERMISSIONS "The permissions must be restricted manually, $INSTDIR\restrict.dat must be readable only by Administrators and Local System"
-!define SUBINACL_MANUAL_INSTALL "Please download SubInAcl.msi and install it manually then run the command: subinacl.exe /service ${SERVICE_NAME} /grant=S-1-1-0=TO"
 
 #################################################################
 # Privileges required by the ProActive Runtime Account
@@ -106,7 +97,7 @@ Page Custom MyCustomPage MyCustomLeave
   Push $R3 ;flags of the control / hwnd of the control
 
   !insertmacro MUI_INSTALLOPTIONS_READ $R2 "${FILE}" "${SOURCECONTROL}" "State"
-  
+
   ${If} ${INV} == "1"
     ${If} "$R2" == "1"
       StrCpy $R2 0
@@ -233,7 +224,7 @@ Function .onInit
         # Check if a previous version of the unistaller is available
        	#-----------------------------------------------------------------------------------
         IfFileExists $INSTDIR\uninstall.exe 0 endLabel
-        
+
         #-----------------------------------------------------------------------------------
         # Ask the user if he wants to uninstall previous version
        	#-----------------------------------------------------------------------------------
@@ -264,7 +255,7 @@ FunctionEnd
 Function MyCustomLeave
 
   # Handle notify event of checkbox "Use service account home"
-  
+
   !insertmacro MUI_INSTALLOPTIONS_READ $tmp "${PAGE_FILE}" "Settings" "State"
   ${Switch} "Field $tmp"
     ${Case} "${CHK_LOGSHOME}"
@@ -281,7 +272,7 @@ Function MyCustomLeave
   #-----------------------------------------------------------------------------------
   # !! CHECK LOCATIONS !!
   #-----------------------------------------------------------------------------------
-  
+
   # Check "Use service account home" for logs location stored in R7
   !insertmacro MUI_INSTALLOPTIONS_READ $R7 ${PAGE_FILE} "${CHK_LOGSHOME}" State
   ${If} $R7 == "1"
@@ -343,7 +334,7 @@ Function MyCustomLeave
     MessageBox MB_OK "Please enter a valid password"
      Abort
   ${EndIf}
-  
+
   # Check for empty domain stored in R5
   !insertmacro MUI_INSTALLOPTIONS_READ $R5 ${PAGE_FILE} "${TXT_DOMAIN}" "State"
   ${If} $R5 == ""
@@ -356,14 +347,14 @@ Function MyCustomLeave
   #-----------------------------------------------------------------------------------
 
     checkAccount:
-    
+
     !insertmacro DoLogonUser $R5 $R3 $R4
     StrCmp $R8 0 unableToLog
     Goto logged
     unableToLog:
     Goto createNewAccount
     logged:
-    
+
     # The user is logged it means the password is correct
     MessageBox MB_OK "Sucessfully logged on as $R3, logging off"
 
@@ -388,12 +379,12 @@ Function MyCustomLeave
     ${Else}
        Goto reportErrorPrivilege
     ${EndIf}
-    
+
     reportErrorPrivilege:
       DetailPrint "The account $R3 must have SE_INCREASE_QUOTA_NAME and SE_ASSIGNPRIMARYTOKEN_NAME privileges ! Result was $0"
       MessageBox MB_OK "The account $R3 must have 'Adjust memory quotas for a process' and 'Replace a process-level token' privileges. In the 'Administrative Tools' of the 'Control Panel' open the 'Local Security Policy'. In 'Security Settings', select 'Local Policies' then select 'User Rights Assignments'. Finally, in the list of policies open the corresponding properties and add the account $R3."
         Abort # Go back to page.
-    
+
     # The account does not exist if the specified domain is local computer the account can be created
     createNewAccount:
       ${If} $R5 == $Hostname
@@ -454,7 +445,7 @@ Function MyCustomLeave
       Goto checkAccount
 
     checkGroupMember:
-    
+
     # Check if the account is part of 'Performace Monitor Group' of SID "S-1-5-32-558"
     # The function UserMgr::IsMemberOfGroup does not work.
     # Instead we use the UserMgr::GetUserNameFromSID to check if the group exists if so
@@ -471,9 +462,9 @@ Function MyCustomLeave
         !insertmacro AddUserToGroup1 $Hostname $R3 "558"
       ${EndIf}
     ${EndIf}
-    
+
     createServiceLABEL:
-    
+
     # Create the service under the Local System and store the user and password in the restricted registry key
     ExecWait 'cmd.exe /C echo Installing "$INSTDIR\ProActiveAgent.exe" as service ... & sc create ${SERVICE_NAME} binPath= "$INSTDIR\ProActiveAgent.exe" DisplayName= "${SERVICE_NAME}" start= auto type= interact type= own & sc description ${SERVICE_NAME} "${SERVICE_DESC}" & pause'
 
@@ -484,22 +475,22 @@ Function MyCustomLeave
       DetailPrint "Unable to install as service."
       MessageBox MB_OK "Unable to install as service. To install manually use sc.exe command"
     ${EndIf}
-    
+
     #-----------------------------------------------------------------------------------
     # On x64 we have to explicitely set the registery view
     #-----------------------------------------------------------------------------------
     #${If} ${RunningX64}
     #  SetRegView 64
     #${EndIf}
-    
+
     # Once the service is installed write auth data into a restricted acces key
     WriteRegStr HKLM "Software\ProActiveAgent\Creds" "domain" $R5
     WriteRegStr HKLM "Software\ProActiveAgent\Creds" "username" $R3
-    
+
     #######################################
     # Encrypt the password, see AGENT-154 #
     #######################################
-    
+
     # Set current dir to the location of pacrypt.dll
     SetOutPath $INSTDIR
     # C-Signature: int encryptData(wchar_t *input, wchar_t *output)
@@ -513,65 +504,30 @@ Function MyCustomLeave
     #MessageBox MB_OK "---> $0 , $1 , $2"
     #System::Call "pacrypt::decryptData(w, w) i(r1., .r4).r0"
     #MessageBox MB_OK "---> $0 , $1 , $4"
-    
+
     # Write encrypted password in registry
     WriteRegStr HKLM "Software\ProActiveAgent\Creds" "password" $1
-    
-    #########################################################################
-    # HERE WE CHECK for SubInACL tool before continue                       #
-    # In order to restrict access to the registry key we need SubInAcl tool #
-    #########################################################################
-
-    # Check if already installed
-    IfFileExists "${SUBINACL_PATH}" existLABEL notExistLABEL
-    notExistLABEL:
-    # Ask the user if he wants to download the tool
-    MessageBox MB_YESNO "The installation requires a Microsoft Resource Kit is needed (SubInACL tool). Do you want to download it automatically from ${SUBINACL_URL} ? $\nNote that during the installation the default install path is required." IDYES downloadToolLABEL
-    MessageBox MB_OK "Unable to download ${SUBINACL_URL} $\n${SUBINACL_MANUAL_PERMISSIONS}"
-    Goto restrictPermRegKeyLabel
-    downloadToolLABEL:
-    # Automatic download of SubInAcl
-    NSISdl::download ${SUBINACL_URL} $INSTDIR\SubInACL.msi
-    # Check for downloaded msi file, if it does not exist report to user then finish installation
-    IfFileExists "$INSTDIR\SubInACL.msi" downloadedLABEL problemLABEL
-    problemLABEL:
-    MessageBox MB_OK "Unable to download ${SUBINACL_URL} $\n${SUBINACL_MANUAL_PERMISSIONS}"
-    Goto restrictPermRegKeyLabel
-    downloadedLABEL:
-    # Run the installer
-    ExecWait 'cmd.exe /C "$INSTDIR\SubInACL.msi"'
-    # Check if correctly installed
-    IfFileExists "${SUBINACL_PATH}" existLABEL incorrectLABEL
-    incorrectLABEL:
-    MessageBox MB_OK "Unable to find ${SUBINACL_PATH} $\n${SUBINACL_MANUAL_PERMISSIONS}"
-    Goto restrictPermRegKeyLabel
-    existLABEL:
-    
 
     UserMgr::GetSIDFromUserName $R5 $R3
     Pop $0
 
     # Run the command in a console view to allow the user to see output
-    # The command revokes permissions for Guests, Users and Power Users
-    # Then the command grants BUILTIN\Administrators permission to control the ProActiveAgent service
-    ExecWait 'cmd.exe /C echo Restricting keyfile access ... & cd "${SUBINACL_DIR}" & subinacl.exe /verbose=1 /file "$INSTDIR\restrict.dat" /revoke=S-1-5-32-545 /revoke=S-1-5-32-546 /revoke=S-1-5-32-547 & pause'
-    # & cls & echo Allowing Administrators to control the ProActiveAgent service ... & subinacl.exe /service ${SERVICE_NAME} /grant=$0=F & pause'
-    
-    ###############################################################################################################################
-    # Using the regini shell command we need to restrict the access to the HKEY_LOCAL_MACHINE\SOFTWARE\ProActiveAgent\Creds key   #
-    # The command uses well known SIDs to restrict permissions only for SYSTEM (ie LocalSystem), Creator and Administrators group #
-    ###############################################################################################################################
-    restrictPermRegKeyLabel:
-    ExecWait 'cmd.exe /C regini.exe "$INSTDIR"\acl.dat'
+    # The command based on SID grants full permissions only for LocalSystem and Administrators to the keyfile and the registry key
+    ExecWait 'cmd.exe /C \
+     echo Restricting keyfile access ... &\
+     "$INSTDIR\SetACL.exe" -on "$INSTDIR\restrict.dat" -ot file -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:S-1-5-18;p:full;s:y" -ace "n:S-1-5-32-544;p:full;s:y"&\
+     echo Restricting regkey access ... &\
+     "$INSTDIR\SetACL.exe" -on HKEY_LOCAL_MACHINE\Software\ProActiveAgent\Creds -ot reg -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:S-1-5-18;p:full;s:y" -ace "n:S-1-5-32-544;p:full;s:y"&\
+     pause'
 
   ${If} $R7 == "1"
     # The goal is to read the path of AppData folder
-    
+
     # Get the SID of the user
     UserMgr::GetSIDFromUserName "." $R3
     Pop $0
     #MessageBox MB_OK "User sid: $0"
-    
+
     # On xp use the standard way
     ${If} ${IsWinXP}
       # If it is loaded in HKU by SID check in the Volatile Environment
@@ -597,7 +553,7 @@ Function MyCustomLeave
       ReadRegStr $1 HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$0" ProfileImagePath
       StrCpy $1 "$1\AppData\Roaming"
     ${EndIf}
-    
+
     #MessageBox MB_OK "AppData path: $1"
 
     StrCpy $R1 "$1\ProActiveAgent\config"
@@ -615,22 +571,20 @@ Function MyCustomLeave
   # Write the config file location into the registry
   WriteRegStr HKLM "Software\ProActiveAgent" "LogsDirectory" $R2
 
-  # If "Allow everyone to start/stop" is selected check for subinacl
+  # If "Allow everyone to start/stop" is selected
   !insertmacro MUI_INSTALLOPTIONS_READ $R0 ${PAGE_FILE} "${CHK_ALLOWANY}" State
   ${If} $R0 == "1"
-    # Check if subinacl tool exist
-    IfFileExists "${SUBINACL_PATH}" runCmdLABEL unableLABEL
-    unableLABEL:
-    MessageBox MB_OK "Unable to find ${SUBINACL_PATH} $\n${SUBINACL_MANUAL_INSTALL}"
-      Abort
-
-    runCmdLABEL:
-  
     # Run the command in a console view to allow the user to see output
     # The first command allows control of the service by ALL USERS group
     # The second command allows full control of the configuration file by ALL USERS group
-    ExecWait 'cmd.exe /C cd "${SUBINACL_DIR}" & subinacl.exe /service ${SERVICE_NAME} /grant=S-1-1-0=TO & subinacl.exe /file "$R1" /grant=S-1-1-0=F & pause'
+    ExecWait 'cmd.exe /C \
+     echo Granting start/stop permissions on ${SERVICE_NAME} service to everyone ... &\
+     "$INSTDIR\SetACL.exe" -on ${SERVICE_NAME} -ot srv -actn ace -ace "n:S-1-1-0;p:start_stop;s:y"&\
+     echo Granting full access on the configuration file to everyone ... &\
+     "$INSTDIR\SetACL.exe" -on "$R1" -ot file -actn ace -ace "n:S-1-1-0;p:full;s:y"&\
+     pause'
   ${EndIf}
+
   # Run the Agent GUI
   Exec "$INSTDIR\AgentForAgent.exe"
 FunctionEnd
@@ -640,7 +594,7 @@ FunctionEnd
 #############################
 
 Section "ProActive Agent"
-        
+
         #-----------------------------------------------------------------------------------
         # The agent requires the following reg sub-key in order to install itself as
         # a service
@@ -674,8 +628,8 @@ Section "ProActive Agent"
         File "bin\Release\pacrypt.dll"
         File "utils\icon.ico"
         File "utils\ListNetworkInterfaces.class"
-        File "utils\acl.dat"
         File "utils\delete_temp.bat"
+        File "utils\SetACL.exe"
         File "ProActiveAgent\log4net.config"
         File "ProActiveAgent\lib\log4net.dll"
         File "ProActiveAgent\lib\InJobProcessCreator.exe"
@@ -705,7 +659,7 @@ Section "ProActive Agent"
         # The agent requires the following reg sub-key to know its default configuration
         #-----------------------------------------------------------------------------------
         WriteRegStr HKLM "Software\ProActiveAgent" "ConfigLocation" "$INSTDIR\config\PAAgent-config.xml"
-        
+
         #-----------------------------------------------------------------------------------
         # Copy the GUI
         #-----------------------------------------------------------------------------------
@@ -757,11 +711,11 @@ Section "Uninstall"
         # For all users
        	#-----------------------------------------------------------------------------------
 	SetShellVarContext all
-      	  
+
 	MessageBox MB_OKCANCEL "This will delete $INSTDIR and all subdirectories and files?" IDOK DoUninstall
 	Abort "Quiting the uninstall process"
 	DoUnInstall:
-	
+
         #-----------------------------------------------------------------------------------
         # Ask the user if he wants to keep the configuration files
        	#-----------------------------------------------------------------------------------
@@ -773,21 +727,21 @@ Section "Uninstall"
       	  SetOutPath $INSTDIR
       	  RMDir /r "$INSTDIR\config"
         keepConfigLabel:
-	
+
 	#-----------------------------------------------------------------------------------
         # On x64 we have to explicitely set the registery view
         #-----------------------------------------------------------------------------------
         #${If} ${RunningX64}
         #  SetRegView 64
         #${EndIf}
-        
+
 	#-----------------------------------------------------------------------------------
         # Close the ProActive Agent Control
         #-----------------------------------------------------------------------------------
         Push ""
         Push "ProActive Agent Control"
         Call un.FindWindowClose
-       
+
 	SetOutPath $INSTDIR
 	#-----------------------------------------------------------------------------------
         # Check if the service is installed and delete it
@@ -795,18 +749,18 @@ Section "Uninstall"
         !insertmacro SERVICE "stop" ${SERVICE_NAME} "" "un."
         !insertmacro SERVICE "delete" ${SERVICE_NAME} "" "un."
 	#ExecWait "$INSTDIR\AgentFirstSetup.exe -u"
-	
+
 	# Delete regkey from uninstall
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ProActiveAgent"
 	# Delete entry from auto start
         DeleteRegValue HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "ProActiveAgent"
 	DeleteRegKey HKLM "Software\ProActiveAgent"
-	
+
 	#-----------------------------------------------------------------------------------
 	# Remove the screen saver
 	#-----------------------------------------------------------------------------------
        	Delete $SYSDIR\ProActiveSSaver.scr
-        
+
        	#-----------------------------------------------------------------------------------
 	# Remove all known files except config directory from $INSTDIR
 	#-----------------------------------------------------------------------------------
@@ -826,7 +780,6 @@ Section "Uninstall"
         Delete "InJobProcessCreator.exe"
         Delete "JobManagement.dll"
         Delete "icon.ico"
-        Delete "acl.dat"
         Delete "delete_temp.bat"
         Delete "restrict.dat"
         Delete "ListNetworkInterfaces.class"
@@ -835,11 +788,11 @@ Section "Uninstall"
         Delete "uninstall.exe"
         Delete "ProActiveAgent-log.txt"
         Delete "AgentForAgent.exe"
-        Delete "SubInACL.msi"
+        Delete "SetACL.exe"
 
 	RMDir /r "$SMPROGRAMS\ProActiveAgent"
 	SetShellVarContext current # reset to current user
-	
+
 SectionEnd
 
 Function un.FindWindowClose
