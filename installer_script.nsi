@@ -252,10 +252,23 @@ Function MyCustomPage
   !insertmacro MUI_INSTALLOPTIONS_DISPLAY ${PAGE_FILE}
 FunctionEnd
 
+##########################################################################################################################################
+# The following macro is used to write into a log file
+#####################################################################
+!macro WriteToFile NewLine File String
+  !if `${NewLine}` == true
+  Push `${String}$\r$\n`
+  !else
+  Push `${String}`
+  !endif
+  Push `${File}`
+  Call WriteToFile
+!macroend
+!define WriteToFile `!insertmacro WriteToFile false`
+!define WriteLineToFile `!insertmacro WriteToFile true`
+
 Function MyCustomLeave
-
   # Handle notify event of checkbox "Use service account home"
-
   !insertmacro MUI_INSTALLOPTIONS_READ $tmp "${PAGE_FILE}" "Settings" "State"
   ${Switch} "Field $tmp"
     ${Case} "${CHK_LOGSHOME}"
@@ -347,10 +360,11 @@ Function MyCustomLeave
   #-----------------------------------------------------------------------------------
 
     checkAccount:
-
+    # Try to log under the specified account
     !insertmacro DoLogonUser $R5 $R3 $R4
     StrCmp $R8 0 unableToLog
     Goto logged
+    # If unable to log ask if the admin wants to create a local account for the agent
     unableToLog:
     Goto createNewAccount
     logged:
@@ -363,27 +377,22 @@ Function MyCustomLeave
     !insertmacro DoLogoffUser $R0
     StrCpy $R5 $0
 
-    # Check for SE_INCREASE_QUOTA_NAME and SE_ASSIGNPRIMARYTOKEN_NAME privilege
+    # Checking privileges required for RunAsMe mode
     UserMgr::HasPrivilege $R3 ${SE_INCREASE_QUOTA_NAME}
     Pop $0
-    ${If} $0 == "TRUE"
-      UserMgr::HasPrivilege $R3 ${SE_ASSIGNPRIMARYTOKEN_NAME}
-      Pop $0
-      ${If} $0 == "TRUE"
-        Goto checkGroupMember
-      ${Else}
-        Goto reportErrorPrivilege
-      ${EndIf}
-    ${ElseIf} $0 == "ERROR GetAccountSid"
-       Goto createNewAccount
-    ${Else}
-       Goto reportErrorPrivilege
+    ${WriteLineToFile} '$INSTDIR\log.txt' 'Does $R3 have the privilege     SE_INCREASE_QUOTA_NAME ? UserMgr::HasPrivilege returns $0'
+    ${If} $0 != "TRUE"
+        MessageBox MB_OK|MB_ICONSTOP "In order to use RunAsMe mode, the account $R3 must have 'Adjust memory quotas for a process' and 'Replace a process-level token' privileges. In the 'Administrative Tools' of the 'Control Panel' open the 'Local Security Policy'. In 'Security Settings', select 'Local Policies' then select 'User Rights Assignments'. Finally, in the list of policies open the corresponding properties and add the account $R3."
     ${EndIf}
 
-    reportErrorPrivilege:
-      DetailPrint "The account $R3 must have SE_INCREASE_QUOTA_NAME and SE_ASSIGNPRIMARYTOKEN_NAME privileges ! Result was $0"
-      MessageBox MB_OK "The account $R3 must have 'Adjust memory quotas for a process' and 'Replace a process-level token' privileges. In the 'Administrative Tools' of the 'Control Panel' open the 'Local Security Policy'. In 'Security Settings', select 'Local Policies' then select 'User Rights Assignments'. Finally, in the list of policies open the corresponding properties and add the account $R3."
-        Abort # Go back to page.
+    UserMgr::HasPrivilege $R3 ${SE_ASSIGNPRIMARYTOKEN_NAME}
+    Pop $0
+    ${WriteLineToFile} '$INSTDIR\log.txt' 'Does $R3 have the privilege SE_ASSIGNPRIMARYTOKEN_NAME ? UserMgr::HasPrivilege returns $0'
+    ${If} $0 != "TRUE"
+        MessageBox MB_OK|MB_ICONSTOP "In order to use RunAsMe mode, the account $R3 must have 'Adjust memory quotas for a process' and 'Replace a process-level token' privileges. In the 'Administrative Tools' of the 'Control Panel' open the 'Local Security Policy'. In 'Security Settings', select 'Local Policies' then select 'User Rights Assignments'. Finally, in the list of policies open the corresponding properties and add the account $R3."
+    ${EndIf}
+
+    Goto checkGroupMember
 
     # The account does not exist if the specified domain is local computer the account can be created
     createNewAccount:
@@ -501,6 +510,8 @@ Function MyCustomLeave
       MessageBox MB_OK "Unable to encrypt the password (too long ?). Error $2"
       Abort
     ${EndIf}
+    # Uncomment the following code to chek if the encryption mechanism works correctly
+    # the last message box should show
     #MessageBox MB_OK "---> $0 , $1 , $2"
     #System::Call "pacrypt::decryptData(w, w) i(r1., .r4).r0"
     #MessageBox MB_OK "---> $0 , $1 , $4"
@@ -815,4 +826,18 @@ Function un.FindWindowClose
     Pop $2
     Pop $1
     Pop $0
+FunctionEnd
+
+Function WriteToFile
+Exch $0 ;file to write to
+Exch
+Exch $1 ;text to write
+
+  FileOpen $0 $0 a #open file
+  FileSeek $0 0 END #go to end
+  FileWrite $0 $1 #write to file
+  FileClose $0
+
+Pop $1
+Pop $0
 FunctionEnd
