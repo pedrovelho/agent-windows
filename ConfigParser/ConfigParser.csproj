@@ -142,12 +142,6 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ConfigParserOLD\ConfigParserOLD.csproj">
-      <Project>{E5705A77-B374-4334-8FD2-86E0153A04F8}</Project>
-      <Name>ConfigParserOLD</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

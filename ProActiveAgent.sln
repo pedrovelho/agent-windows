@@ -2,17 +2,12 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigParser", "ConfigParser\ConfigParser.csproj", "{7A2374A3-842C-4A95-8DCA-2E5E011835F8}"
-	ProjectSection(ProjectDependencies) = postProject
-		{E5705A77-B374-4334-8FD2-86E0153A04F8} = {E5705A77-B374-4334-8FD2-86E0153A04F8}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProActiveAgent", "ProActiveAgent\ProActiveAgent.csproj", "{91B8D1E6-3204-4AC5-91A6-6CB53C0F03F2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgentForAgent", "AgentForAgent\AgentForAgent.csproj", "{B9C37063-2787-4603-A961-EB10AEF9DEB9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenSaver", "ScreenSaver\ScreenSaver.csproj", "{62176B11-E98A-40D9-8BE7-AB5464A395D8}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigParserOLD", "ConfigParserOLD\ConfigParserOLD.csproj", "{E5705A77-B374-4334-8FD2-86E0153A04F8}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pacrypt", "utils\pacrypt\pacrypt.vcxproj", "{6DFC8EB3-F1B4-4543-8B11-DD4BA5F18163}"
 EndProject
@@ -94,18 +89,6 @@ Global
 		{62176B11-E98A-40D9-8BE7-AB5464A395D8}.Release|Win32.ActiveCfg = Release|x86
 		{62176B11-E98A-40D9-8BE7-AB5464A395D8}.Release|x86.ActiveCfg = Release|x86
 		{62176B11-E98A-40D9-8BE7-AB5464A395D8}.Release|x86.Build.0 = Release|x86
-		{E5705A77-B374-4334-8FD2-86E0153A04F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E5705A77-B374-4334-8FD2-86E0153A04F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E5705A77-B374-4334-8FD2-86E0153A04F8}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{E5705A77-B374-4334-8FD2-86E0153A04F8}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{E5705A77-B374-4334-8FD2-86E0153A04F8}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{E5705A77-B374-4334-8FD2-86E0153A04F8}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{E5705A77-B374-4334-8FD2-86E0153A04F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E5705A77-B374-4334-8FD2-86E0153A04F8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E5705A77-B374-4334-8FD2-86E0153A04F8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{E5705A77-B374-4334-8FD2-86E0153A04F8}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{E5705A77-B374-4334-8FD2-86E0153A04F8}.Release|Win32.ActiveCfg = Release|Any CPU
-		{E5705A77-B374-4334-8FD2-86E0153A04F8}.Release|x86.ActiveCfg = Release|Any CPU
 		{6DFC8EB3-F1B4-4543-8B11-DD4BA5F18163}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{6DFC8EB3-F1B4-4543-8B11-DD4BA5F18163}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
 		{6DFC8EB3-F1B4-4543-8B11-DD4BA5F18163}.Debug|Mixed Platforms.Build.0 = Debug|Win32

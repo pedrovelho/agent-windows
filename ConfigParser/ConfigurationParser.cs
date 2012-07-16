@@ -39,7 +39,6 @@ using System.IO;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using ConfigParserOLD;
 
 namespace ConfigParser
 {
@@ -79,18 +78,8 @@ namespace ConfigParser
                 internalValidate(filePath, agentHome, schemaSet);
             }
             catch (Exception e1)
-            {
-                // Try to validate against the older schema version (older than < 2.2)               
-                try
-                {                    
-                    XmlSchemaSet schemaSet = new XmlSchemaSet();
-                    schemaSet.Add(null, agentHome + "\\xml\\agent-old.xsd");
-                    internalValidate(filePath, agentHome, schemaSet);
-                }
-                catch (Exception e2)
-                {
-                    throw new ApplicationException("Invalid configuration file. Against agent-windows.xsd: " + e1 + " Against agent-old.xsd: " + e2.Message);
-                }
+            {               
+               throw new ApplicationException("Invalid configuration file. Against agent-windows.xsd: " + e1.Message, e1);               
             }
         }
         
@@ -109,25 +98,9 @@ namespace ConfigParser
                 XmlSerializer serializer = new XmlSerializer(typeof(AgentType));
                 return (AgentType)serializer.Deserialize(tr1);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                TextReader tr2 = new StreamReader(filePath);
-                try
-                {
-                    // Try against older version
-                    XmlSerializer serializer = new XmlSerializer(typeof(ConfigurationOLD));
-                    ConfigurationOLD oldConf = (ConfigurationOLD)serializer.Deserialize(tr2);
-                    // Translate
-                    return translateFromOLD(oldConf);
-                }
-                catch (Exception e2)
-                {
-                    throw e2;
-                }
-                finally
-                {
-                    tr2.Close();
-                }
+                throw e;
             }
             finally
             {
@@ -173,108 +146,6 @@ namespace ConfigParser
         private static void ValidationError(object sender, ValidationEventArgs arguments)
         {
             reason = arguments.Message;
-        }
-
-        private static AgentType translateFromOLD(ConfigurationOLD oldConf)
-        {
-
-            // Translate general configuration                    
-            AgentConfigType config = new AgentConfigType();
-            config.proactiveHome = oldConf.agentConfig.proactiveLocation;
-            config.javaHome = oldConf.agentConfig.javaHome;
-            config.jvmParameters = oldConf.agentConfig.jvmParameters;
-            config.memoryLimit = 0; // Not translated
-            config.nbRuntimes = (ushort)oldConf.agentConfig.nbProcesses;
-            config.protocol = oldConf.agentConfig.runtimeIncomingProtocol.ToString();
-            config.portRange.first = (ushort)oldConf.agentConfig.proActiveCommunicationPortInitialValue;
-            config.portRange.last = (ushort)(config.portRange.first + config.nbRuntimes);
-            config.onRuntimeExitScript = oldConf.agentConfig.onRuntimeExitScript;
-            config.processPriority = System.Diagnostics.ProcessPriorityClass.Normal;
-            config.maxCpuUsage = 100;
-
-            // Translate events
-            CalendarEventType[] events = new CalendarEventType[oldConf.events.Count];
-            for (int i = 0; i < oldConf.events.Count; i++)
-            {
-                CalendarEvent oldEvent = oldConf.events[i];
-                CalendarEventType newEvent = new CalendarEventType();
-
-                string day = oldEvent.startDay;
-                if (day.Equals("monday"))
-                    newEvent.start.day = DayOfWeek.Monday;
-                else if (day.Equals("tuesday"))
-                    newEvent.start.day = DayOfWeek.Tuesday;
-                else if (day.Equals("wednesday"))
-                    newEvent.start.day = DayOfWeek.Wednesday;
-                else if (day.Equals("thursday"))
-                    newEvent.start.day = DayOfWeek.Thursday;
-                else if (day.Equals("friday"))
-                    newEvent.start.day = DayOfWeek.Friday;
-                else if (day.Equals("saturday"))
-                    newEvent.start.day = DayOfWeek.Saturday;
-                else if (day.Equals("sunday"))
-                    newEvent.start.day = DayOfWeek.Sunday;
-
-                newEvent.start.hour = (ushort)oldEvent.startHour;
-                newEvent.start.minute = (ushort)oldEvent.startMinute;
-                newEvent.start.second = (ushort)oldEvent.startSecond;
-
-                newEvent.duration.days = (ushort)oldEvent.durationDays;
-                newEvent.duration.hours = (ushort)oldEvent.durationHours;
-                newEvent.duration.minutes = (ushort)oldEvent.durationMinutes;
-                newEvent.duration.seconds = (ushort)oldEvent.durationSeconds;
-
-                newEvent.config.processPriority = oldEvent.processPriority;
-                newEvent.config.maxCpuUsage = (ushort)oldEvent.maxCpuUsage;
-
-                // Add the new event
-                events[i] = newEvent;
-            }
-
-            // Translate connections
-            ConnectionType[] connections = new ConnectionType[3];
-
-            AdvertAction advertAction = (AdvertAction)oldConf.actions[0];
-            LocalBindConnectionType localBind = new LocalBindConnectionType();
-            if (advertAction != null)
-            {
-                localBind.respawnIncrement = 10; // TODO: See the default value
-                localBind.javaStarterClass = advertAction.javaStarterClass;
-                localBind.nodename = advertAction.nodeName;
-                localBind.enabled = advertAction.isEnabled;
-            }
-            connections[0] = localBind;
-
-            RMAction rmAction = (RMAction)oldConf.actions[1];
-            ResoureManagerConnectionType rmConn = new ResoureManagerConnectionType();
-            if (rmAction != null)
-            {
-                rmConn.respawnIncrement = 10; // TODO: See the default value
-                rmConn.javaStarterClass = rmAction.javaStarterClass;
-                rmConn.nodename = rmAction.nodeName;
-                rmConn.enabled = rmAction.isEnabled; // TODO: See the default value                        
-                rmConn.url = rmAction.url;
-                rmConn.nodeSourceName = rmAction.nodeSourceName;
-                if (!rmAction.useDefaultCredential)
-                {
-                    rmConn.credential = rmAction.credentialLocation;
-                }
-            }
-            connections[1] = rmConn;
-
-            CustomAction customAction = (CustomAction)oldConf.actions[2];
-            CustomConnectionType customCon = new CustomConnectionType();
-            if (customAction != null)
-            {
-                customCon.respawnIncrement = 10; // TODO: See the default value
-                customCon.javaStarterClass = customAction.javaStarterClass;
-                customCon.args = customAction.args;
-                customCon.enabled = customAction.isEnabled;
-            }
-            connections[2] = customCon;
-
-            // Create the new agent conf
-            return new AgentType(config, events, connections);
-        }
+        }       
     }
 }
