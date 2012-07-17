@@ -38,7 +38,7 @@ using System.Xml.Serialization;
 
 namespace ConfigParser
 {
-    [XmlRoot("agent", Namespace = "urn:proactive:agent:0.90:windows")]
+    [XmlRoot("agent", Namespace = "urn:proactive:agent:1.0:windows")]
     public sealed class AgentType
     {
         /// <summary>
@@ -65,7 +65,7 @@ namespace ConfigParser
         [XmlIgnore]
         public string agentInstallLocation;
 
-        public AgentType() {}
+        public AgentType() { }
 
         public AgentType(AgentConfigType config, CalendarEventType[] events, ConnectionType[] connections)
         {
@@ -86,6 +86,11 @@ namespace ConfigParser
             }
             // If no action was selected ...
             return null;
+        }
+
+        public bool isAlwaysAvailable()
+        {
+            return this.events.Length == 0 || (this.events.Length == 1 && this.events[0].isAlwaysAvailable());
         }
     }
 }

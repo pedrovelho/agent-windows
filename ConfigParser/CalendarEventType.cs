@@ -66,7 +66,7 @@ namespace ConfigParser
             this.config = new AgentConfigType();
         }
 
-        public CalendarEventType(Start start, Duration duration) : this(start, duration, null) {}
+        public CalendarEventType(Start start, Duration duration) : this(start, duration, new AgentConfigType()) {}
 
         public CalendarEventType(Start start, Duration duration, AgentConfigType config)
         {
@@ -83,7 +83,8 @@ namespace ConfigParser
         /// <returns></returns>
         public bool isAlwaysAvailable()
         {
-            return this.duration.days == 6 && this.duration.hours == 23 && this.duration.minutes == 59 && this.duration.seconds == 59;
+            return this.start.day == DayOfWeek.Monday && this.start.hour == 0 && this.start.minute == 0 && this.start.second == 0 &&
+                this.duration.days == 6 && this.duration.hours == 23 && this.duration.minutes == 59 && this.duration.seconds == 59;
         }
         
         /// <summary>
@@ -143,6 +144,14 @@ namespace ConfigParser
             if (num < 10)
                 return "0" + num.ToString();
             return num.ToString();
+        }
+
+        public static CalendarEventType makeAlwaysAvailableDate()
+        {
+            return new CalendarEventType(
+                new Start(DayOfWeek.Monday, 0, 0, 0),
+                new Duration(6, 23, 59, 59)
+               );
         }
     }
 

@@ -132,8 +132,9 @@ namespace AgentForAgent
 
             // Init default values for list boxes
             this.weekdayStart.SelectedIndex = 0;
-
-            if (this.configuration.events.Length == 0)
+            
+            // Always available (empty array or see CalendarEventType.isAlwaysAvailable())
+            if (this.configuration.isAlwaysAvailable())
             {
                 this.alwaysAvailableCheckBox.Checked = true;
                 this.processPriorityComboBox.SelectedItem = Enum.GetName(typeof(ProcessPriorityClass), configuration.config.processPriority);
@@ -333,8 +334,13 @@ namespace AgentForAgent
             if (this.jvmOptionsListBox.Items.Count > 0)
             {
                 this.jvmOptionsListBox.Items.CopyTo(values, 0);
+                this.configuration.config.jvmParameters = values;
             }
-            this.configuration.config.jvmParameters = values;
+            else
+            {
+                // The schema does not support empty <jvmParameters/> element
+                this.configuration.config.jvmParameters = null;
+            }
 
             // Set the on runtime exit script
             this.configuration.config.onRuntimeExitScript = this.scriptLocationTextBox.Text;
@@ -423,6 +429,10 @@ namespace AgentForAgent
 
         private void internalCopyEventsList()
         {
+            if (this.eventsList.Items.Count == 0)
+            {
+                return;
+            }
             List<CalendarEventType> list = new List<CalendarEventType>();
             foreach (object item in this.eventsList.Items)
             {
@@ -802,11 +812,11 @@ namespace AgentForAgent
         {
             if (alwaysAvailableCheckBox.Checked)
             {
-                // Always available means no events                                
+                // Always available means 1 event which start Monday at midnight and lasting 6 days, 23 hours, 59 minutes and 59 seconds
 
                 // 1. Check if there are user defined events and ask the user to save them 
                 //    into a sperate file
-                if (this.eventsList.Items.Count > 0)
+                if (this.eventsList.Items.Count > 0 )
                 {
                     // Ask the user to to save before setting always available
                     DialogResult res = MessageBox.Show("Always available will remove all plans, do you want to save your current planning ?", "Save Current Planning", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
@@ -819,7 +829,10 @@ namespace AgentForAgent
                 // 2. Remove all events
                 this.eventsList.Items.Clear();
 
-                // 3. Load values for the process priority and the max cpu usage                
+                // 3. Add a single event to the configuration
+                this.configuration.events = new CalendarEventType[] { CalendarEventType.makeAlwaysAvailableDate() };
+
+                // 4. Load values for the process priority and the max cpu usage                
                 this.processPriorityComboBox.SelectedItem = Enum.GetName(typeof(ProcessPriorityClass), configuration.config.processPriority);
                 this.maxCpuUsageNumericUpDown.Value = configuration.config.maxCpuUsage;
 

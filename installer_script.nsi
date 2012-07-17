@@ -661,7 +661,6 @@ Section "ProActive Agent"
         SetOutPath $INSTDIR\xml
         File "utils\xml\agent-windows.xsd"
         File "utils\xml\agent-common.xsd"
-        File "utils\xml\agent-old.xsd"
         SetOutPath $INSTDIR\doc
         File "ProActive Agent Documentation.pdf"
 

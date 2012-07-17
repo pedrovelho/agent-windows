@@ -64,22 +64,17 @@ namespace ProActiveAgent
         // The constructor should be called only during starting the service
         public ExecutorsManager(AgentType configuration)
         {
-            // Get the runtime common start info shared between all executors
-            CommonStartInfo commonStartInfo = new CommonStartInfo(configuration);            
-
             // The configuration specifies the number of executors
             int nbProcesses = configuration.config.nbRuntimes == 0 ? Environment.ProcessorCount : configuration.config.nbRuntimes;
             LOGGER.Info("Creating " + nbProcesses + " executors");
+            
+            // Get the runtime common start info shared between all executors
+            CommonStartInfo commonStartInfo = new CommonStartInfo(configuration);
 
+            // Create as many executors with a unique rank as specified in the configuration
             this.proActiveRuntimeExecutors = new List<ProActiveRuntimeExecutor>(nbProcesses);
-
-            // Get the initial value for the ProActive Rmi Port specified in the configuration
-            int lastProActiveRmiPort = configuration.config.portRange.first;
-
-            // Create as many executors as specified in the configuration
             for (int rank = 0; rank < nbProcesses; rank++)
-            {
-                // Create new executor with a unique rank and a valid ProActive Rmi Port
+            {                
                 ProActiveRuntimeExecutor executor = new ProActiveRuntimeExecutor(commonStartInfo, rank);
                 this.proActiveRuntimeExecutors.Add(executor);
             }
@@ -89,7 +84,7 @@ namespace ProActiveAgent
             this.stopTimers = new List<Timer>();
 
             // If always available simply invoke start method with the stop time at max value
-            if (commonStartInfo.isAlwaysAvailable)
+            if (configuration.isAlwaysAvailable())
             {
                 LOGGER.Info("Using always available planning");
                 this.mySendStartAction(new StartActionInfo(

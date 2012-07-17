@@ -99,9 +99,6 @@
     <None Include="..\utils\xml\agent-common.xsd">
       <Link>agent-common.xsd</Link>
     </None>
-    <None Include="..\utils\xml\agent-old.xsd">
-      <Link>agent-old.xsd</Link>
-    </None>
     <None Include="..\utils\xml\agent-windows.xsd">
       <Link>agent-windows.xsd</Link>
     </None>
