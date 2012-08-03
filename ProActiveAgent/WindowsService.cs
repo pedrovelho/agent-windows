@@ -102,27 +102,34 @@ namespace ProActiveAgent
                 confKey.Close();
             }
 
-            // Parse the configuration file once per start
-            AgentType configuration = ConfigurationParser.parseXml(agentConfigLocation, agentInstallLocation);
-            configuration.agentInstallLocation = agentInstallLocation;
-
-            // Read classpath
+            // Parse the configuration file once per start            
+            AgentType configuration = null;
             try
             {
-                Utils.readClasspath(configuration.config, configuration.agentInstallLocation);
+                configuration = Utils.readConfig(agentConfigLocation, agentInstallLocation);                
             }
             catch (Exception ex)
             {
-                LOGGER.Error("An exception occured when reading the classpath", ex);
-                // Cannot start the service if the class path is not set
+                LOGGER.Error("An exception occured when reading the configuration file", ex);                
+                base.Stop();
+                return;
+            }
+            configuration.agentInstallLocation = agentInstallLocation;
+
+            // Read classpath, we cannot start the service if the class path is not set
+            try
+            {
+                Utils.readClasspath(configuration);
+            }
+            catch (Exception ex)
+            {
+                LOGGER.Error("An exception occured when reading the classpath", ex);                
                 base.Stop();
                 return;
             }
             
             this.executorsManager = new ExecutorsManager(configuration);
-
             this.pipeServerWorker = new Worker(this.executorsManager);
-
             base.OnStart(args);
         }
 

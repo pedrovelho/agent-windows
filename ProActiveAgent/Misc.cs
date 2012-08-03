@@ -48,6 +48,7 @@ using System.Windows.Forms;
 using Microsoft.Win32;
 using log4net;
 using System.Security;
+using ConfigParser;
 
 namespace ProActiveAgent
 {
@@ -219,12 +220,81 @@ namespace ProActiveAgent
         }
 
         /// <summary>
+        /// Reads the configuration file, UNC path are accessed within the forker context.
+        /// </summary>
+        /// <param name="agentConfigFilePath">The path to the configuraiton file</param>
+        /// <param name="agentInstallLocation">The path to the agent install location</param>        
+        public static ConfigParser.AgentType readConfig(string agentConfigFilePath, string agentInstallLocation)
+        {           
+            // First check if the configuration file is in UNC format
+            if (agentConfigFilePath.StartsWith(@"\\"))
+            {
+                string username = null;
+                string domain = null;
+                string password = null;
+
+                // Get forker credentials from registry
+                RegistryKey confKey = Registry.LocalMachine.OpenSubKey(Constants.REG_CREDS_SUBKEY);
+
+                if (confKey == null)
+                    throw new ApplicationException("Unable to read credentials from registry");
+
+                username = (string)confKey.GetValue("username");
+                domain = (string)confKey.GetValue("domain");
+                // The password is encrypted, decryption is needed
+                string encryptedPassword = (string)confKey.GetValue("password");
+                confKey.Close();
+
+                // To decrypt the password call the decryptData using pinvoke
+                StringBuilder decryptedPassword = new StringBuilder(32); // suppose passwords are 32 chars max
+
+                {
+                    // Save current dir
+                    string cd = Directory.GetCurrentDirectory();
+
+                    // Current dir must be the location of the agent
+                    Directory.SetCurrentDirectory(agentInstallLocation);
+
+                    // Decrypt the password
+                    int res = decryptData(encryptedPassword, decryptedPassword);
+                    password = decryptedPassword.ToString();
+
+                    if (res != 0)
+                        throw new ApplicationException("Problem " + res);
+
+                    // Restore current dir                    
+                    Directory.SetCurrentDirectory(cd);
+                }
+
+                // Impersonate the forker (get its access rights) in his context UNC paths are accepted
+                using (new Impersonator(username, domain, password))
+                {
+                    // First check if the directory exists
+                    if (!File.Exists(agentConfigFilePath))
+                        throw new ApplicationException("Unable to read the configuration file, the " + agentConfigFilePath + " does not exist");
+                    
+                    return ConfigurationParser.parseXml(agentConfigFilePath);
+                }
+            }
+            else
+            {
+                // The paths are local no need to impersonate
+                // First check if the directory exists
+                if (!File.Exists(agentConfigFilePath))
+                    throw new ApplicationException("Unable to read the configuration file, the " + agentConfigFilePath + " does not exist");
+
+                return ConfigurationParser.parseXml(agentConfigFilePath);
+            }
+        }
+
+        /// <summary>
         /// Reads the value of the CLASSPATH variable defined in a script and stores it into the configuration.
-        /// This method checks if the provided ProActive location contains \bin\windows\init.bat script.        
+        /// This method checks if the provided ProActive location contains \bin\windows\init.bat script.
         /// </summary>
         /// <param name="config">The user defined configuration.</param>
-        public static void readClasspath(ConfigParser.AgentConfigType config, string installLocation)
+        public static void readClasspath(AgentType configuration)
         {
+            AgentConfigType config = configuration.config;
             if (config.proactiveHome == null || config.proactiveHome.Equals(""))
             {
                 throw new ApplicationException("Unable to read the classpath, the ProActive location is unknown");
@@ -274,7 +344,7 @@ namespace ProActiveAgent
                     string cd = Directory.GetCurrentDirectory();
 
                     // Current dir must be the location of the agent
-                    Directory.SetCurrentDirectory(installLocation);
+                    Directory.SetCurrentDirectory(configuration.agentInstallLocation);
 
                     // Decrypt the password
                     int res = decryptData(encryptedPassword, decryptedPassword);
@@ -300,7 +370,7 @@ namespace ProActiveAgent
 
                 config.classpath = VariableEchoer.echoVariableAsForker(
                     config.javaHome,                      // the Java install dir
-                    installLocation,                      // the ProActive Agent install dir
+                    configuration.agentInstallLocation,   // the ProActive Agent install dir
                     config.proactiveHome + @"\bin\windows", // the current directory where to run the initScript
                     initScript,                           // the full path of the initScript
                     Constants.CLASSPATH);                 // the name of the variable to echo                

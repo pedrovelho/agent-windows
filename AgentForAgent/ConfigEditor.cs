@@ -477,7 +477,7 @@ namespace AgentForAgent
                 // Once the proactive location is specified check if classpath can be read
                 try
                 {
-                    Utils.readClasspath(this.configuration.config, this.agentLocation);
+                    Utils.readClasspath(this.configuration);
                 }
                 catch (Exception ex)
                 {

@@ -84,14 +84,13 @@ namespace ConfigParser
         }
         
         /// <summary>
-        /// Tries to parse and deserialize as AgentType with fallback to ConfigurationOLD
+        /// Tries to parse and deserialize as AgentType
         /// </summary>
-        /// <param name="filePath">The path to the configuration file</param>
-        /// <param name="agentHome">The home dir of the agent</param>
+        /// <param name="agentConfigLocation">The path to the configuration file</param>        
         /// <returns></returns>
-        public static AgentType parseXml(String filePath, string agentHome)
+        public static AgentType parseXml(String agentConfigLocation)
         {
-            TextReader tr1 = new StreamReader(filePath);
+            TextReader tr1 = new StreamReader(agentConfigLocation);
             try
             {
                 // Try to deserialize 

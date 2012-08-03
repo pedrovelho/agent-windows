@@ -267,7 +267,7 @@ namespace AgentForAgent
             // 1 - Parse the xml config file            
             try
             {
-                ConfigurationParser.parseXml(configFileLocationTextBox.Text, agentLocation);
+                ConfigurationParser.parseXml(configFileLocationTextBox.Text);
             }
             catch (Exception ex) // since the parseXml method does not declare any exceptions like IncorrectConfigurationException 
             {
@@ -410,7 +410,7 @@ namespace AgentForAgent
         {
             try
             {
-                AgentType conf = ConfigurationParser.parseXml(configFileLocationTextBox.Text, agentLocation);
+                AgentType conf = ConfigurationParser.parseXml(configFileLocationTextBox.Text);
                 ConfigurationEditor configEditor = new ConfigurationEditor(conf, configFileLocationTextBox.Text, agentLocation, this);
                 configEditor.ShowDialog();
             }

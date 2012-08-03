@@ -24,7 +24,7 @@
 #################################################################
 !define SERVICE_NAME "ProActiveAgent"
 !define SERVICE_DESC "The ProActive Agent enables desktop computers as an important source of computational power"
-!define VERSION "2.3.5"
+!define VERSION "2.4"
 !define PAGE_FILE "serviceInstallPage.ini"
 !define INSTALL_LOG "$INSTDIR\install.log"
 
