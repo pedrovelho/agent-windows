@@ -10,9 +10,9 @@
 !include MUI.nsh
 !include WinVer.nsh
 !include FileFunc.nsh
-!include "DotNetVer.nsh"
-!include "servicelib.nsh"
-!include "UserManagement.nsh"
+!include DotNetVer.nsh
+!include servicelib.nsh
+!include UserManagement.nsh
 
 #################################################################
 # !! TARGET_ARCH !! can be x86 or x64
@@ -24,16 +24,16 @@
 #################################################################
 !define SERVICE_NAME "ProActiveAgent"
 !define SERVICE_DESC "The ProActive Agent enables desktop computers as an important source of computational power"
-!define VERSION "2.4"
+!define VERSION "2.4.1"
 !define PAGE_FILE "serviceInstallPage.ini"
 !define INSTALL_LOG "$INSTDIR\install.log"
 
 #################################################################
 # Privileges required by the ProActive Runtime Account
 #################################################################
-!define SERVICE_LOGON_RIGHT 'SeServiceLogonRight'
-!define SE_INCREASE_QUOTA_NAME 'SeIncreaseQuotaPrivilege'
-!define SE_ASSIGNPRIMARYTOKEN_NAME 'SeAssignPrimaryTokenPrivilege'
+!define SERVICE_LOGON_RIGHT "SeServiceLogonRight"
+!define SE_INCREASE_QUOTA_NAME "SeIncreaseQuotaPrivilege"
+!define SE_ASSIGNPRIMARYTOKEN_NAME "SeAssignPrimaryTokenPrivilege"
 
 !define CONFIG_NAME "PAAgent-config.xml"
 !define DEFAULT_CONFIG_PATH "$INSTDIR\config\${CONFIG_NAME}"
@@ -221,7 +221,13 @@ FunctionEnd
 # - admin rights
 # - Microsoft .NET Framework 3.5
 # - Previous version of the unistaller
-########################################
+#
+# Note that in this function the following statement:
+# !insertmacro Log "... message ..."
+# will not work since the installdir is unknown yet so we do not log anything and instead we set an error level with the SetErrorLevel
+# 3 - user is not admin
+# 4 - Unable to find Microsoft .NET Framework 3.5
+##########################################################################################################################################
 Function .onInit
     # Read hostname
   !insertmacro GetServerName $Hostname
@@ -321,27 +327,34 @@ Function .onInit
   System::Call "kernel32::GetModuleHandle(t 'shell32.dll') i .s"
   System::Call "kernel32::GetProcAddress(i s, i 680) i .r0"
   System::Call "::$0() i .r0"
-  !insertmacro Log "Current user is admin? $0"
-  StrCmp $0 '0' 0 +3
-  MessageBox MB_OK "Adminstrator rights are required to install the ProActive Agent." /SD IDOK
-  Abort
+  
+  ${If} $R0 == '0'
+     ${IfNot} ${Silent}
+        MessageBox MB_OK "Adminstrator rights are required to install the ProActive Agent." /SD IDOK
+     ${EndIf}
+     SetErrorLevel 3
+     Abort
+  ${EndIf}
 
   #Check if .NET framework 3.5 is installed
   ${IfNot} ${HasDotNet3.5}
-    !insertmacro Log "!! Unable to find Microsoft .NET Framework 3.5 !!"
-    MessageBox MB_OK "Unable to find Microsoft .NET Framework 3.5" /SD IDOK
+    ${IfNot} ${Silent}
+       MessageBox MB_OK "Unable to find Microsoft .NET Framework 3.5" /SD IDOK
+    ${EndIf}
+    SetErrorLevel 4
     Abort
   ${EndIf}
 
   # Check if a previous version of the unistaller is available
   IfFileExists $INSTDIR\uninstall.exe 0 endLabel
-  # Ask the user if he wants to uninstall previous version
+
   ${If} ${Silent}
+    # The silent mode always uninstalls the previous version
     ${If} $uninstall == 1
       ExecWait '"$INSTDIR\uninstall.exe /S" _?=$INSTDIR'
     ${EndIf}
   ${Else}
-    !insertmacro Log "Uninstalling previous version of the ProActive Agent ..."
+    # Ask the user if he wants to uninstall previous version
     MessageBox MB_YESNO "The previous version of the ProActive Windows Agent must be uninstalled. Run the uninstaller ?" /SD IDYES IDNO abortLabel
     ExecWait '"$INSTDIR\uninstall.exe" _?=$INSTDIR'
   ${EndIf}
@@ -353,7 +366,6 @@ Function .onInit
   endLabel:
      # In silent mode, we needs to explicitly handle parameters and installation
     ${If} ${Silent}
-      !insertmacro Log "Running installer in silent mode ..."
       Call InstallProActiveAgent
       Call InstallProActiveScreenSaver
       Call CreateDesktopShortCuts
@@ -826,6 +838,12 @@ Section "Start Menu Shortcuts"
 SectionEnd
 
 Function InstallProActiveAgent
+
+        #-----------------------------------------------------------------------------------
+        # Set current dir to installation directory
+        #-----------------------------------------------------------------------------------
+        SetOutPath $INSTDIR
+
         #-----------------------------------------------------------------------------------
         # Print the current date and time into the installation log file
         #-----------------------------------------------------------------------------------
@@ -848,11 +866,6 @@ Function InstallProActiveAgent
         #-----------------------------------------------------------------------------------
         WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ProActiveAgent" "DisplayName" "ProActive Agent (remove only)"
         WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ProActiveAgent" "UninstallString" '"$INSTDIR\Uninstall.exe"'
-
-        #-----------------------------------------------------------------------------------
-        # Set current dir to installation directory
-        #-----------------------------------------------------------------------------------
-        SetOutPath $INSTDIR
 
         #-----------------------------------------------------------------------------------
         # Write uninstaller utility
