@@ -197,6 +197,21 @@ Page Custom ConfigureSetupPage HandleSetupArguments
 !endif
 
 #####################################################################
+# Removes character or string from another string
+#####################################################################
+!macro StrStrip Str InStr OutVar
+ Push '${InStr}'
+ Push '${Str}'
+  Call StrStrip
+ Pop '${OutVar}'
+!macroend
+
+; Usage:
+; ${StrStrip}  "ja" "jaja la" $R0
+; $R0 == " la"
+!define StrStrip '!insertmacro StrStrip'
+
+#####################################################################
 # Logs into the detailed gui section and into the log file
 #####################################################################
 !macro Log str
@@ -229,8 +244,11 @@ FunctionEnd
 # 4 - Unable to find Microsoft .NET Framework 3.5
 ##########################################################################################################################################
 Function .onInit
-    # Read hostname
+
+  # Read hostname
   !insertmacro GetServerName $Hostname
+  # Remove leading \\ to avoid AGENT-192 (bugs.activeeon.com)
+  ${StrStrip} "\\" $Hostname $Hostname
   
   ${If} ${Silent}
     ${GetParameters} $0
@@ -1123,4 +1141,35 @@ Function GetCurrentDate
 
   Pop $R8
   Exch $R9
+FunctionEnd
+
+# Taken from http://nsis.sourceforge.net/CharStrip_%26_StrStrip:_Remove_character_or_string_from_another_string
+Function StrStrip
+Exch $R0 #string
+Exch
+Exch $R1 #in string
+Push $R2
+Push $R3
+Push $R4
+Push $R5
+ StrLen $R5 $R0
+ StrCpy $R2 -1
+ IntOp $R2 $R2 + 1
+ StrCpy $R3 $R1 $R5 $R2
+ StrCmp $R3 "" +9
+ StrCmp $R3 $R0 0 -3
+  StrCpy $R3 $R1 $R2
+  IntOp $R2 $R2 + $R5
+  StrCpy $R4 $R1 "" $R2
+  StrCpy $R1 $R3$R4
+  IntOp $R2 $R2 - $R5
+  IntOp $R2 $R2 - 1
+  Goto -10
+  StrCpy $R0 $R1
+Pop $R5
+Pop $R4
+Pop $R3
+Pop $R2
+Pop $R1
+Exch $R0
 FunctionEnd
