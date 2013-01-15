@@ -217,6 +217,11 @@ Page Custom ConfigureSetupPage HandleSetupArguments
 !macro Log str
   DetailPrint "${str}"
   nsislog::log "${INSTALL_LOG}" "${str}"
+  ; Log to stdout
+  System::Call 'kernel32::GetStdHandle(i -11)i.r0'
+  System::Call 'kernel32::AttachConsole(i -1)'
+  FileWrite $0 "${str}"
+  FileWrite $0 "$\r$\n"
 !macroend
 
 #####################################################################
