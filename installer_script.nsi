@@ -27,6 +27,7 @@
 !define VERSION "2.4.1"
 !define PAGE_FILE "serviceInstallPage.ini"
 !define INSTALL_LOG "$INSTDIR\install.log"
+!define SETACL_LOG "$INSTDIR\setacl.log"
 
 #################################################################
 # Privileges required by the ProActive Runtime Account
@@ -731,13 +732,13 @@ Function ProcessSetupArguments
     # Run the command in a console view to allow the user to see output
     # The command based on SID grants full permissions only for LocalSystem and Administrators to the keyfile and the registry key
     ${If} ${Silent}
-      nsExec::Exec '"$INSTDIR\SetACL.exe" -on "$INSTDIR\restrict.dat" -ot file -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:S-1-5-18;p:full;s:y" -ace "n:S-1-5-32-544;p:full;s:y"'
+      nsExec::Exec '"$INSTDIR\SetACL.exe" -on "$INSTDIR\restrict.dat" -ot file -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:S-1-5-18;p:full;s:y" -ace "n:S-1-5-32-544;p:full;s:y" -log "${SETACL_LOG}"'
       ${If} $0 == "ERROR"
         !insertmacro Log "!! Unable to restrict keyfile access !!"
         Call RollbackIfSilent
         Abort
       ${EndIf}
-      nsExec::Exec '"$INSTDIR\SetACL.exe" -on HKEY_LOCAL_MACHINE\Software\ProActiveAgent\Creds -ot reg -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:S-1-5-18;p:full;s:y" -ace "n:S-1-5-32-544;p:full;s:y"'
+      nsExec::Exec '"$INSTDIR\SetACL.exe" -on HKEY_LOCAL_MACHINE\Software\ProActiveAgent\Creds -ot reg -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:S-1-5-18;p:full;s:y" -ace "n:S-1-5-32-544;p:full;s:y" -log "${SETACL_LOG}"'
       ${If} $0 == "ERROR"
         !insertmacro Log "!! Unable to restrict regkey access !!"
         Call RollbackIfSilent
@@ -746,9 +747,9 @@ Function ProcessSetupArguments
     ${Else}
       ExecWait 'cmd.exe /C \
         echo Restricting keyfile access ... &\
-        "$INSTDIR\SetACL.exe" -on "$INSTDIR\restrict.dat" -ot file -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:S-1-5-18;p:full;s:y" -ace "n:S-1-5-32-544;p:full;s:y"&\
+        "$INSTDIR\SetACL.exe" -on "$INSTDIR\restrict.dat" -ot file -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:S-1-5-18;p:full;s:y" -ace "n:S-1-5-32-544;p:full;s:y" -log "${SETACL_LOG}"&\
         echo Restricting regkey access ... &\
-        "$INSTDIR\SetACL.exe" -on HKEY_LOCAL_MACHINE\Software\ProActiveAgent\Creds -ot reg -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:S-1-5-18;p:full;s:y" -ace "n:S-1-5-32-544;p:full;s:y"&\
+        "$INSTDIR\SetACL.exe" -on HKEY_LOCAL_MACHINE\Software\ProActiveAgent\Creds -ot reg -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:S-1-5-18;p:full;s:y" -ace "n:S-1-5-32-544;p:full;s:y" -log "${SETACL_LOG}"&\
         pause'
     ${EndIf}
 
@@ -812,13 +813,13 @@ Function ProcessSetupArguments
     # The first command allows control of the service by ALL USERS group
     # The second command allows full control of the configuration file by ALL USERS group
     ${If} ${Silent}
-      nsExec::Exec '"$INSTDIR\SetACL.exe" -on ${SERVICE_NAME} -ot srv -actn ace -ace "n:S-1-1-0;p:start_stop;s:y"'
+      nsExec::Exec '"$INSTDIR\SetACL.exe" -on ${SERVICE_NAME} -ot srv -actn ace -ace "n:S-1-1-0;p:start_stop;s:y" -log "${SETACL_LOG}"'
       ${If} $0 == "ERROR"
         !insertmacro Log "!! Unable to allow control of the service !!"
         Call RollbackIfSilent
         Abort
       ${EndIf}
-      nsExec::Exec '"$INSTDIR\SetACL.exe" -on "$R1" -ot file -actn ace -ace "n:S-1-1-0;p:full;s:y"'
+      nsExec::Exec '"$INSTDIR\SetACL.exe" -on "$R1" -ot file -actn ace -ace "n:S-1-1-0;p:full;s:y" -log "${SETACL_LOG}"'
       ${If} $0 == "ERROR"
         !insertmacro Log "!! Unable to allow control of the config file !!"
         Call RollbackIfSilent
@@ -827,9 +828,9 @@ Function ProcessSetupArguments
     ${Else}
       ExecWait 'cmd.exe /C \
         echo Granting start/stop permissions on ${SERVICE_NAME} service to everyone ... &\
-        "$INSTDIR\SetACL.exe" -on ${SERVICE_NAME} -ot srv -actn ace -ace "n:S-1-1-0;p:start_stop;s:y"&\
+        "$INSTDIR\SetACL.exe" -on ${SERVICE_NAME} -ot srv -actn ace -ace "n:S-1-1-0;p:start_stop;s:y" -log "${SETACL_LOG}"&\
         echo Granting full access on the configuration file to everyone ... &\
-        "$INSTDIR\SetACL.exe" -on "$R1" -ot file -actn ace -ace "n:S-1-1-0;p:full;s:y"&\
+        "$INSTDIR\SetACL.exe" -on "$R1" -ot file -actn ace -ace "n:S-1-1-0;p:full;s:y" -log "${SETACL_LOG}"&\
         pause'
     ${EndIf}
   ${EndIf}
