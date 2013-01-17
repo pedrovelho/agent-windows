@@ -20,14 +20,32 @@
 !define TARGET_ARCH "x86"
 
 #################################################################
-# Some constants definitions like service name, version, etc ...
+# Product version, service name and service description that
+# appears in the services.msc panel
 #################################################################
+!define VERSION "2.4.1"
 !define SERVICE_NAME "ProActiveAgent"
 !define SERVICE_DESC "The ProActive Agent enables desktop computers as an important source of computational power"
-!define VERSION "2.4.1"
+
 !define PAGE_FILE "serviceInstallPage.ini"
-!define INSTALL_LOG "$INSTDIR\install.log"
-!define SETACL_LOG "$INSTDIR\setacl.log"
+
+#################################################################
+# Default config filename and absolute filepath
+#################################################################
+!define CONFIG_NAME "PAAgent-config.xml"
+!define DEFAULT_CONFIG_PATH "$INSTDIR\config\${CONFIG_NAME}"
+
+#################################################################
+# Installer log filename and absolute filepath
+#################################################################
+!define INSTALL_LOG_NAME "install.log"
+!define INSTALL_LOG_PATH "$INSTDIR\${INSTALL_LOG_NAME}"
+
+#################################################################
+# SetACL tool log filename and absolute filepath
+#################################################################
+!define SETACL_LOG_NAME "setacl.log"
+!define SETACL_LOG_PATH "$INSTDIR\${SETACL_LOG_NAME}"
 
 #################################################################
 # Privileges required by the ProActive Runtime Account
@@ -36,8 +54,6 @@
 !define SE_INCREASE_QUOTA_NAME "SeIncreaseQuotaPrivilege"
 !define SE_ASSIGNPRIMARYTOKEN_NAME "SeAssignPrimaryTokenPrivilege"
 
-!define CONFIG_NAME "PAAgent-config.xml"
-!define DEFAULT_CONFIG_PATH "$INSTDIR\config\${CONFIG_NAME}"
 !define PERFORMANCE_MONITOR_SID "S-1-5-32-558"
 !define TXT_CONF "Field 9"
 !define TXT_LOGSDIR "Field 10"
@@ -217,7 +233,7 @@ Page Custom ConfigureSetupPage HandleSetupArguments
 #####################################################################
 !macro Log str
   DetailPrint "${str}"
-  nsislog::log "${INSTALL_LOG}" "${str}"
+  nsislog::log "${INSTALL_LOG_PATH}" "${str}"
   ; Log to stdout
   System::Call 'kernel32::GetStdHandle(i -11)i.r0'
   System::Call 'kernel32::AttachConsole(i -1)'
@@ -732,13 +748,13 @@ Function ProcessSetupArguments
     # Run the command in a console view to allow the user to see output
     # The command based on SID grants full permissions only for LocalSystem and Administrators to the keyfile and the registry key
     ${If} ${Silent}
-      nsExec::Exec '"$INSTDIR\SetACL.exe" -on "$INSTDIR\restrict.dat" -ot file -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:S-1-5-18;p:full;s:y" -ace "n:S-1-5-32-544;p:full;s:y" -log "${SETACL_LOG}"'
+      nsExec::Exec '"$INSTDIR\SetACL.exe" -on "$INSTDIR\restrict.dat" -ot file -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:S-1-5-18;p:full;s:y" -ace "n:S-1-5-32-544;p:full;s:y" -log "${SETACL_LOG_PATH}"'
       ${If} $0 == "ERROR"
         !insertmacro Log "!! Unable to restrict keyfile access !!"
         Call RollbackIfSilent
         Abort
       ${EndIf}
-      nsExec::Exec '"$INSTDIR\SetACL.exe" -on HKEY_LOCAL_MACHINE\Software\ProActiveAgent\Creds -ot reg -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:S-1-5-18;p:full;s:y" -ace "n:S-1-5-32-544;p:full;s:y" -log "${SETACL_LOG}"'
+      nsExec::Exec '"$INSTDIR\SetACL.exe" -on HKEY_LOCAL_MACHINE\Software\ProActiveAgent\Creds -ot reg -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:S-1-5-18;p:full;s:y" -ace "n:S-1-5-32-544;p:full;s:y" -log "${SETACL_LOG_PATH}"'
       ${If} $0 == "ERROR"
         !insertmacro Log "!! Unable to restrict regkey access !!"
         Call RollbackIfSilent
@@ -747,9 +763,9 @@ Function ProcessSetupArguments
     ${Else}
       ExecWait 'cmd.exe /C \
         echo Restricting keyfile access ... &\
-        "$INSTDIR\SetACL.exe" -on "$INSTDIR\restrict.dat" -ot file -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:S-1-5-18;p:full;s:y" -ace "n:S-1-5-32-544;p:full;s:y" -log "${SETACL_LOG}"&\
+        "$INSTDIR\SetACL.exe" -on "$INSTDIR\restrict.dat" -ot file -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:S-1-5-18;p:full;s:y" -ace "n:S-1-5-32-544;p:full;s:y" -log "${SETACL_LOG_PATH}"&\
         echo Restricting regkey access ... &\
-        "$INSTDIR\SetACL.exe" -on HKEY_LOCAL_MACHINE\Software\ProActiveAgent\Creds -ot reg -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:S-1-5-18;p:full;s:y" -ace "n:S-1-5-32-544;p:full;s:y" -log "${SETACL_LOG}"&\
+        "$INSTDIR\SetACL.exe" -on HKEY_LOCAL_MACHINE\Software\ProActiveAgent\Creds -ot reg -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:S-1-5-18;p:full;s:y" -ace "n:S-1-5-32-544;p:full;s:y" -log "${SETACL_LOG_PATH}"&\
         pause'
     ${EndIf}
 
@@ -813,13 +829,13 @@ Function ProcessSetupArguments
     # The first command allows control of the service by ALL USERS group
     # The second command allows full control of the configuration file by ALL USERS group
     ${If} ${Silent}
-      nsExec::Exec '"$INSTDIR\SetACL.exe" -on ${SERVICE_NAME} -ot srv -actn ace -ace "n:S-1-1-0;p:start_stop;s:y" -log "${SETACL_LOG}"'
+      nsExec::Exec '"$INSTDIR\SetACL.exe" -on ${SERVICE_NAME} -ot srv -actn ace -ace "n:S-1-1-0;p:start_stop;s:y" -log "${SETACL_LOG_PATH}"'
       ${If} $0 == "ERROR"
         !insertmacro Log "!! Unable to allow control of the service !!"
         Call RollbackIfSilent
         Abort
       ${EndIf}
-      nsExec::Exec '"$INSTDIR\SetACL.exe" -on "$R1" -ot file -actn ace -ace "n:S-1-1-0;p:full;s:y" -log "${SETACL_LOG}"'
+      nsExec::Exec '"$INSTDIR\SetACL.exe" -on "$R1" -ot file -actn ace -ace "n:S-1-1-0;p:full;s:y" -log "${SETACL_LOG_PATH}"'
       ${If} $0 == "ERROR"
         !insertmacro Log "!! Unable to allow control of the config file !!"
         Call RollbackIfSilent
@@ -828,9 +844,9 @@ Function ProcessSetupArguments
     ${Else}
       ExecWait 'cmd.exe /C \
         echo Granting start/stop permissions on ${SERVICE_NAME} service to everyone ... &\
-        "$INSTDIR\SetACL.exe" -on ${SERVICE_NAME} -ot srv -actn ace -ace "n:S-1-1-0;p:start_stop;s:y" -log "${SETACL_LOG}"&\
+        "$INSTDIR\SetACL.exe" -on ${SERVICE_NAME} -ot srv -actn ace -ace "n:S-1-1-0;p:start_stop;s:y" -log "${SETACL_LOG_PATH}"&\
         echo Granting full access on the configuration file to everyone ... &\
-        "$INSTDIR\SetACL.exe" -on "$R1" -ot file -actn ace -ace "n:S-1-1-0;p:full;s:y" -log "${SETACL_LOG}"&\
+        "$INSTDIR\SetACL.exe" -on "$R1" -ot file -actn ace -ace "n:S-1-1-0;p:full;s:y" -log "${SETACL_LOG_PATH}"&\
         pause'
     ${EndIf}
   ${EndIf}
@@ -1064,13 +1080,11 @@ Function un.ProActiveAgent
       Delete "AgentForAgent.exe"
       Delete "SubInACL.msi"
       Delete "SetACL.exe"
+      Delete "${INSTALL_LOG_NAME}"
+      Delete "${SETACL_LOG_NAME}"
+      RMDir /r "$INSTDIR\logs"
       RMDir /r "$SMPROGRAMS\ProActiveAgent"
       SetShellVarContext current # reset to current user
-FunctionEnd
-
-
-Function Test
-         DetailPrint "sdfsdf"
 FunctionEnd
 
 Function un.TerminateAgentForAgent
