@@ -53,7 +53,6 @@
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.startServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stopServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.startToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeAdministrationPanelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.proActiveLinkLabel = new System.Windows.Forms.LinkLabel();
             this.controlsGroupBox = new System.Windows.Forms.GroupBox();
@@ -267,42 +266,34 @@
             // 
             // contextMenuStrip
             // 
+            this.contextMenuStrip.AutoSize = false;
             this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.startServiceToolStripMenuItem,
             this.stopServiceToolStripMenuItem,
-            this.startToolStripMenuItem,
             this.closeAdministrationPanelToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip1";
             this.contextMenuStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.contextMenuStrip.Size = new System.Drawing.Size(212, 92);
+            this.contextMenuStrip.ShowImageMargin = false;
+            this.contextMenuStrip.Size = new System.Drawing.Size(150, 75);
             // 
             // startServiceToolStripMenuItem
             // 
             this.startServiceToolStripMenuItem.Name = "startServiceToolStripMenuItem";
-            this.startServiceToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.startServiceToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.startServiceToolStripMenuItem.Text = "Start Service";
             this.startServiceToolStripMenuItem.Click += new System.EventHandler(this.startService_Click);
             // 
             // stopServiceToolStripMenuItem
             // 
             this.stopServiceToolStripMenuItem.Name = "stopServiceToolStripMenuItem";
-            this.stopServiceToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.stopServiceToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.stopServiceToolStripMenuItem.Text = "Stop Service";
             this.stopServiceToolStripMenuItem.Click += new System.EventHandler(this.stopService_Click);
-            // 
-            // startToolStripMenuItem
-            // 
-            this.startToolStripMenuItem.Name = "startToolStripMenuItem";
-            this.startToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
-            this.startToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
-            this.startToolStripMenuItem.Text = "Automatic launch";
-            this.startToolStripMenuItem.CheckStateChanged += new System.EventHandler(this.startToolStripMenuItem_CheckStateChanged);
-            this.startToolStripMenuItem.Click += new System.EventHandler(this.startToolStripMenuItem_Click);
             // 
             // closeAdministrationPanelToolStripMenuItem
             // 
             this.closeAdministrationPanelToolStripMenuItem.Name = "closeAdministrationPanelToolStripMenuItem";
-            this.closeAdministrationPanelToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.closeAdministrationPanelToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.closeAdministrationPanelToolStripMenuItem.Text = "Close Administration Panel";
             this.closeAdministrationPanelToolStripMenuItem.Click += new System.EventHandler(this.closeAdministrationPanelToolStripMenuItem_Click_1);
             // 
@@ -453,7 +444,6 @@
         private System.Windows.Forms.NotifyIcon agentStatusNotifyIcon;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
         private System.Windows.Forms.Button guiEditButton;
-        private System.Windows.Forms.ToolStripMenuItem startToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeAdministrationPanelToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem startServiceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem stopServiceToolStripMenuItem;

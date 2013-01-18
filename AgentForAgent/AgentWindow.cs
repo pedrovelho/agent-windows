@@ -51,11 +51,7 @@ using ProActiveAgent;
 namespace AgentForAgent
 {
     public partial class AgentWindow : Form
-    {
-        public const string AGENT_AUTO_RUN_SUBKEY = "Software\\Microsoft\\Windows\\CurrentVersion\\Run";
-
-        //private ConfigurationEditor configEditor;
-
+    {        
         private readonly string agentLocation;
         private readonly string configFileLocation;
         private readonly string logsDirectory;
@@ -90,24 +86,6 @@ namespace AgentForAgent
 
             // Update the status 
             this.updateFromServiceStatus();
-
-            // Find registry value for auto start agent
-            try
-            {
-                RegistryKey confKey = Registry.LocalMachine.OpenSubKey(AGENT_AUTO_RUN_SUBKEY);
-                if (confKey != null)
-                {
-                    if (confKey.GetValue(Constants.SERVICE_NAME) != null)
-                    {
-                        this.startToolStripMenuItem.CheckState = CheckState.Checked;
-                    }
-                    confKey.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Cannot open the following subkey " + AGENT_AUTO_RUN_SUBKEY + ". " + ex, "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
         }
 
         private void updateFromServiceStatus()
@@ -431,35 +409,6 @@ namespace AgentForAgent
 
             // The following will show the account change dialog
             ChangeAccount.createChangeAccountAndShow();
-        }
-
-        // !! Event !!
-        private void startToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (((ToolStripMenuItem)sender).CheckState == CheckState.Checked)
-                ((ToolStripMenuItem)sender).CheckState = CheckState.Unchecked;
-            else
-                ((ToolStripMenuItem)sender).CheckState = CheckState.Checked;
-        }
-
-        // !! Event !!
-        private void startToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
-        {
-            // Add Register the automatic launch
-            RegistryKey confKey = Registry.LocalMachine.OpenSubKey(AGENT_AUTO_RUN_SUBKEY);
-            if (confKey != null)
-            {
-                if (((ToolStripMenuItem)sender).CheckState == CheckState.Checked)
-                {
-                    confKey.SetValue(Constants.SERVICE_NAME, System.Environment.CommandLine);
-                }
-                else
-                {
-                    confKey.DeleteValue(Constants.SERVICE_NAME);
-                }
-
-                confKey.Close();
-            }
         }
 
         // !! Event !!
