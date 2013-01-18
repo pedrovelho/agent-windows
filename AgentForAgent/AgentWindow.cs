@@ -39,6 +39,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.IO.Pipes;
+using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.ServiceProcess;
 using System.Threading;
@@ -46,7 +47,6 @@ using System.Windows.Forms;
 using ConfigParser;
 using Microsoft.Win32;
 using ProActiveAgent;
-using System.Runtime.InteropServices;
 
 namespace AgentForAgent
 {
@@ -80,11 +80,10 @@ namespace AgentForAgent
             this.configFileLocationTextBox.Text = this.configFileLocation;
             this.configFileLocationTextBox.Enabled = true;
 
-            // Administrators only can edit the location of the config file            
+            // Administrators only can change the account used to spawn runtimes
             WindowsPrincipal principal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
             if (!principal.IsInRole(WindowsBuiltInRole.Administrator))
             {
-                this.browseConfigFileLocation.Enabled = false;
                 this.changeAccountButton.Enabled = false;
                 this.changeAccountButton.Visible = false;
             }
@@ -431,7 +430,7 @@ namespace AgentForAgent
             }
 
             // The following will show the account change dialog
-            ChangeAccount.createChangeAccountAndShow();          
+            ChangeAccount.createChangeAccountAndShow();
         }
 
         // !! Event !!

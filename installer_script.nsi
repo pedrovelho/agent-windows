@@ -34,6 +34,8 @@
 #################################################################
 !define CONFIG_NAME "PAAgent-config.xml"
 !define DEFAULT_CONFIG_PATH "$INSTDIR\config\${CONFIG_NAME}"
+!define CONFIG_DAY_NAME "PAAgent-config-planning-day-only.xml"
+!define CONFIG_NIGHT_NAME "PAAgent-config-planning-night-we.xml"
 
 #################################################################
 # Installer log filename and absolute filepath
@@ -741,33 +743,11 @@ Function ProcessSetupArguments
     # Write encrypted password in registry
     WriteRegStr HKLM "Software\ProActiveAgent\Creds" "password" $1
 
-    UserMgr::GetSIDFromUserName $R5 $R3
-    Pop $0
-
-    !insertmacro Log "Restricting keyfile and regkey access ..."
-    # Run the command in a console view to allow the user to see output
-    # The command based on SID grants full permissions only for LocalSystem and Administrators to the keyfile and the registry key
-    ${If} ${Silent}
-      nsExec::Exec '"$INSTDIR\SetACL.exe" -on "$INSTDIR\restrict.dat" -ot file -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:S-1-5-18;p:full;s:y" -ace "n:S-1-5-32-544;p:full;s:y" -log "${SETACL_LOG_PATH}"'
-      ${If} $0 == "ERROR"
-        !insertmacro Log "!! Unable to restrict keyfile access !!"
-        Call RollbackIfSilent
-        Abort
-      ${EndIf}
-      nsExec::Exec '"$INSTDIR\SetACL.exe" -on HKEY_LOCAL_MACHINE\Software\ProActiveAgent\Creds -ot reg -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:S-1-5-18;p:full;s:y" -ace "n:S-1-5-32-544;p:full;s:y" -log "${SETACL_LOG_PATH}"'
-      ${If} $0 == "ERROR"
-        !insertmacro Log "!! Unable to restrict regkey access !!"
-        Call RollbackIfSilent
-        Abort
-      ${EndIf}
-    ${Else}
-      ExecWait 'cmd.exe /C \
-        echo Restricting keyfile access ... &\
-        "$INSTDIR\SetACL.exe" -on "$INSTDIR\restrict.dat" -ot file -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:S-1-5-18;p:full;s:y" -ace "n:S-1-5-32-544;p:full;s:y" -log "${SETACL_LOG_PATH}"&\
-        echo Restricting regkey access ... &\
-        "$INSTDIR\SetACL.exe" -on HKEY_LOCAL_MACHINE\Software\ProActiveAgent\Creds -ot reg -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:S-1-5-18;p:full;s:y" -ace "n:S-1-5-32-544;p:full;s:y" -log "${SETACL_LOG_PATH}"&\
-        pause'
-    ${EndIf}
+    # The command based on SID grants full permissions only for LocalSystem (S-1-5-18) and Administrators (S-1-5-32-544) to the keyfile and the registry key
+    !insertmacro Log "Restricting keyfile access ..."
+    nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on "$INSTDIR\restrict.dat" -ot file -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:S-1-5-18;p:full;s:y" -ace "n:S-1-5-32-544;p:full;s:y"'
+    !insertmacro Log "Restricting regkey access ..."
+    nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on HKEY_LOCAL_MACHINE\Software\ProActiveAgent\Creds -ot reg -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:S-1-5-18;p:full;s:y" -ace "n:S-1-5-32-544;p:full;s:y"'
 
   ${If} $R7 == "1"
     # The goal is to read the path of AppData folder
@@ -802,9 +782,6 @@ Function ProcessSetupArguments
       ReadRegStr $1 HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$0" ProfileImagePath
       StrCpy $1 "$1\AppData\Roaming"
     ${EndIf}
-
-    #MessageBox MB_OK "AppData path: $1"
-
     StrCpy $R1 "$1\ProActiveAgent\config"
     # Copy the configuration file
     SetOutPath $R1
@@ -815,6 +792,7 @@ Function ProcessSetupArguments
     CreateDirectory "$1\ProActiveAgent\logs"
     StrCpy $R2 "$1\ProActiveAgent\logs"
   ${EndIf}
+  
   # Write the config file location into the registry
   WriteRegStr HKLM "Software\ProActiveAgent" "ConfigLocation" $R1
   # Write the config file location into the registry
@@ -823,32 +801,19 @@ Function ProcessSetupArguments
   # If "Allow everyone to start/stop" is selected
   !insertmacro MUI_INSTALLOPTIONS_READ $R0 ${PAGE_FILE} "${CHK_ALLOWANY}" State
   ${If} $R0 == "1"
-    !insertmacro Log "Allowing everyone to control the service ..."
-
-    # Run the command in a console view to allow the user to see output
-    # The first command allows control of the service by ALL USERS group
-    # The second command allows full control of the configuration file by ALL USERS group
-    ${If} ${Silent}
-      nsExec::Exec '"$INSTDIR\SetACL.exe" -on ${SERVICE_NAME} -ot srv -actn ace -ace "n:S-1-1-0;p:start_stop;s:y" -log "${SETACL_LOG_PATH}"'
-      ${If} $0 == "ERROR"
-        !insertmacro Log "!! Unable to allow control of the service !!"
-        Call RollbackIfSilent
-        Abort
-      ${EndIf}
-      nsExec::Exec '"$INSTDIR\SetACL.exe" -on "$R1" -ot file -actn ace -ace "n:S-1-1-0;p:full;s:y" -log "${SETACL_LOG_PATH}"'
-      ${If} $0 == "ERROR"
-        !insertmacro Log "!! Unable to allow control of the config file !!"
-        Call RollbackIfSilent
-        Abort
-      ${EndIf}
-    ${Else}
-      ExecWait 'cmd.exe /C \
-        echo Granting start/stop permissions on ${SERVICE_NAME} service to everyone ... &\
-        "$INSTDIR\SetACL.exe" -on ${SERVICE_NAME} -ot srv -actn ace -ace "n:S-1-1-0;p:start_stop;s:y" -log "${SETACL_LOG_PATH}"&\
-        echo Granting full access on the configuration file to everyone ... &\
-        "$INSTDIR\SetACL.exe" -on "$R1" -ot file -actn ace -ace "n:S-1-1-0;p:full;s:y" -log "${SETACL_LOG_PATH}"&\
-        pause'
-    ${EndIf}
+    !insertmacro Log "The option Allow everyone to start/stop is selected ..."
+    !insertmacro Log "Granting members of ALL USERS group to start/stop the service ..."
+    nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on ${SERVICE_NAME} -ot srv -actn ace -ace "n:S-1-1-0;p:start_stop;s:y"'
+    !insertmacro Log "Granting members of ALL USERS group the full control of regkey to be able to change the config file ..."
+    nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on HKEY_LOCAL_MACHINE\Software\ProActiveAgent -ot reg -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:S-1-1-0;p:full;s:y"'
+    !insertmacro Log "Granting members of ALL USERS group the full control of the selected $R1 config file ..."
+    nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on "$R1" -ot file -actn ace -ace "n:S-1-1-0;p:full;s:y"'
+    !insertmacro Log "Granting members of ALL USERS group the full control of the $INSTDIR\config\${CONFIG_NAME} config file ..."
+    nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on "$INSTDIR\config\${CONFIG_NAME}" -ot file -actn ace -ace "n:S-1-1-0;p:full;s:y"'
+    !insertmacro Log "Granting members of ALL USERS group the full control of the $INSTDIR\config\${CONFIG_DAY_NAME} config file ..."
+    nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on "$INSTDIR\config\${CONFIG_DAY_NAME}" -ot file -actn ace -ace "n:S-1-1-0;p:full;s:y"'
+    !insertmacro Log "Granting members of ALL USERS group the full control of the $INSTDIR\config\${CONFIG_NIGHT_NAME} config file ..."
+    nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on "$INSTDIR\config\${CONFIG_NIGHT_NAME}" -ot file -actn ace -ace "n:S-1-1-0;p:full;s:y"'
   ${EndIf}
 
   !insertmacro Log "Ready to start the ProActiveAgent service ..."
