@@ -13,8 +13,8 @@
   </config>
   <events>
     <event>
-      <start day="Monday" hour="8" minute="0" second="0" />
-      <duration days="0" hours="11" minutes="0" seconds="0" />
+      <start day="Monday" hour="19" minute="0" second="0" />
+      <duration days="0" hours="13" minutes="0" seconds="0" />
       <config>
         <memoryLimit>0</memoryLimit>
         <nbRuntimes>0</nbRuntimes>
@@ -24,8 +24,8 @@
       </config>
     </event>
     <event>
-      <start day="Tuesday" hour="8" minute="0" second="0" />
-      <duration days="0" hours="11" minutes="0" seconds="0" />
+      <start day="Tuesday" hour="19" minute="0" second="0" />
+      <duration days="0" hours="13" minutes="0" seconds="0" />
       <config>
         <memoryLimit>0</memoryLimit>
         <nbRuntimes>0</nbRuntimes>
@@ -35,8 +35,8 @@
       </config>
     </event>
     <event>
-      <start day="Wednesday" hour="8" minute="0" second="0" />
-      <duration days="0" hours="11" minutes="0" seconds="0" />
+      <start day="Wednesday" hour="19" minute="0" second="0" />
+      <duration days="0" hours="13" minutes="0" seconds="0" />
       <config>
         <memoryLimit>0</memoryLimit>
         <nbRuntimes>0</nbRuntimes>
@@ -46,8 +46,8 @@
       </config>
     </event>
     <event>
-      <start day="Thursday" hour="8" minute="0" second="0" />
-      <duration days="0" hours="11" minutes="0" seconds="0" />
+      <start day="Thursday" hour="19" minute="0" second="0" />
+      <duration days="0" hours="13" minutes="0" seconds="0" />
       <config>
         <memoryLimit>0</memoryLimit>
         <nbRuntimes>0</nbRuntimes>
@@ -57,8 +57,8 @@
       </config>
     </event>
     <event>
-      <start day="Friday" hour="8" minute="0" second="0" />
-      <duration days="0" hours="11" minutes="0" seconds="0" />
+      <start day="Friday" hour="19" minute="0" second="0" />
+      <duration days="2" hours="13" minutes="0" seconds="0" />
       <config>
         <memoryLimit>0</memoryLimit>
         <nbRuntimes>0</nbRuntimes>
