@@ -266,7 +266,6 @@
             // 
             // contextMenuStrip
             // 
-            this.contextMenuStrip.AutoSize = false;
             this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.startServiceToolStripMenuItem,
             this.stopServiceToolStripMenuItem,
@@ -274,27 +273,27 @@
             this.contextMenuStrip.Name = "contextMenuStrip1";
             this.contextMenuStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.contextMenuStrip.ShowImageMargin = false;
-            this.contextMenuStrip.Size = new System.Drawing.Size(150, 75);
+            this.contextMenuStrip.Size = new System.Drawing.Size(128, 92);
             // 
             // startServiceToolStripMenuItem
             // 
             this.startServiceToolStripMenuItem.Name = "startServiceToolStripMenuItem";
-            this.startServiceToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.startServiceToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.startServiceToolStripMenuItem.Text = "Start Service";
             this.startServiceToolStripMenuItem.Click += new System.EventHandler(this.startService_Click);
             // 
             // stopServiceToolStripMenuItem
             // 
             this.stopServiceToolStripMenuItem.Name = "stopServiceToolStripMenuItem";
-            this.stopServiceToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.stopServiceToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.stopServiceToolStripMenuItem.Text = "Stop Service";
             this.stopServiceToolStripMenuItem.Click += new System.EventHandler(this.stopService_Click);
             // 
             // closeAdministrationPanelToolStripMenuItem
             // 
             this.closeAdministrationPanelToolStripMenuItem.Name = "closeAdministrationPanelToolStripMenuItem";
-            this.closeAdministrationPanelToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.closeAdministrationPanelToolStripMenuItem.Text = "Close Administration Panel";
+            this.closeAdministrationPanelToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
+            this.closeAdministrationPanelToolStripMenuItem.Text = "Close";
             this.closeAdministrationPanelToolStripMenuItem.Click += new System.EventHandler(this.closeAdministrationPanelToolStripMenuItem_Click_1);
             // 
             // proActiveLinkLabel
