@@ -732,14 +732,8 @@ Function ProcessSetupArguments
     createServiceLABEL:
 
     !insertmacro Log "Installing ProActiveAgent.exe as service ..."
-    # Create the service under the Local System and store the user and password in the restricted registry key
-    ${If} ${Silent}
-      nsExec::Exec 'cmd.exe /C sc create ${SERVICE_NAME} binPath= "$INSTDIR\ProActiveAgent.exe" DisplayName= "${SERVICE_NAME}" start= auto type= interact type= own & sc description ${SERVICE_NAME} "${SERVICE_DESC}"'
-      # !! OMIT THIS MESSAGE CHECK SERVICE INSTALL BY QUERYING THE SERVICE STATUS !!
-      #!insertmacro Log "Is ok ? $0"
-    ${Else}
-      ExecWait 'cmd.exe /C echo Installing "$INSTDIR\ProActiveAgent.exe" as service ... & sc create ${SERVICE_NAME} binPath= "$INSTDIR\ProActiveAgent.exe" DisplayName= "${SERVICE_NAME}" start= auto type= interact type= own & sc description ${SERVICE_NAME} "${SERVICE_DESC}" & pause'
-    ${EndIf}
+    # Create the service under the Local System
+    nsExec::Exec 'cmd.exe /C sc create ${SERVICE_NAME} binPath= "$INSTDIR\ProActiveAgent.exe" DisplayName= "${SERVICE_NAME}" start= auto type= interact type= own & sc description ${SERVICE_NAME} "${SERVICE_DESC}"'
 
     # Check if the service was correctly installed
     !insertmacro Log "Checking service installation ..."
