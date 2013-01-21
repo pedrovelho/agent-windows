@@ -1093,6 +1093,19 @@ Function LocateJava
           !insertmacro Log "Reading JAVA_HOME environment variable ..."
           Goto javaFoundLabel
         ${EndIf}
+
+        ${If} ${RunningX64}
+            !insertmacro Log "Using x64 regview ..."
+            SetRegView 64
+            ReadRegStr $0 HKLM "SOFTWARE\JavaSoft\Java Development Kit" "CurrentVersion"
+            ${If} $0 != ""
+              !insertmacro Log "Locating java jdk home ..."
+              ReadRegStr $0 HKLM "SOFTWARE\JavaSoft\Java Development Kit\$0" "JavaHome"
+              SetRegView 32
+              Goto javaFoundLabel
+            ${EndIf}
+            SetRegView 32
+        ${EndIf}
         
         ReadRegStr $0 HKLM "SOFTWARE\JavaSoft\Java Development Kit" "CurrentVersion"
         ${If} $0 != ""
@@ -1101,8 +1114,21 @@ Function LocateJava
           Goto javaFoundLabel
         ${EndIf}
 
+        ${If} ${RunningX64}
+            !insertmacro Log "Using x64 regview ..."
+            SetRegView 64
+            ReadRegStr $0 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" "CurrentVersion"
+            ${If} $0 != ""
+              !insertmacro Log "Locating java jre home ..."
+              ReadRegStr $0 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$0" "JavaHome"
+              SetRegView 32
+              Goto javaFoundLabel
+            ${EndIf}
+            SetRegView 32
+        ${EndIf}
+        
         ReadRegStr $0 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" "CurrentVersion"
-        ${If} $0 == ""
+        ${If} $0 != ""
           !insertmacro Log "Locating java jre home ..."
           ReadRegStr $0 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$0" "JavaHome"
           Goto javaFoundLabel
