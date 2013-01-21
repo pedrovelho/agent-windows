@@ -97,6 +97,28 @@ Page Directory
 Page Instfiles
 Page Custom ConfigureSetupPage HandleSetupArguments
 
+#############################
+# !! SECTIONS DEFINITIONS !!
+#############################
+
+Section "ProActive Agent"
+  Call InstallProActiveAgent
+SectionEnd
+
+Section "ProActive ScreenSaver"
+  Call InstallProActiveScreenSaver
+SectionEnd
+
+Section "Start Menu Shortcuts"
+  Call CreateDesktopShortCuts
+SectionEnd
+
+UninstallText "This will uninstall ProActive Agent. Hit next to continue."
+
+Section "Uninstall"
+  Call un.ProActiveAgent
+SectionEnd
+
 ##########################################################################################################################################
 !include "WordFunc.nsh"
 !insertmacro WordReplace
@@ -230,10 +252,24 @@ Page Custom ConfigureSetupPage HandleSetupArguments
 ; $R0 == " la"
 !define StrStrip '!insertmacro StrStrip'
 
+#################################################################
+# This is a simple way to replace the occurrences of a certain
+# string throughout the lines of a file. This I use to turn
+# templates for configuration files into 'real' ones, but
+# for sure you may replace everything.
+#################################################################
+!macro _ReplaceInFile SOURCE_FILE SEARCH_TEXT REPLACEMENT
+  Push "${SOURCE_FILE}"
+  Push "${SEARCH_TEXT}"
+  Push "${REPLACEMENT}"
+  Call RIF
+!macroend
+
 #####################################################################
 # Logs into the detailed gui section and into the log file
 #####################################################################
 !macro Log str
+  Push $0
   DetailPrint "${str}"
   nsislog::log "${INSTALL_LOG_PATH}" "${str}"
   ; Log to stdout
@@ -241,6 +277,7 @@ Page Custom ConfigureSetupPage HandleSetupArguments
   System::Call 'kernel32::AttachConsole(i -1)'
   FileWrite $0 "${str}"
   FileWrite $0 "$\r$\n"
+  Pop $0
 !macroend
 
 #####################################################################
@@ -826,32 +863,14 @@ Function ProcessSetupArguments
   ${EndIf}
 FunctionEnd
 
-#############################
-# !! SECTIONS DEFINITIONS !!
-#############################
-
-Section "ProActive Agent"
-  Call InstallProActiveAgent
-SectionEnd
-
-Section "ProActive ScreenSaver"
-  Call InstallProActiveScreenSaver
-SectionEnd
-
-Section "Start Menu Shortcuts"
-  Call CreateDesktopShortCuts
-SectionEnd
-
+#################################################################
+# Installs the ProActive Agent; copies all the requires files
+#################################################################
 Function InstallProActiveAgent
-
-        #-----------------------------------------------------------------------------------
-        # Set current dir to installation directory
-        #-----------------------------------------------------------------------------------
+        ; Set current dir to installation directory
         SetOutPath $INSTDIR
-
-        #-----------------------------------------------------------------------------------
-        # Print the current date and time into the installation log file
-        #-----------------------------------------------------------------------------------
+        
+        ; Print the current date and time into the installation log file
         Call GetCurrentDate
         Pop $R0
         Call GetCurrentTime
@@ -860,27 +879,20 @@ Function InstallProActiveAgent
         StrCpy $R0 ""
         StrCpy $R1 ""
 
-        #-----------------------------------------------------------------------------------
-        # The agent requires the following reg sub-key in order to install itself as
-        # a service
-        #-----------------------------------------------------------------------------------
+        ; Write into registry the agent home
         WriteRegStr HKLM "Software\ProActiveAgent" "AgentLocation" "$INSTDIR"
-
-        #-----------------------------------------------------------------------------------
-        # Write the uninstall keys for Windows
-        #-----------------------------------------------------------------------------------
+        ; Write into registry the default config
+        WriteRegStr HKLM "Software\ProActiveAgent" "ConfigLocation" "${DEFAULT_CONFIG_PATH}"
+        ; Write the uninstall keys for Windows
         WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ProActiveAgent" "DisplayName" "ProActive Agent (remove only)"
         WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ProActiveAgent" "UninstallString" '"$INSTDIR\Uninstall.exe"'
 
-        #-----------------------------------------------------------------------------------
-        # Write uninstaller utility
-        #-----------------------------------------------------------------------------------
+        ; Write uninstaller utility
         WriteUninstaller uninstall.exe
 
-        #-----------------------------------------------------------------------------------
-        # Write files
-        #-----------------------------------------------------------------------------------
+        ; Write files
         File "LICENSE.txt"
+        File "bin\Release\AgentForAgent.exe"
         File "bin\Release\ConfigParser.dll"
         File "bin\Release\ProActiveAgent.exe"
         File "bin\Release\parunas.exe"
@@ -893,38 +905,32 @@ Function InstallProActiveAgent
         File "ProActiveAgent\lib\log4net.dll"
         File "ProActiveAgent\lib\InJobProcessCreator.exe"
         File "ProActiveAgent\lib\${TARGET_ARCH}\JobManagement.dll"
-
-        IfFileExists $INSTDIR\config\PAAgent-config.xml 0 defaultFileNotExistLabel
-
-        MessageBox MB_YESNO "Use existing configuration file $INSTDIR\config\PAAgent-config.xml ?" /SD IDYES IDNO defaultFileNotExistLabel
-        !insertmacro Log "Using existing configuration file ..."
-        Goto continueInstallLabel
-
-        defaultFileNotExistLabel:
-        SetOutPath $INSTDIR\config
-        File "utils\PAAgent-config.xml"
-
-        continueInstallLabel:
-        SetOutPath $INSTDIR\config
-        File "utils\PAAgent-config-planning-day-only.xml"
-        File "utils\PAAgent-config-planning-night-we.xml"
         SetOutPath $INSTDIR\xml
         File "utils\xml\agent-windows.xsd"
         File "utils\xml\agent-common.xsd"
         SetOutPath $INSTDIR\doc
         File "ProActive Agent Documentation.pdf"
 
-        #-----------------------------------------------------------------------------------
-        # The agent requires the following reg sub-key to know its default configuration
-        #-----------------------------------------------------------------------------------
-        WriteRegStr HKLM "Software\ProActiveAgent" "ConfigLocation" "$INSTDIR\config\PAAgent-config.xml"
+        IfFileExists $INSTDIR\config\PAAgent-config.xml 0 defaultFileNotExistLabel
+        MessageBox MB_YESNO "Use existing configuration file $INSTDIR\config\PAAgent-config.xml ?" /SD IDYES IDNO defaultFileNotExistLabel
+        Goto useExistingConfigLabel
 
-        #-----------------------------------------------------------------------------------
-        # Copy the GUI
-        #-----------------------------------------------------------------------------------
-        SetOutPath $INSTDIR
-        File "bin\Release\AgentForAgent.exe"
+        defaultFileNotExistLabel:
+        SetOutPath $INSTDIR\config
+        File "utils\PAAgent-config.xml"
+        File "utils\PAAgent-config-planning-day-only.xml"
+        File "utils\PAAgent-config-planning-night-we.xml"
         
+        ; Locate java and insert it in config files
+        Call LocateJava
+        Pop $0
+        !insertmacro Log "Inserting located java home $0 into config files ..."
+        !insertmacro _ReplaceInFile "$INSTDIR\config\${CONFIG_NAME}" "<javaHome />" "<javaHome>$0</javaHome>"
+        !insertmacro _ReplaceInFile "$INSTDIR\config\${CONFIG_DAY_NAME}" "<javaHome />" "<javaHome>$0</javaHome>"
+        !insertmacro _ReplaceInFile "$INSTDIR\config\${CONFIG_NIGHT_NAME}" "<javaHome />" "<javaHome>$0</javaHome>"
+
+        useExistingConfigLabel:
+        !insertmacro Log "Using existing configuration file ..."
         !insertmacro Log "Successfully copied files ..."
 FunctionEnd
 
@@ -933,15 +939,9 @@ Function InstallProActiveScreenSaver
         File "bin\Release\ProActiveSSaver.scr"
 FunctionEnd
 
-######################################
-# Section "Desktop shortcuts"
-#         SetShellVarContext all # All users
-#         IfFileExists $INSTDIR\AgentForAgent.exe 0 +2
-#           CreateShortCut "$DESKTOP\ProActive Agent Control.lnk" "$INSTDIR\AgentForAgent.exe" "" "$INSTDIR\icon.ico" 0
-#         SetShellVarContext current # Current User
-# SectionEnd
-######################################
-
+#################################################################
+# Creates the shortcuts
+#################################################################
 Function CreateDesktopShortCuts
         SetShellVarContext all # All users
         CreateDirectory "$SMPROGRAMS\ProActiveAgent"
@@ -951,14 +951,9 @@ Function CreateDesktopShortCuts
         SetShellVarContext current # reset to current user
 FunctionEnd
 
-#uninstall section
-
-UninstallText "This will uninstall ProActive Agent. Hit next to continue."
-
-Section "Uninstall"
-  Call un.ProActiveAgent
-SectionEnd
-
+#################################################################
+# Uninstall the ProActive agent
+#################################################################
 Function un.ProActiveAgent
   !insertmacro Log "Uninstalling ProActiveAgent ..."
   
@@ -1088,13 +1083,42 @@ Function un.TerminateAgentForAgent
 
 FunctionEnd
 
-; My time functions
+#################################################################
+# Locate the java home dir from registry, the result value
+# is stored in $0
+#################################################################
+Function LocateJava
+        ReadEnvStr $0 JAVA_HOME
+        ${If} $0 != ""
+          !insertmacro Log "Reading JAVA_HOME environment variable ..."
+          Goto javaFoundLabel
+        ${EndIf}
+        
+        ReadRegStr $0 HKLM "SOFTWARE\JavaSoft\Java Development Kit" "CurrentVersion"
+        ${If} $0 != ""
+          !insertmacro Log "Locating java jdk home ..."
+          ReadRegStr $0 HKLM "SOFTWARE\JavaSoft\Java Development Kit\$0" "JavaHome"
+          Goto javaFoundLabel
+        ${EndIf}
 
-; GetCurrentTime
-; Written by Saivert
-; Description:
-;   Uses System.dll plugin to call Win32's GetTimeFormat in order
-;   to get the current time as a formatted string.
+        ReadRegStr $0 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" "CurrentVersion"
+        ${If} $0 == ""
+          !insertmacro Log "Locating java jre home ..."
+          ReadRegStr $0 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$0" "JavaHome"
+          Goto javaFoundLabel
+        ${EndIf}
+        
+        javaFoundLabel:
+          Push $0
+FunctionEnd
+
+#################################################################
+# GetCurrentTime
+# Written by Saivert
+# Description:
+#   Uses System.dll plugin to call Win32's GetTimeFormat in order
+#   to get the current time as a formatted string.
+#################################################################
 Function GetCurrentTime
   Push $R9
   Push $R8
@@ -1109,11 +1133,13 @@ Function GetCurrentTime
   Exch $R9
 FunctionEnd
 
-; GetCurrentDate
-; Written by Saivert
-; Description:
-;   Uses System.dll plugin to call Win32's GetDateFormat in order
-;   to get the current date as a formatted string.
+#################################################################
+# GetCurrentDate
+# Written by Saivert
+# Description:
+#   Uses System.dll plugin to call Win32's GetDateFormat in order
+#   to get the current date as a formatted string.
+#################################################################
 Function GetCurrentDate
   Push $R9
   Push $R8
@@ -1128,7 +1154,9 @@ Function GetCurrentDate
   Exch $R9
 FunctionEnd
 
+#################################################################
 # Taken from http://nsis.sourceforge.net/CharStrip_%26_StrStrip:_Remove_character_or_string_from_another_string
+#################################################################
 Function StrStrip
 Exch $R0 #string
 Exch
@@ -1158,3 +1186,133 @@ Pop $R2
 Pop $R1
 Exch $R0
 FunctionEnd
+
+#################################################################
+# Replace in FILE
+#################################################################
+Function RIF
+  ClearErrors  ; want to be a newborn
+
+  Exch $0      ; REPLACEMENT
+  Exch
+  Exch $1      ; SEARCH_TEXT
+  Exch 2
+  Exch $2      ; SOURCE_FILE
+
+  Push $R0     ; SOURCE_FILE file handle
+  Push $R1     ; temporary file handle
+  Push $R2     ; unique temporary file name
+  Push $R3     ; a line to sar/save
+  Push $R4     ; shift puffer
+
+  IfFileExists $2 +1 RIF_error      ; knock-knock
+  FileOpen $R0 $2 "r"               ; open the door
+
+  GetTempFileName $R2               ; who's new?
+  FileOpen $R1 $R2 "w"              ; the escape, please!
+
+  RIF_loop:                         ; round'n'round we go
+    FileRead $R0 $R3                ; read one line
+    IfErrors RIF_leaveloop          ; enough is enough
+    RIF_sar:                        ; sar - search and replace
+      Push "$R3"                    ; (hair)stack
+      Push "$1"                     ; needle
+      Push "$0"                     ; blood
+      Call StrRep                   ; do the bartwalk
+      StrCpy $R4 "$R3"              ; remember previous state
+      Pop $R3                       ; gimme s.th. back in return!
+      StrCmp "$R3" "$R4" +1 RIF_sar ; loop, might change again!
+    FileWrite $R1 "$R3"             ; save the newbie
+  Goto RIF_loop                     ; gimme more
+
+  RIF_leaveloop:                    ; over'n'out, Sir!
+    FileClose $R1                   ; S'rry, Ma'am - clos'n now
+    FileClose $R0                   ; me 2
+
+    Delete "$2.old"                 ; go away, Sire
+    Rename "$2" "$2.old"            ; step aside, Ma'am
+    Rename "$R2" "$2"               ; hi, baby!
+
+    ClearErrors                     ; now i AM a newborn
+    Goto RIF_out                    ; out'n'away
+
+  RIF_error:                        ; ups - s.th. went wrong...
+    SetErrors                       ; ...so cry, boy!
+
+  RIF_out:                          ; your wardrobe?
+  Pop $R4
+  Pop $R3
+  Pop $R2
+  Pop $R1
+  Pop $R0
+  Pop $2
+  Pop $0
+  Pop $1
+FunctionEnd
+
+!define StrRep "!insertmacro StrRep"
+!macro StrRep output string old new
+    Push "${string}"
+    Push "${old}"
+    Push "${new}"
+    !ifdef __UNINSTALL__
+        Call un.StrRep
+    !else
+        Call StrRep
+    !endif
+    Pop ${output}
+!macroend
+
+!macro Func_StrRep un
+    Function ${un}StrRep
+        Exch $R2 ;new
+        Exch 1
+        Exch $R1 ;old
+        Exch 2
+        Exch $R0 ;string
+        Push $R3
+        Push $R4
+        Push $R5
+        Push $R6
+        Push $R7
+        Push $R8
+        Push $R9
+
+        StrCpy $R3 0
+        StrLen $R4 $R1
+        StrLen $R6 $R0
+        StrLen $R9 $R2
+        loop:
+            StrCpy $R5 $R0 $R4 $R3
+            StrCmp $R5 $R1 found
+            StrCmp $R3 $R6 done
+            IntOp $R3 $R3 + 1 ;move offset by 1 to check the next character
+            Goto loop
+        found:
+            StrCpy $R5 $R0 $R3
+            IntOp $R8 $R3 + $R4
+            StrCpy $R7 $R0 "" $R8
+            StrCpy $R0 $R5$R2$R7
+            StrLen $R6 $R0
+            IntOp $R3 $R3 + $R9 ;move offset by length of the replacement string
+            Goto loop
+        done:
+
+        Pop $R9
+        Pop $R8
+        Pop $R7
+        Pop $R6
+        Pop $R5
+        Pop $R4
+        Pop $R3
+        Push $R0
+        Push $R1
+        Pop $R0
+        Pop $R1
+        Pop $R0
+        Pop $R2
+        Exch $R1
+    FunctionEnd
+!macroend
+!insertmacro Func_StrRep ""
+!insertmacro Func_StrRep "un."
