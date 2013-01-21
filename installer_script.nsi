@@ -1071,6 +1071,10 @@ Function un.TerminateAgentForAgent
     FindWindow $0 "" "${WND_TITLE}"
     IntCmp $0 0 finished
     Sleep 2000
+    # Try to kill using taskkill command
+    nsExec::Exec 'cmd.exe /C \
+        taskkill /f /im AgentForAgent.exe &\
+        ping -n 2 127.0.0.1 >nul'
     Goto ask_user
 
   abort:
