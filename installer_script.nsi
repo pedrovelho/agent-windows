@@ -43,6 +43,14 @@
 !define SETACL_LOG_PATH "$INSTDIR\${SETACL_LOG_NAME}"
 
 #################################################################
+# SIDs definitions
+#################################################################
+!define ALL_USERS_SID "S-1-1-0"
+!define LOCAL_SYSTEM_SID "S-1-5-18"
+!define ADMINISTRATORS_SID "S-1-5-32-544"
+!define PERFORMANCE_MONITOR_SID "S-1-5-32-558"
+
+#################################################################
 # Privileges required by the ProActive Runtime Account
 #################################################################
 !define SERVICE_LOGON_RIGHT "SeServiceLogonRight"
@@ -56,8 +64,6 @@
 !define CHK_ALLOWANY "Field 11"
 !define TXT_DOMAIN "Field 15"
 
-!define PERFORMANCE_MONITOR_SID "S-1-5-32-558"
-
 # Fixed parameters for TerminateAgentForAgent function
 !define WND_TITLE "ProActive Agent Control"
 !define TO_MS 2000
@@ -67,6 +73,18 @@ Var Hostname
 Var tmp
 Var uninstall
 Var overrideConfig
+
+#################################################################
+# Variable filled in ReadSetupArguments and used in
+# InstallProActiveAgent.
+#################################################################
+var AccountDomain
+var AccountUsername
+var AccountPassword
+var AllowEveryone
+var ConfigLocation
+var LogsDirectory
+var UseAccountHome
 
 CRCCheck on
 
@@ -86,11 +104,13 @@ ComponentText "This will install ProActive Agent on your computer. Select which 
 
 DirText "Choose a directory to install in to:"
 
+AutoCloseWindow true
+
 Page License
 Page Components
 Page Directory
-Page Instfiles
 Page Custom ConfigureSetupPage HandleSetupArguments
+Page Instfiles
 
 #############################
 # !! SECTIONS DEFINITIONS !!
@@ -274,6 +294,26 @@ SectionEnd
   Pop $0
 !macroend
 
+#################################################################
+# Installs ProActive Screen Saver
+#################################################################
+Function InstallProActiveScreenSaver
+        SetOutPath $SYSDIR
+        File "bin\Release\ProActiveSSaver.scr"
+FunctionEnd
+
+#################################################################
+# Creates the shortcuts
+#################################################################
+Function CreateDesktopShortCuts
+        SetShellVarContext all ; All users
+        CreateDirectory "$SMPROGRAMS\ProActiveAgent"
+        CreateShortCut  "$SMPROGRAMS\ProActiveAgent\ProActive Agent Control.lnk" "$INSTDIR\AgentForAgent.exe" "" "$INSTDIR\icon.ico" 0
+        CreateShortCut  "$SMPROGRAMS\ProActiveAgent\Uninstall ProActive Agent.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
+        CreateShortCut  "$SMPROGRAMS\ProActiveAgent\ProActive Agent Documentation.lnk" "$INSTDIR\doc\ProActive Agent Documentation.pdf" "" "$INSTDIR\doc\ProActive Agent Documentation.pdf" 0
+        SetShellVarContext current ; reset to current user
+FunctionEnd
+
 #####################################################################
 # Runs uninstaller if available
 #####################################################################
@@ -304,12 +344,12 @@ Function .onInit
   !insertmacro GetServerName $Hostname
   ; Remove leading \\ to avoid AGENT-192 (bugs.activeeon.com)
   ${StrStrip} "\\" $Hostname $Hostname
-  
+
   ${If} ${Silent}
     ${GetParameters} $0
     ${If} $0 != ""
       ; Run the uninstaller if /UN is specified.
-      ${GetOptions} "$0" "/UN" $tmp 
+      ${GetOptions} "$0" "/UN" $tmp
       IfErrors continue_install
         Call RollbackIfSilent
         Abort
@@ -321,12 +361,12 @@ Function .onInit
         ClearErrors
         ${GetOptions} "$0" "/H" $tmp
         IfErrors +2
-        StrCpy $R7 "1"
+        StrCpy $R7 "1" ; TODO --------------------------------------- ?????????
         ClearErrors
         ${GetOptions} "$0" "/O" $tmp
         StrCpy $overrideConfig "1"
         ; Read and store command-line arguments
-        ${GetOptions} "$0" "/CONFIG_DIR=" $R1 
+        ${GetOptions} "$0" "/CONFIG_DIR=" $R1
         ; If not specified set default value
         ${If} $R1 == ""
            StrCpy $R1 "$INSTDIR\config"
@@ -397,7 +437,7 @@ Function .onInit
   System::Call "kernel32::GetModuleHandle(t 'shell32.dll') i .s"
   System::Call "kernel32::GetProcAddress(i s, i 680) i .r0"
   System::Call "::$0() i .r0"
-  
+
   ${If} $R0 == '0'
      ${IfNot} ${Silent}
         MessageBox MB_OK "Adminstrator rights are required to install the ProActive Agent." /SD IDOK
@@ -471,16 +511,14 @@ Function ReadSetupArguments
       !insertmacro GROUPCONTROLS "${PAGE_FILE}" "${CHK_LOGSHOME}" "${TXT_LOGSDIR}|${TXT_CONF}" "1"
       Abort
   ${EndSwitch}
-
-  ; CHECK LOCATIONS
-
   # Check "Use service account home" for logs location stored in R7
   !insertmacro MUI_INSTALLOPTIONS_READ $R7 ${PAGE_FILE} "${CHK_LOGSHOME}" State
-  ${If} $R7 == "1"
-    Goto skipLocationsLABEL
-  ${EndIf}
+  StrCpy $UseAccountHome $R7
+
   !insertmacro MUI_INSTALLOPTIONS_READ $R1 ${PAGE_FILE} "${TXT_CONF}" State
   !insertmacro MUI_INSTALLOPTIONS_READ $R2 ${PAGE_FILE} "${TXT_LOGSDIR}" State
+  Strcpy $ConfigLocation $R1
+  Strcpy $LogsDirectory $R2
 
   skipLocationsLABEL:
   ; CHECK ACCOUNT FIELDS
@@ -488,12 +526,21 @@ Function ReadSetupArguments
   !insertmacro MUI_INSTALLOPTIONS_READ $R4 ${PAGE_FILE} "Field 5" "State"
   !insertmacro MUI_INSTALLOPTIONS_READ $R5 ${PAGE_FILE} "${TXT_DOMAIN}" "State"
   !insertmacro MUI_INSTALLOPTIONS_READ $R0 ${PAGE_FILE} "${CHK_ALLOWANY}" State
+  StrCpy $AccountDomain $R5
+  StrCpy $AccountUsername $R3
+  StrCpy $AccountPassword $R4
+  StrCpy $AllowEveryone $R0
 FunctionEnd
 
 Function ProcessSetupArguments
-  ${If} $R7 == "1"
-    Goto skipLocationsLABEL
-  ${EndIf}
+  ; Print the current date and time into the installation log file
+  Call GetCurrentDate
+  Pop $R0
+  Call GetCurrentTime
+  Pop $R1
+  !insertmacro Log "$R0 - $R1 Installing ProActiveAgent v${VERSION} ..."
+  StrCpy $R0 ""
+  StrCpy $R1 ""
 
   ; Check config file location stored in R1
   ${If} ${Silent}
@@ -509,29 +556,6 @@ Function ProcessSetupArguments
     Call RollbackIfSilent
     MessageBox MB_OK "Please enter a valid location for the Configuration File" /SD IDOK
      Abort
-  ${Else}
-    ; If the location is NOT THE DEFAULT ONE
-    ${If} $R1 != "$INSTDIR\config"
-      ; Check if the specified directory exists
-      IfFileExists $R1 dirExistLABEL dirNotExistLABEL
-      dirNotExistLABEL:
-      MessageBox MB_OK "The specified directory $R1 for configuration file doesn't exist" /SD IDOK
-        Abort
-      dirExistLABEL:
-      ; Check if there is already a config file
-      IfFileExists "$R1\${CONFIG_NAME}" askUseLABEL copyDefaultLABEL
-      askUseLABEL:
-      ; Ask the user if he wants to use the existing file (if not the default one will be copied to this dir)
-      MessageBox MB_YESNO "Use existing configuration file $R1\${CONFIG_NAME} ?" /SD IDYES IDYES setLocationLABEL
-      copyDefaultLABEL:
-      SetOutPath $R1
-      File "utils\PAAgent-config.xml"
-      setLocationLABEL:
-      !insertmacro Log "Setting existing location ..."
-      StrCpy $R1 "$R1\${CONFIG_NAME}" # R1 will contain the full path
-    ${Else}
-      StrCpy $R1 "$INSTDIR\config\${CONFIG_NAME}"
-    ${EndIf}
   ${EndIf}
 
   ; Check logs location stored in R2
@@ -598,7 +622,6 @@ Function ProcessSetupArguments
   ;-----------------------------------------------------------------------------------
   ; !! SELECTED: Specify an account !!
   ;-----------------------------------------------------------------------------------
-
   checkAccount:
   ; Try to log under the specified account
   !insertmacro DoLogonUser $R5 $R3 $R4
@@ -694,158 +717,25 @@ Function ProcessSetupArguments
         MessageBox MB_OK "Unable to build account env" /SD IDOK
           Abort
       ${EndIf}
-      ; Here set R6 1 to know that a new account was created
-      StrCpy $R6 "1"
-      Goto checkAccount
 
-    checkGroupMember:
+      checkGroupMember:
+      
+        ; Check if the account is part of 'Performace Monitor Group'
+        ; The function UserMgr::IsMemberOfGroup does not work.
+        ; Instead we use the UserMgr::GetUserNameFromSID to check if the group exists if so
+        ; the user is added using a macro.
+        !insertmacro Log "Checking runtime account member of Performace Monitor Group ..."
+        UserMgr::GetUserNameFromSID ${PERFORMANCE_MONITOR_SID}
+        Pop $0
+        ${If} $0 == "ERROR"
+          ; The group does not exist, this occur on Windows XP so there is nothing to do
+          ${IfNot} ${IsWinXP}
+            !insertmacro Log "!! ${PERFORMANCE_MONITOR_SID} does not exist !!"
+          ${EndIf}
+        ${Else}
+            !insertmacro AddUserToGroup1 $Hostname $AccountUsername "558" ; UserMgr::AddToGroup doesn't work
+        ${EndIf}
 
-    ; Check if the account is part of 'Performace Monitor Group' of SID "S-1-5-32-558"
-    ; The function UserMgr::IsMemberOfGroup does not work.
-    ; Instead we use the UserMgr::GetUserNameFromSID to check if the group exists if so
-    ; the user is added using a macro.
-    UserMgr::GetUserNameFromSID ${PERFORMANCE_MONITOR_SID}
-    Pop $0
-    ${If} $0 == "ERROR"
-      ; The group does not exist, this occur on Windows XP so there is nothing to do
-      ${IfNot} ${IsWinXP}
-         !insertmacro Log "!! ${PERFORMANCE_MONITOR_SID} does not exist !!"
-      ${EndIf}
-      Goto createServiceLABEL
-    ${Else}
-      ; If a new account was created no need to ask to add the user to the group
-      ${If} $R6 == "1"
-        ; The function UserMgr::AddToGroup does not work
-        !insertmacro AddUserToGroup1 $Hostname $R3 "558"
-      ${EndIf}
-    ${EndIf}
-
-    createServiceLABEL:
-
-    !insertmacro Log "Installing ProActiveAgent.exe as service ..."
-    ; Create the service under the Local System
-    nsExec::Exec 'cmd.exe /C sc create ${SERVICE_NAME} binPath= "$INSTDIR\ProActiveAgent.exe" DisplayName= "${SERVICE_NAME}" start= auto type= interact type= own & sc description ${SERVICE_NAME} "${SERVICE_DESC}"'
-
-    ; Check if the service was correctly installed
-    !insertmacro Log "Checking service installation ..."
-    !insertmacro SERVICE "status" ${SERVICE_NAME} '' ""
-    Pop $0
-    ${If} $0 != "stopped"
-      !insertmacro Log "!! Unable to install as service !!"
-      Call RollbackIfSilent
-      MessageBox MB_OK "Unable to install as service. To install manually use sc.exe command" /SD IDOK
-       Abort
-    ${EndIf}
-
-    ; Once the service is installed write auth data into a restricted acces key
-    WriteRegStr HKLM "Software\ProActiveAgent\Creds" "domain" $R5
-    WriteRegStr HKLM "Software\ProActiveAgent\Creds" "username" $R3
-
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ; Encrypt the password, see AGENT-154 ;
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    !insertmacro Log "Encrypting password ..."
-    ; Set current dir to the location of pacrypt.dll
-    SetOutPath $INSTDIR
-    ; C-Signature: int encryptData(wchar_t *input, wchar_t *output)
-    StrCpy $0 $R4 ; copy register to stack
-    System::Call "pacrypt::encryptData(w, w) i(r0., .r1).r2"
-    ${If} $2 != 0
-      !insertmacro Log "!! Unable to encrypt the password (too long ?). Error $2 !!"
-      Call RollbackIfSilent
-      MessageBox MB_OK "Unable to encrypt the password (too long ?). Error $2" /SD IDOK
-      Abort
-    ${EndIf}
-    ; Uncomment the following code to chek if the encryption mechanism works correctly
-    ; the last message box should show
-    ;MessageBox MB_OK "---> $0 , $1 , $2"
-    ;System::Call "pacrypt::decryptData(w, w) i(r1., .r4).r0"
-    ;MessageBox MB_OK "---> $0 , $1 , $4"
-
-    ; Write encrypted password in registry
-    WriteRegStr HKLM "Software\ProActiveAgent\Creds" "password" $1
-
-    ; The command based on SID grants full permissions only for LocalSystem (S-1-5-18) and Administrators (S-1-5-32-544) to the keyfile and the registry key
-    !insertmacro Log "Restricting keyfile access ..."
-    nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on "$INSTDIR\restrict.dat" -ot file -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:S-1-5-18;p:full;s:y" -ace "n:S-1-5-32-544;p:full;s:y"'
-    !insertmacro Log "Restricting regkey access ..."
-    nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on HKEY_LOCAL_MACHINE\Software\ProActiveAgent\Creds -ot reg -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:S-1-5-18;p:full;s:y" -ace "n:S-1-5-32-544;p:full;s:y"'
-
-  ${If} $R7 == "1"
-    ; The goal is to read the path of AppData folder
-
-    ; Get the SID of the user
-    UserMgr::GetSIDFromUserName "." $R3
-    Pop $0
-    ;MessageBox MB_OK "User sid: $0"
-
-    ; On xp use the standard way
-    ${If} ${IsWinXP}
-      ; If it is loaded in HKU by SID check in the Volatile Environment
-      ReadRegStr $1 HKU "$0\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders" AppData
-      ;MessageBox MB_OK "AppData path: $1"
-
-      ; If the result is empty, load the account into the HKU by username the read the same key
-      ${If} $1 == ""
-        UserMgr::RegLoadUserHive $R3
-        ;Pop $0
-        ;MessageBox MB_OK "Load ? $0"
-
-        ReadRegStr $1 HKU "$R3\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders" AppData
-        ;MessageBox MB_OK "User app data: $1"
-
-        UserMgr::RegUnLoadUserHive $R3
-        ;Pop $0
-        ;MessageBox MB_OK "Load ? $0"
-      ${EndIf}
-    ${Else}
-      ; On other OS like Vista or 7 use HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\SID ProfileImagePath
-      ; If it is loaded in HKU by SID check in the Volatile Environment
-      ReadRegStr $1 HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$0" ProfileImagePath
-      StrCpy $1 "$1\AppData\Roaming"
-    ${EndIf}
-    StrCpy $R1 "$1\ProActiveAgent\config"
-    ; Copy the configuration file
-    SetOutPath $R1
-    File "utils\PAAgent-config.xml"
-    ; The location wil be written into the registry
-    StrCpy $R1 "$R1\PAAgent-config.xml"
-    ; Create the logs dir
-    CreateDirectory "$1\ProActiveAgent\logs"
-    StrCpy $R2 "$1\ProActiveAgent\logs"
-  ${EndIf}
-  
-  ; Write the config file location into the registry
-  WriteRegStr HKLM "Software\ProActiveAgent" "ConfigLocation" $R1
-  ; Write the config file location into the registry
-  WriteRegStr HKLM "Software\ProActiveAgent" "LogsDirectory" $R2
-
-  ; If "Allow everyone to start/stop" is selected
-  !insertmacro MUI_INSTALLOPTIONS_READ $R0 ${PAGE_FILE} "${CHK_ALLOWANY}" State
-  ${If} $R0 == "1"
-    !insertmacro Log "The option Allow everyone to start/stop is selected ..."
-    !insertmacro Log "Granting members of ALL USERS group to start/stop the service ..."
-    nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on ${SERVICE_NAME} -ot srv -actn ace -ace "n:S-1-1-0;p:start_stop;s:y"'
-    !insertmacro Log "Granting members of ALL USERS group the full control of regkey to be able to change the config file ..."
-    nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on HKEY_LOCAL_MACHINE\Software\ProActiveAgent -ot reg -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:S-1-1-0;p:full;s:y"'
-    !insertmacro Log "Granting members of ALL USERS group the full control of the selected $R1 config file ..."
-    nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on "$R1" -ot file -actn ace -ace "n:S-1-1-0;p:full;s:y"'
-    !insertmacro Log "Granting members of ALL USERS group the full control of the $INSTDIR\config\${CONFIG_NAME} config file ..."
-    nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on "$INSTDIR\config\${CONFIG_NAME}" -ot file -actn ace -ace "n:S-1-1-0;p:full;s:y"'
-    !insertmacro Log "Granting members of ALL USERS group the full control of the $INSTDIR\config\${CONFIG_DAY_NAME} config file ..."
-    nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on "$INSTDIR\config\${CONFIG_DAY_NAME}" -ot file -actn ace -ace "n:S-1-1-0;p:full;s:y"'
-    !insertmacro Log "Granting members of ALL USERS group the full control of the $INSTDIR\config\${CONFIG_NIGHT_NAME} config file ..."
-    nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on "$INSTDIR\config\${CONFIG_NIGHT_NAME}" -ot file -actn ace -ace "n:S-1-1-0;p:full;s:y"'
-  ${EndIf}
-
-  !insertmacro Log "Ready to start the ProActiveAgent service ..."
-  ${If} ${Silent}
-    ; If silent mode just exit
-    Abort
-  ${Else}
-    ; Run the Agent GUI
-    Exec "$INSTDIR\AgentForAgent.exe"
-  ${EndIf}
 FunctionEnd
 
 #################################################################
@@ -854,38 +744,147 @@ FunctionEnd
 Function InstallProActiveAgent
         ; Set current dir to installation directory
         SetOutPath $INSTDIR
-        
-        ; Print the current date and time into the installation log file
-        Call GetCurrentDate
-        Pop $R0
-        Call GetCurrentTime
-        Pop $R1
-        !insertmacro Log "$R0 - $R1 Installing ProActiveAgent v${VERSION} ..."
-        StrCpy $R0 ""
-        StrCpy $R1 ""
-
-        ; Write into registry the agent home
+        ; Write into registry the agent home and config location and logs dir
         WriteRegStr HKLM "Software\ProActiveAgent" "AgentLocation" "$INSTDIR"
-        ; Write into registry the default config
-        WriteRegStr HKLM "Software\ProActiveAgent" "ConfigLocation" "${DEFAULT_CONFIG_PATH}"
         ; Write the uninstall keys for Windows
         WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ProActiveAgent" "DisplayName" "ProActive Agent (remove only)"
         WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ProActiveAgent" "UninstallString" '"$INSTDIR\Uninstall.exe"'
+        ; Write auth data into a restricted access key
+        WriteRegStr HKLM "Software\ProActiveAgent\Creds" "domain" $AccountDomain
+        WriteRegStr HKLM "Software\ProActiveAgent\Creds" "username" $AccountUsername
 
-        ; Write uninstaller utility
+        ; Write uninstaller utility to able to rollback
         WriteUninstaller uninstall.exe
 
-        ; Write files
+        ; Encrypt the password, see AGENT-154
+        File "bin\Release\pacrypt.dll" ; the .dll contains C-Signature: int encryptData(wchar_t *input, wchar_t *output)
+        !insertmacro Log "Encrypting password ..."
+        StrCpy $0 $AccountPassword ; copy register to stack
+        System::Call "pacrypt::encryptData(w, w) i(r0., .r1).r2"
+        ${If} $2 != 0
+           !insertmacro Log "!! Unable to encrypt the password (too long ?). Error $2 !!"
+           Call RollbackIfSilent
+           MessageBox MB_OK "Unable to encrypt the password (too long ?). Error $2" /SD IDOK
+           Abort
+        ${EndIf}
+        ; Uncomment the following code to chek if the encryption mechanism works correctly
+        ; the last message box should show
+        ;MessageBox MB_OK "---> $0 , $1 , $2"
+        ;System::Call "pacrypt::decryptData(w, w) i(r1., .r4).r0"
+        ;MessageBox MB_OK "---> $0 , $1 , $4"
+        ; Write encrypted password in registry
+        WriteRegStr HKLM "Software\ProActiveAgent\Creds" "password" $1
+
+        ; The command based on SID grants full permissions only for LocalSystem and Administrators keyfile and the registry key
+        File "utils\SetACL.exe" ; copy the tool for access restriction
+        !insertmacro Log "Restricting keyfile access ..."
+        nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on "$INSTDIR\restrict.dat" -ot file -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:${LOCAL_SYSTEM_SID};p:full;s:y" -ace "n:${ADMINISTRATORS_SID};p:full;s:y"'
+        !insertmacro Log "Restricting regkey access ..."
+        nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on HKEY_LOCAL_MACHINE\Software\ProActiveAgent\Creds -ot reg -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:${LOCAL_SYSTEM_SID};p:full;s:y" -ace "n:${ADMINISTRATORS_SID};p:full;s:y"'
+
+        ; Install the service under the Local System and check if the service was correctly installed
+        File "bin\Release\ProActiveAgent.exe" ; copy the service executable
+        !insertmacro Log "Installing ProActiveAgent.exe as service ..."
+        nsExec::Exec 'cmd.exe /C sc create ${SERVICE_NAME} binPath= "$INSTDIR\ProActiveAgent.exe" DisplayName= "${SERVICE_NAME}" start= auto type= interact type= own & sc description ${SERVICE_NAME} "${SERVICE_DESC}"'
+        !insertmacro Log "Checking service installation ..."
+        !insertmacro SERVICE "status" ${SERVICE_NAME} '' ""
+        Pop $0
+        ${If} $0 != "stopped"
+          !insertmacro Log "!! Unable to install as service !!"
+          Call RollbackIfSilent
+          MessageBox MB_OK "Unable to install as service. To install manually use sc.exe command" /SD IDOK
+          Abort
+        ${EndIf}
+
+        ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        ; CHECK USE RUNTIME ACCOUNT ;
+        ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        ${If} $UseAccountHome == "1"
+          ; The goal is to read the path of AppData folder
+          UserMgr::GetSIDFromUserName "." $AccountUsername ; Get the SID of the user
+          Pop $0
+          ${If} ${IsWinXP}
+            ; On xp use the standard way, if it is loaded in HKU by SID check in the Volatile Environment
+            ReadRegStr $1 HKU "$0\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders" AppData
+            ; If the result is empty, load the account into the HKU by username the read the same key
+            ${If} $1 == ""
+              UserMgr::RegLoadUserHive $AccountUsername
+              ;Pop $0
+              ;MessageBox MB_OK "Load ? $0"
+              ReadRegStr $1 HKU "$R3\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders" AppData
+              ;MessageBox MB_OK "User app data: $1"
+              UserMgr::RegUnLoadUserHive $AccountUsername
+              ;Pop $0
+              ;MessageBox MB_OK "Load ? $0"
+            ${EndIf}
+          ${Else}
+            ; On other OS like Vista or 7 use HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\SID ProfileImagePath
+            ; If it is loaded in HKU by SID check in the Volatile Environment
+            ReadRegStr $1 HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$0" ProfileImagePath
+            StrCpy $1 "$1\AppData\Roaming"
+          ${EndIf}
+          CreateDirectory "$1\ProActiveAgent\config"
+          StrCpy $ConfigLocation "$1\ProActiveAgent\config"
+          CreateDirectory "$1\ProActiveAgent\logs"
+          StrCpy $LogsDirectory "$1\ProActiveAgent\logs"
+        ${EndIf}
+        
+        ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        ; CHECK USE DEFAULT LOCATION ;
+        ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        ${If} $ConfigLocation == "$INSTDIR\config"
+          IfFileExists $ConfigLocation\${CONFIG_NAME} 0 defaultFileNotExistLabel
+          MessageBox MB_YESNO "Use existing configuration file $INSTDIR\config\${CONFIG_NAME} ?" /SD IDYES IDNO defaultFileNotExistLabel
+          !insertmacro Log "Using existing configuration file ..."
+          Goto useExistingConfigLabel
+        ${Else} ; If NOT default location
+          IfFileExists $ConfigLocation dirExistLABEL dirNotExistLABEL ; check exists
+          dirNotExistLABEL:
+          MessageBox MB_OK "The specified directory $ConfigLocation for configuration file doesn't exist" /SD IDOK
+          Abort
+          dirExistLABEL:
+          ; Check if there is already a config file
+          IfFileExists "$ConfigLocation\${CONFIG_NAME}" askUseLABEL defaultFileNotExistLabel
+          askUseLABEL:
+          ; Ask the user if he wants to use the existing file (if not the default one will be copied to this dir)
+          MessageBox MB_YESNO "Use existing configuration file $ConfigLocation\${CONFIG_NAME} ?" /SD IDYES IDNO defaultFileNotExistLabel
+          !insertmacro Log "Using existing configuration file ..."
+          Goto useExistingConfigLabel
+        ${EndIf}
+
+        defaultFileNotExistLabel:
+        !insertmacro Log "Writing config files into $ConfigLocation ..."
+        ; Copy config files then locate java and insert into it
+        SetOutPath $ConfigLocation
+        File "utils\${CONFIG_NAME}"
+        File "utils\${CONFIG_DAY_NAME}"
+        File "utils\${CONFIG_NIGHT_NAME}"
+        Call LocateJava
+        Pop $0
+        !insertmacro Log "Inserting located java home $0 into config files ..."
+        !insertmacro _ReplaceInFile "$ConfigLocation\${CONFIG_NAME}" "<javaHome />" "<javaHome>$0</javaHome>"
+        !insertmacro _ReplaceInFile "$ConfigLocation\${CONFIG_DAY_NAME}" "<javaHome />" "<javaHome>$0</javaHome>"
+        !insertmacro _ReplaceInFile "$ConfigLocation\${CONFIG_NIGHT_NAME}" "<javaHome />" "<javaHome>$0</javaHome>"
+        
+        ; Sometime the replacement mecanism doesn't remove .old files
+        Delete "$ConfigLocation\${CONFIG_NAME}.old"
+        Delete "$ConfigLocation\${CONFIG_DAY_NAME}.old"
+        Delete "$ConfigLocation\${CONFIG_NIGHT_NAME}.old"
+
+        useExistingConfigLabel:
+        
+        WriteRegStr HKLM "Software\ProActiveAgent" "ConfigLocation" "$ConfigLocation\${CONFIG_NAME}"
+        WriteRegStr HKLM "Software\ProActiveAgent" "LogsDirectory" $LogsDirectory
+        
+        ; Write other files
+        SetOutPath $INSTDIR
         File "LICENSE.txt"
         File "bin\Release\AgentForAgent.exe"
         File "bin\Release\ConfigParser.dll"
-        File "bin\Release\ProActiveAgent.exe"
         File "bin\Release\parunas.exe"
-        File "bin\Release\pacrypt.dll"
         File "utils\icon.ico"
         File "utils\ListNetworkInterfaces.class"
         File "utils\delete_temp.bat"
-        File "utils\SetACL.exe"
         File "ProActiveAgent\log4net.config"
         File "ProActiveAgent\lib\log4net.dll"
         File "ProActiveAgent\lib\InJobProcessCreator.exe"
@@ -895,45 +894,27 @@ Function InstallProActiveAgent
         File "utils\xml\agent-common.xsd"
         SetOutPath $INSTDIR\doc
         File "ProActive Agent Documentation.pdf"
-
-        IfFileExists $INSTDIR\config\PAAgent-config.xml 0 defaultFileNotExistLabel
-        MessageBox MB_YESNO "Use existing configuration file $INSTDIR\config\PAAgent-config.xml ?" /SD IDYES IDNO defaultFileNotExistLabel
-        Goto useExistingConfigLabel
-
-        defaultFileNotExistLabel:
-        SetOutPath $INSTDIR\config
-        File "utils\PAAgent-config.xml"
-        File "utils\PAAgent-config-planning-day-only.xml"
-        File "utils\PAAgent-config-planning-night-we.xml"
         
-        ; Locate java and insert it in config files
-        Call LocateJava
-        Pop $0
-        !insertmacro Log "Inserting located java home $0 into config files ..."
-        !insertmacro _ReplaceInFile "$INSTDIR\config\${CONFIG_NAME}" "<javaHome />" "<javaHome>$0</javaHome>"
-        !insertmacro _ReplaceInFile "$INSTDIR\config\${CONFIG_DAY_NAME}" "<javaHome />" "<javaHome>$0</javaHome>"
-        !insertmacro _ReplaceInFile "$INSTDIR\config\${CONFIG_NIGHT_NAME}" "<javaHome />" "<javaHome>$0</javaHome>"
-
-        useExistingConfigLabel:
-        !insertmacro Log "Using existing configuration file ..."
         !insertmacro Log "Successfully copied files ..."
-FunctionEnd
+        
+        ${If} $AllowEveryone == "1"
+          !insertmacro Log "The option Allow everyone to start/stop is selected ..."
+          !insertmacro Log "Granting members of ALL USERS group to start/stop the service ..."
+          nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on ${SERVICE_NAME} -ot srv -actn ace -ace "n:${ALL_USERS_SID};p:start_stop;s:y"'
+          !insertmacro Log "Granting members of ALL USERS group the full control of regkey to be able to change the config file ..."
+          nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on HKEY_LOCAL_MACHINE\Software\ProActiveAgent -ot reg -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:${ALL_USERS_SID};p:full;s:y"'
+          !insertmacro Log "Granting members of ALL USERS group the full control of the selected $ConfigLocation\${CONFIG_NAME} config file ..."
+          nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on "$ConfigLocation\${CONFIG_NAME}" -ot file -actn ace -ace "n:${ALL_USERS_SID};p:full;s:y"'
+          !insertmacro Log "Granting members of ALL USERS group the full control of the $ConfigLocation\${CONFIG_DAY_NAME} config file ..."
+          nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on "$ConfigLocation\${CONFIG_DAY_NAME}" -ot file -actn ace -ace "n:${ALL_USERS_SID};p:full;s:y"'
+          !insertmacro Log "Granting members of ALL USERS group the full control of the $ConfigLocation\${CONFIG_NIGHT_NAME} config file ..."
+          nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on "$ConfigLocation\${CONFIG_NIGHT_NAME}" -ot file -actn ace -ace "n:${ALL_USERS_SID};p:full;s:y"'
+        ${EndIf}
 
-Function InstallProActiveScreenSaver
-        SetOutPath $SYSDIR
-        File "bin\Release\ProActiveSSaver.scr"
-FunctionEnd
-
-#################################################################
-# Creates the shortcuts
-#################################################################
-Function CreateDesktopShortCuts
-        SetShellVarContext all ; All users
-        CreateDirectory "$SMPROGRAMS\ProActiveAgent"
-        CreateShortCut  "$SMPROGRAMS\ProActiveAgent\ProActive Agent Control.lnk" "$INSTDIR\AgentForAgent.exe" "" "$INSTDIR\icon.ico" 0
-        CreateShortCut  "$SMPROGRAMS\ProActiveAgent\Uninstall ProActive Agent.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
-        CreateShortCut  "$SMPROGRAMS\ProActiveAgent\ProActive Agent Documentation.lnk" "$INSTDIR\doc\ProActive Agent Documentation.pdf" "" "$INSTDIR\doc\ProActive Agent Documentation.pdf" 0
-        SetShellVarContext current ; reset to current user
+        !insertmacro Log "Installed sucessfully, ready to start the ProActiveAgent service ..."
+        ${IfNot} ${Silent}
+          Exec "$INSTDIR\AgentForAgent.exe" ; Run the Agent GUI
+        ${EndIf}
 FunctionEnd
 
 #################################################################
@@ -941,7 +922,7 @@ FunctionEnd
 #################################################################
 Function un.ProActiveAgent
   !insertmacro Log "Uninstalling ProActiveAgent ..."
-  
+
   ; Check user admin rights
   System::Call "kernel32::GetModuleHandle(t 'shell32.dll') i .s"
   System::Call "kernel32::GetProcAddress(i s, i 680) i .r0"
@@ -1085,7 +1066,7 @@ Function LocateJava
             ${EndIf}
             SetRegView 32
         ${EndIf}
-        
+
         ReadRegStr $0 HKLM "SOFTWARE\JavaSoft\Java Development Kit" "CurrentVersion"
         ${If} $0 != ""
           !insertmacro Log "Locating java jdk home ..."
@@ -1105,14 +1086,14 @@ Function LocateJava
             ${EndIf}
             SetRegView 32
         ${EndIf}
-        
+
         ReadRegStr $0 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" "CurrentVersion"
         ${If} $0 != ""
           !insertmacro Log "Locating java jre home ..."
           ReadRegStr $0 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$0" "JavaHome"
           Goto javaFoundLabel
         ${EndIf}
-        
+
         javaFoundLabel:
           Push $0
 FunctionEnd
