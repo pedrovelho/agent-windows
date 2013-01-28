@@ -63,16 +63,19 @@
 !define CHK_LOGSHOME "Field 12"
 !define CHK_ALLOWANY "Field 11"
 !define TXT_DOMAIN "Field 15"
+!define TXT_USERNAME "Field 4"
+!define TXT_PASSWORD "Field 5"
 
 # Fixed parameters for TerminateAgentForAgent function
 !define WND_TITLE "ProActive Agent Control"
 !define TO_MS 2000
 !define SYNC_TERM 0x0010000
 
-Var Hostname
-Var tmp
-Var uninstall
-Var overrideConfig
+#################################################################
+# Default Account Username and Password
+#################################################################
+!define DEFAULT_USERNAME "proactive"
+!define DEFAULT_PASSWORD "Community1."
 
 #################################################################
 # Variable filled in ReadSetupArguments and used in
@@ -82,9 +85,10 @@ var AccountDomain
 var AccountUsername
 var AccountPassword
 var AllowEveryone
-var ConfigLocation
-var LogsDirectory
+var ConfigDir
+var LogsDir
 var UseAccountHome
+Var Hostname
 
 CRCCheck on
 
@@ -226,15 +230,10 @@ SectionEnd
 
 !ifmacrondef DoLogonUser
   ; Logs on a user, and returns their login token in $R0
+  ; R0: token
+  ; R8: call return
   !macro DoLogonUser Domain Username Password
-    System::Call "${LogonUser}('${Username}', '${Domain}', '${Password}', ${LOGON32_LOGON_NETWORK}, ${LOGON32_PROVIDER_DEFAULT}, .R0) .R8"
-    StrCmp $R8 0 logOnErr
-    goto logOnDone
-    logOnErr:
-      MessageBox MB_OK "Invalid username or password"
-    logOnDone:
-      DetailPrint "Return token: $R0"
-      DetailPrint "Call return: $R8"
+     System::Call "${LogonUser}('${Username}', '${Domain}', '${Password}', ${LOGON32_LOGON_NETWORK}, ${LOGON32_PROVIDER_DEFAULT}, .R0) .R8"
   !macroend
 !endif
 
@@ -283,15 +282,14 @@ SectionEnd
 # Logs into the detailed gui section and into the log file
 #####################################################################
 !macro Log str
-  Push $0
+  ; Log to NSIS console
   DetailPrint "${str}"
-  nsislog::log "${INSTALL_LOG_PATH}" "${str}"
+  IfFileExists $INSTDIR 0 +2 ; check exists
+  nsislog::log ${INSTALL_LOG_PATH} "${str}"
   ; Log to stdout
-  System::Call 'kernel32::GetStdHandle(i -11)i.r0'
+  System::Call 'kernel32::GetStdHandle(i -11)i.r9'
   System::Call 'kernel32::AttachConsole(i -1)'
-  FileWrite $0 "${str}"
-  FileWrite $0 "$\r$\n"
-  Pop $0
+  FileWrite $9 "${str}$\r$\n"
 !macroend
 
 #################################################################
@@ -319,10 +317,11 @@ FunctionEnd
 #####################################################################
 Function RollbackIfSilent
   ${If} ${Silent}
-    !insertmacro Log "Rollbacking  uninstaller ..."
+    !insertmacro Log "Running uninstaller ..."
     ${If} ${FileExists} '$INSTDIR\uninstall.exe'
       ExecWait '"$INSTDIR\uninstall.exe" /S ?_=$INSTDIR'
     ${EndIf}
+    !insertmacro Log "Uninstall finished ..."
   ${EndIf}
 FunctionEnd
 
@@ -339,148 +338,106 @@ FunctionEnd
 # 4 - Unable to find Microsoft .NET Framework 3.5
 ##########################################################################################################################################
 Function .onInit
-
-  ; Read hostname
-  !insertmacro GetServerName $Hostname
-  ; Remove leading \\ to avoid AGENT-192 (bugs.activeeon.com)
-  ${StrStrip} "\\" $Hostname $Hostname
-
-  ${If} ${Silent}
-    ${GetParameters} $0
-    ${If} $0 != ""
-      ; Run the uninstaller if /UN is specified.
-      ${GetOptions} "$0" "/UN" $tmp
-      IfErrors continue_install
-        Call RollbackIfSilent
-        Abort
-      continue_install:
-        ClearErrors
-        ${GetOptions} "$0" "/A" $tmp
-        IfErrors +2
-        StrCpy $R0 "1"
-        ClearErrors
-        ${GetOptions} "$0" "/H" $tmp
-        IfErrors +2
-        StrCpy $R7 "1" ; TODO --------------------------------------- ?????????
-        ClearErrors
-        ${GetOptions} "$0" "/O" $tmp
-        StrCpy $overrideConfig "1"
-        ; Read and store command-line arguments
-        ${GetOptions} "$0" "/CONFIG_DIR=" $R1
-        ; If not specified set default value
-        ${If} $R1 == ""
-           StrCpy $R1 "$INSTDIR\config"
-        ${EndIf}
-        ${GetOptions} "$0" "/LOG_DIR=" $R2
-        ; If not specified set default value
-        ${If} $R2 == ""
-           StrCpy $R2 "$INSTDIR\logs"
-        ${EndIf}
-        ${GetOptions} "$0" "/USER=" $R3
-        ${GetOptions} "$0" "/PASSWORD=" $R4
-        ${GetOptions} "$0" "/DOMAIN=" $R5
-        ; If not specified set hostname as value
-        ${If} $R5 == ""
-           StrCpy $R5 $Hostname
-        ${EndIf}
-        ClearErrors
-        ${GetOptions} "$0" "/INI=" $1
-        ${Unless} ${Errors}
-          ; If the requried parameter is not given as a command-line argument,
-          ; check whether it is specified in a configuration file (if any)
-          ${If} ${FileExists} "$1"
-            ; THIS will override the  commandline argument
-            ReadINIStr $2 $1 "INSTALL" "INST_DIR"
-            ; Set the INSTDIR variable if a installation directory specified
-            ${If} $2 != ""
-              StrCpy $INSTDIR $2
-            ${EndIf}
-            ${If} $R1 == ""
-              ReadINIStr $R1 $1 "INSTALL" "CONFIG_DIR"
-            ${EndIf}
-            ${If} $R2 == ""
-              ReadINIStr $R2 $1 "INSTALL" "LOG_DIR"
-            ${EndIf}
-            ${If} $R3 == ""
-              ReadINIStr $R3 $1 "INSTALL" "USER"
-            ${EndIf}
-            ${If} $R4 == ""
-              ReadINIStr $R4 $1 "INSTALL" "PASSWORD"
-            ${EndIf}
-            ${If} $R5 == ""
-              ReadINIStr $R5 $1 "INSTALL" "DOMAIN"
-            ${EndIf}
-            ${If} $R0 == ""
-              ReadINIStr $R0 $1 "INSTALL" "ALLOW_ALL_USERS_TO_START_STOP"
-              ; Allow all users to start/stop
-              ${If} $R0 == ""
-                StrCpy $R0 "0" ; default
-              ${EndIf}
-            ${EndIf}
-            ${If} $R7 == ""
-              ReadINIStr $R7 $1 "INSTALL" "USE_SERVICE_ACCOUNT_HOME"
-              ${If} $R7 == ""
-                StrCpy $R7 "0" ; default
-              ${EndIf}
-            ${EndIf}
-            ${If} $overrideConfig == ""
-              ReadINIStr $overrideConfig $1 "INSTALL" "OVERRIDE_CONFIG"
-              ${If} $overrideConfig == ""
-                StrCpy $overrideConfig "0" ; default
-              ${EndIf}
-            ${EndIf}
-          ${EndIf}
-        ${EndUnless}
-    ${EndIf}
-  ${EndIf}
+  ; Print the current date and time into the installation log file
+  Call GetCurrentDate
+  Pop $R0
+  Call GetCurrentTime
+  Pop $R1
+  !insertmacro Log "$\r$R0 - $R1 Installing ProActiveAgent v${VERSION} ..."
+  StrCpy $R0 ""
+  StrCpy $R1 ""
+  
   ; Check user admin rights
+  !insertmacro Log "Checking admin rights ..."
   System::Call "kernel32::GetModuleHandle(t 'shell32.dll') i .s"
   System::Call "kernel32::GetProcAddress(i s, i 680) i .r0"
   System::Call "::$0() i .r0"
-
   ${If} $R0 == '0'
-     ${IfNot} ${Silent}
-        MessageBox MB_OK "Adminstrator rights are required to install the ProActive Agent." /SD IDOK
+     ${If} ${Silent}
+       !insertmacro Log "!! Administrator rights are required to install the ProActive Agent !!"
+     ${Else}
+        MessageBox MB_OK "Administrator rights are required to install the ProActive Agent." /SD IDOK
      ${EndIf}
      SetErrorLevel 3
      Abort
   ${EndIf}
 
+  ; Parse args
+  ${If} ${Silent}
+    !insertmacro Log "Running silent installation ..."
+    ${GetParameters} $0 ; $0 contains all args
+    ; !insertmacro Log "Specified parameters: $0"
+    ; Checking /UN to run the uninstaller
+    ${GetOptions} $0 "/UN" $1
+    IfErrors noUninstallLABEL
+    !insertmacro Log "The /UN is specified, running uninstaller and exiting ..."
+    ReadRegStr $0 HKLM "Software\ProActiveAgent" "AgentLocation"
+    ${If} ${FileExists} $0
+      ExecWait '"$0\uninstall.exe" /S ?_=$0'
+    ${EndIf}
+    Delete ${INSTALL_LOG_PATH}
+    Abort
+    noUninstallLABEL:
+    ClearErrors
+    ; Checking /USE_ACC to use account home for Config Dir and Logs Dir
+    ${GetOptions} $0 "/USE_ACC" $UseAccountHome
+    IfErrors noUseAccLABEL
+    !insertmacro Log "The /USE_ACC is specified, using runtime account home for config and logs ..."
+    StrCpy $UseAccountHome "1"
+    noUseAccLABEL:
+    ClearErrors
+    ; Checking /ALLOW to allow everyone to control the service
+    ${GetOptions} $0 "/ALLOW" $AllowEveryone
+    IfErrors noAllowLABEL
+    !insertmacro Log "The /ALLOW is specified, allowing everyone to control the agent ..."
+    StrCpy $AllowEveryone "1"
+    noAllowLABEL:
+    ClearErrors
+    ; Parsing locations
+    ${GetOptions} $0 "/CONFIG_DIR=" $ConfigDir
+    ${GetOptions} $0 "/LOG_DIR=" $LogsDir
+    ; Parsing Runtime Account domain, username and password
+    ${GetOptions} $0 "/DOMAIN=" $AccountDomain
+    ${GetOptions} $0 "/USER=" $AccountUsername
+    ${GetOptions} $0 "/PASSWORD=" $AccountPassword
+    ClearErrors
+  ${EndIf}
+  
+  ; Read hostname
+  !insertmacro GetServerName $Hostname
+  ${StrStrip} "\\" $Hostname $Hostname ; Remove leading \\ to avoid AGENT-192 (bugs.activeeon.com)
+
   ; Check if .NET framework 3.5 is installed
   ${IfNot} ${HasDotNet3.5}
+    !insertmacro Log "!! Unable to find Microsoft .NET Framework 3.5 !!"
     ${IfNot} ${Silent}
        MessageBox MB_OK "Unable to find Microsoft .NET Framework 3.5" /SD IDOK
     ${EndIf}
-    SetErrorLevel 4
     Abort
   ${EndIf}
 
-  ; Check if a previous version of the unistaller is available
-  IfFileExists $INSTDIR\uninstall.exe 0 endLabel
-
-  ${If} ${Silent}
+  ; Check if a previous unistaller is available, in gui mode ask the user
+  ReadRegStr $0 HKLM "Software\ProActiveAgent" "AgentLocation"
+  ${If} ${FileExists} '$0\uninstall.exe'
+    ${IfNot} ${Silent}
+      MessageBox MB_YESNO "The previous version of the ProActive Windows Agent must be uninstalled. Run the uninstaller ?" /SD IDYES IDNO endLabel
+    ${EndIf}
+    uninstallLABEL:
     ; The silent mode always uninstalls the previous version
-    ${If} $uninstall == 1
-      ExecWait '"$INSTDIR\uninstall.exe /S" _?=$INSTDIR'
+    ; Loop until the uninstaller is still available and try again
+    !insertmacro Log "Uninstalling previous version from $0 ..."
+    nsExec::ExecToStack '"$0\uninstall.exe" /S ?_=$0'
+    ${If} ${FileExists} '$0\uninstall.exe'
+      Sleep 1000
+      Goto uninstallLABEL
     ${EndIf}
-  ${Else}
-    ; Ask if the user he wants to uninstall previous version
-    MessageBox MB_YESNO "The previous version of the ProActive Windows Agent must be uninstalled. Run the uninstaller ?" /SD IDYES IDNO abortLabel
-    ExecWait '"$INSTDIR\uninstall.exe" _?=$INSTDIR'
   ${EndIf}
-  Goto endLabel
-
-  abortLabel:
-    Abort
-
+  
   endLabel:
-    ; In silent mode, we needs to explicitly handle parameters and installation
-    ${If} ${Silent}
-      Call InstallProActiveAgent
-      Call InstallProActiveScreenSaver
-      Call CreateDesktopShortCuts
-      Call ProcessSetupArguments
-    ${EndIf}
+  ; In silent mode, we needs to explicitly handle parameters and installation
+  ${If} ${Silent}
+    Call ProcessSetupArguments
+  ${EndIf}
 FunctionEnd
 
 Function ConfigureSetupPage
@@ -490,8 +447,10 @@ Function ConfigureSetupPage
   !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "${TXT_CONF}" State "$INSTDIR\config"
   ; Set default location for logs directory
   !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "${TXT_LOGSDIR}" State "$INSTDIR\logs"
-  ; Set default user domain
+  ; Set default account domain, username and password
   !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "${TXT_DOMAIN}" State $Hostname
+  !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "${TXT_USERNAME}" State ${DEFAULT_USERNAME}
+  !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "${TXT_PASSWORD}" State ${DEFAULT_PASSWORD}
   ; Disable "Use service account home"
   ; !insertmacro GROUPCONTROLS "${PAGE_FILE}" "${SEL_INSTLOC}" "${CHK_LOGSHOME}|" "1"
   ; Display the custom page
@@ -505,254 +464,232 @@ FunctionEnd
 
 Function ReadSetupArguments
   ; Handle notify event of checkbox "Use service account home"
-  !insertmacro MUI_INSTALLOPTIONS_READ $tmp "${PAGE_FILE}" "Settings" "State"
-  ${Switch} "Field $tmp"
+  !insertmacro MUI_INSTALLOPTIONS_READ $0 "${PAGE_FILE}" "Settings" State
+  ${Switch} "Field $0"
     ${Case} "${CHK_LOGSHOME}"
       !insertmacro GROUPCONTROLS "${PAGE_FILE}" "${CHK_LOGSHOME}" "${TXT_LOGSDIR}|${TXT_CONF}" "1"
       Abort
   ${EndSwitch}
   # Check "Use service account home" for logs location stored in R7
-  !insertmacro MUI_INSTALLOPTIONS_READ $R7 ${PAGE_FILE} "${CHK_LOGSHOME}" State
-  StrCpy $UseAccountHome $R7
+  !insertmacro MUI_INSTALLOPTIONS_READ $UseAccountHome ${PAGE_FILE} "${CHK_LOGSHOME}" State
 
-  !insertmacro MUI_INSTALLOPTIONS_READ $R1 ${PAGE_FILE} "${TXT_CONF}" State
-  !insertmacro MUI_INSTALLOPTIONS_READ $R2 ${PAGE_FILE} "${TXT_LOGSDIR}" State
-  Strcpy $ConfigLocation $R1
-  Strcpy $LogsDirectory $R2
+  !insertmacro MUI_INSTALLOPTIONS_READ $ConfigDir ${PAGE_FILE} "${TXT_CONF}" State
+  !insertmacro MUI_INSTALLOPTIONS_READ $LogsDir ${PAGE_FILE} "${TXT_LOGSDIR}" State
 
   skipLocationsLABEL:
   ; CHECK ACCOUNT FIELDS
-  !insertmacro MUI_INSTALLOPTIONS_READ $R3 ${PAGE_FILE} "Field 4" "State"
-  !insertmacro MUI_INSTALLOPTIONS_READ $R4 ${PAGE_FILE} "Field 5" "State"
-  !insertmacro MUI_INSTALLOPTIONS_READ $R5 ${PAGE_FILE} "${TXT_DOMAIN}" "State"
-  !insertmacro MUI_INSTALLOPTIONS_READ $R0 ${PAGE_FILE} "${CHK_ALLOWANY}" State
-  StrCpy $AccountDomain $R5
-  StrCpy $AccountUsername $R3
-  StrCpy $AccountPassword $R4
-  StrCpy $AllowEveryone $R0
+  !insertmacro MUI_INSTALLOPTIONS_READ $AllowEveryone ${PAGE_FILE} "${CHK_ALLOWANY}" State
+  !insertmacro MUI_INSTALLOPTIONS_READ $AccountDomain ${PAGE_FILE} "${TXT_DOMAIN}" State
+  !insertmacro MUI_INSTALLOPTIONS_READ $AccountUsername ${PAGE_FILE} "${TXT_USERNAME}" State
+  !insertmacro MUI_INSTALLOPTIONS_READ $AccountPassword ${PAGE_FILE} "${TXT_PASSWORD}" State
 FunctionEnd
 
 Function ProcessSetupArguments
-  ; Print the current date and time into the installation log file
-  Call GetCurrentDate
-  Pop $R0
-  Call GetCurrentTime
-  Pop $R1
-  !insertmacro Log "$R0 - $R1 Installing ProActiveAgent v${VERSION} ..."
-  StrCpy $R0 ""
-  StrCpy $R1 ""
+  ; If UseAccountHome is checked then skip locations checks
+  ${If} $UseAccountHome == "1"
+    Goto skipLocationChecksLABEL
+  ${EndIf}
 
-  ; Check config file location stored in R1
-  ${If} ${Silent}
-    ; In silent mode set '$INSTDIR/config' as the default config directory if not specified
-    ${If} $R1 == ""
-       StrCpy $R1 "$INSTDIR\config"
-    ${EndIf}
+  ; Check config dir, if undefined set to default value
+  ${If} $ConfigDir == ""
+    !insertmacro Log "Config Dir not specified, using default: $INSTDIR\config ..."
+    StrCpy $ConfigDir "$INSTDIR\config"
   ${Else}
-      !insertmacro MUI_INSTALLOPTIONS_READ $R1 ${PAGE_FILE} "${TXT_CONF}" State
-  ${EndIf}
-  ${If} $R1 == ""
-    !insertmacro Log "!! Invalid config file location !!"
-    Call RollbackIfSilent
-    MessageBox MB_OK "Please enter a valid location for the Configuration File" /SD IDOK
-     Abort
-  ${EndIf}
-
-  ; Check logs location stored in R2
-  !insertmacro Log "Checking logs location ..."
-  ${If} ${Silent}
-     ; Set '$INSTDIR/logs' as the default log directory if not specified
-     ${If} $R2 == ""
-        StrCpy $R2 "$INSTDIR\logs"
-     ${EndIf}
-  ${Else}
-    !insertmacro MUI_INSTALLOPTIONS_READ $R2 ${PAGE_FILE} "${TXT_LOGSDIR}" State
-  ${EndIf}
-  ${If} $R2 == ""
-    !insertmacro Log "!! Invalid logs location !!"
-    Call RollbackIfSilent
-    MessageBox MB_OK "Please enter a valid location for the logs" /SD IDOK
-     Abort
-  ${EndIf}
-
-  skipLocationsLABEL:
-
-  ;-----------------------------------------------------------------------------------
-  ; !! CHECK ACCOUNT FIELDS !!
-  ;-----------------------------------------------------------------------------------
-
-  ; Check for empty username stored in R3
-  ${IfNot} ${Silent}
-    !insertmacro MUI_INSTALLOPTIONS_READ $R3 ${PAGE_FILE} "Field 4" "State"
-  ${EndIf}
-  ${If} $R3 == ""
-    !insertmacro Log "!! Invalid account name !!"
-    Call RollbackIfSilent
-    MessageBox MB_OK "Please enter a valid account name" /SD IDOK
-     Abort
-  ${EndIf}
-
-  ; Check for empty password stored in R4
-  ${IfNot} ${Silent}
-    !insertmacro MUI_INSTALLOPTIONS_READ $R4 ${PAGE_FILE} "Field 5" "State"
-  ${EndIf}
-  ${If} $R4 == ""
-    !insertmacro Log "!! Invalid password !!"
-    Call RollbackIfSilent
-    MessageBox MB_OK "Please enter a valid password" /SD IDOK
-     Abort
-  ${EndIf}
-
-  ; Check for empty domain stored in R5
-  ${If} ${Silent}
-     # Set hostname as the default domain
-     ${If} $R5 == ""
-        !insertmacro GetServerName $R5
-     ${EndIf}
-  ${Else}
-     !insertmacro MUI_INSTALLOPTIONS_READ $R5 ${PAGE_FILE} "${TXT_DOMAIN}" "State"
-  ${EndIf}
-  ${If} $R5 == ""
-    !insertmacro Log "!! Invalid domain !!"
-    Call RollbackIfSilent
-    MessageBox MB_OK "Please enter a valid domain" /SD IDOK
-     Abort
-  ${EndIf}
-
-  ;-----------------------------------------------------------------------------------
-  ; !! SELECTED: Specify an account !!
-  ;-----------------------------------------------------------------------------------
-  checkAccount:
-  ; Try to log under the specified account
-  !insertmacro DoLogonUser $R5 $R3 $R4
-  StrCmp $R8 0 unableToLog
-  Goto logged
-  ; If unable to log ask if the admin wants to create a local account for the agent
-  unableToLog:
-  Goto createNewAccount
-  logged:
-
-  ; The user is logged it means the password is correct
-  !insertmacro Log "Sucessfully logged on as $R3, logging off ..."
-  MessageBox MB_OK "Sucessfully logged on as $R3, logging off" /SD IDOK
-
-    ; Logoff user
-    StrCpy $0 $R5
-    !insertmacro DoLogoffUser $R0
-    StrCpy $R5 $0
-
-    ; Checking privileges required for RunAsMe mode
-    UserMgr::HasPrivilege $R3 ${SE_INCREASE_QUOTA_NAME}
-    Pop $0
-    !insertmacro Log "Does $R3 have the privilege     SE_INCREASE_QUOTA_NAME ? UserMgr::HasPrivilege returns $0 ..."
-    ${If} $0 != "TRUE"
-        MessageBox MB_OK|MB_ICONSTOP "In order to use RunAsMe mode, the account $R3 must have 'Adjust memory quotas for a process' and 'Replace a process-level token' privileges. In the 'Administrative Tools' of the 'Control Panel' open the 'Local Security Policy'. In 'Security Settings', select 'Local Policies' then select 'User Rights Assignments'. Finally, in the list of policies open the corresponding properties and add the account $R3." /SD IDOK
-    ${EndIf}
-
-    UserMgr::HasPrivilege $R3 ${SE_ASSIGNPRIMARYTOKEN_NAME}
-    Pop $0
-    !insertmacro Log "Does $R3 have the privilege SE_ASSIGNPRIMARYTOKEN_NAME ? UserMgr::HasPrivilege returns $0 ..."
-    ${If} $0 != "TRUE"
-        MessageBox MB_OK|MB_ICONSTOP "In order to use RunAsMe mode, the account $R3 must have 'Adjust memory quotas for a process' and 'Replace a process-level token' privileges. In the 'Administrative Tools' of the 'Control Panel' open the 'Local Security Policy'. In 'Security Settings', select 'Local Policies' then select 'User Rights Assignments'. Finally, in the list of policies open the corresponding properties and add the account $R3." /SD IDOK
-    ${EndIf}
-
-    Goto checkGroupMember
-
-    ; The account does not exist if the specified domain is local computer the account can be created
-    createNewAccount:
-      ${If} $R5 == $Hostname
-        !insertmacro Log "The account $R3 does not exist, asking user if he wants to create a new account (not created in silent mode)"
-         ; Ask the user if he wants to create a new account
-         MessageBox MB_YESNO "The account $R3 does not exist, would you like to create it ?" /SD IDNO IDYES createAccount
-           Abort
-      ${Else}
-         ; The  domain is not local so the account cannot be created
-         MessageBox MB_OK "The account $R3 does not exist, since the Domain is not local the account cannot be created." /SD IDOK
-           Abort
-      ${EndIf}
-      DetailPrint "The account $R3 does not exist ... asking user if he wants to create a new account"
-      ; Ask the user if he wants to create a new account
-      MessageBox MB_YESNO "The account $R3 does not exist, would you like to create it ?" /SD IDYES IDYES createAccount
+    ${If} $ConfigDir == "$INSTDIR\config"
+      !insertmacro Log "Using default Config Dir: $INSTDIR\config ..."
+    ${Else}
+      IfFileExists $ConfigDir configDirExistLABEL 0
+      ${If} ${Silent}
+        !insertmacro Log "!! The specified Config Dir: $ConfigDir does not exists !!"
         Abort
-      createAccount:
-      !insertmacro Log "Creating $R3 account locally ..."
-      UserMgr::CreateAccount $R3 $R4 "The ProActive Agent runs a Java Virtual Machine under this account."
-      Pop $0
-      ${If} $0 == "ERROR 2224" # Means account already exists .. it's strange but yes it is possible !
-        !insertmacro Log "!! The account $R3 already exist !!"
-        MessageBox MB_OK "The account $R3 already exist" /SD IDOK
-          Abort
-      ${ElseIf} $0 == "ERROR 2245" # The password requirements are not met (too short)
-        !insertmacro Log "!! Password requirements are not met !!"
-        MessageBox MB_OK "The password does not meet the password policy requirements. Check the minimum password length, password complexity and password history requirements." /SD IDOK
-          Abort
       ${Else}
-        ${If} $0 != "OK"
-          MessageBox MB_OK "Unable to create the service. ERROR $0" /SD IDOK
-           Abort
-        ${EndIf}
+        MessageBox MB_YESNO "The specified Config Dir does not exist, would you like to create it ?" /SD IDNO IDYES createConfigDirLABEL
+        Abort
+        createConfigDirLABEL:
+        CreateDirectory $ConfigDir
       ${EndIf}
-      ; Add SE_INCREASE_QUOTA_NAME account privilege
-      UserMgr::AddPrivilege $R3 ${SE_INCREASE_QUOTA_NAME}
-      Pop $0
-      ${If} $0 == "FALSE" # Means could not add privilege
-        !insertmacro Log "!! Unable to add privilege SE_INCREASE_QUOTA_NAME !!"
-        MessageBox MB_OK "Unable to add privilege SE_INCREASE_QUOTA_NAME" /SD IDOK
-          Abort
-      ${EndIf}
-      ; Add SE_ASSIGNPRIMARYTOKEN_NAME account privilege
-      UserMgr::AddPrivilege $R3 ${SE_ASSIGNPRIMARYTOKEN_NAME}
-      Pop $0
-      ${If} $0 == "FALSE" # Means could not add privilege
-        !insertmacro Log "!! Unable to add privilege SE_ASSIGNPRIMARYTOKEN_NAME !!"
-        MessageBox MB_OK "Unable to add privilege SE_ASSIGNPRIMARYTOKEN_NAME" /SD IDOK
-          Abort
-      ${EndIf}
-      ; Build the user environment of the user (Registry hive, Documents and settings etc.), returns status string
-      UserMgr::BuiltAccountEnv $R3 $R4
-      Pop $0
-      ${If} $0 == "FALSE" # Means could not build account env
-        !insertmacro Log "!! Unable to build account env !!"
+      configDirExistLABEL:
+    ${EndIf}
+  ${EndIf}
+  
+  ; Check logs dir, if undefined set to default value
+  ${If} $LogsDir == ""
+    !insertmacro Log "Logs Dir not specified, using default: $INSTDIR\logs ..."
+    StrCpy $LogsDir "$INSTDIR\logs"
+  ${Else}
+    ${If} $LogsDir == "$INSTDIR\logs"
+      !insertmacro Log "Using default Logs Dir: $INSTDIR\logs ..."
+    ${Else}
+      IfFileExists $LogsDir logsDirectoryExistsLABEL 0
+      ${If} ${Silent}
+        !insertmacro Log "!! The specified Logs Dir does not exists Invalid logs directory !!"
         Call RollbackIfSilent
-        MessageBox MB_OK "Unable to build account env" /SD IDOK
-          Abort
+      ${Else}
+        MessageBox MB_YESNO "The specified Logs Dir does not exist, would you like to create it ?" /SD IDNO IDYES createLogsDirLABEL
+        Abort
+        createLogsDirLABEL:
+        CreateDirectory $LogsDir
       ${EndIf}
+      Abort
+      logsDirectoryExistsLABEL:
+    ${EndIf}
+  ${EndIf}
 
-      checkGroupMember:
-      
-        ; Check if the account is part of 'Performace Monitor Group'
-        ; The function UserMgr::IsMemberOfGroup does not work.
-        ; Instead we use the UserMgr::GetUserNameFromSID to check if the group exists if so
-        ; the user is added using a macro.
-        !insertmacro Log "Checking runtime account member of Performace Monitor Group ..."
-        UserMgr::GetUserNameFromSID ${PERFORMANCE_MONITOR_SID}
-        Pop $0
-        ${If} $0 == "ERROR"
-          ; The group does not exist, this occur on Windows XP so there is nothing to do
-          ${IfNot} ${IsWinXP}
-            !insertmacro Log "!! ${PERFORMANCE_MONITOR_SID} does not exist !!"
+  skipLocationChecksLABEL:
+
+  ; Check Account Domain
+  ${If} $AccountDomain == ""
+    ${If} ${Silent}
+      !insertmacro Log "Account Domain not specified, using default: $Hostname ..."
+      StrCpy $AccountDomain $Hostname
+    ${Else}
+      MessageBox MB_OK "Please enter a valid Domain" /SD IDOK
+      Abort
+    ${EndIf}
+  ${EndIf}
+  
+  ; Check Account Username
+  ${If} $AccountUsername == ""
+    ${If} ${Silent}
+      !insertmacro Log "Account Username not specified, using default: ${DEFAULT_USERNAME} ..."
+      StrCpy $AccountUsername ${DEFAULT_USERNAME}
+    ${Else}
+      MessageBox MB_OK "Please enter a valid Username" /SD IDOK
+      Abort
+    ${EndIf}
+  ${EndIf}
+
+  ; Check Account Password
+  ${If} $AccountPassword == ""
+    ${If} ${Silent}
+      !insertmacro Log "Account Password not specified, using default ..."
+      StrCpy $AccountPassword ${DEFAULT_PASSWORD}
+    ${Else}
+      MessageBox MB_OK "Please enter a valid Password" /SD IDOK
+      Abort
+    ${EndIf}
+  ${EndIf}
+
+  checkAccountLABEL:
+  !insertmacro Log "Trying to logon as $AccountUsername on domain: $AccountDomain ..."
+  !insertmacro DoLogonUser $AccountDomain $AccountUsername $AccountPassword
+  StrCmp $R8 0 unableToLogLABEL loggedLABEL
+  
+  # If unable to logon using default account maybe the account does not exists or password is incorrect
+  unableToLogLABEL:
+  !insertmacro Log "Unable to logon as $AccountUsername on domain: $AccountDomain ! DoLogonUser returns: $R8"
+  # Check if user exists
+  UserMgr::GetUserInfo $AccountUsername "EXISTS"
+  Pop $0
+  ${If} $0 == "OK"
+     # If exists set never expiring password
+     UserMgr::SetUserInfo $AccountUsername "PASSWORD" $AccountPassword
+     Pop $0
+     !insertmacro Log "SetUserInfo(password) returns: $0"
+     ${If} $0 == "ERROR 2245" # Password requirements are not met
+        !insertmacro Log "!! The password requirements are not met !!"
+        ${IfNot} ${Silent}
+          MessageBox MB_OK "The password does not meet the password policy requirements. Check the minimum password length, password complexity and password history requirements." /SD IDOK
+        ${EndIf}
+        Abort
+     ${EndIf}
+     UserMgr::SetUserInfo $AccountUsername "PASSWD_NEVER_EXPIRES" "YES"
+     Pop $0
+     !insertmacro Log "SetUserInfo(expire): $0"
+     goto checkAccountLABEL
+  ${Else}
+     ${If} $0 == "ERROR 2221" # 2221 means the user name could not be found
+
+        ; In gui install check if default account, if not ask if the user wants to create a new account
+        ${IfNot} ${Silent}
+          ${If} $AccountUsername == ${DEFAULT_USERNAME}
+          ${AndIf} $AccountPassword == ${DEFAULT_PASSWORD}
+             !insertmacro Log "Creating new default account ..."
+          ${Else}
+             MessageBox MB_YESNO "The local account $AccountUsername does not exist, would you like to create it ?" /SD IDNO IDYES +2
+             Abort
           ${EndIf}
-        ${Else}
-            !insertmacro AddUserToGroup1 $Hostname $AccountUsername "558" ; UserMgr::AddToGroup doesn't work
         ${EndIf}
 
+        # Create the account with never expiring password, runasme required privileges and build this account env
+        UserMgr::CreateAccount $AccountUsername $AccountPassword "The ProActive Agent runs a Java Virtual Machine under this account."
+        Pop $0
+        !insertmacro Log "UserMgr::CreateAccount returns: $0"
+        ${If} $0 == "ERROR 2245" # Password requirements are not met
+          !insertmacro Log "!! The password requirements are not met !!"
+          ${IfNot} ${Silent}
+            MessageBox MB_OK "The password does not meet the password policy requirements. Check the minimum password length, password complexity and password history requirements." /SD IDOK
+          ${EndIf}
+          Abort
+        ${EndIf}
+        UserMgr::AddPrivilege $AccountUsername ${SE_INCREASE_QUOTA_NAME}
+        Pop $0
+        !insertmacro Log "UserMgr::AddPrivilege(quota) returns: $0"
+        UserMgr::AddPrivilege $AccountUsername ${SE_ASSIGNPRIMARYTOKEN_NAME}
+        Pop $0
+        !insertmacro Log "UserMgr::AddPrivilege(assign) returns: $0"
+        UserMgr::BuiltAccountEnv $AccountUsername $AccountPassword
+        Pop $0
+        !insertmacro Log "UserMgr::BuiltAccountEnv returns: $0"
+        UserMgr::SetUserInfo $AccountUsername "PASSWD_NEVER_EXPIRES" "YES"
+        Pop $0
+        !insertmacro Log "SetUserInfo(expire): $0"
+        goto checkAccountLABEL
+     ${Else}
+        !insertmacro Log "Unable to logon as $AccountUsername and to know if username exists. GetUserInfo returns: $0"
+        Abort
+     ${EndIf}
+  ${EndIf}
+  
+  loggedLABEL:
+  # The user is logged it means the password is correct
+  !insertmacro Log "Logging off ..."
+  # Logoff user (preserve $R5)
+  StrCpy $0 $R5
+  !insertmacro DoLogoffUser $R0
+  StrCpy $R5 $0
+  
+  ; Check privileges required for RunAsMe mode
+  UserMgr::HasPrivilege $AccountUsername ${SE_INCREASE_QUOTA_NAME}
+  Pop $0
+  ${If} $0 != "TRUE"
+    !insertmacro Log "Does $AccountUsername have the privilege SE_INCREASE_QUOTA_NAME ? UserMgr::HasPrivilege returns $0 ..."
+    !insertmacro Log "In order to use RunAsMe mode, the account $AccountUsername must have 'Adjust memory quotas for a process' and 'Replace a process-level token' privileges. In the 'Administrative Tools' of the 'Control Panel' open the 'Local Security Policy'. In 'Security Settings', select 'Local Policies' then select 'User Rights Assignments'. Finally, in the list of policies open the corresponding properties and add the account $AccountUsername."
+  ${EndIf}
+  UserMgr::HasPrivilege $AccountUsername ${SE_ASSIGNPRIMARYTOKEN_NAME}
+  Pop $0
+  ${If} $0 != "TRUE"
+    !insertmacro Log "Does $AccountUsername have the privilege SE_ASSIGNPRIMARYTOKEN_NAME ? UserMgr::HasPrivilege returns $0 ..."
+    !insertmacro Log "In order to use RunAsMe mode, the account $AccountUsername must have 'Adjust memory quotas for a process' and 'Replace a process-level token' privileges. In the 'Administrative Tools' of the 'Control Panel' open the 'Local Security Policy'. In 'Security Settings', select 'Local Policies' then select 'User Rights Assignments'. Finally, in the list of policies open the corresponding properties and add the account $AccountUsername."
+  ${EndIf}
+  
+  checkGroupMember:
+      
+  ; Check if the account is part of 'Performace Monitor Group'
+  ; The function UserMgr::IsMemberOfGroup does not work.
+  ; Instead we use the UserMgr::GetUserNameFromSID to check if the group exists if so
+  ; the user is added using a macro.
+  !insertmacro Log "Checking runtime account member of Performace Monitor Group ..."
+  UserMgr::GetUserNameFromSID ${PERFORMANCE_MONITOR_SID}
+  Pop $0
+  ${If} $0 == "ERROR"
+    ; The group does not exist, this occur on Windows XP so there is nothing to do
+    ${IfNot} ${IsWinXP}
+      !insertmacro Log "!! ${PERFORMANCE_MONITOR_SID} does not exist !!"
+    ${EndIf}
+  ${Else}
+    !insertmacro AddUserToGroup1 $Hostname $AccountUsername "558" ; UserMgr::AddToGroup doesn't work
+  ${EndIf}
 FunctionEnd
 
 #################################################################
 # Installs the ProActive Agent; copies all the requires files
 #################################################################
 Function InstallProActiveAgent
+        !insertmacro Log "Installing into $INSTDIR ..."
         ; Set current dir to installation directory
         SetOutPath $INSTDIR
-        ; Write into registry the agent home and config location and logs dir
-        WriteRegStr HKLM "Software\ProActiveAgent" "AgentLocation" "$INSTDIR"
-        ; Write the uninstall keys for Windows
-        WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ProActiveAgent" "DisplayName" "ProActive Agent (remove only)"
-        WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ProActiveAgent" "UninstallString" '"$INSTDIR\Uninstall.exe"'
-        ; Write auth data into a restricted access key
-        WriteRegStr HKLM "Software\ProActiveAgent\Creds" "domain" $AccountDomain
-        WriteRegStr HKLM "Software\ProActiveAgent\Creds" "username" $AccountUsername
-
+        
         ; Write uninstaller utility to able to rollback
         WriteUninstaller uninstall.exe
 
@@ -796,10 +733,19 @@ Function InstallProActiveAgent
           Abort
         ${EndIf}
 
-        ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-        ; CHECK USE RUNTIME ACCOUNT ;
-        ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        ; Write into registry the agent home and config location and logs dir
+        !insertmacro Log "Writing registry keys ..."
+        WriteRegStr HKLM "Software\ProActiveAgent" "AgentLocation" "$INSTDIR"
+        ; Write the uninstall keys for Windows
+        WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ProActiveAgent" "DisplayName" "ProActive Agent (remove only)"
+        WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ProActiveAgent" "UninstallString" '"$INSTDIR\Uninstall.exe"'
+        ; Write auth data into a restricted access key
+        WriteRegStr HKLM "Software\ProActiveAgent\Creds" "domain" $AccountDomain
+        WriteRegStr HKLM "Software\ProActiveAgent\Creds" "username" $AccountUsername
+
+        ; Checking the usage of the account home for config and logs
         ${If} $UseAccountHome == "1"
+          !insertmacro Log "Using runtime account $AccountUsername for config and logs dir ..."
           ; The goal is to read the path of AppData folder
           UserMgr::GetSIDFromUserName "." $AccountUsername ; Get the SID of the user
           Pop $0
@@ -809,13 +755,8 @@ Function InstallProActiveAgent
             ; If the result is empty, load the account into the HKU by username the read the same key
             ${If} $1 == ""
               UserMgr::RegLoadUserHive $AccountUsername
-              ;Pop $0
-              ;MessageBox MB_OK "Load ? $0"
-              ReadRegStr $1 HKU "$R3\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders" AppData
-              ;MessageBox MB_OK "User app data: $1"
+              ReadRegStr $1 HKU "$AccountUsername\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders" AppData
               UserMgr::RegUnLoadUserHive $AccountUsername
-              ;Pop $0
-              ;MessageBox MB_OK "Load ? $0"
             ${EndIf}
           ${Else}
             ; On other OS like Vista or 7 use HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\SID ProfileImagePath
@@ -824,57 +765,55 @@ Function InstallProActiveAgent
             StrCpy $1 "$1\AppData\Roaming"
           ${EndIf}
           CreateDirectory "$1\ProActiveAgent\config"
-          StrCpy $ConfigLocation "$1\ProActiveAgent\config"
+          StrCpy $ConfigDir "$1\ProActiveAgent\config"
           CreateDirectory "$1\ProActiveAgent\logs"
-          StrCpy $LogsDirectory "$1\ProActiveAgent\logs"
+          StrCpy $LogsDir "$1\ProActiveAgent\logs"
         ${EndIf}
         
-        ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-        ; CHECK USE DEFAULT LOCATION ;
-        ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-        ${If} $ConfigLocation == "$INSTDIR\config"
-          IfFileExists $ConfigLocation\${CONFIG_NAME} 0 defaultFileNotExistLabel
+        ; Checking default location for config and log
+        !insertmacro Log "Checking use default location ..."
+        ${If} $ConfigDir == "$INSTDIR\config"
+          IfFileExists $ConfigDir\${CONFIG_NAME} 0 defaultFileNotExistLabel
           MessageBox MB_YESNO "Use existing configuration file $INSTDIR\config\${CONFIG_NAME} ?" /SD IDYES IDNO defaultFileNotExistLabel
           !insertmacro Log "Using existing configuration file ..."
           Goto useExistingConfigLabel
         ${Else} ; If NOT default location
-          IfFileExists $ConfigLocation dirExistLABEL dirNotExistLABEL ; check exists
+          IfFileExists $ConfigDir dirExistLABEL dirNotExistLABEL ; check exists
           dirNotExistLABEL:
-          MessageBox MB_OK "The specified directory $ConfigLocation for configuration file doesn't exist" /SD IDOK
+          MessageBox MB_OK "The specified directory $ConfigDir for configuration file doesn't exist" /SD IDOK
           Abort
           dirExistLABEL:
           ; Check if there is already a config file
-          IfFileExists "$ConfigLocation\${CONFIG_NAME}" askUseLABEL defaultFileNotExistLabel
+          IfFileExists "$ConfigDir\${CONFIG_NAME}" askUseLABEL defaultFileNotExistLabel
           askUseLABEL:
           ; Ask the user if he wants to use the existing file (if not the default one will be copied to this dir)
-          MessageBox MB_YESNO "Use existing configuration file $ConfigLocation\${CONFIG_NAME} ?" /SD IDYES IDNO defaultFileNotExistLabel
+          MessageBox MB_YESNO "Use existing configuration file $ConfigDir\${CONFIG_NAME} ?" /SD IDYES IDNO defaultFileNotExistLabel
           !insertmacro Log "Using existing configuration file ..."
           Goto useExistingConfigLabel
         ${EndIf}
 
         defaultFileNotExistLabel:
-        !insertmacro Log "Writing config files into $ConfigLocation ..."
+        !insertmacro Log "Writing config files into $ConfigDir ..."
         ; Copy config files then locate java and insert into it
-        SetOutPath $ConfigLocation
+        SetOutPath $ConfigDir
         File "utils\${CONFIG_NAME}"
         File "utils\${CONFIG_DAY_NAME}"
         File "utils\${CONFIG_NIGHT_NAME}"
         Call LocateJava
         Pop $0
         !insertmacro Log "Inserting located java home $0 into config files ..."
-        !insertmacro _ReplaceInFile "$ConfigLocation\${CONFIG_NAME}" "<javaHome />" "<javaHome>$0</javaHome>"
-        !insertmacro _ReplaceInFile "$ConfigLocation\${CONFIG_DAY_NAME}" "<javaHome />" "<javaHome>$0</javaHome>"
-        !insertmacro _ReplaceInFile "$ConfigLocation\${CONFIG_NIGHT_NAME}" "<javaHome />" "<javaHome>$0</javaHome>"
+        !insertmacro _ReplaceInFile "$ConfigDir\${CONFIG_NAME}" "<javaHome />" "<javaHome>$0</javaHome>"
+        !insertmacro _ReplaceInFile "$ConfigDir\${CONFIG_DAY_NAME}" "<javaHome />" "<javaHome>$0</javaHome>"
+        !insertmacro _ReplaceInFile "$ConfigDir\${CONFIG_NIGHT_NAME}" "<javaHome />" "<javaHome>$0</javaHome>"
         
         ; Sometime the replacement mecanism doesn't remove .old files
-        Delete "$ConfigLocation\${CONFIG_NAME}.old"
-        Delete "$ConfigLocation\${CONFIG_DAY_NAME}.old"
-        Delete "$ConfigLocation\${CONFIG_NIGHT_NAME}.old"
+        Delete "$ConfigDir\${CONFIG_NAME}.old"
+        Delete "$ConfigDir\${CONFIG_DAY_NAME}.old"
+        Delete "$ConfigDir\${CONFIG_NIGHT_NAME}.old"
 
         useExistingConfigLabel:
-        
-        WriteRegStr HKLM "Software\ProActiveAgent" "ConfigLocation" "$ConfigLocation\${CONFIG_NAME}"
-        WriteRegStr HKLM "Software\ProActiveAgent" "LogsDirectory" $LogsDirectory
+        WriteRegStr HKLM "Software\ProActiveAgent" "ConfigLocation" "$ConfigDir\${CONFIG_NAME}"
+        WriteRegStr HKLM "Software\ProActiveAgent" "LogsDirectory" $LogsDir
         
         ; Write other files
         SetOutPath $INSTDIR
@@ -898,17 +837,17 @@ Function InstallProActiveAgent
         !insertmacro Log "Successfully copied files ..."
         
         ${If} $AllowEveryone == "1"
-          !insertmacro Log "The option Allow everyone to start/stop is selected ..."
+          !insertmacro Log "Allowing everyone to control the agent ..."
           !insertmacro Log "Granting members of ALL USERS group to start/stop the service ..."
           nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on ${SERVICE_NAME} -ot srv -actn ace -ace "n:${ALL_USERS_SID};p:start_stop;s:y"'
           !insertmacro Log "Granting members of ALL USERS group the full control of regkey to be able to change the config file ..."
           nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on HKEY_LOCAL_MACHINE\Software\ProActiveAgent -ot reg -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:${ALL_USERS_SID};p:full;s:y"'
-          !insertmacro Log "Granting members of ALL USERS group the full control of the selected $ConfigLocation\${CONFIG_NAME} config file ..."
-          nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on "$ConfigLocation\${CONFIG_NAME}" -ot file -actn ace -ace "n:${ALL_USERS_SID};p:full;s:y"'
-          !insertmacro Log "Granting members of ALL USERS group the full control of the $ConfigLocation\${CONFIG_DAY_NAME} config file ..."
-          nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on "$ConfigLocation\${CONFIG_DAY_NAME}" -ot file -actn ace -ace "n:${ALL_USERS_SID};p:full;s:y"'
-          !insertmacro Log "Granting members of ALL USERS group the full control of the $ConfigLocation\${CONFIG_NIGHT_NAME} config file ..."
-          nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on "$ConfigLocation\${CONFIG_NIGHT_NAME}" -ot file -actn ace -ace "n:${ALL_USERS_SID};p:full;s:y"'
+          !insertmacro Log "Granting members of ALL USERS group the full control of the selected $ConfigDir\${CONFIG_NAME} config file ..."
+          nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on "$ConfigDir\${CONFIG_NAME}" -ot file -actn ace -ace "n:${ALL_USERS_SID};p:full;s:y"'
+          !insertmacro Log "Granting members of ALL USERS group the full control of the $ConfigDir\${CONFIG_DAY_NAME} config file ..."
+          nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on "$ConfigDir\${CONFIG_DAY_NAME}" -ot file -actn ace -ace "n:${ALL_USERS_SID};p:full;s:y"'
+          !insertmacro Log "Granting members of ALL USERS group the full control of the $ConfigDir\${CONFIG_NIGHT_NAME} config file ..."
+          nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on "$ConfigDir\${CONFIG_NIGHT_NAME}" -ot file -actn ace -ace "n:${ALL_USERS_SID};p:full;s:y"'
         ${EndIf}
 
         !insertmacro Log "Installed sucessfully, ready to start the ProActiveAgent service ..."
@@ -921,7 +860,7 @@ FunctionEnd
 # Uninstall the ProActive agent
 #################################################################
 Function un.ProActiveAgent
-  !insertmacro Log "Uninstalling ProActiveAgent ..."
+ ; !insertmacro Log "Uninstalling ProActiveAgent ..."
 
   ; Check user admin rights
   System::Call "kernel32::GetModuleHandle(t 'shell32.dll') i .s"
@@ -929,7 +868,7 @@ Function un.ProActiveAgent
   System::Call "::$0() i .r0"
   DetailPrint "Check: Current user is admin? $0"
   StrCmp $0 '0' 0 +3
-  MessageBox MB_OK "Adminstrator rights are required to uninstall the ProActive Agent."
+  MessageBox MB_OK "Administrator rights are required to uninstall the ProActive Agent." /SD IDOK
   Abort
 
   Call un.TerminateAgentForAgent
@@ -942,7 +881,7 @@ Function un.ProActiveAgent
   DoUnInstall:
     ; Ask the user if he wants to keep the configuration files
     ; In silent mode, we remove everything
-    MessageBox MB_YESNO "Delete configuration files from $INSTDIR\config ?" /SD IDNO IDNO keepConfigLabel
+    MessageBox MB_YESNO "Delete configuration files from $INSTDIR\config ?" /SD IDYES IDNO keepConfigLabel
 
     SetOutPath $INSTDIR\config
     Delete "PAAgent-config.xml"
@@ -1029,8 +968,7 @@ Function un.TerminateAgentForAgent
     Sleep 2000
     ; Try to kill using taskkill command
     nsExec::Exec 'cmd.exe /C \
-        taskkill /f /im AgentForAgent.exe &\
-        ping -n 2 127.0.0.1 >nul'
+        taskkill /f /im AgentForAgent.exe'
     Goto ask_user
 
   abort:
