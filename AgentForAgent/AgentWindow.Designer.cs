@@ -231,9 +231,9 @@
             this.label3.BackColor = System.Drawing.Color.White;
             this.label3.Location = new System.Drawing.Point(399, 24);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(105, 13);
+            this.label3.Size = new System.Drawing.Size(114, 13);
             this.label3.TabIndex = 6;
-            this.label3.Text = "ProActiveAgent v2.4";
+            this.label3.Text = "ProActiveAgent v2.4.1";
             // 
             // label4
             // 
@@ -243,7 +243,7 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(172, 13);
             this.label4.TabIndex = 6;
-            this.label4.Text = "(C) 1997-2012 INRIA/University of ";
+            this.label4.Text = "(C) 1997-2013 INRIA/University of ";
             // 
             // timer
             // 

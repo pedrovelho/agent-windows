@@ -41,11 +41,11 @@ using System.Runtime.InteropServices;
 // l'ensemble d'attributs suivant. Changez les valeurs de ces attributs pour modifier les informations
 // associées à un assembly.
 [assembly: AssemblyTitle("ProActiveAgent")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Windows service logic")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("INRIA and ActiveEon")]
-[assembly: AssemblyProduct("ProActiveAgent")]
-[assembly: AssemblyCopyright("Copyright © ActiveEon 2010")]
+[assembly: AssemblyCompany("Activeeon")]
+[assembly: AssemblyProduct("ProActive Agent")]
+[assembly: AssemblyCopyright("Copyright © Activeeon 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -64,8 +64,8 @@ using System.Runtime.InteropServices;
 //      Numéro de build
 //      Révision
 //
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("2.4.1.*")]
+[assembly: AssemblyFileVersion("2.4.1.0")]
 
 //For log4net 1.2.10.0
 //[assembly: log4net.Config.XmlConfigurator(ConfigFile = "log4net.config", Watch = true)]

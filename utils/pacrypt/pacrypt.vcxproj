@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="WinAES.h" />
   </ItemGroup>
@@ -18,6 +19,9 @@
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="test.cpp" />
     <ClCompile Include="WinAES.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="pacrypt.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{6DFC8EB3-F1B4-4543-8B11-DD4BA5F18163}</ProjectGuid>
