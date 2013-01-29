@@ -293,6 +293,25 @@ SectionEnd
 !macroend
 
 #################################################################
+# Simulates a keyboard key press to return to prompt after install
+#################################################################
+!define VK_RETURN             0x0D
+!define keybd_event "!insertmacro macro_keybd_event"
+!macro macro_keybd_event setkey intkey
+  !ifndef keybd
+  !define keybd
+  !define KEYEVENTF_EXTENDEDKEY 0x0001
+  !define KEYEVENTF_KEYUP       0x0002
+  !endif
+  System::Store S
+  ${For} $0 1 ${intkey}
+    System::Call "user32::keybd_event(i${setkey}, i0x45, i${KEYEVENTF_EXTENDEDKEY}|0, i0)"
+    System::Call "user32::keybd_event(i${setkey}, i0x45, i${KEYEVENTF_EXTENDEDKEY}|${KEYEVENTF_KEYUP}, i0)"
+  ${Next}
+  System::Store L
+!macroend
+
+#################################################################
 # Installs ProActive Screen Saver
 #################################################################
 Function InstallProActiveScreenSaver
@@ -343,6 +362,7 @@ Function .onInit
   Pop $R0
   Call GetCurrentTime
   Pop $R1
+  !insertmacro Log "$\r---------------------------------------------------"
   !insertmacro Log "$\r$R0 - $R1 Installing ProActiveAgent v${VERSION} ..."
   StrCpy $R0 ""
   StrCpy $R1 ""
@@ -421,16 +441,23 @@ Function .onInit
   ${If} ${FileExists} '$0\uninstall.exe'
     ${IfNot} ${Silent}
       MessageBox MB_YESNO "The previous version of the ProActive Windows Agent must be uninstalled. Run the uninstaller ?" /SD IDYES IDNO endLabel
+      ExecWait '"$0\uninstall.exe" _?=$0'
+      Goto endLabel
     ${EndIf}
     uninstallLABEL:
     ; The silent mode always uninstalls the previous version
     ; Loop until the uninstaller is still available and try again
     !insertmacro Log "Uninstalling previous version from $0 ..."
-    nsExec::ExecToStack '"$0\uninstall.exe" /S ?_=$0'
+    nsExec::Exec '"$0\uninstall.exe" /S ?_=$0'
     ${If} ${FileExists} '$0\uninstall.exe'
       Sleep 1000
       Goto uninstallLABEL
     ${EndIf}
+    ReadRegStr $0 HKLM "Software\ProActiveAgent" "AgentLocation"
+    ${If} $0 != ""
+      Goto uninstallLABEL
+    ${EndIf}
+    !insertmacro Log "Previous version uninstalled sucessfully ..."
   ${EndIf}
   
   endLabel:
@@ -692,6 +719,17 @@ Function InstallProActiveAgent
         
         ; Write uninstaller utility to able to rollback
         WriteUninstaller uninstall.exe
+        
+        !insertmacro Log "Writing registry keys ..."
+        ; Write the uninstall keys for Windows
+        WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ProActiveAgent" "DisplayName" "ProActive Agent (remove only)"
+        WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ProActiveAgent" "UninstallString" '"$INSTDIR\Uninstall.exe"'
+        
+        ; Write into registry the agent home and config location and logs dir
+        WriteRegStr HKLM "Software\ProActiveAgent" "AgentLocation" "$INSTDIR"
+        ; Write auth data into a restricted access key
+        WriteRegStr HKLM "Software\ProActiveAgent\Creds" "domain" $AccountDomain
+        WriteRegStr HKLM "Software\ProActiveAgent\Creds" "username" $AccountUsername
 
         ; Encrypt the password, see AGENT-154
         File "bin\Release\pacrypt.dll" ; the .dll contains C-Signature: int encryptData(wchar_t *input, wchar_t *output)
@@ -700,8 +738,8 @@ Function InstallProActiveAgent
         System::Call "pacrypt::encryptData(w, w) i(r0., .r1).r2"
         ${If} $2 != 0
            !insertmacro Log "!! Unable to encrypt the password (too long ?). Error $2 !!"
-           Call RollbackIfSilent
            MessageBox MB_OK "Unable to encrypt the password (too long ?). Error $2" /SD IDOK
+           Call RollbackIfSilent
            Abort
         ${EndIf}
         ; Uncomment the following code to chek if the encryption mechanism works correctly
@@ -728,20 +766,10 @@ Function InstallProActiveAgent
         Pop $0
         ${If} $0 != "stopped"
           !insertmacro Log "!! Unable to install as service !!"
-          Call RollbackIfSilent
           MessageBox MB_OK "Unable to install as service. To install manually use sc.exe command" /SD IDOK
+          Call RollbackIfSilent
           Abort
         ${EndIf}
-
-        ; Write into registry the agent home and config location and logs dir
-        !insertmacro Log "Writing registry keys ..."
-        WriteRegStr HKLM "Software\ProActiveAgent" "AgentLocation" "$INSTDIR"
-        ; Write the uninstall keys for Windows
-        WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ProActiveAgent" "DisplayName" "ProActive Agent (remove only)"
-        WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ProActiveAgent" "UninstallString" '"$INSTDIR\Uninstall.exe"'
-        ; Write auth data into a restricted access key
-        WriteRegStr HKLM "Software\ProActiveAgent\Creds" "domain" $AccountDomain
-        WriteRegStr HKLM "Software\ProActiveAgent\Creds" "username" $AccountUsername
 
         ; Checking the usage of the account home for config and logs
         ${If} $UseAccountHome == "1"
@@ -851,17 +879,18 @@ Function InstallProActiveAgent
         ${EndIf}
 
         !insertmacro Log "Installed sucessfully, ready to start the ProActiveAgent service ..."
-        ${IfNot} ${Silent}
+        ${If} ${Silent}
+          ${keybd_event} ${VK_RETURN} 1 ; Simulate a keyboard event of the Return key to return to prompt
+        ${Else}
           Exec "$INSTDIR\AgentForAgent.exe" ; Run the Agent GUI
         ${EndIf}
+        
 FunctionEnd
 
 #################################################################
 # Uninstall the ProActive agent
 #################################################################
 Function un.ProActiveAgent
- ; !insertmacro Log "Uninstalling ProActiveAgent ..."
-
   ; Check user admin rights
   System::Call "kernel32::GetModuleHandle(t 'shell32.dll') i .s"
   System::Call "kernel32::GetProcAddress(i s, i 680) i .r0"
@@ -883,10 +912,10 @@ Function un.ProActiveAgent
     ; In silent mode, we remove everything
     MessageBox MB_YESNO "Delete configuration files from $INSTDIR\config ?" /SD IDYES IDNO keepConfigLabel
 
-    SetOutPath $INSTDIR\config
-    Delete "PAAgent-config.xml"
-    Delete "PAAgent-config-planning-day-only.xml"
-    Delete "PAAgent-config-planning-night-we.xml"
+    SetOutPath "$INSTDIR\config"
+    Delete ${CONFIG_NAME}
+    Delete ${CONFIG_DAY_NAME}
+    Delete ${CONFIG_NIGHT_NAME}
     SetOutPath $INSTDIR
     RMDir /r "$INSTDIR\config"
 
@@ -896,13 +925,6 @@ Function un.ProActiveAgent
       ; Check if the service is installed and delete it
       !insertmacro SERVICE "stop" ${SERVICE_NAME} "" "un."
       !insertmacro SERVICE "delete" ${SERVICE_NAME} "" "un."
-      ;ExecWait "$INSTDIR\AgentFirstSetup.exe -u"
-
-      ; Delete regkey from uninstall
-      DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ProActiveAgent"
-      ; Delete entry from auto start
-      DeleteRegValue HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "ProActiveAgent"
-      DeleteRegKey HKLM "Software\ProActiveAgent"
 
       ; Remove the screen saver
       Delete $SYSDIR\ProActiveSSaver.scr
@@ -939,6 +961,13 @@ Function un.ProActiveAgent
       Delete "${SETACL_LOG_NAME}"
       RMDir /r "$INSTDIR\logs"
       RMDir /r "$SMPROGRAMS\ProActiveAgent"
+      
+      ; Delete regkey from uninstall
+      DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ProActiveAgent"
+      ; Delete entry from auto start
+      DeleteRegValue HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "ProActiveAgent"
+      DeleteRegKey HKLM "Software\ProActiveAgent"
+      
       SetShellVarContext current ; reset to current user
 FunctionEnd
 
