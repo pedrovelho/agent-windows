@@ -22,6 +22,19 @@
 !define SERVICE_NAME "ProActiveAgent"
 !define SERVICE_DESC "The ProActive Agent enables desktop computers as an important source of computational power"
 
+VIProductVersion                 "${VERSION}.0"
+VIAddVersionKey ProductName      "ProActive Agent"
+VIAddVersionKey Comments         "www.activeeon.com"
+VIAddVersionKey CompanyName      "Activeeon"
+VIAddVersionKey LegalCopyright   "Activeeon"
+VIAddVersionKey FileDescription  "Installer of the ProActive Agent"
+VIAddVersionKey FileVersion      ${VERSION}
+VIAddVersionKey ProductVersion   ${VERSION}
+VIAddVersionKey InternalName     "ProActiveAgent"
+VIAddVersionKey LegalTrademarks  "Copyright (C) Activeeon 2013"
+VIAddVersionKey OriginalFilename "ProActiveAgent-${VERSION}-setup.exe"
+
+
 #################################################################
 # Default config filename and absolute filepath
 #################################################################
