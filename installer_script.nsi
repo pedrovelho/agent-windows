@@ -891,13 +891,15 @@ Function InstallProActiveAgent
           nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on "$ConfigDir\${CONFIG_NIGHT_NAME}" -ot file -actn ace -ace "n:${ALL_USERS_SID};p:full;s:y"'
         ${EndIf}
 
-        !insertmacro Log "Installed sucessfully, ready to start the ProActiveAgent service ..."
-        ${If} ${Silent}
-          ${keybd_event} ${VK_RETURN} 1 ; Simulate a keyboard event of the Return key to return to prompt
-        ${Else}
+        ${IfNot} ${Silent}
           Exec "$INSTDIR\AgentForAgent.exe" ; Run the Agent GUI
         ${EndIf}
 
+        !insertmacro Log "Installed sucessfully, ready to start the ProActiveAgent service ..."
+        
+        ${If} ${Silent}
+          ${keybd_event} ${VK_RETURN} 1 ; Simulate a keyboard event of the Return key to return to prompt
+        ${EndIf}
 FunctionEnd
 
 #################################################################
