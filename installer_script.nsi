@@ -915,81 +915,58 @@ Function un.ProActiveAgent
   MessageBox MB_OK "Administrator rights are required to uninstall the ProActive Agent." /SD IDOK
   Abort
 
-  Call un.TerminateAgentForAgent
-
-  ; For all users
-  SetShellVarContext all
   MessageBox MB_OKCANCEL "This will delete $INSTDIR and all subdirectories and files?" /SD IDOK IDOK DoUninstall
   Abort "Quiting the uninstall process"
 
   DoUnInstall:
-    ; Ask the user if he wants to keep the configuration files
-    ; In silent mode, we remove everything
-    MessageBox MB_YESNO "Delete configuration files from $INSTDIR\config ?" /SD IDYES IDNO keepConfigLabel
+  SetShellVarContext all ; For all users
 
-    SetOutPath "$INSTDIR\config"
-    Delete ${CONFIG_NAME}
-    Delete ${CONFIG_DAY_NAME}
-    Delete ${CONFIG_NIGHT_NAME}
-    SetOutPath $INSTDIR
-    RMDir /r "$INSTDIR\config"
+  Call un.TerminateAgentForAgent ; Terminate agent gui
 
-    keepConfigLabel:
-      SetOutPath $INSTDIR
+  stopServiceLABEL:
+  !insertmacro SERVICE "stop" ${SERVICE_NAME} "" "un."
+  !insertmacro SERVICE "status" ${SERVICE_NAME} "" "un."
+  Pop $0
+  ${If} $0 != "stopped"
+    Goto stopServiceLABEL
+  ${EndIf}
+  !insertmacro SERVICE "delete" ${SERVICE_NAME} "" "un."
 
-      stopServiceLABEL:
-      !insertmacro SERVICE "stop" ${SERVICE_NAME} "" "un."
-      !insertmacro SERVICE "status" ${SERVICE_NAME} "" "un."
-      Pop $0
-      ${If} $0 != "stopped"
-        Goto stopServiceLABEL
-      ${EndIf}
+  ; Ask the user if he wants to keep the configuration files
+  ; In silent mode, we remove everything
+  MessageBox MB_YESNO "Delete configuration files from $INSTDIR\config ?" /SD IDYES IDNO keepConfigLabel
+  SetOutPath "$INSTDIR\config"
+  Delete ${CONFIG_NAME}
+  Delete ${CONFIG_DAY_NAME}
+  Delete ${CONFIG_NIGHT_NAME}
+  SetOutPath $INSTDIR
+  RMDir /r "$INSTDIR\config"
 
-      !insertmacro SERVICE "delete" ${SERVICE_NAME} "" "un."
+  keepConfigLabel:
 
-      ; Remove the screen saver
-      Delete $SYSDIR\ProActiveSSaver.scr
+  ${If} ${FileExists} "$INSTDIR\config"
+    ; Erase everything except config dir by copying into temp dir
+    CreateDirectory "$TEMP\ProActiveAgentUninstall"
+    CopyFiles "$INSTDIR\config\*" "$TEMP\ProActiveAgentUninstall"
+    RMDir /R $INSTDIR
+    CreateDirectory "$INSTDIR\config"
+    CopyFiles "$TEMP\ProActiveAgentUninstall\*" "$INSTDIR\config"
+    RMDir /R "$TEMP\ProActiveAgentUninstall"
+  ${Else}
+    RMDir /R $INSTDIR
+  ${EndIf}
 
-      ; Remove all known files except config directory from $INSTDIR
-      Delete "$INSTDIR\xml\agent-windows.xsd"
-      Delete "$INSTDIR\xml\agent-common.xsd"
-      Delete "$INSTDIR\xml\agent-old.xsd"
-      RMDir /r "$INSTDIR\xml"
-      Delete "$INSTDIR\doc\ProActive Agent Documentation.pdf"
-      RMDir /r "$INSTDIR\doc"
-      Delete "ConfigParser.dll"
-      Delete "ConfigParserOLD.dll"
-      Delete "ProActiveAgent.exe"
-      Delete "log4net.dll"
-      Delete "log4net.config"
-      Delete "parunas.exe"
-      Delete "pacrypt.dll"
-      Delete "InJobProcessCreator.exe"
-      Delete "JobManagement.dll"
-      Delete "icon.ico"
-      Delete "acl.dat"
-      Delete "delete_temp.bat"
-      Delete "restrict.dat"
-      Delete "ListNetworkInterfaces.class"
-      Delete "LICENSE.txt"
-      Delete "configuration.ini"
-      Delete "uninstall.exe"
-      Delete "ProActiveAgent-log.txt"
-      Delete "AgentForAgent.exe"
-      Delete "SubInACL.msi"
-      Delete "SetACL.exe"
-      Delete "${INSTALL_LOG_NAME}"
-      Delete "${SETACL_LOG_NAME}"
-      RMDir /r "$INSTDIR\logs"
-      RMDir /r "$SMPROGRAMS\ProActiveAgent"
-      
-      ; Delete regkey from uninstall
-      DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ProActiveAgent"
-      ; Delete entry from auto start
-      DeleteRegValue HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "ProActiveAgent"
-      DeleteRegKey HKLM "Software\ProActiveAgent"
-      
-      SetShellVarContext current ; reset to current user
+  ; Remove the screen saver
+  Delete "$SYSDIR\ProActiveSSaver.scr"
+  RMDir /r "$SMPROGRAMS\ProActiveAgent"
+
+  ; Delete regkey from uninstall
+  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ProActiveAgent"
+  ; Delete entry from auto start
+  DeleteRegValue HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "ProActiveAgent"
+  DeleteRegKey HKLM "Software\ProActiveAgent"
+
+  SetShellVarContext current ; reset to current user
 FunctionEnd
 
 Function un.TerminateAgentForAgent
