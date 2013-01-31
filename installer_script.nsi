@@ -452,31 +452,21 @@ Function .onInit
   ; Check if a previous unistaller is available, in gui mode ask the user
   ReadRegStr $0 HKLM "Software\ProActiveAgent" "AgentLocation"
   ${If} ${FileExists} '$0\uninstall.exe'
-    ${IfNot} ${Silent}
-      MessageBox MB_YESNO "The previous version of the ProActive Windows Agent must be uninstalled. Run the uninstaller ?" /SD IDYES IDNO endLabel
+    ${If} ${Silent}
+      uninstallLABEL:
+      ; The silent mode always uninstalls the previous version
+      ; Loop until the uninstaller is still available and try again
+      !insertmacro Log "Uninstalling previous version from $0 ..."
+      ;nsExec::Exec '"$0\uninstall.exe" /S ?_=$0'
+      ExecWait '"$0\uninstall.exe" /S _?=$0'
+      Sleep 5000
+      !insertmacro Log "Previous version uninstalled sucessfully ..."
+    ${Else}
+      MessageBox MB_YESNO "The previous version of the ProActive Windows Agent must be uninstalled. Run the uninstaller ?" /SD IDYES IDYES runUninstallerLABEL
+      Abort
+      runUninstallerLABEL:
       ExecWait '"$0\uninstall.exe" _?=$0'
-      Goto endLabel
     ${EndIf}
-    uninstallLABEL:
-    ; The silent mode always uninstalls the previous version
-    ; Loop until the uninstaller is still available and try again
-    !insertmacro Log "Uninstalling previous version from $0 ..."
-    nsExec::Exec '"$0\uninstall.exe" /S ?_=$0'
-    ${If} ${FileExists} '$0\uninstall.exe'
-      Sleep 1000
-      Goto uninstallLABEL
-    ${EndIf}
-    ReadRegStr $0 HKLM "Software\ProActiveAgent" "AgentLocation"
-    ${If} $0 != ""
-      Goto uninstallLABEL
-    ${EndIf}
-    !insertmacro Log "Previous version uninstalled sucessfully ..."
-  ${EndIf}
-  
-  endLabel:
-  ; In silent mode, we needs to explicitly handle parameters and installation
-  ${If} ${Silent}
-    Call ProcessSetupArguments
   ${EndIf}
 FunctionEnd
 
@@ -726,6 +716,11 @@ FunctionEnd
 # Installs the ProActive Agent; copies all the requires files
 #################################################################
 Function InstallProActiveAgent
+        ; In silent mode, we needs to explicitly handle parameters and installation
+        ${If} ${Silent}
+          Call ProcessSetupArguments
+        ${EndIf}
+        
         !insertmacro Log "Installing into $INSTDIR ..."
         ; Set current dir to installation directory
         SetOutPath $INSTDIR
@@ -919,7 +914,6 @@ Function un.ProActiveAgent
   Abort "Quiting the uninstall process"
 
   DoUnInstall:
-  SetShellVarContext all ; For all users
 
   Call un.TerminateAgentForAgent ; Terminate agent gui
 
@@ -956,6 +950,7 @@ Function un.ProActiveAgent
     RMDir /R $INSTDIR
   ${EndIf}
 
+  SetShellVarContext all ; For all users
   ; Remove the screen saver
   Delete "$SYSDIR\ProActiveSSaver.scr"
   RMDir /r "$SMPROGRAMS\ProActiveAgent"
