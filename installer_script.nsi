@@ -897,7 +897,7 @@ Function InstallProActiveAgent
         ${Else}
           Exec "$INSTDIR\AgentForAgent.exe" ; Run the Agent GUI
         ${EndIf}
-        
+
 FunctionEnd
 
 #################################################################
@@ -935,8 +935,14 @@ Function un.ProActiveAgent
     keepConfigLabel:
       SetOutPath $INSTDIR
 
-      ; Check if the service is installed and delete it
+      stopServiceLABEL:
       !insertmacro SERVICE "stop" ${SERVICE_NAME} "" "un."
+      !insertmacro SERVICE "status" ${SERVICE_NAME} "" "un."
+      Pop $0
+      ${If} $0 != "stopped"
+        Goto stopServiceLABEL
+      ${EndIf}
+
       !insertmacro SERVICE "delete" ${SERVICE_NAME} "" "un."
 
       ; Remove the screen saver
