@@ -1,0 +1,14 @@
+product: scheduling
+version: 3.4.0
+branch: origin/tmp-fabien-dataspaces
+git revision: 758b3daa751336e5d1affff95a33b62337b1a95e
+date: 2013-08-23_15-25-55
+
+git HEAD:
+commit 758b3daa751336e5d1affff95a33b62337b1a95e
+Author: youribonnaffe <youri.bonnaffe@activeeon.com>
+Date:   Fri Aug 23 14:38:36 2013 +0200
+
+    SCHEDULING-1902 - add unit test
+    
+    Change-Id: I7ccacfde2c61742eaa50942c39a7e8bf7efba607
