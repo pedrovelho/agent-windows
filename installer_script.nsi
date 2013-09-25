@@ -18,24 +18,31 @@
 # Product version, service name and service description that
 # appears in the services.msc panel
 #################################################################
-!define STANDALONE
-!ifdef STANDALONE
-     !define ARCH_X86 ; ARCH_X64
-     
-     !ifdef ARCH_X86
-          !define ARCH "x86"
-          !define JRE_INSTALLER "jre-7u40-windows-i586.exe"
-     !endif
-     
-     !ifdef ARCH_X64
-          !define ARCH "x64"
-          !define JRE_INSTALLER "jre-7u40-windows-x64.exe"
-     !endif
 
-     !define SUFIX "-${ARCH}-standalone"
+;!define STANDALONE_X86 "x86"
+!define STANDALONE_X64 "x64"; ; Comment this line to build the stadard non-standalone version
+
+!ifdef STANDALONE_X64
+     !define ARCH ${STANDALONE_X64}
+     !define JRE_INSTALLER "jre-7u40-windows-x64.exe"
+     !define SUFIX "${ARCH} Standalone with JRE and Scheduling Worker"
+     !define FILENAME_SUFIX "-${ARCH}-standalone"
      !define UNSTCODE "26A24AE4-039D-4CA4-87B4-2F83217040F0" ; depends on jre version
-!else
+     !define STANDALONE ""
+!endif
+
+!ifdef STANDALONE_X86
+     !define ARCH ${STANDALONE_X86}
+     !define JRE_INSTALLER "jre-7u40-windows-i586.exe"
+     !define SUFIX "${ARCH} Standalone with JRE and Scheduling Worker"
+     !define FILENAME_SUFIX "-${ARCH}-standalone"
+     !define UNSTCODE "26A24AE4-039D-4CA4-87B4-2F83217040F0" ; depends on jre version
+     !define STANDALONE ""
+!endif
+
+!ifndef STANDALONE
      !define SUFIX ""
+     !define FILENAME_SUFIX ""
 !endif
 
 !define VERSION "2.4.1"
@@ -47,12 +54,12 @@ VIAddVersionKey ProductName      "ProActive Agent"
 VIAddVersionKey Comments         "www.activeeon.com"
 VIAddVersionKey CompanyName      "Activeeon"
 VIAddVersionKey LegalCopyright   "Activeeon"
-VIAddVersionKey FileDescription  "Installer of the ProActive Agent"
+VIAddVersionKey FileDescription  "Installer of the ProActive Agent ${VERSION} ${SUFIX}"
 VIAddVersionKey FileVersion      ${VERSION}
 VIAddVersionKey ProductVersion   ${VERSION}
 VIAddVersionKey InternalName     "ProActiveAgent"
 VIAddVersionKey LegalTrademarks  "Copyright (C) Activeeon 2013"
-VIAddVersionKey OriginalFilename "ProActiveAgent-${VERSION}${SUFIX}-setup.exe"
+VIAddVersionKey OriginalFilename "ProActiveAgent-${VERSION}${FILENAME_SUFIX}-setup.exe"
 
 
 #################################################################
@@ -125,8 +132,8 @@ Var Hostname
 
 CRCCheck on
 
-Name "ProActive Agent ${VERSION}${SUFIX}"
-OutFile ProActiveAgent-${VERSION}${SUFIX}-setup.exe
+Name "ProActive Agent ${VERSION} ${SUFIX}"
+OutFile ProActiveAgent-${VERSION}${FILENAME_SUFIX}-setup.exe
 
 LicenseText "This program is Licensed under the GNU General Public License (GPL)."
 LicenseData "LICENSE.txt"
@@ -401,15 +408,19 @@ Function .onInit
   StrCpy $R1 ""
   
   ; Forbid the execution of 64bit installer on 32 bits
-  !ifdef STANDALONE
-     ${IfNot} ${RunningX64}
-        !ifdef ARCH_X64
-             !insertmacro Log "!! Cannot run a x64 installer on a x86 architecture !!"
-             SetErrorLevel 3
-             Abort
-        !endif
-     ${EndIf}
-  !endif
+  ${If} ${RunningX64}
+    !insertmacro Log "Running on x64 architecture ..."
+  ${Else}
+    !insertmacro Log "Running on x86 architecture ..."
+    !ifdef STANDALONE_X64
+       ${IfNot} ${Silent}
+          MessageBox MB_OK "Cannot run a x64 installer on a x86 architecture." /SD IDOK
+       ${EndIf}
+       !insertmacro Log "Cannot run a x64 installer on a x86 architecture."
+       SetErrorLevel 3
+       Abort
+    !endif
+  ${EndIf}
   
   ; Check user admin rights
   !insertmacro Log "Checking admin rights ..."
@@ -1143,6 +1154,7 @@ Function InstallProActiveAgent
                 File "utils\schedworker\dist\lib\xmlschema-core-2.0.1.jar"
                 File "utils\schedworker\dist\lib\xmlsec-1.4.0.jar"
                 File "utils\schedworker\dist\lib\xsdlib.jar"
+
                 ; Silently install the correct jre
                 SetOutPath $INSTDIR\jre
                 File "utils\${ARCH}\${JRE_INSTALLER}"
