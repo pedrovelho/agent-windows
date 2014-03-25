@@ -19,8 +19,9 @@
 # appears in the services.msc panel
 #################################################################
 
+; Uncomment one of these lines to build the standalone version
 ;!define STANDALONE_X86 "x86"
-!define STANDALONE_X64 "x64"; ; Comment this line to build the stadard non-standalone version
+;!define STANDALONE_X64 "x64"
 
 !ifdef STANDALONE_X64
      !define ARCH ${STANDALONE_X64}
@@ -59,7 +60,7 @@ VIAddVersionKey FileVersion      ${VERSION}
 VIAddVersionKey ProductVersion   ${VERSION}
 VIAddVersionKey InternalName     "ProActiveAgent"
 VIAddVersionKey LegalTrademarks  "Copyright (C) Activeeon 2013"
-VIAddVersionKey OriginalFilename "ProActiveAgent-${VERSION}${FILENAME_SUFIX}-setup.exe"
+VIAddVersionKey OriginalFilename "ProActiveAgent-${VERSION}${FILENAME_SUFIX}-cea-setup.exe"
 
 
 #################################################################
@@ -261,6 +262,12 @@ SectionEnd
 !ifndef CloseHandle
 !define CloseHandle "Kernel32::CloseHandle(i) i"
 !endif
+!ifndef LOGON32_LOGON_BATCH
+!define LOGON32_LOGON_BATCH 4
+!endif
+!ifndef LOGON32_LOGON_INTERACTIVE
+!define LOGON32_LOGON_INTERACTIVE 2
+!endif
 !ifndef LOGON32_LOGON_NETWORK
 !define LOGON32_LOGON_NETWORK 3
 !endif
@@ -274,6 +281,24 @@ SectionEnd
   ; R8: call return
   !macro DoLogonUser Domain Username Password
      System::Call "${LogonUser}('${Username}', '${Domain}', '${Password}', ${LOGON32_LOGON_NETWORK}, ${LOGON32_PROVIDER_DEFAULT}, .R0) .R8"
+  !macroend
+!endif
+
+!ifmacrondef DoLogonUserBatch
+  ; Logs on a user, and returns their login token in $R0
+  ; R0: token
+  ; R8: call return
+  !macro DoLogonUserBatch Domain Username Password
+     System::Call "${LogonUser}('${Username}', '${Domain}', '${Password}', ${LOGON32_LOGON_BATCH}, ${LOGON32_PROVIDER_DEFAULT}, .R0) .R8"
+  !macroend
+!endif
+
+!ifmacrondef DoLogonUserInteractive
+  ; Logs on a user, and returns their login token in $R0
+  ; R0: token
+  ; R8: call return
+  !macro DoLogonUserInteractive Domain Username Password
+     System::Call "${LogonUser}('${Username}', '${Domain}', '${Password}', ${LOGON32_LOGON_INTERACTIVE}, ${LOGON32_PROVIDER_DEFAULT}, .R0) .R8"
   !macroend
 !endif
 
@@ -645,6 +670,28 @@ Function ProcessSetupArguments
   checkAccountLABEL:
   !insertmacro Log "Trying to logon as $AccountUsername on domain: $AccountDomain ..."
   !insertmacro DoLogonUser $AccountDomain $AccountUsername $AccountPassword
+  
+  ${If} $R8 == 0
+     ; DoLogonUser failed
+     !insertmacro Log "Unable to logon using DoLogonUser return value: $R8 token: $R0"
+     
+     ; Try with DoLogonUserBatch
+     !insertmacro DoLogonUserBatch $AccountDomain $AccountUsername $AccountPassword
+     
+     ${If} $R8 == 0
+        ; DoLogonUserBatch failed
+        !insertmacro Log "Unable to logon using DoLogonUserBatch return value: $R8 token: $R0"
+        
+        ; Try with DoLogonUserInteractive
+        !insertmacro DoLogonUserInteractive $AccountDomain $AccountUsername $AccountPassword
+        
+        ${If} $R8 == 0
+           ; DoLogonUserInteractive failed
+           !insertmacro Log "Unable to logon using DoLogonUserInteractive return value: $R8 token: $R0"
+        ${EndIf}
+     ${EndIf}
+  ${EndIf}
+  
   StrCmp $R8 0 unableToLogLABEL loggedLABEL
   
   # If unable to logon using default account maybe the account does not exists or password is incorrect
