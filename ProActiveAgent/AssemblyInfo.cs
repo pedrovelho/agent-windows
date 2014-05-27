@@ -45,7 +45,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Activeeon")]
 [assembly: AssemblyProduct("ProActive Agent")]
-[assembly: AssemblyCopyright("Copyright © Activeeon 2013")]
+[assembly: AssemblyCopyright("Copyright © Activeeon 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -64,8 +64,8 @@ using System.Runtime.InteropServices;
 //      Numéro de build
 //      Révision
 //
-[assembly: AssemblyVersion("2.4.1.*")]
-[assembly: AssemblyFileVersion("2.4.1.0")]
+[assembly: AssemblyVersion("2.4.2.*")]
+[assembly: AssemblyFileVersion("2.4.2.0")]
 
 //For log4net 1.2.10.0
 //[assembly: log4net.Config.XmlConfigurator(ConfigFile = "log4net.config", Watch = true)]
