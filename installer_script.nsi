@@ -684,6 +684,9 @@ Function ProcessSetupArguments
         ${If} $R8 == 0
            ; DoLogonUserInteractive failed
            !insertmacro Log "Unable to logon using DoLogonUserInteractive return value: $R8 token: $R0"
+           ; This is bad and there is nothing to do
+           !insertmacro Log "Exiting installer ..."
+           Abort
         ${EndIf}
      ${EndIf}
   ${EndIf}
