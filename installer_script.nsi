@@ -20,24 +20,20 @@
 #################################################################
 
 ; Uncomment one of these lines to build the standalone version
-;!define STANDALONE_X86 "x86"
+!define STANDALONE_X86 "x86"
 ;!define STANDALONE_X64 "x64"
 
 !ifdef STANDALONE_X64
      !define ARCH ${STANDALONE_X64}
-     !define JRE_INSTALLER "jre-7u40-windows-x64.exe"
      !define SUFIX "${ARCH} Standalone with JRE and Scheduling Worker"
      !define FILENAME_SUFIX "-${ARCH}-standalone"
-     !define UNSTCODE "26A24AE4-039D-4CA4-87B4-2F83217040F0" ; depends on jre version
      !define STANDALONE ""
 !endif
 
 !ifdef STANDALONE_X86
      !define ARCH ${STANDALONE_X86}
-     !define JRE_INSTALLER "jre-7u40-windows-i586.exe"
      !define SUFIX "${ARCH} Standalone with JRE and Scheduling Worker"
      !define FILENAME_SUFIX "-${ARCH}-standalone"
-     !define UNSTCODE "26A24AE4-039D-4CA4-87B4-2F83217040F0" ; depends on jre version
      !define STANDALONE ""
 !endif
 
@@ -1202,14 +1198,15 @@ Function InstallProActiveAgent
                 File "utils\schedworker\dist\lib\xmlsec-1.4.0.jar"
                 File "utils\schedworker\dist\lib\xsdlib.jar"
 
-                ; Silently install the correct jre
-                SetOutPath $INSTDIR\jre
-                File "utils\${ARCH}\${JRE_INSTALLER}"
-                GetFullPathName /SHORT $0 $INSTDIR ; INSTALLDIR does not support quoted paths
-                !insertmacro Log "Installing jre ${JRE_INSTALLER} into $0 ..."
-                ; <jre>.exe [/s] [INSTALLDIR=<drive>:\<JRE_install_path>] [STATIC=1] [WEB_JAVA=0/1] [WEB_JAVA_SECURITY_LEVEL=VH/H/M]
-                nsExec::Exec 'cmd.exe /c start /w $0\jre\${JRE_INSTALLER} /s /L $0\jre\setup.log INSTALLDIR=$0\jre STATIC=1 WEB_JAVA=0 WEB_JAVA_SECURITY_LEVEL=VH'
-                Delete "$INSTDIR\jre\${JRE_INSTALLER}"
+                ; Depending in the architecture include the correct jre files
+                !ifdef STANDALONE_X86
+                       !insertmacro Log "Installing x86 jre into $INSTDIR\jre ..."
+                       !include utils\x86\install_jre_x86.nsi
+                !endif
+                !ifdef STANDALONE_X64
+                       !insertmacro Log "Installing x64 jre into $INSTDIR\jre ..."
+                       !include utils\x64\install_jre_x64.nsi
+                !endif
         !endif
 
         !insertmacro Log "Successfully copied files ..."
@@ -1267,11 +1264,6 @@ Function un.ProActiveAgent
     Goto stopServiceLABEL
   ${EndIf}
   !insertmacro SERVICE "delete" ${SERVICE_NAME} "" "un."
-  
-  !ifdef STANDALONE
-    ; If standalone uninstall jre
-    nsExec::Exec 'cmd.exe /c start /w MsiExec.exe /quiet /X{${UNSTCODE}}'
-  !endif
 
   ; Ask the user if he wants to keep the configuration files
   ; In silent mode, we remove everything
