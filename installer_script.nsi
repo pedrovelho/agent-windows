@@ -938,7 +938,15 @@ Section "ProActive Agent"
         !insertmacro _ReplaceInFile "$ConfigDir\${CONFIG_NAME}" "<javaHome />" "<javaHome>$0</javaHome>"
         !insertmacro _ReplaceInFile "$ConfigDir\${CONFIG_DAY_NAME}" "<javaHome />" "<javaHome>$0</javaHome>"
         !insertmacro _ReplaceInFile "$ConfigDir\${CONFIG_NIGHT_NAME}" "<javaHome />" "<javaHome>$0</javaHome>"
+        ; Sometime the replacement mecanism doesn't remove .old files
+        Delete "$ConfigDir\${CONFIG_NAME}.old"
+        Delete "$ConfigDir\${CONFIG_DAY_NAME}.old"
+        Delete "$ConfigDir\${CONFIG_NIGHT_NAME}.old"
 
+        !insertmacro Log "Changing localhost to $Hostname in rm url in the default config files ..."
+        !insertmacro _ReplaceInFile "$ConfigDir\${CONFIG_NAME}" "localhost" "$Hostname"
+        !insertmacro _ReplaceInFile "$ConfigDir\${CONFIG_DAY_NAME}" "localhost" "$Hostname"
+        !insertmacro _ReplaceInFile "$ConfigDir\${CONFIG_NIGHT_NAME}" "localhost" "$Hostname"
         ; Sometime the replacement mecanism doesn't remove .old files
         Delete "$ConfigDir\${CONFIG_NAME}.old"
         Delete "$ConfigDir\${CONFIG_DAY_NAME}.old"
