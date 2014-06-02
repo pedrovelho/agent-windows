@@ -20,8 +20,8 @@
 #################################################################
 
 ; Uncomment one of these lines to build the standalone version
-!define STANDALONE_X86 "x86"
-;!define STANDALONE_X64 "x64"
+;!define STANDALONE_X86 "x86"
+!define STANDALONE_X64 "x64"
 
 !ifdef STANDALONE_X64
      !define ARCH ${STANDALONE_X64}
@@ -152,27 +152,6 @@ Page Components
 Page Directory
 Page Custom ConfigureSetupPage HandleSetupArguments
 Page Instfiles
-
-#############################
-# !! SECTIONS DEFINITIONS !!
-#############################
-Section "ProActive Agent"
-  Call InstallProActiveAgent
-SectionEnd
-
-Section "ProActive ScreenSaver"
-  Call InstallProActiveScreenSaver
-SectionEnd
-
-Section "Start Menu Shortcuts"
-  Call CreateDesktopShortCuts
-SectionEnd
-
-UninstallText "This will uninstall ProActive Agent. Hit next to continue."
-
-Section "Uninstall"
-  Call un.ProActiveAgent
-SectionEnd
 
 ##########################################################################################################################################
 !include "WordFunc.nsh"
@@ -803,24 +782,31 @@ FunctionEnd
 #################################################################
 # Installs the ProActive Agent; copies all the requires files
 #################################################################
-Function InstallProActiveAgent
+;Function InstallProActiveAgent
+
+;FunctionEnd
+
+#############################
+# !! SECTIONS DEFINITIONS !!
+#############################
+Section "ProActive Agent"
         ; In silent mode, we needs to explicitly handle parameters and installation
         ${If} ${Silent}
-          Call ProcessSetupArguments
+           Call ProcessSetupArguments
         ${EndIf}
-        
+
         !insertmacro Log "Installing into $INSTDIR ..."
         ; Set current dir to installation directory
         SetOutPath $INSTDIR
-        
+
         ; Write uninstaller utility to able to rollback
         WriteUninstaller uninstall.exe
-        
+
         !insertmacro Log "Writing registry keys ..."
         ; Write the uninstall keys for Windows
         WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ProActiveAgent" "DisplayName" "ProActive Agent (remove only)"
         WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ProActiveAgent" "UninstallString" '"$INSTDIR\Uninstall.exe"'
-        
+
         ; Write into registry the agent home and config location and logs dir
         WriteRegStr HKLM "Software\ProActiveAgent" "AgentLocation" "$INSTDIR"
         ; Write auth data into a restricted access key
@@ -893,7 +879,7 @@ Function InstallProActiveAgent
           CreateDirectory "$1\ProActiveAgent\logs"
           StrCpy $LogsDir "$1\ProActiveAgent\logs"
         ${EndIf}
-        
+
         ; Checking default location for config and log
         !insertmacro Log "Checking use default location ..."
         ${If} $ConfigDir == "$INSTDIR\config"
@@ -937,7 +923,7 @@ Function InstallProActiveAgent
                 Delete "$ConfigDir\${CONFIG_NIGHT_NAME}.old"
                 !insertmacro _ReplaceInFile "$ConfigDir\${CONFIG_NIGHT_NAME}" "<credential />" "<credential>$INSTDIR\schedworker\config\authentication\rm.cred</credential>"
                 Delete "$ConfigDir\${CONFIG_NIGHT_NAME}.old"
-                
+
                 ; In standalone mode a jre bundle will be installed
                 StrCpy $0 "$INSTDIR\jre"
                 !insertmacro Log "Java home is set to the bundled jre at $0 ..."
@@ -961,7 +947,7 @@ Function InstallProActiveAgent
         useExistingConfigLabel:
         WriteRegStr HKLM "Software\ProActiveAgent" "ConfigLocation" "$ConfigDir\${CONFIG_NAME}"
         WriteRegStr HKLM "Software\ProActiveAgent" "LogsDirectory" $LogsDir
-        
+
         ; Write other files
         SetOutPath $INSTDIR
         File "LICENSE.txt"
@@ -980,7 +966,7 @@ Function InstallProActiveAgent
         File "utils\xml\agent-common.xsd"
         SetOutPath $INSTDIR\doc
         File "ProActive Agent Documentation.pdf"
-        
+
         ;-----------------------------------------------------------------------------------
         ; The standalone contains the schedworker version
         ;-----------------------------------------------------------------------------------
@@ -1201,7 +1187,7 @@ Function InstallProActiveAgent
                 File "utils\schedworker\dist\lib\xmlsec-1.4.0.jar"
                 File "utils\schedworker\dist\lib\xsdlib.jar"
 
-                ; Depending in the architecture include the correct jre files
+                ; Depending on the architecture include the correct jre files
                 !ifdef STANDALONE_X86
                        !insertmacro Log "Installing x86 jre into $INSTDIR\jre ..."
                        !include utils\x86\install_jre_x86.nsi
@@ -1213,7 +1199,7 @@ Function InstallProActiveAgent
         !endif
 
         !insertmacro Log "Successfully copied files ..."
-        
+
         ${If} $AllowEveryone == "1"
           !insertmacro Log "Allowing everyone to control the agent ..."
           !insertmacro Log "Granting members of ALL USERS group to start/stop the service ..."
@@ -1233,11 +1219,25 @@ Function InstallProActiveAgent
         ${EndIf}
 
         !insertmacro Log "Installed sucessfully, ready to start the ProActiveAgent service ..."
-        
+
         ${If} ${Silent}
           ${keybd_event} ${VK_RETURN} 1 ; Simulate a keyboard event of the Return key to return to prompt
         ${EndIf}
-FunctionEnd
+SectionEnd
+
+Section "ProActive ScreenSaver"
+  Call InstallProActiveScreenSaver
+SectionEnd
+
+Section "Start Menu Shortcuts"
+  Call CreateDesktopShortCuts
+SectionEnd
+
+UninstallText "This will uninstall ProActive Agent. Hit next to continue."
+
+Section "Uninstall"
+  Call un.ProActiveAgent
+SectionEnd
 
 #################################################################
 # Uninstall the ProActive agent
