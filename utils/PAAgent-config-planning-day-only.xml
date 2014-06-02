@@ -69,11 +69,11 @@
     </event>
   </events>
   <connections>
-    <localBind enabled="true">
+    <localBind enabled="false">
       <respawnIncrement>10</respawnIncrement>
       <javaStarterClass>org.objectweb.proactive.core.util.winagent.PAAgentServiceRMIStarter</javaStarterClass>
     </localBind>
-    <rmConnection enabled="false">
+    <rmConnection enabled="true">
       <respawnIncrement>10</respawnIncrement>
       <javaStarterClass>org.ow2.proactive.resourcemanager.utils.RMNodeStarter</javaStarterClass>
       <nodename>PA-AGENT_NODE</nodename>
