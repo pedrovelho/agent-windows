@@ -21,7 +21,7 @@
 
 ; Uncomment one of these lines to build the standalone version
 ;!define STANDALONE_X86 "x86"
-!define STANDALONE_X64 "x64"
+;!define STANDALONE_X64 "x64"
 
 !ifdef STANDALONE_X64
      !define ARCH ${STANDALONE_X64}
@@ -42,7 +42,7 @@
      !define FILENAME_SUFIX ""
 !endif
 
-!define VERSION "2.4.2"
+!define VERSION "2.4.3"
 !define SERVICE_NAME "ProActiveAgent"
 !define SERVICE_DESC "The ProActive Agent enables desktop computers as an important source of computational power"
 
@@ -55,8 +55,8 @@ VIAddVersionKey FileDescription  "Installer of the ProActive Agent ${VERSION} ${
 VIAddVersionKey FileVersion      ${VERSION}
 VIAddVersionKey ProductVersion   ${VERSION}
 VIAddVersionKey InternalName     "ProActiveAgent"
-VIAddVersionKey LegalTrademarks  "Copyright (C) Activeeon 2013"
-VIAddVersionKey OriginalFilename "ProActiveAgent-${VERSION}${FILENAME_SUFIX}-cea-setup.exe"
+VIAddVersionKey LegalTrademarks  "Copyright (C) Activeeon 2014"
+VIAddVersionKey OriginalFilename "ProActiveAgent-${VERSION}${FILENAME_SUFIX}-setup.exe"
 
 
 #################################################################
