@@ -459,10 +459,13 @@ namespace ProActiveAgent
                         this.paRuntimeJavaProcess = incriminatedProcess;
                     }
                 }
-                // add the process to the cpu limiter
-                if (this.cpuLimiter.addProcessToWatchList(incriminatedProcess))
-                {
-                    LOGGER.Info("Added new process " + incriminatedProcess.ProcessName + " [pid:" + incriminatedProcess.Id + "] to the cpu limiter");
+                
+                // Fix for AGENT-223: Don't add processes to CPULimiter if the planning is set as Always available and the Max CPU usage is 100%
+                if (this.commonStartInfo.isCpuLimiterEnabled) {
+                    if (this.cpuLimiter.addProcessToWatchList(incriminatedProcess))
+                    {
+                        LOGGER.Info("Added new process " + incriminatedProcess.ProcessName + " [pid:" + incriminatedProcess.Id + "] to the cpu limiter");
+                    }
                 }
             }
             catch (Exception ex)

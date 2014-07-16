@@ -65,6 +65,9 @@ namespace ProActiveAgent
         /// The runtime start delay is enabled if the PA_AGENT_RUNTIME_START_DELAY system env variable is defined</summary>
         private readonly bool _runtimeStartDelayEnabled;
         /// <summary>
+        /// If always available and max cpu usage is 100, no need to use the cpu limiter</summary>
+        private readonly bool _cpuLimiterEnabled;
+        /// <summary>
         /// The constructor of this class.</summary>
         public CommonStartInfo(AgentType configuration)
         {
@@ -99,11 +102,12 @@ namespace ProActiveAgent
                 if (!Int32.TryParse(value, out this._runtimeStartDelayInMs))
                     LOGGER.Warn("Unable to parse the runtime start delay using default value " + this._runtimeStartDelayInMs + " ms");
                 else
-                {                    
+                {
                     this._runtimeStartDelayEnabled = true;
                     LOGGER.Info("Runtime start delay is set to " + this._runtimeStartDelayInMs + " ms");
                 }
             }
+            this._cpuLimiterEnabled = !(configuration.isAlwaysAvailable() && configuration.config.maxCpuUsage == 100);
         }
 
         public AgentType configuration
@@ -151,6 +155,14 @@ namespace ProActiveAgent
             get 
             {
                 return this._runtimeStartDelayEnabled;
+            }
+        }
+
+        public bool isCpuLimiterEnabled
+        {
+            get
+            {
+                return this._cpuLimiterEnabled;
             }
         }
     }

@@ -58,7 +58,7 @@ namespace ProActiveAgent
         // stop - action timers
         private readonly List<Timer> stopTimers;
         /// <summary>
-        /// The list of executors.</summary>                        
+        /// The list of executors.</summary>
         private readonly List<ProActiveRuntimeExecutor> proActiveRuntimeExecutors;
 
         // The constructor should be called only during starting the service
@@ -67,14 +67,14 @@ namespace ProActiveAgent
             // The configuration specifies the number of executors
             int nbProcesses = configuration.config.nbRuntimes == 0 ? Environment.ProcessorCount : configuration.config.nbRuntimes;
             LOGGER.Info("Creating " + nbProcesses + " executors");
-            
+
             // Get the runtime common start info shared between all executors
             CommonStartInfo commonStartInfo = new CommonStartInfo(configuration);
 
             // Create as many executors with a unique rank as specified in the configuration
             this.proActiveRuntimeExecutors = new List<ProActiveRuntimeExecutor>(nbProcesses);
             for (int rank = 0; rank < nbProcesses; rank++)
-            {                
+            {
                 ProActiveRuntimeExecutor executor = new ProActiveRuntimeExecutor(commonStartInfo, rank);
                 this.proActiveRuntimeExecutors.Add(executor);
             }
