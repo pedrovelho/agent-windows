@@ -38,8 +38,8 @@
 !endif
 
 !ifndef STANDALONE
-     !define SUFIX "cea"
-     !define FILENAME_SUFIX "-cea"
+     !define SUFIX "cea v1"
+     !define FILENAME_SUFIX "-cea-v1"
 !endif
 
 !define VERSION "2.4.3"
