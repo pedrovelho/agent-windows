@@ -19,21 +19,29 @@
 # appears in the services.msc panel
 #################################################################
 
-; Uncomment one of these lines to build the standalone version
+; Uncomment (or specify with /D from command line) one of these variables to build the standalone version
 ;!define STANDALONE_X86 "x86"
 ;!define STANDALONE_X64 "x64"
 
 !ifdef STANDALONE_X64
      !define ARCH ${STANDALONE_X64}
      !define SUFIX "${ARCH} Standalone with JRE and Scheduling Worker"
-     !define FILENAME_SUFIX "-${ARCH}-standalone"
+     !ifdef SCHEDWORKER_VERSION
+          !define FILENAME_SUFIX "-${ARCH}-standalone-${SCHEDWORKER_VERSION}"
+     !else
+          !define FILENAME_SUFIX "-${ARCH}-standalone"
+     !endif
      !define STANDALONE ""
 !endif
 
 !ifdef STANDALONE_X86
      !define ARCH ${STANDALONE_X86}
      !define SUFIX "${ARCH} Standalone with JRE and Scheduling Worker"
-     !define FILENAME_SUFIX "-${ARCH}-standalone"
+     !ifdef SCHEDWORKER_VERSION
+          !define FILENAME_SUFIX "-${ARCH}-standalone-${SCHEDWORKER_VERSION}"
+     !else
+          !define FILENAME_SUFIX "-${ARCH}-standalone"
+     !endif
      !define STANDALONE ""
 !endif
 
