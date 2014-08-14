@@ -1,4 +1,7 @@
-﻿/*
+﻿using ConfigParser;
+using log4net;
+using Microsoft.Win32;
+/*
  * ################################################################
  *
  * ProActive Parallel Suite(TM): The Java(TM) library for
@@ -45,10 +48,6 @@ using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Text;
 using System.Windows.Forms;
-using Microsoft.Win32;
-using log4net;
-using System.Security;
-using ConfigParser;
 
 namespace ProActiveAgent
 {
@@ -304,18 +303,20 @@ namespace ProActiveAgent
             // 2) If not specified use JAVA_HOME variable
             // 3) If JAVA_HOME is not defined or empty throw exception
 
-            if (config.javaHome == null || config.javaHome.Equals(""))
+            if (String.IsNullOrEmpty(config.javaHome))
             {
                 // The classpath will be filled using the JAVA_HOME variable defined in the parent environement
                 config.javaHome = System.Environment.GetEnvironmentVariable(Constants.JAVA_HOME);
-
-                if (config.javaHome == null || config.javaHome.Equals(""))
-                {
-                    throw new ApplicationException("Unable to read the classpath, please specify the java location in the configuration or set JAVA_HOME environement variable");
-                }
+                if (String.IsNullOrEmpty(config.javaHome))
+                    throw new ApplicationException("Unable to read the classpath, please specify the java location in the configuration or set JAVA_HOME environement variable");                
             }
 
-            string initScript = null;
+            // If bin\init.bat exists use it to get the classpath
+            // If bin\windows\init.bat exists use it to get the classpath
+            // If none of them exists use standard classpath
+
+            string binInit = config.proactiveHome + @"\bin\init.bat";
+            string binWindowsInit = config.proactiveHome + @"\bin\windows\init.bat";
 
             // First check if the proactiveHome or javaHome path are in UNC format
             if (config.proactiveHome.StartsWith(@"\\") || config.javaHome.StartsWith(@"\\"))
@@ -351,82 +352,71 @@ namespace ProActiveAgent
                     password = decryptedPassword.ToString();
 
                     if (res != 0)
-                        throw new ApplicationException("Problem " + res);
+                        throw new ApplicationException("Problem unable to decrypt the password, exitCode=" + res);
 
-                    // Restore current dir                    
+                    // Restore current dir
                     Directory.SetCurrentDirectory(cd);
                 }
+
+                bool readClasspathFromScript = false;
+                string initScript = null;
+                string initScriptParentAbsolutePath = null;
 
                 // Impersonate the forker (get its access rights) in his context UNC paths are accepted
                 using (new Impersonator(username, domain, password))
                 {
-                    // First check if the directory exists
-                    if (!Directory.Exists(config.javaHome))
-                        throw new ApplicationException("Unable to read the classpath, the Java Home directory " + config.javaHome + " does not exist");
-
-                    // Get the initScript 
-                    initScript = findInitScriptInternal(config.proactiveHome);
+                    if (Directory.Exists(config.javaHome)) {
+                        if (File.Exists(binInit))
+                        {
+                            initScript = binInit;
+                            initScriptParentAbsolutePath = config.proactiveHome + @"\bin";
+                            readClasspathFromScript = true;
+                        }
+                        else if (File.Exists(binWindowsInit))
+                        {
+                            initScript = binWindowsInit;
+                            initScriptParentAbsolutePath = config.proactiveHome + @"\bin\windows";
+                            readClasspathFromScript = true;
+                        }
+                        else
+                        {
+                            readClasspathFromScript = false;
+                        }
+                    } else {
+                        readClasspathFromScript = false;
+                    }
                 }
 
-                config.classpath = VariableEchoer.echoVariableAsForker(
-                    config.javaHome,                      // the Java install dir
-                    configuration.agentInstallLocation,   // the ProActive Agent install dir
-                    config.proactiveHome + @"\bin\windows", // the current directory where to run the initScript
-                    initScript,                           // the full path of the initScript
-                    Constants.CLASSPATH);                 // the name of the variable to echo                
+                if (readClasspathFromScript)
+                    config.classpath = VariableEchoer.echoVariableAsForker(
+                        config.javaHome,                      // the Java install dir
+                        configuration.agentInstallLocation,   // the ProActive Agent install dir
+                        initScriptParentAbsolutePath,         // the current directory where to run the initScript
+                        initScript,                           // the full path of the initScript
+                        Constants.CLASSPATH);                 // the name of the variable to echo
+                else                
+                    config.classpath = config.proactiveHome + @"\dist\lib\*;" + config.proactiveHome + @"\addons\*";
             }
             else
             {
                 // The paths are local no need to impersonate
-
-                // First check if the directory exists
-                if (!Directory.Exists(config.javaHome))
-                {
-                    throw new ApplicationException("Unable to read the classpath, the Java Home directory " + config.javaHome + " does not exist");
-                }
-
-                // Get the initScript
-                initScript = findInitScriptInternal(config.proactiveHome);
-
                 ProcessStartInfo info = new ProcessStartInfo();
                 info.EnvironmentVariables["PA_SCHEDULER"] = config.proactiveHome;
                 info.EnvironmentVariables["PROACTIVE"] = config.proactiveHome;
                 info.EnvironmentVariables[Constants.JAVA_HOME] = config.javaHome;
 
-                // Run initScript and get the value of the CLASSPATH variable
-                config.classpath = VariableEchoer.echoVariable(initScript, Constants.CLASSPATH, info);
+                bool javaHomeExists = Directory.Exists(config.javaHome);
+
+                if (File.Exists(binInit) && javaHomeExists)
+                    config.classpath = VariableEchoer.echoVariable(binInit, Constants.CLASSPATH, info);
+                else if (File.Exists(binWindowsInit) && javaHomeExists)
+                    config.classpath = VariableEchoer.echoVariable(binWindowsInit, Constants.CLASSPATH, info);
+                else
+                    config.classpath = config.proactiveHome + @"\dist\lib\*;" + config.proactiveHome + @"\addons\*";
             }
         }
 
-        // !! This method can be executed in impersonated context !!
-        // This function finds the init.bat script :
-        // - if the proactiveHome is the ProActive install dir
-        // - if the proactiveHome is the Scheduling install dir
-        private static string findInitScriptInternal(string proactiveHome)
-        {
-            string binDirectory = proactiveHome + @"\bin";
-
-            // First check if the directory exists
-            if (!Directory.Exists(binDirectory))
-            {
-                throw new ApplicationException("Unable to read the classpath, the ProActive Home directory " + binDirectory + " does not exist");
-            }
-
-            string initScript = binDirectory + @"\init.bat";
-            // Check if the 'bin\init.bat' script exists
-            if (!System.IO.File.Exists(initScript))
-            {
-                // If the 'init.bat' script does not exists in the 'bin' directory check in 'bin\windows' directory
-                initScript = binDirectory + @"\windows\init.bat";
-                if (!System.IO.File.Exists(initScript))
-                {
-                    throw new ApplicationException("Unable to read the classpath, the initialization script " + initScript + " does not exist");
-                }
-            }
-            return initScript;
-        }
-
-        /// <summary>        
+        /// <summary>
         /// This method checks if a tcp port is available. 
         /// !! DOES NOT CHECK FOR MAX VALUE !!
         /// </summary>
