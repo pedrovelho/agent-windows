@@ -19,30 +19,16 @@
 # appears in the services.msc panel
 #################################################################
 
-; Uncomment (or specify with /D from command line) one of these variables to build the standalone version
-;!define STANDALONE_X86 "x86"
-;!define STANDALONE_X64 "x64"
+; Uncomment (or specify with /D from command line) this variable to build the standalone version there must be a utils\schedworker dir
+;!define STANDALONE ""
 
-!ifdef STANDALONE_X64
-     !define ARCH ${STANDALONE_X64}
-     !define SUFIX "${ARCH} Standalone with JRE and Scheduling Worker"
+!ifdef STANDALONE
+     !define SUFIX "Standalone with JRE and Scheduler Node package"
      !ifdef SCHEDWORKER_VERSION
-          !define FILENAME_SUFIX "-${ARCH}-standalone-${SCHEDWORKER_VERSION}"
+          !define FILENAME_SUFIX "-standalone-${SCHEDWORKER_VERSION}"
      !else
-          !define FILENAME_SUFIX "-${ARCH}-standalone"
+          !define FILENAME_SUFIX "-standalone"
      !endif
-     !define STANDALONE ""
-!endif
-
-!ifdef STANDALONE_X86
-     !define ARCH ${STANDALONE_X86}
-     !define SUFIX "${ARCH} Standalone with JRE and Scheduling Worker"
-     !ifdef SCHEDWORKER_VERSION
-          !define FILENAME_SUFIX "-${ARCH}-standalone-${SCHEDWORKER_VERSION}"
-     !else
-          !define FILENAME_SUFIX "-${ARCH}-standalone"
-     !endif
-     !define STANDALONE ""
 !endif
 
 !ifndef STANDALONE
@@ -933,7 +919,7 @@ Section "ProActive Agent"
                 Delete "$ConfigDir\${CONFIG_NIGHT_NAME}.old"
 
                 ; In standalone mode a jre bundle will be installed
-                StrCpy $0 "$INSTDIR\jre"
+                StrCpy $0 "$INSTDIR\schedworker\jre"
                 !insertmacro Log "Java home is set to the bundled jre at $0 ..."
         !else
                 ; Auto detect java home
@@ -990,16 +976,6 @@ Section "ProActive Agent"
                 SetOverwrite try
                 !insertmacro Log "Installing schedworker into $INSTDIR\schedworker ..."
                 !include utils\install_schedworker.nsi
-
-                ; Depending on the architecture include the correct jre files
-                !ifdef STANDALONE_X86
-                       !insertmacro Log "Installing x86 jre into $INSTDIR\jre ..."
-                       !include utils\x86\install_jre_x86.nsi
-                !endif
-                !ifdef STANDALONE_X64
-                       !insertmacro Log "Installing x64 jre into $INSTDIR\jre ..."
-                       !include utils\x64\install_jre_x64.nsi
-                !endif
         !endif
 
         !insertmacro Log "Successfully copied files ..."
