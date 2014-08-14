@@ -99,7 +99,6 @@ namespace ConfigParser
             jvmOptions.Add("-Dpa.scheduler.home=\"" + proactiveLocation + "\"");
             jvmOptions.Add("-Dpa.rm.home=\"" + proactiveLocation + "\"");
             jvmOptions.Add("-Djava.security.policy=\"" + proactiveLocation + "\\config\\security.java.policy-client\"");
-            jvmOptions.Add("-Dlog4j.configuration=\"file:///" + proactiveLocation + "\\config\\log4j\\log4j-defaultNode\"");
         }
     }
 }
