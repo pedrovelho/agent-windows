@@ -484,7 +484,6 @@ Function .onInit
   ReadRegStr $0 HKLM "Software\ProActiveAgent" "AgentLocation"
   ${If} ${FileExists} '$0\uninstall.exe'
     ${If} ${Silent}
-      uninstallLABEL:
       ; The silent mode always uninstalls the previous version
       ; Loop until the uninstaller is still available and try again
       !insertmacro Log "Uninstalling previous version from $0 ..."
@@ -537,7 +536,6 @@ Function ReadSetupArguments
   !insertmacro MUI_INSTALLOPTIONS_READ $ConfigDir ${PAGE_FILE} "${TXT_CONF}" State
   !insertmacro MUI_INSTALLOPTIONS_READ $LogsDir ${PAGE_FILE} "${TXT_LOGSDIR}" State
 
-  skipLocationsLABEL:
   ; CHECK ACCOUNT FIELDS
   !insertmacro MUI_INSTALLOPTIONS_READ $AllowEveryone ${PAGE_FILE} "${CHK_ALLOWANY}" State
   !insertmacro MUI_INSTALLOPTIONS_READ $AccountDomain ${PAGE_FILE} "${TXT_DOMAIN}" State
@@ -758,9 +756,7 @@ Function ProcessSetupArguments
     !insertmacro Log "Does $AccountUsername have the privilege SE_ASSIGNPRIMARYTOKEN_NAME ? UserMgr::HasPrivilege returns $0 ..."
     !insertmacro Log "In order to use RunAsMe mode, the account $AccountUsername must have 'Adjust memory quotas for a process' and 'Replace a process-level token' privileges. In the 'Administrative Tools' of the 'Control Panel' open the 'Local Security Policy'. In 'Security Settings', select 'Local Policies' then select 'User Rights Assignments'. Finally, in the list of policies open the corresponding properties and add the account $AccountUsername."
   ${EndIf}
-  
-  checkGroupMember:
-      
+
   ; Check if the account is part of 'Performace Monitor Group'
   ; The function UserMgr::IsMemberOfGroup does not work.
   ; Instead we use the UserMgr::GetUserNameFromSID to check if the group exists if so
