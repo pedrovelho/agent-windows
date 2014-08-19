@@ -15,8 +15,15 @@ if (!installerFile.exists()) {
 var out = new PrintWriter(installerFile);
 // dump all files with relative paths to 
 var schedworkerDir = new File("schedworker");
-printPath(schedworkerDir)
+
+println('>> Dumping all relative paths of files inside the ' + schedworkerDir + ' into the nsis ' + installerFile);
+printPath(schedworkerDir);
 out.close();
+
+// Fix for AGENT-226 - The standalone packaging should set a node logs dir writable by the agent user account
+println('>> Replace proactive.home by java.io.tmpdir inside the schedworker\\config\\log\\node.properties');
+var nodePropsFile = new File(schedworkerDir, 'config\\log\\node.properties')
+replaceInFile('proactive.home', 'java.io.tmpdir', nodePropsFile);
 
 function printPath(file){
 	if (file.isDirectory()) {
@@ -46,4 +53,18 @@ function printPath(file){
 			printPath(dirs[i]);
 		}
 	}
+}
+
+function replaceInFile(oldstring, newstring, inFile) {
+	var reader = new BufferedReader(new FileReader(inFile));
+	var copyFile = File.createTempFile('prefix','blabla');
+	var writer = new PrintWriter(new FileWriter(copyFile));
+	var line = null;
+	while ((line = reader.readLine()) != null) {
+		writer.println(line.replaceAll(oldstring, newstring));
+	}
+	reader.close();
+	writer.close();	
+	inFile['delete']();
+	copyFile.renameTo(inFile);
 }

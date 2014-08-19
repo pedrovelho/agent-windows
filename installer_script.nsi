@@ -21,6 +21,7 @@
 
 ; Uncomment (or specify with /D from command line) this variable to build the standalone version there must be a utils\schedworker dir
 ;!define STANDALONE ""
+;!define SCHEDWORKER_VERSION "x64-6.0.0-RC1"
 
 !ifdef STANDALONE
      !define SUFIX "Standalone with JRE and Scheduler Node package"
@@ -933,7 +934,6 @@ Section "ProActive Agent"
         !insertmacro _ReplaceInFile "$ConfigDir\${CONFIG_NAME}" "<javaHome />" "<javaHome>$0</javaHome>"
         !insertmacro _ReplaceInFile "$ConfigDir\${CONFIG_DAY_NAME}" "<javaHome />" "<javaHome>$0</javaHome>"
         !insertmacro _ReplaceInFile "$ConfigDir\${CONFIG_NIGHT_NAME}" "<javaHome />" "<javaHome>$0</javaHome>"
-        ; Sometime the replacement mecanism doesn't remove .old files
         Delete "$ConfigDir\${CONFIG_NAME}.old"
         Delete "$ConfigDir\${CONFIG_DAY_NAME}.old"
         Delete "$ConfigDir\${CONFIG_NIGHT_NAME}.old"
@@ -942,7 +942,42 @@ Section "ProActive Agent"
         !insertmacro _ReplaceInFile "$ConfigDir\${CONFIG_NAME}" "localhost" "$Hostname"
         !insertmacro _ReplaceInFile "$ConfigDir\${CONFIG_DAY_NAME}" "localhost" "$Hostname"
         !insertmacro _ReplaceInFile "$ConfigDir\${CONFIG_NIGHT_NAME}" "localhost" "$Hostname"
-        ; Sometime the replacement mecanism doesn't remove .old files
+        Delete "$ConfigDir\${CONFIG_NAME}.old"
+        Delete "$ConfigDir\${CONFIG_DAY_NAME}.old"
+        Delete "$ConfigDir\${CONFIG_NIGHT_NAME}.old"
+
+        GetFullPathName /SHORT $1 "$INSTDIR"
+
+        ; Update the OnRuntimeExit script location
+        !insertmacro _ReplaceInFile "$ConfigDir\${CONFIG_NAME}" "INSTDIR" "$1"
+        !insertmacro _ReplaceInFile "$ConfigDir\${CONFIG_DAY_NAME}" "INSTDIR" "$1"
+        !insertmacro _ReplaceInFile "$ConfigDir\${CONFIG_NIGHT_NAME}" "INSTDIR" "$1"
+        Delete "$ConfigDir\${CONFIG_NAME}.old"
+        Delete "$ConfigDir\${CONFIG_DAY_NAME}.old"
+        Delete "$ConfigDir\${CONFIG_NIGHT_NAME}.old"
+
+        ; Get the temp folder of the user and store it in $1
+        ; The goal is to read the path of AppData folder
+        UserMgr::GetSIDFromUserName "." $AccountUsername ; Get the SID of the user
+        Pop $0
+        ${If} ${IsWinXP}
+          UserMgr::RegLoadUserHive $AccountUsername
+          ReadRegStr $1 HKU "$AccountUsername\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders" "Local Settings"
+          UserMgr::RegUnLoadUserHive $AccountUsername
+          StrCpy $1 "$1\Temp"
+        ${Else}
+          ; On other OS like Vista or 7 use HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\SID ProfileImagePath
+          ReadRegStr $1 HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$0" ProfileImagePath
+          StrCpy $1 "$1\AppData\Local\Temp"
+        ${EndIf}
+
+        GetFullPathName /SHORT $1 "$1"
+
+        ; Set custom java.io.tmpdir that will be deleted with the OnRuntimeExit script
+        !insertmacro Log "Inserting $1 as node tmp folder into config files ..."
+        !insertmacro _ReplaceInFile "$ConfigDir\${CONFIG_NAME}" "JAVA_IO_TMPDIR" "$1"
+        !insertmacro _ReplaceInFile "$ConfigDir\${CONFIG_DAY_NAME}" "JAVA_IO_TMPDIR" "$1"
+        !insertmacro _ReplaceInFile "$ConfigDir\${CONFIG_NIGHT_NAME}" "JAVA_IO_TMPDIR" "$1"
         Delete "$ConfigDir\${CONFIG_NAME}.old"
         Delete "$ConfigDir\${CONFIG_DAY_NAME}.old"
         Delete "$ConfigDir\${CONFIG_NIGHT_NAME}.old"
