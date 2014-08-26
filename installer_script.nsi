@@ -673,7 +673,7 @@ Function ProcessSetupArguments
   # If unable to logon using default account maybe the account does not exists or password is incorrect
   unableToLogLABEL:
   !insertmacro Log "Unable to logon as $AccountUsername on domain: $AccountDomain Trying to create a user on the local machine ..."
-  # Check if user exists
+  # Check if cannot logon but the user exists
   UserMgr::GetUserInfo $AccountUsername "EXISTS"
   Pop $0
   ${If} $0 == "OK"
@@ -698,6 +698,9 @@ Function ProcessSetupArguments
      ${If} $R8 == 0 ; Abort if unable to Logon
        !insertmacro Log "Unable to logon using DoLogonUser return value: $R8 token: $R0"
        !insertmacro Log "Please create an account manually ..."
+       ${IfNot} ${Silent}
+          MessageBox MB_OK "The account $AccountUsername exists but the logon on $AccountDomain failed, probably the logon as this account is forbidden, please try to specify the FQDN as Domain or specify another valid account." /SD IDOK
+       ${EndIf}
        Abort
      ${EndIf}
   ${Else}
@@ -742,6 +745,9 @@ Function ProcessSetupArguments
         ${If} $R8 == 0 ; Abort if unable to Logon
           !insertmacro Log "Unable to logon using DoLogonUser return value: $R8 token: $R0"
           !insertmacro Log "Please create an account manually ..."
+          ${IfNot} ${Silent}
+             MessageBox MB_OK "Unable to logon as $AccountUsername on $AccountDomain after account creation please specify a valid local or domain account." /SD IDOK
+          ${EndIf}
           Abort
         ${EndIf}
      ${Else}
@@ -788,13 +794,6 @@ Function ProcessSetupArguments
     !insertmacro AddUserToGroup1 $Hostname $AccountUsername "558" ; UserMgr::AddToGroup doesn't work
   ${EndIf}
 FunctionEnd
-
-#################################################################
-# Installs the ProActive Agent; copies all the requires files
-#################################################################
-;Function InstallProActiveAgent
-
-;FunctionEnd
 
 #############################
 # !! SECTIONS DEFINITIONS !!
