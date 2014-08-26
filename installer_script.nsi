@@ -397,13 +397,15 @@ FunctionEnd
 # 4 - Unable to find Microsoft .NET Framework 3.5
 ##########################################################################################################################################
 Function .onInit
+  !insertmacro Log "$\r"
+  !insertmacro Log "$\r---------------------------------------------------"
+  !insertmacro Log "$\r"
   ; Print the current date and time into the installation log file
   Call GetCurrentDate
   Pop $R0
   Call GetCurrentTime
   Pop $R1
-  !insertmacro Log "$\r---------------------------------------------------"
-  !insertmacro Log "$\r$R0 - $R1 Installing ProActiveAgent v${VERSION} ..."
+  !insertmacro Log "\r$R0 - $R1 Installing ProActiveAgent v${VERSION} ..."
   StrCpy $R0 ""
   StrCpy $R1 ""
   
@@ -664,8 +666,6 @@ Function ProcessSetupArguments
            ; DoLogonUserInteractive failed
            !insertmacro Log "Unable to logon using DoLogonUserInteractive return value: $R8 token: $R0"
            ; This is bad and there is nothing to do
-           !insertmacro Log "Exiting installer ..."
-           Abort
         ${EndIf}
      ${EndIf}
   ${EndIf}
@@ -674,7 +674,7 @@ Function ProcessSetupArguments
   
   # If unable to logon using default account maybe the account does not exists or password is incorrect
   unableToLogLABEL:
-  !insertmacro Log "Unable to logon as $AccountUsername on domain: $AccountDomain ! DoLogonUser returns: $R8"
+  !insertmacro Log "Unable to logon as $AccountUsername on domain: $AccountDomain Trying to create a user on the local machine ..."
   # Check if user exists
   UserMgr::GetUserInfo $AccountUsername "EXISTS"
   Pop $0
@@ -693,7 +693,15 @@ Function ProcessSetupArguments
      UserMgr::SetUserInfo $AccountUsername "PASSWD_NEVER_EXPIRES" "YES"
      Pop $0
      !insertmacro Log "SetUserInfo(expire): $0"
-     goto checkAccountLABEL
+     
+     ; We now should be able to logon
+     !insertmacro Log "Trying to logon as $AccountUsername on domain: $AccountDomain ..."
+     !insertmacro DoLogonUser $AccountDomain $AccountUsername $AccountPassword
+     ${If} $R8 == 0 ; Abort if unable to Logon
+       !insertmacro Log "Unable to logon using DoLogonUser return value: $R8 token: $R0"
+       !insertmacro Log "Please create an account manually ..."
+       Abort
+     ${EndIf}
   ${Else}
      ${If} $0 == "ERROR 2221" # 2221 means the user name could not be found
 
@@ -731,7 +739,13 @@ Function ProcessSetupArguments
         UserMgr::SetUserInfo $AccountUsername "PASSWD_NEVER_EXPIRES" "YES"
         Pop $0
         !insertmacro Log "SetUserInfo(expire): $0"
-        goto checkAccountLABEL
+        !insertmacro Log "Trying to logon after account creation as $AccountUsername on domain: $AccountDomain ..."
+        !insertmacro DoLogonUser $AccountDomain $AccountUsername $AccountPassword
+        ${If} $R8 == 0 ; Abort if unable to Logon
+          !insertmacro Log "Unable to logon using DoLogonUser return value: $R8 token: $R0"
+          !insertmacro Log "Please create an account manually ..."
+          Abort
+        ${EndIf}
      ${Else}
         !insertmacro Log "Unable to logon as $AccountUsername and to know if username exists. GetUserInfo returns: $0"
         Abort
