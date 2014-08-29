@@ -5,13 +5,13 @@
     <javaHome />
     <jvmParameters>
       <param>-Djava.io.tmpdir=JAVA_IO_TMPDIR\${rank}</param>
-      <param>-Dpas.launcher.forkas.method=pwd</param>
       <param>-Dproactive.node.monitoring.db.dir=JAVA_IO_TMPDIR\${rank}\</param>
+      <param>-Dpas.launcher.forkas.method=pwd</param>      
     </jvmParameters>
     <memoryLimit>0</memoryLimit>
     <nbRuntimes>1</nbRuntimes>
-    <protocol>rmi</protocol>
-    <portRange first="1099" last="1100" />
+    <protocol>pnp</protocol>
+    <portRange first="1100" last="1110" />
     <onRuntimeExitScript>INSTDIR\delete_temp.bat</onRuntimeExitScript>
     <processPriority>Normal</processPriority>
     <maxCpuUsage>100</maxCpuUsage>
