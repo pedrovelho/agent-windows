@@ -37,7 +37,7 @@
      !define FILENAME_SUFIX ""
 !endif
 
-!define VERSION "2.4.3"
+!define VERSION "2.6.0"
 !define SERVICE_NAME "ProActiveAgent"
 !define SERVICE_DESC "The ProActive Agent enables desktop computers as an important source of computational power"
 
