@@ -5,6 +5,7 @@
     <javaHome />
     <jvmParameters>
       <param>-Djava.io.tmpdir=JAVA_IO_TMPDIR\${rank}</param>
+      <param>-Dproactive.node.monitoring.db.dir=JAVA_IO_TMPDIR\${rank}\</param>
       <param>-Dpas.launcher.forkas.method=pwd</param>
     </jvmParameters>
     <memoryLimit>0</memoryLimit>
