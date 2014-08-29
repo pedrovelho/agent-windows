@@ -447,6 +447,12 @@ namespace AgentForAgent
         }
 
         // !! Event !!
+        private void docActiveeonLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(this.docActiveeonLinkLabel.Text);
+        }
+
+        // !! Event !!
         private void activeeonLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             System.Diagnostics.Process.Start(this.activeeonLinkLabel.Text);

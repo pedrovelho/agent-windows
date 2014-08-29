@@ -38,11 +38,15 @@
 !endif
 
 !define VERSION "2.6.0"
+!define PRODUCT_NAME "ProActive Agent"
+!define PRODUCT_WEB_SITE "http://doc.activeeon.com"
 !define SERVICE_NAME "ProActiveAgent"
 !define SERVICE_DESC "The ProActive Agent enables desktop computers as an important source of computational power"
 
+BrandingText "(C) 2014 INRIA/ActiveEon"
+
 VIProductVersion                 "${VERSION}.0"
-VIAddVersionKey ProductName      "ProActive Agent"
+VIAddVersionKey ProductName      "${PRODUCT_NAME}"
 VIAddVersionKey Comments         "www.activeeon.com"
 VIAddVersionKey CompanyName      "Activeeon"
 VIAddVersionKey LegalCopyright   "Activeeon"
@@ -52,7 +56,6 @@ VIAddVersionKey ProductVersion   ${VERSION}
 VIAddVersionKey InternalName     "ProActiveAgent"
 VIAddVersionKey LegalTrademarks  "Copyright (C) Activeeon 2014"
 VIAddVersionKey OriginalFilename "ProActiveAgent-${VERSION}${FILENAME_SUFIX}-setup.exe"
-
 
 #################################################################
 # Default config filename and absolute filepath
@@ -362,7 +365,8 @@ Function CreateDesktopShortCuts
         CreateDirectory "$SMPROGRAMS\ProActiveAgent"
         CreateShortCut  "$SMPROGRAMS\ProActiveAgent\ProActive Agent Control.lnk" "$INSTDIR\AgentForAgent.exe" "" "$INSTDIR\icon.ico" 0
         CreateShortCut  "$SMPROGRAMS\ProActiveAgent\Uninstall ProActive Agent.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
-        CreateShortCut  "$SMPROGRAMS\ProActiveAgent\ProActive Agent Documentation.lnk" "$INSTDIR\doc\ProActive Agent Documentation.pdf" "" "$INSTDIR\doc\ProActive Agent Documentation.pdf" 0
+        WriteIniStr "$INSTDIR\${PRODUCT_NAME}.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
+        CreateShortCut "$SMPROGRAMS\ProActiveAgent\www.activeeon.com.lnk" "$INSTDIR\${PRODUCT_NAME}.url"
         SetShellVarContext current ; reset to current user
 FunctionEnd
 
@@ -1000,8 +1004,6 @@ Section "ProActive Agent"
         SetOutPath $INSTDIR\xml
         File "utils\xml\agent-windows.xsd"
         File "utils\xml\agent-common.xsd"
-        SetOutPath $INSTDIR\doc
-        File "ProActive Agent Documentation.pdf"
 
         ;-----------------------------------------------------------------------------------
         ; The standalone contains the schedworker version
