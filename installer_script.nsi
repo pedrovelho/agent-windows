@@ -130,7 +130,7 @@ CRCCheck on
 Name "ProActive Agent ${VERSION} ${SUFIX}"
 OutFile ProActiveAgent-${VERSION}${FILENAME_SUFIX}-setup.exe
 
-LicenseText "This program is Licensed under the GNU General Public License (GPL)."
+LicenseText "This software is licensed under AGPL 3.0 license."
 LicenseData "LICENSE.txt"
 
 #####################################################################
