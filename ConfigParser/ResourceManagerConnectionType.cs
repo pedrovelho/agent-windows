@@ -96,9 +96,10 @@ namespace ConfigParser
         public override void fillDefaultJvmOptions(List<string> jvmOptions, string proactiveLocation)
         {
             base.fillDefaultJvmOptions(jvmOptions, proactiveLocation);
+            jvmOptions.Add("-Djava.security.policy=\"" + proactiveLocation + "\\config\\security.java.policy-client\"");
+            jvmOptions.Add("-Dproactive.configuration=\"file:" + proactiveLocation + "\\config\\network\\node.ini\"");
             jvmOptions.Add("-Dpa.scheduler.home=\"" + proactiveLocation + "\"");
             jvmOptions.Add("-Dpa.rm.home=\"" + proactiveLocation + "\"");
-            jvmOptions.Add("-Djava.security.policy=\"" + proactiveLocation + "\\config\\security.java.policy-client\"");
         }
     }
 }

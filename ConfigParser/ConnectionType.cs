@@ -77,7 +77,6 @@ namespace ConfigParser
         public virtual void fillDefaultJvmOptions(List<string> jvmOptions, string proactiveLocation)
         {
             jvmOptions.Add("-Dproactive.home=\"" + proactiveLocation + "\"");
-            jvmOptions.Add("-Dproactive.configuration=\"file:" + proactiveLocation + "\\config\\proactive\\ProActiveConfiguration.xml\"");
             jvmOptions.Add("-Djava.security.manager");
         }
     }
