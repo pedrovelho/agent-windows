@@ -398,14 +398,13 @@ FunctionEnd
 Function .onInit
   !insertmacro Log "$\r"
   !insertmacro Log "$\r---------------------------------------------------"
-  !insertmacro Log "$\r"
   
   ; Print the current date and time into the installation log file
   Call GetCurrentDate
   Pop $R0
   Call GetCurrentTime
   Pop $R1
-  !insertmacro Log "$\r$R0 - $R1 Installing ProActiveAgent v${VERSION} ..."
+  !insertmacro Log "$\r$R0 -- $R1 -- Installing ProActiveAgent v${VERSION} ..."
   StrCpy $R0 ""
   StrCpy $R1 ""
   
@@ -1038,6 +1037,14 @@ Section "ProActive Agent"
         ${EndIf}
 
         !insertmacro Log "Installed sucessfully, ready to start the ProActiveAgent service ..."
+
+        ; Added improvement AGENT-214: autostart the service after silent installation
+        !ifdef STANDALONE
+          ${If} ${Silent}
+            !insertmacro Log "Starting the ProActiveAgent service ..."
+            !insertmacro SERVICE "start" ${SERVICE_NAME} '' ""
+          ${EndIf}
+        !endif
 
         ${If} ${Silent}
           ${keybd_event} ${VK_RETURN} 1 ; Simulate a keyboard event of the Return key to return to prompt
