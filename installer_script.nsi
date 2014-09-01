@@ -396,16 +396,16 @@ FunctionEnd
 # 4 - Unable to find Microsoft .NET Framework 3.5
 ##########################################################################################################################################
 Function .onInit
-  !insertmacro Log "\r"
-  !insertmacro Log "\r---------------------------------------------------"
-  !insertmacro Log "\r"
+  !insertmacro Log "$\r"
+  !insertmacro Log "$\r---------------------------------------------------"
+  !insertmacro Log "$\r"
   
   ; Print the current date and time into the installation log file
   Call GetCurrentDate
   Pop $R0
   Call GetCurrentTime
   Pop $R1
-  !insertmacro Log "\r$R0 - $R1 Installing ProActiveAgent v${VERSION} ..."
+  !insertmacro Log "$\r$R0 - $R1 Installing ProActiveAgent v${VERSION} ..."
   StrCpy $R0 ""
   StrCpy $R1 ""
   
@@ -476,6 +476,9 @@ Function .onInit
   !insertmacro GetServerName $Hostname
   ${StrStrip} "\\" $Hostname $Hostname ; Remove leading \\ to avoid AGENT-192 (bugs.activeeon.com)
 
+  ; Read USERDOMAIN
+  ReadEnvStr $AccountDomain USERDOMAIN
+
   ; Check if .NET framework 3.5 is installed
   ${IfNot} ${HasDotNet3.5}
     !insertmacro Log "!! Unable to find Microsoft .NET Framework 3.5 !!"
@@ -513,7 +516,7 @@ Function ConfigureSetupPage
   ; Set default location for logs directory
   !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "${TXT_LOGSDIR}" State "$INSTDIR\logs"
   ; Set default account domain, username and password
-  !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "${TXT_DOMAIN}" State $Hostname
+  !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "${TXT_DOMAIN}" State $AccountDomain
   !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "${TXT_USERNAME}" State ${DEFAULT_USERNAME}
   !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "${TXT_PASSWORD}" State ${DEFAULT_PASSWORD}
   ; Disable "Use service account home"
