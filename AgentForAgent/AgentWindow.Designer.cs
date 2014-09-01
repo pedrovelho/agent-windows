@@ -218,10 +218,11 @@
             this.proActiveLogoPictureBox.BackColor = System.Drawing.Color.White;
             this.proActiveLogoPictureBox.Image = ((System.Drawing.Image)(resources.GetObject("proActiveLogoPictureBox.Image")));
             this.proActiveLogoPictureBox.InitialImage = ((System.Drawing.Image)(resources.GetObject("proActiveLogoPictureBox.InitialImage")));
-            this.proActiveLogoPictureBox.Location = new System.Drawing.Point(19, 22);
+            this.proActiveLogoPictureBox.Location = new System.Drawing.Point(9, 9);
             this.proActiveLogoPictureBox.Margin = new System.Windows.Forms.Padding(0);
             this.proActiveLogoPictureBox.Name = "proActiveLogoPictureBox";
-            this.proActiveLogoPictureBox.Size = new System.Drawing.Size(349, 75);
+            this.proActiveLogoPictureBox.Size = new System.Drawing.Size(438, 105);
+            this.proActiveLogoPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.proActiveLogoPictureBox.TabIndex = 4;
             this.proActiveLogoPictureBox.TabStop = false;
             // 
@@ -229,7 +230,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.BackColor = System.Drawing.Color.Transparent;
-            this.label3.Location = new System.Drawing.Point(421, 22);
+            this.label3.Location = new System.Drawing.Point(472, 9);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(114, 13);
             this.label3.TabIndex = 6;
@@ -239,7 +240,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.BackColor = System.Drawing.Color.Transparent;
-            this.label4.Location = new System.Drawing.Point(422, 57);
+            this.label4.Location = new System.Drawing.Point(450, 101);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(136, 13);
             this.label4.TabIndex = 6;
@@ -301,7 +302,7 @@
             this.proActiveLinkLabel.AutoSize = true;
             this.proActiveLinkLabel.BackColor = System.Drawing.Color.Transparent;
             this.proActiveLinkLabel.DisabledLinkColor = System.Drawing.Color.White;
-            this.proActiveLinkLabel.Location = new System.Drawing.Point(422, 71);
+            this.proActiveLinkLabel.Location = new System.Drawing.Point(473, 66);
             this.proActiveLinkLabel.Name = "proActiveLinkLabel";
             this.proActiveLinkLabel.Size = new System.Drawing.Size(113, 13);
             this.proActiveLinkLabel.TabIndex = 9;
@@ -368,7 +369,7 @@
             this.activeeonLinkLabel.AutoSize = true;
             this.activeeonLinkLabel.BackColor = System.Drawing.Color.Transparent;
             this.activeeonLinkLabel.DisabledLinkColor = System.Drawing.Color.White;
-            this.activeeonLinkLabel.Location = new System.Drawing.Point(422, 84);
+            this.activeeonLinkLabel.Location = new System.Drawing.Point(451, 79);
             this.activeeonLinkLabel.Name = "activeeonLinkLabel";
             this.activeeonLinkLabel.Size = new System.Drawing.Size(135, 13);
             this.activeeonLinkLabel.TabIndex = 13;
@@ -381,7 +382,7 @@
             this.docActiveeonLinkLabel.AutoSize = true;
             this.docActiveeonLinkLabel.BackColor = System.Drawing.Color.Transparent;
             this.docActiveeonLinkLabel.DisabledLinkColor = System.Drawing.Color.White;
-            this.docActiveeonLinkLabel.Location = new System.Drawing.Point(422, 35);
+            this.docActiveeonLinkLabel.Location = new System.Drawing.Point(457, 22);
             this.docActiveeonLinkLabel.Name = "docActiveeonLinkLabel";
             this.docActiveeonLinkLabel.Size = new System.Drawing.Size(129, 13);
             this.docActiveeonLinkLabel.TabIndex = 14;
