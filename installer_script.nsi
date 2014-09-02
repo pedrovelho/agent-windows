@@ -477,12 +477,17 @@ Function .onInit
 
   ; Read USERDOMAIN
   ReadEnvStr $AccountDomain USERDOMAIN
-
+  
   ; Check if .NET framework 3.5 is installed
   ${IfNot} ${HasDotNet3.5}
     !insertmacro Log "!! Unable to find Microsoft .NET Framework 3.5 !!"
     ${IfNot} ${Silent}
-       MessageBox MB_OK "Unable to find Microsoft .NET Framework 3.5" /SD IDOK
+       MessageBox MB_OKCANCEL "Unable to find Microsoft .NET Framework 3.5 $\nChoose Cancel to abort the installation or OK to download." /SD IDOK IDOK downloadWinamp
+         Abort
+         Goto done
+       downloadWinamp:
+         ExecShell "open" "http://www.microsoft.com/en-us/download/details.aspx?id=21"
+       done:
     ${EndIf}
     Abort
   ${EndIf}
