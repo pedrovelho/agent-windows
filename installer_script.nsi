@@ -977,7 +977,13 @@ Section "ProActive Agent"
         ${Else}
           ; On other OS like Vista or 7 use HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\SID ProfileImagePath
           ReadRegStr $1 HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$0" ProfileImagePath
-          StrCpy $1 "$1\AppData\Local\Temp"
+          ${If} $1 == ""
+            !insertmacro Log "Unable to get the ProfileImagePath of $0 all tmp files will be stored at c:\Temp ..."
+            StrCpy $1 "c:\Temp"
+            CreateDirectory $1
+          ${Else}
+            StrCpy $1 "$1\AppData\Local\Temp"
+          ${EndIf}
         ${EndIf}
 
         GetFullPathName /SHORT $1 "$1"
