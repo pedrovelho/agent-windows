@@ -366,7 +366,7 @@ Function CreateDesktopShortCuts
         CreateShortCut  "$SMPROGRAMS\ProActiveAgent\ProActive Agent Control.lnk" "$INSTDIR\AgentForAgent.exe" "" "$INSTDIR\icon.ico" 0
         CreateShortCut  "$SMPROGRAMS\ProActiveAgent\Uninstall ProActive Agent.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
         WriteIniStr "$INSTDIR\ProActive Documentation.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
-        CreateShortCut "$SMPROGRAMS\ProActiveAgent\ProActive Documentation.lnk" "$INSTDIR\ProActive Documentation.url" "" "" 0
+        CreateShortCut "$SMPROGRAMS\ProActiveAgent\ProActive Documentation.lnk" "$INSTDIR\ProActive Documentation.url"
         SetShellVarContext current ; reset to current user
 FunctionEnd
 
