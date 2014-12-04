@@ -376,11 +376,7 @@ namespace AgentForAgent
 
             // Save resource manager registration action definition
             ResoureManagerConnectionType rmConnection = new ResoureManagerConnectionType();
-            if ("".Equals(rmUrl.Text))
-            {
-                rmConnection.url = Constants.DEFAULT_RM_URL;
-            }
-            else
+            if (!"".Equals(rmUrl.Text))
             {
                 rmConnection.url = rmUrl.Text;
             }

@@ -68,7 +68,11 @@ namespace ConfigParser
 
         public override string[] getArgs()
         {
-            string urlOpt = "-r " + this.url;
+            string urlOpt = "";
+            if (this.url != null && !this.url.Equals(""))
+            {
+               urlOpt = "-r " + this.url;
+            }
             string nodeNameOpt = "";
             if (base.nodename != null && !base.nodename.Equals(""))
             {

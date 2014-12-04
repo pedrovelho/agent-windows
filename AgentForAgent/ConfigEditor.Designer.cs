@@ -616,7 +616,7 @@ namespace AgentForAgent
             this.resourceManagerRegistrationRadioButton.Size = new System.Drawing.Size(14, 13);
             this.resourceManagerRegistrationRadioButton.TabIndex = 2;
             this.resourceManagerRegistrationRadioButton.TabStop = true;
-            this.toolTip.SetToolTip(this.resourceManagerRegistrationRadioButton, "Enables the Resource Manager Registration. The Runtime will try to registrate to " +
+            this.toolTip.SetToolTip(this.resourceManagerRegistrationRadioButton, "Enables the Resource Manager Registration. The Runtime will try to register to " +
                     "the specified Resource Manager.");
             this.resourceManagerRegistrationRadioButton.UseVisualStyleBackColor = true;
             this.resourceManagerRegistrationRadioButton.CheckedChanged += new System.EventHandler(this.resourceManagerRegistrationRadioButton_CheckedChanged);
@@ -629,7 +629,7 @@ namespace AgentForAgent
             this.localRegistrationRadioButton.Size = new System.Drawing.Size(14, 13);
             this.localRegistrationRadioButton.TabIndex = 1;
             this.localRegistrationRadioButton.TabStop = true;
-            this.toolTip.SetToolTip(this.localRegistrationRadioButton, "Enables the Local Registration.The runtime will be registred locally.");
+            this.toolTip.SetToolTip(this.localRegistrationRadioButton, "Enables the Local Registration.The runtime will be registered locally.");
             this.localRegistrationRadioButton.UseVisualStyleBackColor = true;
             this.localRegistrationRadioButton.CheckedChanged += new System.EventHandler(this.rmiRegistrationRadioButton_CheckedChanged);
             // 
@@ -821,7 +821,7 @@ namespace AgentForAgent
             this.rmUrl.Name = "rmUrl";
             this.rmUrl.Size = new System.Drawing.Size(309, 20);
             this.rmUrl.TabIndex = 1;
-            this.toolTip.SetToolTip(this.rmUrl, "Example: PROTOCOL://HOSTNAME_OR_IP_ADDRESS:PORT");
+            this.toolTip.SetToolTip(this.rmUrl, "Example: PROTOCOL://HOSTNAME_OR_IP_ADDRESS:PORT, can be empty if discovery is used.");
             this.rmUrl.TextChanged += new System.EventHandler(this.rmUrl_TextChanged);
             // 
             // resourceManagerUrlLabel
