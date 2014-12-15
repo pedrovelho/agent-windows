@@ -37,7 +37,7 @@
      !define FILENAME_SUFIX ""
 !endif
 
-!define VERSION "6.0.0"
+!define VERSION "6.1.0"
 !define PRODUCT_NAME "ProActive Agent"
 !define PRODUCT_WEB_SITE "http://doc.activeeon.com"
 !define SERVICE_NAME "ProActiveAgent"
