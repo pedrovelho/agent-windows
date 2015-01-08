@@ -118,7 +118,7 @@
           <xsd:sequence>
             <xsd:element minOccurs="0" maxOccurs="1" name="url" type="xsd:string">
               <xsd:annotation><xsd:documentation xml:lang="en">
-              The URL of the ProActive Resource Manager
+              The URL of the ProActive Resource Manager, can be empty if discovery is used
               </xsd:documentation></xsd:annotation>
             </xsd:element>
 
@@ -313,6 +313,7 @@
       <xsd:element minOccurs="0" maxOccurs="1" name="jvmParameters" type="ConfJvmParametersType"/> 
       <xsd:element minOccurs="0" maxOccurs="1" name="memoryLimit" type="ConfMemoryLimitationType"/>
       <xsd:element minOccurs="0" maxOccurs="1" name="nbRuntimes" type="ConfNbRuntimesType"/>
+      <xsd:element minOccurs="0" maxOccurs="1" name="nbWorkers" type="ConfNbWorkersType"/>
       <xsd:element minOccurs="0" maxOccurs="1" name="protocol" type="ConfProtocolType"/>
       <xsd:element minOccurs="0" maxOccurs="1" name="portRange" type="ConfPortRangeType"/>
       <xsd:element minOccurs="0" maxOccurs="1" name="onRuntimeExitScript" type="ConfOnRuntimeExitScriptType"/>
@@ -329,6 +330,7 @@
       <xsd:element minOccurs="0" maxOccurs="1" name="jvmParameters" type="ConfJvmParametersType"/> 
       <xsd:element minOccurs="0" maxOccurs="1" name="memoryLimit" type="ConfMemoryLimitationType"/>
       <xsd:element minOccurs="0" maxOccurs="1" name="nbRuntimes" type="ConfNbRuntimesType"/>
+      <xsd:element minOccurs="0" maxOccurs="1" name="nbWorkers" type="ConfNbWorkersType"/>
       <xsd:element minOccurs="0" maxOccurs="1" name="protocol" type="ConfProtocolType"/>
       <xsd:element minOccurs="0" maxOccurs="1" name="portRange" type="ConfPortRangeType"/>
       <xsd:element minOccurs="0" maxOccurs="1" name="onRuntimeExitScript" type="ConfOnRuntimeExitScriptType"/>
@@ -380,6 +382,21 @@
       <xsd:minInclusive value="0"/>    
     </xsd:restriction>
   </xsd:simpleType>
+
+  <xsd:simpleType name="ConfNbWorkersType">
+    <xsd:annotation><xsd:documentation xml:lang="en">
+      The number of ProActive workers to start per runtime (1 by default).
+
+      If present but empty then the node is started with "-w", which means that it will use as many workers as there are cores.
+    </xsd:documentation></xsd:annotation>
+    <xsd:union memberTypes="xsd:positiveInteger">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value=""/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:union>
+  </xsd:simpleType>
       
   <xsd:simpleType name="ConfProtocolType">
     <xsd:annotation><xsd:documentation xml:lang="en">
@@ -400,7 +417,7 @@
 
   <xsd:simpleType name="ConfOnRuntimeExitScriptType"> 
     <xsd:annotation><xsd:documentation xml:lang="en">
-    The path to an executable to be started each time a forked ProActive runtime exits. It can be used to cleanup some resources, or to gather some results
+    The path to an executable to be started each time a forked ProActive runtime exits. It can be used to cleanup some ressources, or to gather some results
     </xsd:documentation></xsd:annotation>
     <xsd:list itemType="nonEmptyString"/>
   </xsd:simpleType>

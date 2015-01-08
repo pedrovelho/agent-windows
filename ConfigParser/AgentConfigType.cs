@@ -68,6 +68,11 @@ namespace ConfigParser
         public ushort nbRuntimes; // when parsing check for auto
 
         /// <summary>
+        /// The number of workers per runtime.</summary>
+        [XmlElement("nbWorkers")]
+        public ushort nbWorkers;
+
+        /// <summary>
         /// The communication protocol to be used by the started ProActive runtime.</summary>
         [XmlElement("protocol")]
         public string protocol;

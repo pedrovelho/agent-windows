@@ -265,6 +265,16 @@ namespace ProActiveAgent
                     }
                 }
 
+                ushort nbWorkers = this.commonStartInfo.configuration.config.nbWorkers;
+                if (nbWorkers != 0)
+                {
+                    argumentsBuilder.Append(" -w " + nbWorkers);
+                }
+                else
+                {
+                    argumentsBuilder.Append(" -w");
+                }
+
                 // Create a new process
                 this.rootProcess = new Process();
 

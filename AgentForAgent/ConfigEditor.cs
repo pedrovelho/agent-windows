@@ -118,12 +118,22 @@ namespace AgentForAgent
 
             if (conf.config.nbRuntimes == 0)
             {
-                this.nbRuntimesNumericUpDown.Value = Environment.ProcessorCount;
+                this.nbRuntimesNumericUpDown.Value = 1;
             }
             else
             {
                 this.nbRuntimesNumericUpDown.Value = conf.config.nbRuntimes;
                 this.nbRuntimesNumericUpDown.Enabled = true;
+            }
+
+            if (conf.config.nbWorkers == 0)
+            {
+                this.nbWorkersNumericUpDown.Value = Environment.ProcessorCount;
+            }
+            else
+            {
+                this.nbWorkersNumericUpDown.Value = conf.config.nbWorkers;
+                this.nbWorkersNumericUpDown.Enabled = true;
             }
 
             ////////////////////////////////////////
@@ -353,6 +363,7 @@ namespace AgentForAgent
             }
             // Save multi process related config
             this.configuration.config.nbRuntimes = Convert.ToUInt16(this.nbRuntimesNumericUpDown.Value);
+            this.configuration.config.nbWorkers = Convert.ToUInt16(this.nbWorkersNumericUpDown.Value);
 
             //--Events list                        
             this.internalCopyEventsList();
@@ -1148,6 +1159,11 @@ namespace AgentForAgent
         }
 
         private void memoryLimitNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            this.saveConfig.Enabled = true;
+        }
+
+        private void nbWorkersNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             this.saveConfig.Enabled = true;
         }
