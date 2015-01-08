@@ -65,7 +65,7 @@ namespace ProActiveAgent
         public ExecutorsManager(AgentType configuration)
         {
             // The configuration specifies the number of executors
-            int nbProcesses = configuration.config.nbRuntimes == 0 ? Environment.ProcessorCount : configuration.config.nbRuntimes;
+            int nbProcesses = configuration.config.nbRuntimes == 0 ? 1 : configuration.config.nbRuntimes;
             LOGGER.Info("Creating " + nbProcesses + " executors");
 
             // Get the runtime common start info shared between all executors
