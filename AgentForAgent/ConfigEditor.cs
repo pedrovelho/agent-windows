@@ -245,6 +245,7 @@ namespace AgentForAgent
             chart = new Chart();
             iniConfiguration = new IniFile(this.agentLocation + "\\configuration.ini");
 
+            this.internalSave(this.configurationLocation);
             this.saveConfig.Enabled = false;
         }
 
