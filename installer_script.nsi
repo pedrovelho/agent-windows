@@ -43,7 +43,7 @@
 !define SERVICE_NAME "ProActiveAgent"
 !define SERVICE_DESC "The ProActive Agent enables desktop computers as an important source of computational power"
 
-BrandingText "(C) 2014 INRIA/ActiveEon"
+BrandingText "(C) 2015 INRIA/ActiveEon"
 
 VIProductVersion                 "${VERSION}.0"
 VIAddVersionKey ProductName      "${PRODUCT_NAME}"
@@ -54,7 +54,7 @@ VIAddVersionKey FileDescription  "Installer of the ProActive Agent ${VERSION} ${
 VIAddVersionKey FileVersion      ${VERSION}
 VIAddVersionKey ProductVersion   ${VERSION}
 VIAddVersionKey InternalName     "ProActiveAgent"
-VIAddVersionKey LegalTrademarks  "Copyright (C) Activeeon 2014"
+VIAddVersionKey LegalTrademarks  "Copyright (C) Activeeon 2015"
 VIAddVersionKey OriginalFilename "ProActiveAgent-${VERSION}${FILENAME_SUFIX}-setup.exe"
 
 #################################################################

@@ -45,7 +45,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Activeeon")]
 [assembly: AssemblyProduct("ProActive Agent")]
-[assembly: AssemblyCopyright("Copyright © Activeeon 2014")]
+[assembly: AssemblyCopyright("Copyright © Activeeon 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
