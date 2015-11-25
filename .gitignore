@@ -22,3 +22,7 @@
 /ScreenSaver/obj
 /ProActiveAgent.sdf
 /pacryptTest
+
+*.iml
+.idea/
+
