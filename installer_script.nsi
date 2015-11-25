@@ -21,7 +21,7 @@
 
 ; Uncomment (or specify with /D from command line) this variable to build the standalone version there must be a utils\schedworker dir
 ;!define STANDALONE ""
-;!define SCHEDWORKER_VERSION "x64-6.0.0-RC1"
+;!define SCHEDWORKER_VERSION "x64-7.0.0"
 
 !ifdef STANDALONE
      !define SUFIX "Standalone with JRE and Scheduler Node package"
@@ -37,7 +37,10 @@
      !define FILENAME_SUFIX ""
 !endif
 
-!define VERSION "6.1.0"
+!ifndef VERSION
+     !define VERSION "7.0.0"
+!endif
+
 !define PRODUCT_NAME "ProActive Agent"
 !define PRODUCT_WEB_SITE "http://doc.activeeon.com"
 !define SERVICE_NAME "ProActiveAgent"
