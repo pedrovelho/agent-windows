@@ -24,17 +24,17 @@
 ;!define SCHEDWORKER_VERSION "x64-7.0.0"
 
 !ifdef STANDALONE
-     !define SUFIX "Standalone with JRE and Scheduler Node package"
+     !define SUFFIX "Standalone with JRE and Scheduler Node package"
      !ifdef SCHEDWORKER_VERSION
-          !define FILENAME_SUFIX "-standalone-${SCHEDWORKER_VERSION}"
+          !define FILENAME_SUFFIX "-standalone-${SCHEDWORKER_VERSION}"
      !else
-          !define FILENAME_SUFIX "-standalone"
+          !define FILENAME_SUFFIX "-standalone"
      !endif
 !endif
 
 !ifndef STANDALONE
-     !define SUFIX ""
-     !define FILENAME_SUFIX ""
+     !define SUFFIX ""
+     !define FILENAME_SUFFIX ""
 !endif
 
 !ifndef VERSION
@@ -53,12 +53,12 @@ VIAddVersionKey ProductName      "${PRODUCT_NAME}"
 VIAddVersionKey Comments         "www.activeeon.com"
 VIAddVersionKey CompanyName      "Activeeon"
 VIAddVersionKey LegalCopyright   "Activeeon"
-VIAddVersionKey FileDescription  "Installer of the ProActive Agent ${VERSION} ${SUFIX}"
+VIAddVersionKey FileDescription  "Installer of the ProActive Agent ${VERSION} ${SUFFIX}"
 VIAddVersionKey FileVersion      ${VERSION}
 VIAddVersionKey ProductVersion   ${VERSION}
 VIAddVersionKey InternalName     "ProActiveAgent"
 VIAddVersionKey LegalTrademarks  "Copyright (C) Activeeon 2015"
-VIAddVersionKey OriginalFilename "ProActiveAgent-${VERSION}${FILENAME_SUFIX}-setup.exe"
+VIAddVersionKey OriginalFilename "ProActiveAgent-${VERSION}${FILENAME_SUFFIX}-setup.exe"
 
 #################################################################
 # Default config filename and absolute filepath
@@ -130,8 +130,8 @@ Var Hostname
 
 CRCCheck on
 
-Name "ProActive Agent ${VERSION} ${SUFIX}"
-OutFile ProActiveAgent-${VERSION}${FILENAME_SUFIX}-setup.exe
+Name "ProActive Agent ${VERSION} ${SUFFIX}"
+OutFile ProActiveAgent-${VERSION}${FILENAME_SUFFIX}-setup.exe
 
 LicenseText "This software is licensed under AGPL 3.0 license."
 LicenseData "LICENSE.txt"
