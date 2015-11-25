@@ -234,7 +234,7 @@
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(114, 13);
             this.label3.TabIndex = 6;
-            this.label3.Text = "ProActiveAgent v6.1.0";
+            this.label3.Text = "ProActive Agent";
             // 
             // label4
             // 
@@ -244,7 +244,7 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(136, 13);
             this.label4.TabIndex = 6;
-            this.label4.Text = "(C) 2015 INRIA/ActiveEon ";
+            this.label4.Text = "(C) 2015 INRIA/ActiveEon";
             // 
             // timer
             // 
