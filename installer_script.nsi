@@ -21,7 +21,8 @@
 
 ; Uncomment (or specify with /D from command line) this variable to build the standalone version there must be a utils\schedworker dir
 ;!define STANDALONE ""
-;!define SCHEDWORKER_VERSION "x64-7.0.0"
+;!define SCHEDWORKER_VERSION "x64"
+;!define VERSION "x.x.x"
 
 !ifdef STANDALONE
      !define SUFFIX "Standalone with JRE and Scheduler Node package"
