@@ -826,13 +826,10 @@ Section "ProActive Agent"
         File "bin\Release\pacrypt.dll" ; the .dll contains C-Signature: int encryptData(wchar_t *input, wchar_t *output)
         !insertmacro Log "Encrypting password ..."
         StrCpy $0 $AccountPassword ; copy register to stack
-        System::Call "pacrypt::encryptData(w, w)?e i(r0., .r1).r2"
-        Pop $5
-        !insertmacro Log "Calling pacrypt::encryptData gives error code $5"
-        ${If} $5 != 0
-           !insertmacro Log "!! Calling pacrypt::encryptData returns $2 !!"
-           !insertmacro Log "!! Unable to encrypt the password (too long?). Error $5 !!"
-           MessageBox MB_OK "Unable to encrypt the password (too long?). Error $5" /SD IDOK
+        System::Call "pacrypt::encryptData(w, w) i(r0., .r1).r2"
+        ${If} $2 != 0
+           !insertmacro Log "!! Unable to encrypt the password (too long ?). Error $2 !!"
+           MessageBox MB_OK "Unable to encrypt the password (too long ?). Error $2" /SD IDOK
            Call RollbackIfSilent
            Abort
         ${EndIf}
