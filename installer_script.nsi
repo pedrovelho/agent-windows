@@ -114,7 +114,7 @@ VIAddVersionKey OriginalFilename "ProActiveAgent-${VERSION}${FILENAME_SUFFIX}-se
 # Default Account Username and Password
 #################################################################
 !define DEFAULT_USERNAME "proactive"
-!define DEFAULT_PASSWORD "Community1."
+!define DEFAULT_PASSWORD ""
 
 #################################################################
 # Variable filled in ReadSetupArguments and used in
@@ -526,7 +526,7 @@ Function ConfigureSetupPage
   ; Set default account domain, username and password
   !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "${TXT_DOMAIN}" State $AccountDomain
   !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "${TXT_USERNAME}" State ${DEFAULT_USERNAME}
-  !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "${TXT_PASSWORD}" State ${DEFAULT_PASSWORD}
+  !insertmacro MUI_INSTALLOPTIONS_WRITE ${PAGE_FILE} "${TXT_PASSWORD}" State "${DEFAULT_PASSWORD}"
   ; Disable "Use service account home"
   ; !insertmacro GROUPCONTROLS "${PAGE_FILE}" "${SEL_INSTLOC}" "${CHK_LOGSHOME}|" "1"
   ; Display the custom page
@@ -638,7 +638,7 @@ Function ProcessSetupArguments
   ${If} $AccountPassword == ""
     ${If} ${Silent}
       !insertmacro Log "Account Password not specified, using default ..."
-      StrCpy $AccountPassword ${DEFAULT_PASSWORD}
+      StrCpy $AccountPassword "${DEFAULT_PASSWORD}"
     ${Else}
       MessageBox MB_OK "Please enter a valid Password" /SD IDOK
       Abort
@@ -709,7 +709,7 @@ Function ProcessSetupArguments
         ; In gui install check if default account, if not ask if the user wants to create a new account
         ${IfNot} ${Silent}
           ${If} $AccountUsername == ${DEFAULT_USERNAME}
-          ${AndIf} $AccountPassword == ${DEFAULT_PASSWORD}
+          ${AndIf} $AccountPassword == "${DEFAULT_PASSWORD}"
              !insertmacro Log "Creating new default account ..."
           ${Else}
              MessageBox MB_YESNO "The local account $AccountUsername does not exist, would you like to create it ?" /SD IDNO IDYES +2
