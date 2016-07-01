@@ -799,7 +799,7 @@ FunctionEnd
 # !! SECTIONS DEFINITIONS !!
 #############################
 Section "ProActive Agent"
-        System::Call 'KERNEL32::AddDllDirectory(w "$INSDIR")i.r0'
+        System::Call 'KERNEL32::AddDllDirectory(w "$INSTDIR")i.r0'
         
         ; In silent mode, we needs to explicitly handle parameters and installation
         ${If} ${Silent}
