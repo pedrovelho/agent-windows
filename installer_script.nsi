@@ -846,14 +846,25 @@ Section "ProActive Agent"
         ; The command based on SID grants full permissions only for LocalSystem and Administrators keyfile and the registry key
         File "utils\SetACL.exe" ; copy the tool for access restriction
         !insertmacro Log "Restricting keyfile access ..."
-        nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on "$INSTDIR\restrict.dat" -ot file -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:${LOCAL_SYSTEM_SID};p:full;s:y" -ace "n:${ADMINISTRATORS_SID};p:full;s:y"'
+        nsExec::ExecToStack '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on "$INSTDIR\restrict.dat" -ot file -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:${LOCAL_SYSTEM_SID};p:full;s:y" -ace "n:${ADMINISTRATORS_SID};p:full;s:y"'
+        Pop $0
+        Pop $1
+        !insertmacro Log $1
+
         !insertmacro Log "Restricting regkey access ..."
-        nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on HKEY_LOCAL_MACHINE\Software\ProActiveAgent\Creds -ot reg -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:${LOCAL_SYSTEM_SID};p:full;s:y" -ace "n:${ADMINISTRATORS_SID};p:full;s:y"'
+        nsExec::ExecToStack '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on HKEY_LOCAL_MACHINE\Software\ProActiveAgent\Creds -ot reg -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:${LOCAL_SYSTEM_SID};p:full;s:y" -ace "n:${ADMINISTRATORS_SID};p:full;s:y"'
+        Pop $0
+        Pop $1
+        !insertmacro Log $1
 
         ; Install the service under the Local System and check if the service was correctly installed
         File "bin\Release\ProActiveAgent.exe" ; copy the service executable
         !insertmacro Log "Installing ProActiveAgent.exe as service ..."
-        nsExec::Exec 'cmd.exe /C sc create ${SERVICE_NAME} binPath= "$INSTDIR\ProActiveAgent.exe" DisplayName= "${SERVICE_NAME}" start= auto type= interact type= own & sc description ${SERVICE_NAME} "${SERVICE_DESC}"'
+        nsExec::ExecToStack 'cmd.exe /C sc create ${SERVICE_NAME} binPath= "$INSTDIR\ProActiveAgent.exe" DisplayName= "${SERVICE_NAME}" start= auto type= interact type= own & sc description ${SERVICE_NAME} "${SERVICE_DESC}"'
+        Pop $0
+        Pop $1
+        !insertmacro Log $1
+
         !insertmacro Log "Checking service installation ..."
         !insertmacro SERVICE "status" ${SERVICE_NAME} '' ""
         Pop $0
@@ -1038,15 +1049,36 @@ Section "ProActive Agent"
         ${If} $AllowEveryone == "1"
           !insertmacro Log "Allowing everyone to control the agent ..."
           !insertmacro Log "Granting members of ALL USERS group to start/stop the service ..."
-          nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on ${SERVICE_NAME} -ot srv -actn ace -ace "n:${ALL_USERS_SID};p:start_stop;s:y"'
+          nsExec::ExecToStack '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on ${SERVICE_NAME} -ot srv -actn ace -ace "n:${ALL_USERS_SID};p:start_stop;s:y"'
+          Pop $0
+          Pop $1
+          !insertmacro Log $1
+
+
           !insertmacro Log "Granting members of ALL USERS group the full control of regkey to be able to change the config file ..."
-          nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on HKEY_LOCAL_MACHINE\Software\ProActiveAgent -ot reg -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:${ALL_USERS_SID};p:full;s:y"'
+          nsExec::ExecToStack '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on HKEY_LOCAL_MACHINE\Software\ProActiveAgent -ot reg -actn setprot -op "dacl:p_nc;sacl:p_nc" -actn ace -ace "n:${ALL_USERS_SID};p:full;s:y"'
+          Pop $0
+          Pop $1
+          !insertmacro Log $1
+
           !insertmacro Log "Granting members of ALL USERS group the full control of the selected $ConfigDir\${CONFIG_NAME} config file ..."
-          nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on "$ConfigDir\${CONFIG_NAME}" -ot file -actn ace -ace "n:${ALL_USERS_SID};p:full;s:y"'
+          nsExec::ExecToStack '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on "$ConfigDir\${CONFIG_NAME}" -ot file -actn ace -ace "n:${ALL_USERS_SID};p:full;s:y"'
+          Pop $0
+          Pop $1
+          !insertmacro Log $1
+
           !insertmacro Log "Granting members of ALL USERS group the full control of the $ConfigDir\${CONFIG_DAY_NAME} config file ..."
-          nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on "$ConfigDir\${CONFIG_DAY_NAME}" -ot file -actn ace -ace "n:${ALL_USERS_SID};p:full;s:y"'
+          nsExec::ExecToStack '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on "$ConfigDir\${CONFIG_DAY_NAME}" -ot file -actn ace -ace "n:${ALL_USERS_SID};p:full;s:y"'
+          Pop $0
+          Pop $1
+          !insertmacro Log $1
+
           !insertmacro Log "Granting members of ALL USERS group the full control of the $ConfigDir\${CONFIG_NIGHT_NAME} config file ..."
-          nsExec::Exec '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on "$ConfigDir\${CONFIG_NIGHT_NAME}" -ot file -actn ace -ace "n:${ALL_USERS_SID};p:full;s:y"'
+          nsExec::ExecToStack '"$INSTDIR\SetACL.exe" -log "${SETACL_LOG_PATH}" -on "$ConfigDir\${CONFIG_NIGHT_NAME}" -ot file -actn ace -ace "n:${ALL_USERS_SID};p:full;s:y"'
+          Pop $0
+          Pop $1
+          !insertmacro Log $1
+
         ${EndIf}
 
         ${IfNot} ${Silent}
@@ -1174,8 +1206,12 @@ Function un.TerminateAgentForAgent
     IntCmp $0 0 finished
     Sleep 2000
     ; Try to kill using taskkill command
-    nsExec::Exec 'cmd.exe /C \
+    nsExec::ExecToStack 'cmd.exe /C \
         taskkill /f /im AgentForAgent.exe'
+    Pop $0
+    Pop $1
+    !insertmacro Log $1
+
     Goto ask_user
 
   abort:
