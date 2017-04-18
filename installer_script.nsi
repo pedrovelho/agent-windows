@@ -826,6 +826,15 @@ Section "ProActive Agent"
 
         ; Encrypt the password, see AGENT-154
         File "bin\Release\pacrypt.dll" ; the .dll contains C-Signature: int encryptData(wchar_t *input, wchar_t *output)
+        !insertmacro Log "Loading pacrypt.dll"
+        System::Call 'KERNEL32::LoadLibrary(t "$INSTDIR\pacrypt.dll")i.r3' ;directly load the library that is needed for encryption
+        System::Call "KERNEL32::GetModuleHandle(t 'pacrypt.dll') i.r0"
+        ${If} $0 == 0
+           !insertmacro Log "!! Unable to load pacrypt.dll file for encryption !!"
+           MessageBox MB_OK "Unable to load pacrypt.dll file for encryption" /SD IDOK
+           Call RollbackIfSilent
+           Abort
+        ${EndIf}
         !insertmacro Log "Encrypting password ..."
         StrCpy $0 $AccountPassword ; copy register to stack
         System::Call "pacrypt::encryptData(w, w) i(r0., .r1).r2"
@@ -842,6 +851,7 @@ Section "ProActive Agent"
         ;MessageBox MB_OK "---> $0 , $1 , $4"
         ; Write encrypted password in registry
         WriteRegStr HKLM "Software\ProActiveAgent\Creds" "password" $1
+        System::Call 'KERNEL32::FreeLibrary(ir3)'
 
         ; The command based on SID grants full permissions only for LocalSystem and Administrators keyfile and the registry key
         File "utils\SetACL.exe" ; copy the tool for access restriction
