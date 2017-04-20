@@ -47,7 +47,7 @@
 !define SERVICE_NAME "ProActiveAgent"
 !define SERVICE_DESC "The ProActive Agent enables desktop computers as an important source of computational power"
 
-BrandingText "(C) 2016 INRIA/ActiveEon"
+BrandingText "(C) 2017 INRIA/ActiveEon"
 
 VIProductVersion                 "${VERSION}.0"
 VIAddVersionKey ProductName      "${PRODUCT_NAME}"
@@ -58,7 +58,7 @@ VIAddVersionKey FileDescription  "Installer of the ProActive Agent ${VERSION} ${
 VIAddVersionKey FileVersion      ${VERSION}
 VIAddVersionKey ProductVersion   ${VERSION}
 VIAddVersionKey InternalName     "ProActiveAgent"
-VIAddVersionKey LegalTrademarks  "Copyright (C) Activeeon 2016"
+VIAddVersionKey LegalTrademarks  "Copyright (C) Activeeon 2017"
 VIAddVersionKey OriginalFilename "ProActiveAgent-${VERSION}${FILENAME_SUFFIX}-setup.exe"
 
 #################################################################
@@ -837,7 +837,8 @@ Section "ProActive Agent"
         ${EndIf}
         !insertmacro Log "Encrypting password ..."
         StrCpy $0 $AccountPassword ; copy register to stack
-        System::Call "pacrypt::encryptData(w, w) i(r0., .r1).r2"
+        StrCpy $3 ${INSTALL_LOG_PATH} ; copy logFilePath to stack
+        System::Call "pacrypt::encryptDataWithLog(w, w, w) i(r0., .r1, r3.).r2"
         ${If} $2 != 0
            !insertmacro Log "!! Unable to encrypt the password (too long ?). Error $2 !!"
            MessageBox MB_OK "Unable to encrypt the password (too long ?). Error $2" /SD IDOK

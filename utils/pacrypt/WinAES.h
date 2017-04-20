@@ -195,7 +195,9 @@ extern "C" {
 	 * @param outputDataInHex encrypted data in hex format
 	 * @return 0 if no errors
 	 */
-	DllExport int encryptData(const wchar_t *inputData, wchar_t *outputDataInHex);
+	 DllExport int encryptData(const wchar_t *inputData, wchar_t *outputDataInHex);
+
+  	DllExport int encryptDataWithLog(const wchar_t *inputData, wchar_t *outputDataInHex, wchar_t *logFile);
 
 	/**
 	 * Decrypts previously encrypted data using Microsoft AES Cryptographic Service Provider
