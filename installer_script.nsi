@@ -826,10 +826,11 @@ Section "ProActive Agent"
 
         ; Encrypt the password, see AGENT-154
         File "bin\Release\pacrypt.dll" ; the .dll contains C-Signature: int encryptData(wchar_t *input, wchar_t *output)
+        ;Load pacrypt.dll for encryption to the OS memory and check if it is loaded successfully
         !insertmacro Log "Loading pacrypt.dll"
         System::Call 'KERNEL32::LoadLibrary(t "$INSTDIR\pacrypt.dll")i.r3' ;directly load the library that is needed for encryption
-        System::Call "KERNEL32::GetModuleHandle(t 'pacrypt.dll') i.r0"
-        ${If} $0 == 0
+        System::Call "KERNEL32::GetModuleHandle(t 'pacrypt.dll') i.r0"     ;check if the pacrypt.dll was loaded, the result is written in 0 register
+        ${If} $0 == 0 ;check if pacrypt.dll was loaded successfully, in this case in 0 register should be non zero value
            !insertmacro Log "!! Unable to load pacrypt.dll file for encryption !!"
            MessageBox MB_OK "Unable to load pacrypt.dll file for encryption" /SD IDOK
            Call RollbackIfSilent
