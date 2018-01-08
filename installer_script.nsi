@@ -47,7 +47,7 @@
 !define SERVICE_NAME "ProActiveAgent"
 !define SERVICE_DESC "The ProActive Agent enables desktop computers as an important source of computational power"
 
-BrandingText "(C) 2016 INRIA/ActiveEon"
+BrandingText "(C) 2017 INRIA/ActiveEon"
 
 VIProductVersion                 "${VERSION}.0"
 VIAddVersionKey ProductName      "${PRODUCT_NAME}"
@@ -58,7 +58,7 @@ VIAddVersionKey FileDescription  "Installer of the ProActive Agent ${VERSION} ${
 VIAddVersionKey FileVersion      ${VERSION}
 VIAddVersionKey ProductVersion   ${VERSION}
 VIAddVersionKey InternalName     "ProActiveAgent"
-VIAddVersionKey LegalTrademarks  "Copyright (C) Activeeon 2016"
+VIAddVersionKey LegalTrademarks  "Copyright (C) Activeeon 2017"
 VIAddVersionKey OriginalFilename "ProActiveAgent-${VERSION}${FILENAME_SUFFIX}-setup.exe"
 
 #################################################################
@@ -826,9 +826,20 @@ Section "ProActive Agent"
 
         ; Encrypt the password, see AGENT-154
         File "bin\Release\pacrypt.dll" ; the .dll contains C-Signature: int encryptData(wchar_t *input, wchar_t *output)
+        ;Load pacrypt.dll for encryption to the OS memory and check if it is loaded successfully
+        !insertmacro Log "Loading pacrypt.dll"
+        System::Call 'KERNEL32::LoadLibrary(t "$INSTDIR\pacrypt.dll")i.r3' ;directly load the library that is needed for encryption
+        System::Call "KERNEL32::GetModuleHandle(t 'pacrypt.dll') i.r0"     ;check if the pacrypt.dll was loaded, the result is written in 0 register
+        ${If} $0 == 0 ;check if pacrypt.dll was loaded successfully, in this case in 0 register should be non zero value
+           !insertmacro Log "!! Unable to load pacrypt.dll file for encryption !!"
+           MessageBox MB_OK "Unable to load pacrypt.dll file for encryption" /SD IDOK
+           Call RollbackIfSilent
+           Abort
+        ${EndIf}
         !insertmacro Log "Encrypting password ..."
         StrCpy $0 $AccountPassword ; copy register to stack
-        System::Call "pacrypt::encryptData(w, w) i(r0., .r1).r2"
+        StrCpy $3 ${INSTALL_LOG_PATH} ; copy logFilePath to stack
+        System::Call "pacrypt::encryptDataWithLog(w, w, w) i(r0., .r1, r3.).r2"
         ${If} $2 != 0
            !insertmacro Log "!! Unable to encrypt the password (too long ?). Error $2 !!"
            MessageBox MB_OK "Unable to encrypt the password (too long ?). Error $2" /SD IDOK
@@ -842,6 +853,7 @@ Section "ProActive Agent"
         ;MessageBox MB_OK "---> $0 , $1 , $4"
         ; Write encrypted password in registry
         WriteRegStr HKLM "Software\ProActiveAgent\Creds" "password" $1
+        System::Call 'KERNEL32::FreeLibrary(ir3)'
 
         ; The command based on SID grants full permissions only for LocalSystem and Administrators keyfile and the registry key
         File "utils\SetACL.exe" ; copy the tool for access restriction

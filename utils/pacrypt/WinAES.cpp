@@ -809,6 +809,7 @@ void bytearray_to_wstring(std::wstring &dst, const unsigned char *src, const int
 
 DllExport int encryptDataStd(const std::wstring &inputData, std::wstring &outputDataInHex)
 {
+	cout << "Encrypt data with WinAES" << endl;
 	int status = 0;	
 	WinAES aes;
 
@@ -949,8 +950,42 @@ extern "C" {
 		// Encrypt input data
 		const int res = encryptDataStd(input, output);
 
-		// Copy encrypted output into a cstring		
+		// Copy encrypted output into a cstring
 		wcscpy_s(outputDataInHex, output.length()+1, output.c_str());
+
+		return res;
+	}
+
+	DllExport int encryptDataWithLog(const wchar_t *inputData, wchar_t *outputDataInHex, wchar_t *logFile){
+		std::wstring logFilePath(logFile);
+		std::string logFilePathStr(logFilePath.begin(), logFilePath.end());
+
+		std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
+		std::streambuf *cerrbuf = std::cerr.rdbuf(); //save old buf
+		std::ofstream myfile;
+		int res;
+		try
+		{
+			myfile.open(logFilePathStr, std::ios_base::app);
+			if (myfile.is_open()) {
+			
+				//redirection cout, cerr streams to file
+				std::cout.rdbuf(myfile.rdbuf()); //redirect std::cout to logFile
+				std::cerr.rdbuf(myfile.rdbuf()); //redirect std::cerr to logFile
+			}
+			else cerr << "Unable to open log file: " + logFilePathStr << endl;
+			
+			// Encrypt input data
+			res = encryptData(inputData, outputDataInHex);
+			
+			std::cout.rdbuf(coutbuf); //reset to standard output again
+			std::cerr.rdbuf(cerrbuf); //reset to standard error output again
+		}
+		catch(std::ofstream::failure &writeErr)
+		{
+			myfile << "Error while writing to log file: " << writeErr.what() << endl;
+		}
+		myfile.close();
 
 		return res;
 	}
