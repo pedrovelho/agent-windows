@@ -95,7 +95,7 @@ namespace AgentForAgent
             else
             {
                 jvmDirectory.Text = conf.config.javaHome;
-            }
+            }          
 
             // Load the On Runtime Exit script absolute path
             this.scriptLocationTextBox.Text = conf.config.onRuntimeExitScript;
@@ -245,8 +245,8 @@ namespace AgentForAgent
             chart = new Chart();
             iniConfiguration = new IniFile(this.agentLocation + "\\configuration.ini");
 
-            this.internalSave(this.configurationLocation);
-            this.saveConfig.Enabled = false;
+            ConfigEditor_Load(null, null);
+            this.saveConfig.Enabled = true;
         }
 
         private void CreateEditBox(object sender)
@@ -1058,6 +1058,7 @@ namespace AgentForAgent
 
             if (this.configuration.config.jvmParameters != null)
             {
+                this.jvmOptionsListBox.Items.Clear();
                 this.jvmOptionsListBox.Items.AddRange(this.configuration.config.jvmParameters);
             }
         }
