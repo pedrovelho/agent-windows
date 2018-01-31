@@ -78,8 +78,10 @@ namespace AgentForAgent
 
             // Administrators only can change the account used to spawn runtimes
             WindowsPrincipal principal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
-            if (!principal.IsInRole(WindowsBuiltInRole.Administrator))
+            if (principal.IsInRole(WindowsBuiltInRole.Administrator) || principal.IsInRole(WindowsBuiltInRole.AccountOperator) || principal.IsInRole(WindowsBuiltInRole.SystemOperator))
             {
+                // role should be allowed to change the account
+            } else {
                 this.changeAccountButton.Enabled = false;
                 this.changeAccountButton.Visible = false;
             }
