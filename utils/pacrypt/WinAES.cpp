@@ -6,6 +6,9 @@
 #include "assert.h"
 #include <exception>
 #include <vector>
+#include <conio.h>
+#include <certenroll.h>
+#include <atlbase.h>
 
 using std::ostringstream;
 using std::fstream;
@@ -91,6 +94,73 @@ bool WinAES::GenerateRandom( byte* buffer, int size )
 	return !!CryptGenRandom( m_hProvider, size, buffer );
 }
 
+void enumProviders(void)
+{
+	CComPtr<ICspInformations>     pCSPs;   // Provider collection
+	CComPtr<ICspInformation>      pCSP;    // Provider instgance
+	HRESULT           hr = S_OK;  // Return value
+	long              lCount = 0;     // Count of providers
+	CComBSTR          bstrName;            // Provider name
+	VARIANT_BOOL      bLegacy;             // CryptoAPI or CNG	
+	// Initialize COM.
+	hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+	if (FAILED(hr)) {
+		cerr << "Could not initialize COM" << endl;
+		return;
+	}
+
+	// Create a collection of cryptographic providers.
+	hr = CoCreateInstance(
+		__uuidof(CCspInformations),
+		NULL,
+		CLSCTX_INPROC_SERVER,
+		__uuidof(ICspInformations),
+		(void **)&pCSPs);
+	if (FAILED(hr)) {
+		cerr << "Could not Create the collection of cryptographic providers" << endl;
+		return;
+	}
+
+	// Add the providers installed on the computer.
+	hr = pCSPs->AddAvailableCsps();
+	if (FAILED(hr)) {
+		cerr << "Could not add providers installed on this computer" << endl;
+		return;
+	}
+
+	// Retrieve the number of installed providers.
+	hr = pCSPs->get_Count(&lCount);
+	if (FAILED(hr)) {
+		cerr << "Could not retrieve the number of installed providers" << endl;
+		return;
+	}
+
+	// Print the providers to the console. Print the
+	// name and a value that specifies whether the 
+	// CSP is a legacy or CNG provider.
+	for (long i = 0; i<lCount; i++)
+	{
+		hr = pCSPs->get_ItemByIndex(i, &pCSP);
+		if (FAILED(hr)) return;
+
+		hr = pCSP->get_Name(&bstrName);
+		if (FAILED(hr)) return;
+
+		hr = pCSP->get_LegacyCsp(&bLegacy);
+		if (FAILED(hr)) return;
+
+		if (VARIANT_TRUE == bLegacy)
+			std::wcerr << i << L". Legacy: ";
+		else
+			std::wcerr << i << L". CNG: ";
+
+		std::wcerr << static_cast<wchar_t*>(bstrName.m_str) << endl;
+
+		pCSP = NULL;
+
+	}
+}
+
 bool WinAES::AcquireContext( const wchar_t* lpszContainer )
 {
 	// We need to record the index of the provider which we were able to 
@@ -105,8 +175,14 @@ bool WinAES::AcquireContext( const wchar_t* lpszContainer )
 
 		if( CryptAcquireContext( &m_hProvider, lpszContainer, AesProviders[i].params.lpwsz,
 			AesProviders[i].params.dwType, AesProviders[i].params.dwFlags ) ) {
-				m_nIndex = i;
+				m_nIndex = i;			
 				break;
+		}
+		else {
+			cerr << "Could not acquire context for ";
+			std::wcerr << AesProviders[i].params.lpwsz;
+			cerr << " : " << ErrorToDefine(GetLastError());			
+			cerr << " (0x" << std::hex << GetLastError() << ")" << endl;			
 		}
 	}
 
@@ -114,6 +190,11 @@ bool WinAES::AcquireContext( const wchar_t* lpszContainer )
 	//  extra variable to track success from CryptAcquireContext.
 	if( (m_nIndex == INVALID_INDEX) && (THROW_EXCEPTION & m_nFlags) ) {
 		throw WinAESException("AcquireContext: CryptAcquireContext failed");
+	}
+	else if(m_nIndex == INVALID_INDEX) {
+		cerr << "AcquireContext: CryptAcquireContext failed" << endl;
+		cerr << "Installed Providers:" << endl;
+		enumProviders();
 	}
 
 	return m_nIndex != INVALID_INDEX;
@@ -188,10 +269,13 @@ bool WinAES::SetKeyWithIv( const byte* key, int ksize, const byte* iv, int vsize
 			throw WinAESException("SetKeyWithIv: SetIv failed");
 		}
 	}
-	catch( const WinAESException& /*e*/ )
+	catch( const WinAESException& e )
 	{
-		if(THROW_EXCEPTION & m_nFlags) {
-			throw;
+		if( THROW_EXCEPTION & m_nFlags ) {
+			throw e;
+		}
+		else {
+			cerr << "Exception: " << e.what() << endl;
 		}
 
 		result = false;
@@ -285,10 +369,13 @@ bool WinAES::SetKey( const byte* key, int ksize )
 
 		result = true;
 	}
-	catch( const WinAESException& /*e*/ )
+	catch( const WinAESException& e )
 	{
 		if( THROW_EXCEPTION & m_nFlags ) {
-			throw;
+			throw e;
+		}
+		else {
+			cerr << "Exception: " << e.what() << endl;
 		}
 		result = false;
 	}
@@ -341,12 +428,15 @@ bool WinAES::SetIv(const byte* iv, int vsize )
 
 		result = m_bHaveIv = true;
 	}
-	catch( const WinAESException& /*e*/ )
+	catch( const WinAESException& e )
 	{
 		result = m_bHaveIv = false;
 
 		if( THROW_EXCEPTION & m_nFlags ) {
-			throw;
+			throw e;
+		}
+		else {
+			cerr << "Exception: " << e.what() << endl;
 		}
 	}
 
@@ -437,10 +527,13 @@ bool WinAES::Encrypt( byte* buffer, /*In*/size_t bsize, /*In*/size_t psize, /*Ou
 		// result is TRUE
 		csize = d;
 	}
-	catch( const WinAESException& /*e*/ )
+	catch( const WinAESException& e )
 	{
 		if( m_nFlags & THROW_EXCEPTION ) {
-			throw;
+			throw e;
+		}
+		else {
+			cerr << "Exception: " << e.what() << endl;
 		}
 		result = FALSE;
 	}
@@ -519,10 +612,13 @@ bool WinAES::Decrypt( byte* buffer, /*In*/size_t bsize, /*In*/size_t csize, /*Ou
 		// result is TRUE
 		psize = d;
 	}
-	catch( const WinAESException& /*e*/ )
+	catch( const WinAESException& e )
 	{
 		if( m_nFlags & THROW_EXCEPTION ) {
-			throw;
+			throw e;
+		}
+		else {
+			cerr << "Exception: " << e.what() << endl;
 		}
 		result = FALSE;
 	}
@@ -593,10 +689,13 @@ bool WinAES::Encrypt( const byte* plaintext, /*In*/size_t psize, /*InOut*/byte* 
 		// result is TRUE
 	}
 
-	catch( const WinAESException& /*e*/ )
+	catch( const WinAESException& e )
 	{
 		if( m_nFlags & THROW_EXCEPTION ) {
-			throw;
+			throw e;
+		}
+		else {
+			cerr << "Exception: " << e.what() << endl;
 		}
 		result = false;
 	}
@@ -660,10 +759,13 @@ bool WinAES::Decrypt( const byte* ciphertext, /*In*/size_t csize, /*InOut*/byte*
 		// result is TRUE
 	}
 
-	catch( const WinAESException& /*e*/ )
+	catch( const WinAESException& e )
 	{
 		if( m_nFlags & THROW_EXCEPTION ) {
-			throw;
+			throw e;
+		}
+		else {
+			cerr << "Exception: " << e.what() << endl;			
 		}
 		result = false;
 	}
@@ -674,7 +776,7 @@ bool WinAES::Decrypt( const byte* ciphertext, /*In*/size_t csize, /*InOut*/byte*
 const char* WinAES::ErrorToDefine( DWORD dwError )
 {
 	switch( dwError )
-	{
+	{	
 	case ERROR_ACCESS_DENIED:
 		return "ERROR_ACCESS_DENIED";  
 	case ERROR_INVALID_HANDLE:
@@ -682,19 +784,19 @@ const char* WinAES::ErrorToDefine( DWORD dwError )
 	case ERROR_INVALID_PARAMETER:
 		return "ERROR_INVALID_PARAMETER";
 	case ERROR_DEV_NOT_EXIST:
-		return "ERROR_DEV_NOT_EXIST";
-	case NTE_BAD_HASH:
-		return "NTE_BAD_HASH";        
-	case NTE_BAD_HASH_STATE:
-		return "NTE_BAD_HASH_STATE";
+		return "ERROR_DEV_NOT_EXIST"; 
 	case NTE_BAD_UID:
 		return "NTE_BAD_UID";
+	case NTE_BAD_HASH:
+		return "NTE_BAD_HASH";      
 	case NTE_BAD_KEY:
 		return "NTE_BAD_KEY";
 	case NTE_BAD_LEN:
 		return "NTE_BAD_LEN";
 	case NTE_BAD_DATA:
 		return "NTE_BAD_DATA";
+	case NTE_BAD_SIGNATURE:
+		return "NTE_BAD_SIGNATURE";	
 	case NTE_BAD_VER:
 		return "NTE_BAD_VER";
 	case NTE_BAD_ALGID:
@@ -705,6 +807,8 @@ const char* WinAES::ErrorToDefine( DWORD dwError )
 		return "NTE_BAD_TYPE";
 	case NTE_BAD_KEY_STATE:
 		return "NTE_BAD_KEY_STATE";
+	case NTE_BAD_HASH_STATE:
+		return "NTE_BAD_HASH_STATE";
 	case NTE_NO_KEY:
 		return "NTE_NO_KEY";
 	case NTE_NO_MEMORY:
@@ -721,6 +825,8 @@ const char* WinAES::ErrorToDefine( DWORD dwError )
 		return "NTE_BAD_PROVIDER";
 	case NTE_BAD_PROV_TYPE:
 		return "NTE_BAD_PROV_TYPE";
+	case NTE_BAD_PUBLIC_KEY:
+		return "NTE_BAD_PUBLIC_KEY";
 	case NTE_BAD_KEYSET:
 		return "NTE_BAD_KEYSET";
 	case NTE_PROV_TYPE_NOT_DEF:
@@ -731,6 +837,14 @@ const char* WinAES::ErrorToDefine( DWORD dwError )
 		return "NTE_KEYSET_NOT_DEF";
 	case NTE_KEYSET_ENTRY_BAD:
 		return "NTE_KEYSET_ENTRY_BAD";
+	case NTE_PROV_TYPE_NO_MATCH:
+		return "NTE_PROV_TYPE_NO_MATCH";
+	case NTE_SIGNATURE_FILE_BAD:
+		return "NTE_SIGNATURE_FILE_BAD";
+	case NTE_PROVIDER_DLL_FAIL:
+		return "NTE_PROVIDER_DLL_FAIL";
+	case NTE_PROV_DLL_NOT_FOUND:
+		return "NTE_PROV_DLL_NOT_FOUND";
 	case NTE_BAD_KEYSET_PARAM:
 		return "NTE_BAD_KEYSET_PARAM";
 	case NTE_FAIL:
@@ -739,6 +853,10 @@ const char* WinAES::ErrorToDefine( DWORD dwError )
 		return "NTE_SYS_ERR";
 	case NTE_SILENT_CONTEXT:
 		return "NTE_SILENT_CONTEXT";
+	case NTE_TOKEN_KEYSET_STORAGE_FULL:
+		return "NTE_TOKEN_KEYSET_STORAGE_FULL";
+	case NTE_TEMPORARY_PROFILE:
+		return "NTE_TEMPORARY_PROFILE";
 	case NTE_FIXEDPARAMETER:
 		return "NTE_FIXEDPARAMETER";
 	case NTE_INVALID_HANDLE:
@@ -747,12 +865,20 @@ const char* WinAES::ErrorToDefine( DWORD dwError )
 		return "NTE_INVALID_PARAMETER";
 	case NTE_BUFFER_TOO_SMALL:
 		return "NTE_BUFFER_TOO_SMALL";
+	case NTE_NOT_SUPPORTED:
+		return "NTE_NOT_SUPPORTED";
+	case NTE_NO_MORE_ITEMS:
+		return "NTE_NO_MORE_ITEMS";		
 	case NTE_BUFFERS_OVERLAP:
 		return "NTE_BUFFERS_OVERLAP";
 	case NTE_DECRYPTION_FAILURE:
 		return "NTE_DECRYPTION_FAILURE";
 	case NTE_INTERNAL_ERROR:
 		return "NTE_INTERNAL_ERROR";
+	case NTE_UI_REQUIRED:
+		return "NTE_UI_REQUIRED";
+	case NTE_HMAC_NOT_SUPPORTED:
+		return "NTE_HMAC_NOT_SUPPORTED";		 
 	default: ;
 	}
 
@@ -857,7 +983,7 @@ DllExport int encryptDataStd(const std::wstring &inputData, std::wstring &output
 
 		// Encrypt data
 		if( !aes.Encrypt( (byte*)plaintext, psize, ciphertext, csize ) ) {
-			cerr << "Failed to encrypt plain text" << endl;
+			cerr << "FATAL: Failed to encrypt plain text, the ProActive Agent will not work." << endl;
 		}						
 
 		// Convert encrypted data to hex string			
@@ -915,6 +1041,7 @@ DllExport int decryptDataStd(const std::wstring &inputDataInHex, std::wstring &o
 
 		if( !aes.Decrypt( ciphertext, csize, recovered, rsize ) ) {
 			cerr << "Failed to decrypt cipher text" << endl;
+			status = 3;
 		}			
 
 		int len = (rsize / sizeof(wchar_t));
@@ -960,18 +1087,31 @@ extern "C" {
 		std::wstring logFilePath(logFile);
 		std::string logFilePathStr(logFilePath.begin(), logFilePath.end());
 
-		std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
-		std::streambuf *cerrbuf = std::cerr.rdbuf(); //save old buf
+		// save old buffers
+		std::streambuf *coutbuf = std::cout.rdbuf(); 
+		std::streambuf *cerrbuf = std::cerr.rdbuf();
+		std::wstreambuf *wcoutbuf = std::wcout.rdbuf();
+		std::wstreambuf *wcerrbuf = std::wcerr.rdbuf();
 		std::ofstream myfile;
+		std::wofstream myfileW;
 		int res;
 		try
 		{
 			myfile.open(logFilePathStr, std::ios_base::app);
 			if (myfile.is_open()) {
 			
-				//redirection cout, cerr streams to file
+				//redirection cout, cerr, streams to file
 				std::cout.rdbuf(myfile.rdbuf()); //redirect std::cout to logFile
-				std::cerr.rdbuf(myfile.rdbuf()); //redirect std::cerr to logFile
+				std::cerr.rdbuf(myfile.rdbuf()); //redirect std::cerr to logFile				
+			}
+			else cerr << "Unable to open log file: " + logFilePathStr << endl;
+
+			myfileW.open(logFilePathStr, std::ios_base::app);
+			if (myfileW.is_open()) {
+
+				//redirection wcout, wcerr streams to file
+				std::wcout.rdbuf(myfileW.rdbuf()); //redirect std::wcout to logFile
+				std::wcerr.rdbuf(myfileW.rdbuf()); //redirect std::wcerr to logFile				
 			}
 			else cerr << "Unable to open log file: " + logFilePathStr << endl;
 			
@@ -980,12 +1120,15 @@ extern "C" {
 			
 			std::cout.rdbuf(coutbuf); //reset to standard output again
 			std::cerr.rdbuf(cerrbuf); //reset to standard error output again
+			std::wcout.rdbuf(wcoutbuf); //reset to standard output again
+			std::wcerr.rdbuf(wcerrbuf); //reset to standard error output again
 		}
 		catch(std::ofstream::failure &writeErr)
 		{
 			myfile << "Error while writing to log file: " << writeErr.what() << endl;
 		}
 		myfile.close();
+		myfileW.close();
 
 		return res;
 	}
