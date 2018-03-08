@@ -265,6 +265,11 @@ namespace ProActiveAgent
                     }
                 }
 
+                foreach (string parameter in this.commonStartInfo.configuration.config.additionalCmdArgs)
+                {                   
+                    argumentsBuilder.Append(" " + parameter);
+                }
+
                 ushort nbWorkers = this.commonStartInfo.configuration.config.nbWorkers;
                 if (nbWorkers != 0)
                 {
