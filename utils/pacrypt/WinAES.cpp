@@ -6,7 +6,6 @@
 #include "assert.h"
 #include <exception>
 #include <vector>
-#include <conio.h>
 #include <certenroll.h>
 #include <atlbase.h>
 
@@ -159,6 +158,8 @@ void enumProviders(void)
 		pCSP = NULL;
 
 	}
+
+	CoUninitialize();
 }
 
 bool WinAES::AcquireContext( const wchar_t* lpszContainer )
@@ -776,7 +777,7 @@ bool WinAES::Decrypt( const byte* ciphertext, /*In*/size_t csize, /*InOut*/byte*
 const char* WinAES::ErrorToDefine( DWORD dwError )
 {
 	switch( dwError )
-	{	
+	{
 	case ERROR_ACCESS_DENIED:
 		return "ERROR_ACCESS_DENIED";  
 	case ERROR_INVALID_HANDLE:
