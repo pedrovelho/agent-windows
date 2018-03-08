@@ -42,6 +42,9 @@ namespace AgentForAgent
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfigurationEditor));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.removeArgsParameterButton = new System.Windows.Forms.Button();
+            this.addArgsParameterButton = new System.Windows.Forms.Button();
+            this.argsOptionsListBox = new System.Windows.Forms.ListBox();
             this.jvmOptionsListBox = new System.Windows.Forms.ListBox();
             this.removeJvmParameterButton = new System.Windows.Forms.Button();
             this.addJvmParameterButton = new System.Windows.Forms.Button();
@@ -147,6 +150,7 @@ namespace AgentForAgent
             this.showButton = new System.Windows.Forms.Button();
             this.createEventButton = new System.Windows.Forms.Button();
             this.deleteEventButton = new System.Windows.Forms.Button();
+            this.eventsList = new AgentForAgent.RefreshingListBox();
             this.saveConfig = new System.Windows.Forms.Button();
             this.closeConfig = new System.Windows.Forms.Button();
             this.proActiveLocationBrowser = new System.Windows.Forms.FolderBrowserDialog();
@@ -156,7 +160,6 @@ namespace AgentForAgent
             this.scriptLocationOpenDialog = new System.Windows.Forms.OpenFileDialog();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.credentialLocationOpenDialog = new System.Windows.Forms.OpenFileDialog();
-            this.eventsList = new AgentForAgent.RefreshingListBox();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.generalTabPage.SuspendLayout();
@@ -199,6 +202,9 @@ namespace AgentForAgent
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.removeArgsParameterButton);
+            this.groupBox1.Controls.Add(this.addArgsParameterButton);
+            this.groupBox1.Controls.Add(this.argsOptionsListBox);
             this.groupBox1.Controls.Add(this.jvmOptionsListBox);
             this.groupBox1.Controls.Add(this.removeJvmParameterButton);
             this.groupBox1.Controls.Add(this.addJvmParameterButton);
@@ -214,23 +220,57 @@ namespace AgentForAgent
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "ProActive Configuration";
             // 
+            // removeArgsParameterButton
+            // 
+            this.removeArgsParameterButton.Location = new System.Drawing.Point(3, 121);
+            this.removeArgsParameterButton.Name = "removeArgsParameterButton";
+            this.removeArgsParameterButton.Size = new System.Drawing.Size(86, 21);
+            this.removeArgsParameterButton.TabIndex = 15;
+            this.removeArgsParameterButton.Text = "Remove args";
+            this.removeArgsParameterButton.UseVisualStyleBackColor = true;
+            this.removeArgsParameterButton.Click += new System.EventHandler(this.removeArgsOptionButton_Click);
+            // 
+            // addArgsParameterButton
+            // 
+            this.addArgsParameterButton.Location = new System.Drawing.Point(3, 94);
+            this.addArgsParameterButton.Name = "addArgsParameterButton";
+            this.addArgsParameterButton.Size = new System.Drawing.Size(86, 21);
+            this.addArgsParameterButton.TabIndex = 14;
+            this.addArgsParameterButton.Text = "Add args";
+            this.addArgsParameterButton.UseVisualStyleBackColor = true;
+            this.addArgsParameterButton.Click += new System.EventHandler(this.addArgsOptionButton_Click);
+            // 
+            // argsOptionsListBox
+            // 
+            this.argsOptionsListBox.FormattingEnabled = true;
+            this.argsOptionsListBox.Location = new System.Drawing.Point(95, 94);
+            this.argsOptionsListBox.Name = "argsOptionsListBox";
+            this.argsOptionsListBox.Size = new System.Drawing.Size(175, 69);
+            this.argsOptionsListBox.TabIndex = 13;
+            this.toolTip.SetToolTip(this.argsOptionsListBox, "If the parameter contains ${rank} it will be dynamically replaced by the Runtime " +
+        "rank.");
+            this.argsOptionsListBox.SelectedIndexChanged += new System.EventHandler(this.argsOptionsListBox_SelectedIndexChanged);
+            this.argsOptionsListBox.DoubleClick += new System.EventHandler(this.argsOptionsListBox_DoubleClick);
+            this.argsOptionsListBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.argsOptionsListBox_KeyPress);
+            // 
             // jvmOptionsListBox
             // 
             this.jvmOptionsListBox.FormattingEnabled = true;
-            this.jvmOptionsListBox.Location = new System.Drawing.Point(145, 95);
+            this.jvmOptionsListBox.Location = new System.Drawing.Point(397, 95);
             this.jvmOptionsListBox.Name = "jvmOptionsListBox";
-            this.jvmOptionsListBox.Size = new System.Drawing.Size(514, 69);
+            this.jvmOptionsListBox.Size = new System.Drawing.Size(262, 69);
             this.jvmOptionsListBox.TabIndex = 12;
             this.toolTip.SetToolTip(this.jvmOptionsListBox, "If the parameter contains ${rank} it will be dynamically replaced by the Runtime " +
         "rank.");
+            this.jvmOptionsListBox.SelectedIndexChanged += new System.EventHandler(this.jvmOptionsListBox_SelectedIndexChanged);
             this.jvmOptionsListBox.DoubleClick += new System.EventHandler(this.jvmOptionsListBox_DoubleClick);
             this.jvmOptionsListBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.jvmOptionsListBox_KeyPress);
             // 
             // removeJvmParameterButton
             // 
-            this.removeJvmParameterButton.Location = new System.Drawing.Point(6, 124);
+            this.removeJvmParameterButton.Location = new System.Drawing.Point(276, 122);
             this.removeJvmParameterButton.Name = "removeJvmParameterButton";
-            this.removeJvmParameterButton.Size = new System.Drawing.Size(133, 21);
+            this.removeJvmParameterButton.Size = new System.Drawing.Size(114, 21);
             this.removeJvmParameterButton.TabIndex = 11;
             this.removeJvmParameterButton.Text = "Remove JVM Option";
             this.removeJvmParameterButton.UseVisualStyleBackColor = true;
@@ -238,9 +278,9 @@ namespace AgentForAgent
             // 
             // addJvmParameterButton
             // 
-            this.addJvmParameterButton.Location = new System.Drawing.Point(6, 95);
+            this.addJvmParameterButton.Location = new System.Drawing.Point(276, 95);
             this.addJvmParameterButton.Name = "addJvmParameterButton";
-            this.addJvmParameterButton.Size = new System.Drawing.Size(133, 21);
+            this.addJvmParameterButton.Size = new System.Drawing.Size(114, 21);
             this.addJvmParameterButton.TabIndex = 10;
             this.addJvmParameterButton.Text = "Add JVM Option";
             this.addJvmParameterButton.UseVisualStyleBackColor = true;
@@ -521,9 +561,9 @@ namespace AgentForAgent
             this.networkInterfaceListGroupBox.Controls.Add(this.useNetworkInterfaceButton);
             this.networkInterfaceListGroupBox.Controls.Add(this.networkInterfacesListBox);
             this.networkInterfaceListGroupBox.Controls.Add(this.refreshNetworkInterfacesButton);
-            this.networkInterfaceListGroupBox.Location = new System.Drawing.Point(394, 184);
+            this.networkInterfaceListGroupBox.Location = new System.Drawing.Point(394, 227);
             this.networkInterfaceListGroupBox.Name = "networkInterfaceListGroupBox";
-            this.networkInterfaceListGroupBox.Size = new System.Drawing.Size(274, 210);
+            this.networkInterfaceListGroupBox.Size = new System.Drawing.Size(274, 167);
             this.networkInterfaceListGroupBox.TabIndex = 3;
             this.networkInterfaceListGroupBox.TabStop = false;
             this.networkInterfaceListGroupBox.Text = "Available Network Interfaces (Java 6 only)";
@@ -1428,6 +1468,16 @@ namespace AgentForAgent
             this.deleteEventButton.UseVisualStyleBackColor = true;
             this.deleteEventButton.Click += new System.EventHandler(this.deleteEventButton_Click);
             // 
+            // eventsList
+            // 
+            this.eventsList.FormattingEnabled = true;
+            this.eventsList.Location = new System.Drawing.Point(6, 19);
+            this.eventsList.Name = "eventsList";
+            this.eventsList.Size = new System.Drawing.Size(235, 303);
+            this.eventsList.TabIndex = 0;
+            this.toolTip.SetToolTip(this.eventsList, "The list of weekly plans.");
+            this.eventsList.SelectedIndexChanged += new System.EventHandler(this.eventsList_SelectedIndexChanged);
+            // 
             // saveConfig
             // 
             this.saveConfig.Enabled = false;
@@ -1479,16 +1529,6 @@ namespace AgentForAgent
             // 
             this.credentialLocationOpenDialog.DefaultExt = "cred";
             this.credentialLocationOpenDialog.Filter = "Credentials .cred|*.cred";
-            // 
-            // eventsList
-            // 
-            this.eventsList.FormattingEnabled = true;
-            this.eventsList.Location = new System.Drawing.Point(6, 19);
-            this.eventsList.Name = "eventsList";
-            this.eventsList.Size = new System.Drawing.Size(235, 303);
-            this.eventsList.TabIndex = 0;
-            this.toolTip.SetToolTip(this.eventsList, "The list of weekly plans.");
-            this.eventsList.SelectedIndexChanged += new System.EventHandler(this.eventsList_SelectedIndexChanged);
             // 
             // ConfigurationEditor
             // 
@@ -1611,6 +1651,7 @@ namespace AgentForAgent
         private System.Windows.Forms.Button removeJvmParameterButton;
         private System.Windows.Forms.Button addJvmParameterButton;
         private System.Windows.Forms.ListBox jvmOptionsListBox;
+        private System.Windows.Forms.ListBox argsOptionsListBox;
         private System.Windows.Forms.Label memoryLimitLabel;
         private System.Windows.Forms.NumericUpDown memoryLimitNumericUpDown;
         private System.Windows.Forms.GroupBox durationGroupBox;
@@ -1684,6 +1725,8 @@ namespace AgentForAgent
         private System.Windows.Forms.NumericUpDown portInitialValueNumericUpDown;
         private System.Windows.Forms.Label nbWorkersLabel;
         private System.Windows.Forms.NumericUpDown nbWorkersNumericUpDown;
+        private System.Windows.Forms.Button addArgsParameterButton;
+        private System.Windows.Forms.Button removeArgsParameterButton;
     }
 
 
