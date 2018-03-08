@@ -849,8 +849,13 @@ Section "ProActive Agent"
         ; Uncomment the following code to chek if the encryption mechanism works correctly
         ; the last message box should show
         ;MessageBox MB_OK "---> $0 , $1 , $2"
-        ;System::Call "pacrypt::decryptData(w, w) i(r1., .r4).r0"
-        ;MessageBox MB_OK "---> $0 , $1 , $4"
+        System::Call "pacrypt::decryptData(w, w) i(r1., .r4).r2"
+        ${If} $2 != 0
+            !insertmacro Log "!! Unable to decrypt the encrypted password. Check the install.log file. Error $2 !!"
+            MessageBox MB_OK "Unable to decrypt the encrypted password. Check the install.log file. Error $2" /SD IDOK
+            Call RollbackIfSilent
+            Abort
+        ${EndIf}
         ; Write encrypted password in registry
         WriteRegStr HKLM "Software\ProActiveAgent\Creds" "password" $1
         System::Call 'KERNEL32::FreeLibrary(ir3)'
