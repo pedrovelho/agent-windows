@@ -121,6 +121,8 @@ namespace AgentForAgent
             this.label14 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.processManagementGroupBox = new System.Windows.Forms.GroupBox();
+            this.nbRuntimesEventUpDown = new System.Windows.Forms.NumericUpDown();
+            this.nbRuntimeEventLabel = new System.Windows.Forms.Label();
             this.label20 = new System.Windows.Forms.Label();
             this.maxCpuUsageNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.maxCpuUsageLabel = new System.Windows.Forms.Label();
@@ -186,6 +188,7 @@ namespace AgentForAgent
             this.customActionGroup.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.processManagementGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nbRuntimesEventUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.maxCpuUsageNumericUpDown)).BeginInit();
             this.eventEditorGroup.SuspendLayout();
             this.startTimeGroupBox.SuspendLayout();
@@ -1098,6 +1101,8 @@ namespace AgentForAgent
             // 
             // processManagementGroupBox
             // 
+            this.processManagementGroupBox.Controls.Add(this.nbRuntimesEventUpDown);
+            this.processManagementGroupBox.Controls.Add(this.nbRuntimeEventLabel);
             this.processManagementGroupBox.Controls.Add(this.label20);
             this.processManagementGroupBox.Controls.Add(this.maxCpuUsageNumericUpDown);
             this.processManagementGroupBox.Controls.Add(this.maxCpuUsageLabel);
@@ -1105,10 +1110,43 @@ namespace AgentForAgent
             this.processManagementGroupBox.Controls.Add(this.processPriorityComboBox);
             this.processManagementGroupBox.Location = new System.Drawing.Point(259, 142);
             this.processManagementGroupBox.Name = "processManagementGroupBox";
-            this.processManagementGroupBox.Size = new System.Drawing.Size(409, 51);
+            this.processManagementGroupBox.Size = new System.Drawing.Size(409, 97);
             this.processManagementGroupBox.TabIndex = 20;
             this.processManagementGroupBox.TabStop = false;
             this.processManagementGroupBox.Text = "Process Management";
+            // 
+            // nbRuntimesEventUpDown
+            // 
+            this.nbRuntimesEventUpDown.Location = new System.Drawing.Point(327, 54);
+            this.nbRuntimesEventUpDown.Maximum = new decimal(new int[] {
+            32,
+            0,
+            0,
+            0});
+            this.nbRuntimesEventUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nbRuntimesEventUpDown.Name = "nbRuntimesEventUpDown";
+            this.nbRuntimesEventUpDown.Size = new System.Drawing.Size(48, 20);
+            this.nbRuntimesEventUpDown.TabIndex = 6;
+            this.toolTip.SetToolTip(this.nbRuntimesEventUpDown, "Specifies the number of Runtimes to spawn.");
+            this.nbRuntimesEventUpDown.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nbRuntimesEventUpDown.ValueChanged += new System.EventHandler(this.nbRuntimesEventUpDown_ValueChanged);
+            // 
+            // nbRuntimeEventLabel
+            // 
+            this.nbRuntimeEventLabel.AutoSize = true;
+            this.nbRuntimeEventLabel.Location = new System.Drawing.Point(220, 56);
+            this.nbRuntimeEventLabel.Name = "nbRuntimeEventLabel";
+            this.nbRuntimeEventLabel.Size = new System.Drawing.Size(97, 13);
+            this.nbRuntimeEventLabel.TabIndex = 5;
+            this.nbRuntimeEventLabel.Text = "Runtime instances:";
             // 
             // label20
             // 
@@ -1588,6 +1626,7 @@ namespace AgentForAgent
             this.tabPage2.PerformLayout();
             this.processManagementGroupBox.ResumeLayout(false);
             this.processManagementGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nbRuntimesEventUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.maxCpuUsageNumericUpDown)).EndInit();
             this.eventEditorGroup.ResumeLayout(false);
             this.startTimeGroupBox.ResumeLayout(false);
@@ -1727,6 +1766,8 @@ namespace AgentForAgent
         private System.Windows.Forms.NumericUpDown nbWorkersNumericUpDown;
         private System.Windows.Forms.Button addArgsParameterButton;
         private System.Windows.Forms.Button removeArgsParameterButton;
+        private System.Windows.Forms.NumericUpDown nbRuntimesEventUpDown;
+        private System.Windows.Forms.Label nbRuntimeEventLabel;
     }
 
 
