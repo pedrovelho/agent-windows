@@ -893,20 +893,13 @@ namespace AgentForAgent
 
         private void nbRuntimesEventUpDown_ValueChanged(object sender, EventArgs e)
         {
-            if (this.configuration.isAlwaysAvailable() && this.configuration.events.Length == 1)
-            {
-                this.configuration.events[0].config.nbRuntimes = this.configuration.config.nbRuntimes;
-            }
-            else
-            {
-                if (eventsList.SelectedIndex == -1)
-                    return;
-                else
-                {
-                    CalendarEventType calEvent = (CalendarEventType)this.eventsList.SelectedItem;
-                    calEvent.config.nbRuntimes = Convert.ToUInt16(this.nbRuntimesEventUpDown.Value);
-                }
-            }
+            if (eventsList.SelectedIndex == -1)
+                return;
+            CalendarEventType calEvent = (CalendarEventType)this.eventsList.SelectedItem;
+            calEvent.config.nbRuntimes = (ushort)this.nbRuntimesEventUpDown.Value;
+            // Refresh widget
+            this.eventsList.RefreshItem(eventsList.SelectedIndex);
+            this.alwaysAvailableCheckBox.Checked = calEvent.isAlwaysAvailable();
             this.saveConfig.Enabled = true;
         }
 
