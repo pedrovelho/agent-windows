@@ -129,18 +129,11 @@ namespace AgentForAgent
 
             if (this.configuration.isAlwaysAvailable() && this.configuration.events.Length == 1)
             {
-                this.configuration.events[0].config.nbRuntimes = Convert.ToUInt16(this.nbRuntimesNumericUpDown.Value);
+                this.configuration.events[0].config.nbWorkers = Convert.ToUInt16(this.nbWorkersEventUpDown.Value);
             }
 
-            if (conf.config.nbWorkers == 0)
-            {
-                this.nbWorkersNumericUpDown.Value = Environment.ProcessorCount;
-            }
-            else
-            {
-                this.nbWorkersNumericUpDown.Value = conf.config.nbWorkers;
-                this.nbWorkersNumericUpDown.Enabled = true;
-            }
+            this.nbWorkersNumericUpDown.Value = conf.config.nbWorkers;
+            this.nbWorkersNumericUpDown.Enabled = true;
 
             ////////////////////////////////////////
             // Load events from the configuration //
@@ -155,14 +148,14 @@ namespace AgentForAgent
                 this.alwaysAvailableCheckBox.Checked = true;
                 this.processPriorityComboBox.SelectedItem = Enum.GetName(typeof(ProcessPriorityClass), configuration.config.processPriority);
                 this.maxCpuUsageNumericUpDown.Value = configuration.config.maxCpuUsage;
-                this.nbRuntimesEventUpDown.Value = configuration.config.nbRuntimes;
+                this.nbWorkersEventUpDown.Value = configuration.config.nbWorkers;
             }
             else
             {
                 // Set default values for the no events selected state
                 this.processPriorityComboBox.SelectedIndex = 0;
                 this.maxCpuUsageNumericUpDown.Value = this.maxCpuUsageNumericUpDown.Maximum;
-                this.nbRuntimesEventUpDown.Value = this.nbRuntimesEventUpDown.Minimum;
+                this.nbWorkersEventUpDown.Value = this.nbWorkersEventUpDown.Minimum;
 
                 // Load config events in the GUI
                 foreach (CalendarEventType cEv in this.configuration.events)
@@ -429,10 +422,10 @@ namespace AgentForAgent
 
             //--Events list                        
             this.internalCopyEventsList();
-            //if it is always available it will create a single event that must have the same nbRuntimes as the global nbRuntime
+            //if it is always available it will create a single event that must have the same nbWorkers as the global
             if(this.configuration.isAlwaysAvailable() && this.configuration.events.Length == 1)
             {
-                this.configuration.events[0].config.nbRuntimes = this.configuration.config.nbRuntimes;
+                this.configuration.events[0].config.nbWorkers = this.configuration.config.nbWorkers;
             }
 
             // Save ProActive Communication Protocol and Port initial value
@@ -681,16 +674,16 @@ namespace AgentForAgent
             this.secondsDuration.Value = cEv.duration.seconds;
             this.processPriorityComboBox.SelectedItem = Enum.GetName(typeof(ProcessPriorityClass), cEv.config.processPriority);
             this.maxCpuUsageNumericUpDown.Value = cEv.config.maxCpuUsage;
-            if (cEv.config.nbRuntimes < this.nbRuntimesEventUpDown.Minimum)
+            if (cEv.config.nbWorkers < this.nbWorkersEventUpDown.Minimum)
             {
-                this.nbRuntimesEventUpDown.Value = this.nbRuntimesEventUpDown.Minimum;
+                this.nbWorkersEventUpDown.Value = this.nbWorkersEventUpDown.Minimum;
             }
             else
             {
-                this.nbRuntimesEventUpDown.Value = cEv.config.nbRuntimes;
+                this.nbWorkersEventUpDown.Value = cEv.config.nbWorkers;
             }
             this.eventEditorGroup.Enabled = true;
-            this.nbRuntimesEventUpDown.Enabled = true;
+            this.nbWorkersEventUpDown.Enabled = true;
         }
 
 
@@ -699,7 +692,7 @@ namespace AgentForAgent
         {
             CalendarEventType calEvent = new CalendarEventType();
             calEvent.config = new AgentConfigType();
-            calEvent.config.nbRuntimes = Convert.ToUInt16(this.nbRuntimesEventUpDown.Minimum);
+            calEvent.config.nbWorkers = Convert.ToUInt16(this.nbWorkersEventUpDown.Minimum);
             int indexToSelect = this.eventsList.Items.Add(calEvent);
             // Select the created item
             this.eventsList.SelectedIndex = indexToSelect;
@@ -730,7 +723,7 @@ namespace AgentForAgent
                     {
                         // Disable other widgets if there is no more items
                         this.eventEditorGroup.Enabled = false;
-                        this.nbRuntimesEventUpDown.Enabled = false;
+                        this.nbWorkersEventUpDown.Enabled = false;
                     }
                 }
                 this.saveConfig.Enabled = true;
@@ -891,12 +884,12 @@ namespace AgentForAgent
             this.saveConfig.Enabled = true;
         }
 
-        private void nbRuntimesEventUpDown_ValueChanged(object sender, EventArgs e)
+        private void nbWorkersEventUpDown_ValueChanged(object sender, EventArgs e)
         {
             if (eventsList.SelectedIndex == -1)
                 return;
             CalendarEventType calEvent = (CalendarEventType)this.eventsList.SelectedItem;
-            calEvent.config.nbRuntimes = (ushort)this.nbRuntimesEventUpDown.Value;
+            calEvent.config.nbWorkers = (ushort)this.nbWorkersEventUpDown.Value;
             // Refresh widget
             this.eventsList.RefreshItem(eventsList.SelectedIndex);
             this.alwaysAvailableCheckBox.Checked = calEvent.isAlwaysAvailable();
@@ -934,17 +927,17 @@ namespace AgentForAgent
                 // 3.1 Make sure this single event uses the global runtime instance
                 if (configuration.events.Length == 1)
                 {
-                    configuration.events[0].config.nbRuntimes = this.configuration.config.nbRuntimes;
+                    configuration.events[0].config.nbWorkers = this.configuration.config.nbWorkers;
                 }
 
                 // 4. Load values for the process priority and the max cpu usage                
                 this.processPriorityComboBox.SelectedItem = Enum.GetName(typeof(ProcessPriorityClass), configuration.config.processPriority);
                 this.maxCpuUsageNumericUpDown.Value = configuration.config.maxCpuUsage;
-                this.nbRuntimesEventUpDown.Value = configuration.config.nbRuntimes;
+                this.nbWorkersEventUpDown.Value = configuration.config.nbWorkers;
 
                 // Disable buttons and group boxes
                 this.eventEditorGroup.Enabled = false;
-                this.nbRuntimesEventUpDown.Enabled = false;
+                this.nbWorkersEventUpDown.Enabled = false;
                 this.eventsList.Enabled = false;
                 this.createEventButton.Enabled = false;
                 this.deleteEventButton.Enabled = false;
@@ -955,7 +948,7 @@ namespace AgentForAgent
                 if (this.eventsList.SelectedIndex != -1)
                 {
                     this.eventEditorGroup.Enabled = true;
-                    this.nbRuntimesEventUpDown.Enabled = true;
+                    this.nbWorkersEventUpDown.Enabled = true;
                 }
                 eventsList.Enabled = true;
                 createEventButton.Enabled = true;
@@ -1307,7 +1300,7 @@ namespace AgentForAgent
                 {
                     this.configuration.events[0].config.nbRuntimes = this.configuration.config.nbRuntimes;
                 }
-                this.nbRuntimesEventUpDown.Value = this.configuration.config.nbRuntimes;
+                this.nbWorkersEventUpDown.Value = this.configuration.config.nbRuntimes;
             }
             this.saveConfig.Enabled = true;
         }
