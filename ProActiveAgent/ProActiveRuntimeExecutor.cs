@@ -268,11 +268,14 @@ namespace ProActiveAgent
                     }
                 }
 
-                foreach (string parameter in this.commonStartInfo.configuration.config.additionalCmdArgs)
-                {                   
-                    argumentsBuilder.Append(" " + parameter);
+                if (this.commonStartInfo.configuration.config.additionalCmdArgs != null)
+                {
+                    foreach (string parameter in this.commonStartInfo.configuration.config.additionalCmdArgs)
+                    {
+                        argumentsBuilder.Append(" " + parameter);
+                    }
                 }
-                
+
                 if (this.nbWorkers != 0)
                 {
                     argumentsBuilder.Append(" -w " + this.nbWorkers);
